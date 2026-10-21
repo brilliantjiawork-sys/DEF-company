@@ -1,0 +1,41 @@
+backend:
+  name: test-repo
+
+media_folder: "images" 
+public_folder: "/images"
+
+collections:
+  # =========================================
+  # 1. 故事/文章 (Stories) - 带有话题标签筛选
+  # =========================================
+  - name: "stories"
+    label: "Stories (文章)"
+    folder: "data/stories" 
+    create: true
+    fields:
+      - { label: "文章标题", name: "title", widget: "string" }
+      - { label: "发布日期", name: "date", widget: "datetime", format: "MMM DD, YYYY" }
+      - { label: "封面图", name: "image", widget: "image" }
+      # 对应前端的筛选按钮（AI Vision / Automation）
+      - label: "话题标签 (Topics)"
+        name: "tags"
+        widget: "select"
+        multiple: true
+        options: ["AI Vision", "Automation", "Case Study", "Company News"]
+      - { label: "正文内容", name: "body", widget: "markdown" }
+
+  # =========================================
+  # 2. 展会/活动 (Events) - 带有时间、地点和年份筛选
+  # =========================================
+  - name: "events"
+    label: "Events (展会)"
+    folder: "data/events"
+    create: true
+    fields:
+      - { label: "展会名称", name: "title", widget: "string" }
+      - { label: "年份 (用于前端筛选)", name: "year", widget: "select", options: ["2026", "2027", "2028"] }
+      - { label: "具体日期 (如 Nov 12-15, 2026)", name: "date", widget: "string" }
+      - { label: "地点 (城市, 国家)", name: "loc", widget: "string" }
+      - { label: "展会简介", name: "desc", widget: "text" }
+      - { label: "列表封面图", name: "cover", widget: "image" }
+      - { label: "详情页大图", name: "detailImg", widget: "image" }
