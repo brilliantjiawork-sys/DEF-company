@@ -6,12 +6,20 @@ backend:
 media_folder: "images"
 public_folder: "/images"
 
-# 开启 Unsplash
+# 🌟 核心修复：只保留本地和 Unsplash，彻底干掉 Pexels 和 Pixabay
 media_libraries:
+  default:
+    name: "本地上传"
+    extensions: ["jpg", "jpeg", "png", "webp", "gif"]
   unsplash:
     access_key: ""
+  pexels:
+    disabled: true
+  pixabay:
+    disabled: true
 
 collections:
+  # 1. 故事/文章（带标签、支持多图/加粗/多标题）
   - name: "stories"
     label: "Stories (文章)"
     folder: "data/stories"
@@ -27,6 +35,7 @@ collections:
         options: ["AI Vision", "Automation", "Case Study", "Company News"]
       - { label: "正文内容 (支持多图/加粗/多标题)", name: "body", widget: "markdown" }
 
+  # 2. 展会/活动
   - name: "events"
     label: "Events (展会)"
     folder: "data/events"
@@ -40,6 +49,7 @@ collections:
       - { label: "列表封面图", name: "cover", widget: "image" }
       - { label: "详情页大图", name: "detailImg", widget: "image" }
 
+  # 3. 主页图片（精确命名字段，只有这两张图）
   - name: "global_settings"
     label: "主页图片"
     files:
