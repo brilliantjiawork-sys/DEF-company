@@ -6,6 +6,11 @@ backend:
 media_folder: "images"
 public_folder: "/images"
 
+# 开启 Unsplash
+media_libraries:
+  unsplash:
+    access_key: ""
+
 collections:
   - name: "stories"
     label: "Stories (文章)"
@@ -20,7 +25,7 @@ collections:
         widget: "select"
         multiple: true
         options: ["AI Vision", "Automation", "Case Study", "Company News"]
-      - { label: "正文内容 (支持多图/加粗)", name: "body", widget: "markdown" }
+      - { label: "正文内容 (支持多图/加粗/多标题)", name: "body", widget: "markdown" }
 
   - name: "events"
     label: "Events (展会)"
