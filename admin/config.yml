@@ -3,23 +3,18 @@ backend:
   repo: brilliantjiawork-sys/DEF-company
   branch: main
 
+# 1. 开启本地媒体存储（这是本地传图的根本）
 media_folder: "images"
 public_folder: "/images"
 
-# 🌟 核心修复：只保留本地和 Unsplash，彻底干掉 Pexels 和 Pixabay
+# 2. 明确指定图库设置，只保留 Unsplash 和 Lorem Picsum（如果你想把 Lorem 也去掉，就把那行删掉即可）
 media_libraries:
-  default:
-    name: "本地上传"
-    extensions: ["jpg", "jpeg", "png", "webp", "gif"]
-  unsplash:
-    access_key: ""
-  pexels:
-    disabled: true
-  pixabay:
-    disabled: true
+  stock_assets:
+    providers:
+      - unsplash
+      # - lorem_picsum  # 如果不需要这个占位图库，把这行前面的 - 删掉即可
 
 collections:
-  # 1. 故事/文章（带标签、支持多图/加粗/多标题）
   - name: "stories"
     label: "Stories (文章)"
     folder: "data/stories"
@@ -33,9 +28,8 @@ collections:
         widget: "select"
         multiple: true
         options: ["AI Vision", "Automation", "Case Study", "Company News"]
-      - { label: "正文内容 (支持多图/加粗/多标题)", name: "body", widget: "markdown" }
+      - { label: "正文内容 (支持多图/加粗)", name: "body", widget: "markdown" }
 
-  # 2. 展会/活动
   - name: "events"
     label: "Events (展会)"
     folder: "data/events"
@@ -49,7 +43,6 @@ collections:
       - { label: "列表封面图", name: "cover", widget: "image" }
       - { label: "详情页大图", name: "detailImg", widget: "image" }
 
-  # 3. 主页图片（精确命名字段，只有这两张图）
   - name: "global_settings"
     label: "主页图片"
     files:
