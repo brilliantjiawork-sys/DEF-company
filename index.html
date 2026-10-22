@@ -509,68 +509,79 @@
          JavaScript 逻辑
          ========================================= -->
     <script>
-        // =========================================
-        // 1. 数据部分 (更新了近期日期和未来展会)
-        // =========================================
-        const storiesData = [
-            { id: 1, title: "How AI is Revolutionizing Defect Detection", desc: "Discover how DEF's latest cameras identify flaws at 10,000 parts per minute.", date: "Oct 15, 2026", img: "images/story-cover.jpg", tags: ["AI Vision", "Automation"] },
-            { id: 2, title: "The Future of Smart Factories", desc: "Key technologies driving the next wave of industrial automation.", date: "Sept 28, 2026", img: "images/social-cover.jpg", tags: ["Automation"] },
-            { id: 3, title: "Customer Success: Automotive Assembly", desc: "How our vision systems helped a major automaker reduce defects by 40%.", date: "Sept 10, 2026", img: "images/event-1.jpg", tags: ["Case Study"] }
-        ];
+            // ==========================================
+        // 全新动态读取逻辑（不再写死假数据）
+        // ==========================================
+        let storiesData = [];
+        let eventsData = [];
 
-        // 修复：展会日期全部改为未来的 2026 年底和 2027 年
-        const eventsData = [
-            { id: 1, title: "Automate 2026", year: "2026", date: "Nov 12-15, 2026", loc: "Detroit, MI", desc: "Booth #4022 | Live demonstrations of our latest AI-driven inspection systems.", cover: "images/event-cover.jpg", detailImg: "images/event-1.jpg" },
-            { id: 2, title: "Vision Expo 2026", year: "2026", date: "Dec 05-08, 2026", loc: "Stuttgart, Germany", desc: "Join us to explore next-gen industrial camera solutions for European manufacturers.", cover: "images/event-2.jpg", detailImg: "images/event-2.jpg" },
-            { id: 3, title: "Automate 2027", year: "2027", date: "May 10-13, 2027", loc: "Chicago, IL", desc: "Showcasing our first generation of ultra-compact smart cameras.", cover: "images/event-3.jpg", detailImg: "images/event-3.jpg" }
-        ];
+        async function loadData() {
+            try {
+                // 读取云端 CMS 生成的文章数据
+                const res = await fetch('data/database.json');
+                if (res.ok) {
+                    const data = await res.json();
+                    storiesData = data.articles || [];
+                }
+                // 读取云端展会数据（如果有）
+                const resEvents = await fetch('data/events.json');
+                if (resEvents.ok) {
+                    const data = await resEvents.json();
+                    eventsData = data.exhibitions || [];
+                }
+                renderStories();
+                renderEvents();
+            } catch (error) {
+                console.log("等待云端数据...", error);
+            }
+        }
 
-        // =========================================
-        // 2. 页面切换逻辑
-        // =========================================
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
+            const target = document.getElementById(id);
+            if(target) target.classList.add('active');
             if(id === 'newsroom') switchView('ov');
             window.scrollTo(0,0);
         }
 
         function switchView(viewId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById('view-' + viewId).classList.add('active');
+            const target = document.getElementById('view-' + viewId);
+            if (target) target.classList.add('active');
             
             document.querySelectorAll('.nr-sidebar a').forEach(a => a.classList.remove('active'));
-            let title = viewId.charAt(0).toUpperCase() + viewId.slice(1).replace('-detail', '');
+            const navMap = { ov: 'nav-ov', stories: 'nav-stories', social: 'nav-social', media: 'nav-media', 'story-detail': 'nav-stories', events: 'nav-events', 'event-detail': 'nav-events' };
+            const navEl = document.getElementById(navMap[viewId]);
+            if (navEl) navEl.classList.add('active');
             
-            if(viewId.includes('-detail')) {
-                let parent = viewId.split('-')[0];
-                document.getElementById('nav-' + parent).classList.add('active');
-            } else {
-                let navEl = document.getElementById('nav-' + viewId);
-                if(navEl) navEl.classList.add('active');
+            const bcTitle = document.getElementById('bc-title');
+            if(bcTitle) {
+                const titles = { ov: 'Overview', stories: 'Stories', social: 'Social Media', media: 'Media', events: 'Events', 'story-detail': 'Stories', 'event-detail': 'Events' };
+                bcTitle.innerText = titles[viewId] || viewId;
             }
-            document.getElementById('bc-title').innerText = title;
-            
-            // 修复侧边栏遮挡问题：改为往上滚一点，不会遮挡顶部的字
-            window.scrollTo(0, 80); 
+            window.scrollTo(0, 80);
         }
 
-        // =========================================
-        // 3. 列表渲染逻辑
-        // =========================================
         function renderStories(filter = 'All') {
             const container = document.getElementById('stories-list');
+            if (!container) return;
             container.innerHTML = '';
-            const filtered = filter === 'All' ? storiesData : storiesData.filter(s => s.tags.includes(filter));
-            filtered.forEach(story => {
+            const filtered = filter === 'All' ? storiesData : storiesData.filter(s => (s.tags || []).includes(filter));
+            
+            filtered.forEach((story, index) => {
+                const plainText = (story.body || "").replace(/<[^>]*>?/gm, '');
+                const readingTime = Math.max(1, Math.ceil(plainText.split(/\s+/).length / 150)) + " mins read";
+                const tagsHtml = (story.tags || []).map(t => `<span style="background: #e6f4f9; color: #45b2d3; padding: 4px 10px; border-radius: 2px; font-size: 12px; font-weight: 600; margin-right: 8px;">${t}</span>`).join('');
+                
                 container.innerHTML += `
-                    <div class="list-card" onclick="showStoryDetail(${story.id})">
-                        <img src="${story.img}">
+                    <div class="list-card" onclick="showStoryDetail(${index})">
+                        <img src="${story.image || 'images/story-cover.jpg'}">
                         <div class="list-info">
-                            <span class="date">${story.date}</span>
+                            <div style="font-size: 13px; color: #888; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;">
+                                <span>${new Date(story.date).toLocaleDateString()}</span> • <span>${readingTime}</span>
+                            </div>
                             <h4>${story.title}</h4>
-                            <p>${story.desc}</p>
-                            <div class="story-tags">${story.tags.map(t => `<span class="story-tag-item">#${t}</span>`).join(' ')}</div>
+                            <div style="margin-top: 12px;">${tagsHtml}</div>
                         </div>
                     </div>
                 `;
@@ -583,28 +594,29 @@
             renderStories(topic);
         }
 
-        function showStoryDetail(id) {
-            const story = storiesData.find(s => s.id === id);
-            document.getElementById('sd-img').src = story.img;
-            document.getElementById('sd-date').innerText = story.date;
+        function showStoryDetail(index) {
+            const story = storiesData[index];
+            if(!story) return;
+            document.getElementById('sd-img').src = story.image || 'images/story-cover.jpg';
+            document.getElementById('sd-date').innerText = new Date(story.date).toLocaleDateString();
             document.getElementById('sd-title').innerText = story.title;
+            document.getElementById('sd-body').innerHTML = marked.parse(story.body || "");
             switchView('story-detail');
         }
 
         function renderEvents(filter = 'All') {
             const container = document.getElementById('events-list');
+            if (!container) return;
             container.innerHTML = '';
             const filtered = filter === 'All' ? eventsData : eventsData.filter(e => e.year === filter);
-            filtered.forEach(ev => {
-                // 修复：改成左图右文结构
+            filtered.forEach((ev, index) => {
                 container.innerHTML += `
-                    <div class="event-card" onclick="showEventDetail(${ev.id})">
-                        <img src="${ev.cover}">
+                    <div class="event-card" onclick="showEventDetail(${index})">
+                        <img src="${ev.cover || 'images/event-cover.jpg'}">
                         <div class="event-info">
                             <span class="event-year-badge">${ev.year}</span>
                             <h4>${ev.title}</h4>
                             <p>${ev.date} • ${ev.loc}</p>
-                            <p style="margin-top:12px; font-size:14px; color:var(--blue); font-weight:600;">Click to view details →</p>
                         </div>
                     </div>
                 `;
@@ -617,105 +629,58 @@
             renderEvents(year);
         }
 
-        function showEventDetail(id) {
-            const ev = eventsData.find(e => e.id === id);
-            document.getElementById('ed-img').src = ev.detailImg;
+        function showEventDetail(index) {
+            const ev = eventsData[index];
+            if(!ev) return;
+            document.getElementById('ed-img').src = ev.detailImg || 'images/event-1.jpg';
             document.getElementById('ed-title').innerText = ev.title;
-            document.getElementById('ed-desc').innerHTML = `<strong>Year:</strong> ${ev.year}<br><strong>Date:</strong> ${ev.date}<br><strong>Location:</strong> ${ev.loc}<br><br>${ev.desc}`;
+            document.getElementById('ed-desc').innerHTML = `<strong>Location:</strong> ${ev.loc}<br><br>${ev.desc || ''}`;
             switchView('event-detail');
         }
 
-        // =========================================
-        // 4. 表单提交逻辑 (直连 Google Sheet)
-        // =========================================
+        // 表单提交与 Cookie 逻辑
         document.addEventListener("DOMContentLoaded", function() {
+            loadData(); // 页面一打开就去拉取文章
+            
             const form = document.getElementById('detailed-contact-form');
-            const header = document.getElementById('form-header');
-            const submitBtn = document.getElementById('submit-btn');
-            const successMessage = document.getElementById('success-message');
-
             if(form) {
                 form.addEventListener('submit', function(e) {
-                    e.preventDefault(); // 阻止刷新
-                    
-                    submitBtn.innerText = 'Submitting...';
-                    submitBtn.disabled = true;
-                    submitBtn.style.backgroundColor = '#cccccc';
-
+                    e.preventDefault(); 
+                    const btn = document.getElementById('submit-btn');
+                    if(btn) { btn.innerText = 'Submitting...'; btn.disabled = true; }
                     const formData = new FormData(this);
-
-                    // 读取 config.js 中的 contactUrl
-                    fetch(SITE_CONFIG.contactUrl, {
-                        method: 'POST',
-                        mode: 'no-cors',
-                        body: formData 
-                    }).then(() => {
-                        header.style.display = 'none';
+                    fetch(SITE_CONFIG.contactUrl, { method: 'POST', mode: 'no-cors', body: formData })
+                    .then(() => {
+                        document.getElementById('form-header').style.display = 'none';
                         form.style.display = 'none';
-                        successMessage.style.display = 'block';
-                    }).catch(error => {
-                        alert('Submission failed. Please check your connection.');
-                        submitBtn.innerText = 'Submit Inquiry';
-                        submitBtn.disabled = false;
-                        submitBtn.style.backgroundColor = '#FFE817';
+                        document.getElementById('success-message').style.display = 'block';
                     });
                 });
             }
             
-            // 顺便修复 Newsletter 订阅的提交
-            window.subscribeNewsletter = async function() {
-                const email = document.getElementById('nl-email').value.trim();
-                if (!email) return alert('Please enter your email.');
-                await fetch(SITE_CONFIG.newsletterUrl, { method: 'POST', body: new URLSearchParams({ email }), mode: 'no-cors' });
-                alert('Subscribed!');
-                document.getElementById('nl-email').value = '';
-            };
+            const cookieBanner = document.getElementById('cookie-banner');
+            setTimeout(() => { if(cookieBanner) cookieBanner.style.display = 'block'; }, 500);
         });
 
-        // =========================================
-        // 5. Cookie 弹窗逻辑
-        // =========================================
-        const cookieBanner = document.getElementById('cookie-banner');
-        const mainBtns = document.getElementById('cookie-main-btns');
-        const detailsArea = document.getElementById('cookie-details-area');
-        
-        // 延迟半秒弹出 Cookie
-        setTimeout(() => { if(cookieBanner) cookieBanner.style.display = 'block'; }, 500);
-        
-        function showCookieDetails() { mainBtns.style.display = 'none'; detailsArea.style.display = 'block'; }
-        function backToMain() { mainBtns.style.display = 'flex'; detailsArea.style.display = 'none'; }
-        
-        function acceptAllCookies() { 
-            document.getElementById('cookie-pref').checked = true; 
-            document.getElementById('cookie-stat').checked = true; 
-            document.getElementById('cookie-mkt').checked = true; 
-            saveCustomCookies(); 
-        }
-        function denyAllCookies() { 
-            document.getElementById('cookie-pref').checked = false; 
-            document.getElementById('cookie-stat').checked = false; 
-            document.getElementById('cookie-mkt').checked = false; 
-            saveCustomCookies(); 
-        }
+        window.subscribeNewsletter = async function() {
+            const email = document.getElementById('nl-email').value.trim();
+            if (!email) return alert('Please enter your email.');
+            await fetch(SITE_CONFIG.newsletterUrl, { method: 'POST', body: new URLSearchParams({ email }), mode: 'no-cors' });
+            alert('Subscribed!');
+        };
+
+        function showCookieDetails() { document.getElementById('cookie-main-btns').style.display = 'none'; document.getElementById('cookie-details-area').style.display = 'block'; }
+        function backToMain() { document.getElementById('cookie-main-btns').style.display = 'flex'; document.getElementById('cookie-details-area').style.display = 'none'; }
+        function acceptAllCookies() { document.getElementById('cookie-pref').checked = true; document.getElementById('cookie-stat').checked = true; document.getElementById('cookie-mkt').checked = true; saveCustomCookies(); }
+        function denyAllCookies() { document.getElementById('cookie-pref').checked = false; document.getElementById('cookie-stat').checked = false; document.getElementById('cookie-mkt').checked = false; saveCustomCookies(); }
         function saveCustomCookies() {
             const isStat = document.getElementById('cookie-stat').checked;
             const isMkt = document.getElementById('cookie-mkt').checked;
-            
-            // 触发 GTM 合规事件
             if(typeof gtag !== 'undefined') {
-                gtag('consent', 'update', { 
-                    'analytics_storage': isStat ? 'granted' : 'denied', 
-                    'ad_storage': isMkt ? 'granted' : 'denied', 
-                    'ad_user_data': isMkt ? 'granted' : 'denied', 
-                    'ad_personalization': isMkt ? 'granted' : 'denied' 
-                });
+                gtag('consent', 'update', { 'analytics_storage': isStat ? 'granted' : 'denied', 'ad_storage': isMkt ? 'granted' : 'denied' });
             }
-            cookieBanner.style.display = 'none';
+            document.getElementById('cookie-banner').style.display = 'none';
         }
-
-        // 初始化渲染列表
-        renderStories();
-        renderEvents();
     </script>
 </body>
-</html>
+</html>    
