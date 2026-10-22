@@ -1,0 +1,28 @@
+{
+  "exhibitions": [
+    {
+      "title": "Automate 2026",
+      "year": "2026",
+      "date": "Nov 12-15, 2026",
+      "loc": "Detroit, MI",
+      "desc": "Booth #4022 | Live demonstrations of our latest AI-driven inspection systems.",
+      "cover": "/images/event-1.jpg"
+    },
+    {
+      "title": "Vision Expo 2026",
+      "year": "2026",
+      "date": "Dec 05-08, 2026",
+      "loc": "Stuttgart, Germany",
+      "desc": "Join us to explore next-gen industrial camera solutions for European manufacturers.",
+      "cover": "/images/event-2.jpg"
+    },
+    {
+      "title": "Automate 2027",
+      "year": "2027",
+      "date": "May 10-13, 2027",
+      "loc": "Chicago, IL",
+      "desc": "Showcasing our first generation of ultra-compact smart cameras.",
+      "cover": "/images/event-3.jpg"
+    }
+  ]
+}
