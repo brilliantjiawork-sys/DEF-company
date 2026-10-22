@@ -6,133 +6,23 @@
     <title>DEF Company | Newsroom</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="config.js"></script>
-    <style>
-        :root { --blue: #45b2d3; --yellow: #FFE817; --dark: #111; --gray: #555; --light: #888; --white: #fff; --bg: #f9f9f9; --line: #e0e0e0; }
-        body { font-family: 'Inter', sans-serif; margin: 0; color: var(--dark); background: var(--white); line-height: 1.5; }
-        a { text-decoration: none; color: inherit; cursor: pointer; }
-        
-        /* 顶部导航 */
-        .nav { border-bottom: 1px solid var(--line); padding: 16px 48px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; width: 100%; box-sizing: border-box; background: var(--white); z-index: 1000; }
-        .logo { display: flex; align-items: center; gap: 16px; }
-        .logo img { height: 48px; object-fit: contain; }
-        .logo h1 { font-size: 22px; font-weight: 600; margin: 0; line-height: 1.2; }
-        .logo span { font-size: 10px; color: var(--light); letter-spacing: 2px; }
-        .menu { display: flex; gap: 32px; align-items: center; font-size: 16px; font-weight: 500; }
-        .menu a:hover { color: var(--blue); }
-        .btn-y { background: var(--yellow); padding: 12px 28px; border-radius: 2px; font-weight: 600; color: var(--dark); border: none; cursor: pointer; font-family: inherit; font-size: 15px; transition: 0.2s; display: inline-block; text-align: center;}
-        .btn-y:hover { background: #E6D000; }
-        
-        .page { display: none; padding: 110px 48px 60px; max-width: 1300px; margin: 0 auto; }
-        .page.active { display: block; }
-        .view { display: none; }
-        .view.active { display: block; animation: fade 0.3s; }
-        @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-
-        /* 首页 */
-        .hero { display: flex; justify-content: space-between; align-items: center; gap: 40px; }
-        .hero-text { width: 50%; }
-        .hero h2 { font-size: 76px; font-weight: 300; margin: 0 0 20px; letter-spacing: -2px; line-height: 1.1; }
-        .hero p { font-size: 20px; color: var(--gray); margin-bottom: 32px; }
-        .hero img { width: 48%; max-width: 550px; border-radius: 2px; object-fit: cover; }
-        .newsletter { display: flex; gap: 60px; align-items: center; border-top: 1px solid var(--line); margin-top: 60px; padding-top: 60px; }
-        .nl-img { width: 45%; }
-        .nl-img img { width: 100%; height: 280px; object-fit: cover; border-radius: 2px; }
-        .nl-img p { font-size: 13px; color: var(--light); border-left: 3px solid var(--yellow); padding-left: 12px; margin-top: 12px; }
-        .nl-form { width: 55%; }
-        .nl-form h3 { font-size: 36px; font-weight: 300; margin: 0 0 12px; }
-        .nl-input { display: flex; gap: 12px; }
-        .nl-input input { flex: 1; padding: 14px; border: 1px solid #ccc; border-radius: 2px; outline: none; }
-
-        /* Newsroom 布局 */
-        .nr-layout { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; min-height: 600px;}
-        .nr-sidebar { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; background: var(--bg); border-right: 1px solid var(--line); padding: 24px; }
-        .nr-sidebar a { font-size: 16px; color: var(--gray); padding: 12px 16px; border-radius: 4px; transition: 0.2s; }
-        .nr-sidebar a:hover { color: var(--dark); background: rgba(255,255,255,0.6); }
-        .nr-sidebar a.active { color: var(--dark); font-weight: 600; background: var(--white); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .nr-main { flex: 1; min-width: 0; padding: 40px; }
-        .nr-title { font-size: 48px; font-weight: 300; margin: 0 0 24px; }
-
-        /* 四宫格 */
-        .ov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .ov-card { position: relative; height: 260px; cursor: pointer; overflow: hidden; border-radius: 2px; background: #eee; }
-        .ov-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
-        .ov-card:hover img { transform: scale(1.05); }
-        .ov-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; justify-content: space-between; align-items: flex-end; padding: 24px; }
-        .ov-overlay h3 { color: white; font-size: 26px; font-weight: 300; margin: 0; }
-
-        /* 文章卡片 */
-        .list-card { display: flex; gap: 24px; border: 1px solid var(--line); padding: 20px; margin-bottom: 20px; cursor: pointer; border-radius: 4px; transition: 0.2s; }
-        .list-card:hover { background: var(--bg); }
-        .list-card img { width: 260px; height: 150px; object-fit: cover; border-radius: 2px; }
-        .list-info h4 { font-size: 22px; font-weight: 500; margin: 0 0 8px; }
-        
-        /* 展会卡片 (详情完整) */
-        .event-card { display: flex; gap: 30px; border-bottom: 1px solid var(--line); padding: 30px 0; cursor: pointer; align-items: center; transition: 0.2s; }
-        .event-card:hover { background: var(--bg); padding-left: 20px; border-radius: 4px;}
-        .event-card img { width: 320px; height: 200px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
-        .event-info h4 { font-size: 24px; font-weight: 500; margin: 0 0 8px; }
-        .event-info p { color: var(--gray); margin: 0 0 8px; font-size: 15px; }
-        .event-year-badge { display: inline-block; background: var(--yellow); color: var(--dark); font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 2px; margin-bottom: 12px;}
-
-        /* 详情页 */
-        .detail-layout { display: flex; gap: 40px; align-items: flex-start; }
-        .detail-img { width: 45%; height: 380px; object-fit: cover; border-radius: 4px; }
-        .detail-content { width: 55%; }
-        .detail-date { font-size: 14px; color: var(--light); font-weight: 600; margin-bottom: 12px; display: block; text-transform: uppercase; }
-        .detail-title { font-size: 36px; font-weight: 400; margin: 0 0 20px; }
-        .back-btn { display: inline-flex; font-size: 14px; color: var(--gray); margin-bottom: 24px; cursor: pointer; }
-
-        /* Social 样式 */
-        .social-wrapper { display: flex; flex-direction: column; gap: 30px; }
-        .social-main { display: flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; height: 380px;}
-        .social-main-img { width: 50%; background: #eee; position: relative;}
-        .social-main-img img { width: 100%; height: 100%; object-fit: cover; }
-        .social-main-text { width: 50%; padding: 40px; background: var(--bg);}
-        .social-sub { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .social-card { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column;}
-        .social-card-img { height: 240px; background: #eee; position: relative;}
-        .social-card-img img { width: 100%; height: 100%; object-fit: cover; }
-        .social-card-text { padding: 24px; flex: 1;}
-        
-        /* Logo 黑色小方块 */
-        .social-logo { position: absolute; bottom: 20px; left: 20px; background: rgba(255, 255, 255, 0.95); padding: 12px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);}
-        .social-logo svg { width: 32px; height: 32px; display: block; }
-
-        /* Media 样式 */
-        .media-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-        .media-card img { width: 100%; height: 300px; object-fit: cover; border-radius: 4px; }
-        .media-card h4 { font-size: 22px; font-weight: 500; margin: 16px 0 6px; }
-        .media-card p { color: var(--gray); font-size: 15px; margin: 0 0 12px; }
-        .note-box { background: var(--bg); border-left: 4px solid var(--yellow); padding: 20px; margin-top: 40px; font-size: 14px; color: var(--gray); }
-
-        /* 完整表单样式 */
-        .form-container { background-color: #ffffff; width: 100%; max-width: 700px; margin: 0 auto; padding: 48px; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
-        .form-header h2 { font-size: 32px; font-weight: 400; margin: 0 0 24px 0; }
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 2px; box-sizing: border-box; font-family: inherit;}
-        .row { display: flex; gap: 20px; }
-        .row .form-group { flex: 1; }
-        .btn-submit { background-color: var(--yellow); padding: 18px; border: none; width: 100%; font-weight: 600; cursor: pointer; font-size: 16px;}
-
-        /* Cookie 弹窗样式 */
-        #cookie-banner { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.98); border-top: 1px solid var(--line); z-index: 9999; display: none; padding: 20px 48px; box-shadow: 0 -10px 30px rgba(0,0,0,0.05); }
-        .cookie-content { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 40px;}
-        .cookie-btns { display: flex; gap: 12px; }
-        .c-btn { padding: 10px 20px; border-radius: 2px; cursor: pointer; border: 1px solid #ccc; background: #fff; font-weight: 500;}
-        .btn-allow { background: var(--yellow); border: none;}
-    </style>
+    <!-- 引入我们刚拆分出来的 CSS -->
+    <link rel="stylesheet" href="style.css">
+    <!-- 引入 Markdown 解析库 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
+    <!-- 导航 -->
     <div class="nav">
         <div class="logo" onclick="showPage('home')">
-            <img src="images/logo.jpg">
+            <img src="images/logo.jpg" alt="DEF">
             <div><h1>DEF Company</h1><span>DEFINE THE STANDARD OF SIGHT.</span></div>
         </div>
         <div class="menu">
             <a onclick="showPage('home')">Home</a>
+            <a>Products</a><a>Solutions</a><a>Support</a>
             <a onclick="showPage('newsroom')">Newsroom</a>
-            <a class="btn-y" onclick="showPage('contact')">Contact Sales</a>
+            <a class="btn-y" onclick="showPage('contact')" style="padding:10px 24px; font-size:15px;">Contact Sales</a>
         </div>
     </div>
 
@@ -141,20 +31,21 @@
         <div class="hero">
             <div class="hero-text">
                 <h2>Precision Industrial Vision.</h2>
-                <p>DEF Company designs high-performance machine vision systems to help global manufacturers optimize quality control.</p>
+                <p>DEF Company designs high-performance machine vision systems to help global manufacturers optimize quality control and increase throughput.</p>
                 <button class="btn-y" onclick="showPage('contact')">Book a Demo</button>
             </div>
-            <img src="images/hero-bg.jpg">
+            <img src="images/hero-bg.jpg" alt="Vision">
         </div>
         <div class="newsletter">
             <div class="nl-img">
-                <img src="images/team.jpg">
+                <img src="images/team.jpg" alt="Team">
                 <p>* The DEF Company engineering team collaborating on next-generation systems.</p>
             </div>
             <div class="nl-form">
-                <h3>Subscribe to our Newsletter</h3>
+                <h3>Subscribe to our Technical Newsletter</h3>
+                <p>Receive product releases, engineering case studies, and industry insights.</p>
                 <div class="nl-input">
-                    <input type="email" placeholder="Work Email">
+                    <input type="email" placeholder="Enter your Work Email">
                     <button class="btn-y" onclick="alert('Subscribed!')">Subscribe</button>
                 </div>
             </div>
@@ -173,74 +64,85 @@
             </div>
             <div class="nr-main">
                 
-                <!-- Overview -->
+                <!-- 总览 -->
                 <div id="view-ov" class="view active">
                     <h2 class="nr-title">Corporate Newsroom</h2>
                     <div class="ov-grid">
-                        <div class="ov-card" onclick="switchView('social')"><img src="images/11.jpg"><div class="ov-overlay"><h3>Social Media</h3></div></div>
-                        <div class="ov-card" onclick="switchView('stories')"><img src="images/story-cover.jpg"><div class="ov-overlay"><h3>Stories</h3></div></div>
-                        <div class="ov-card" onclick="switchView('events')"><img src="images/event-1.jpg"><div class="ov-overlay"><h3>Events</h3></div></div>
-                        <div class="ov-card" onclick="switchView('media')"><img src="images/media-cover.jpg"><div class="ov-overlay"><h3>Media</h3></div></div>
-                    </div>
-                </div>
-
-                <!-- Stories -->
-                <div id="view-stories" class="view">
-                    <h2 class="nr-title">Explore our stories</h2>
-                    <div class="list-card" onclick="switchView('story-detail')">
-                        <img src="images/story-cover.jpg">
-                        <div class="list-info">
-                            <div style="font-size: 13px; color: #888; margin-bottom: 8px;">Oct 15, 2026 • 3 mins read</div>
-                            <h4>How AI is Revolutionizing Defect Detection</h4>
+                        <div class="ov-card" onclick="switchView('social')">
+                            <img id="ov-img-social" src="images/11.jpg">
+                            <div class="ov-overlay"><h3>Social Media</h3></div>
+                        </div>
+                        <div class="ov-card" onclick="switchView('stories')">
+                            <img id="ov-img-stories" src="images/story-cover.jpg">
+                            <div class="ov-overlay"><h3>Stories</h3></div>
+                        </div>
+                        <div class="ov-card" onclick="switchView('events')">
+                            <img id="ov-img-events" src="images/event-1.jpg">
+                            <div class="ov-overlay"><h3>Events</h3></div>
+                        </div>
+                        <div class="ov-card" onclick="switchView('media')">
+                            <img id="ov-img-media" src="images/media-cover.jpg">
+                            <div class="ov-overlay"><h3>Media</h3></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Story 详情 -->
+                <!-- Stories 列表 -->
+                <div id="view-stories" class="view">
+                    <h2 class="nr-title">Explore our stories</h2>
+                    <div id="stories-list">
+                        <!-- 这里的默认文章会被 JS 自动替换为云端数据 -->
+                        <div class="list-card" onclick="alert('Loading data...')">
+                            <img src="images/story-cover.jpg">
+                            <div class="list-info">
+                                <div style="font-size: 13px; color: #888; margin-bottom: 8px;">Oct 15, 2026 • 4 mins read</div>
+                                <h4>How AI is Revolutionizing Defect Detection</h4>
+                                <div class="story-tags">
+                                    <span class="kone-tag">AI Vision</span>
+                                    <span class="kone-tag">Automation</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Stories 详情 -->
                 <div id="view-story-detail" class="view">
                     <div class="back-btn" onclick="switchView('stories')">← Back to Stories</div>
                     <div class="detail-layout">
-                        <img src="images/story-cover.jpg" class="detail-img">
+                        <img id="sd-img" src="images/story-cover.jpg" class="detail-img">
                         <div class="detail-content">
-                            <span class="detail-date">Oct 15, 2026</span>
-                            <h2 class="detail-title">How AI is Revolutionizing Defect Detection</h2>
-                            <p>Industrial automation is evolving faster than ever. At DEF Company, we leverage state-of-the-art neural networks...</p>
+                            <span id="sd-date" class="detail-date"></span>
+                            <h2 id="sd-title" class="detail-title"></h2>
+                            <div id="sd-body" class="detail-text"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Events (完整展会信息) -->
+                <!-- Events 列表 -->
                 <div id="view-events" class="view">
                     <h2 class="nr-title">Trade Shows</h2>
-                    <div class="event-card">
-                        <img src="images/event-1.jpg">
-                        <div class="event-info">
-                            <span class="event-year-badge">2026</span>
-                            <h4>Automate 2026</h4>
-                            <p><strong>Date:</strong> Nov 12-15, 2026</p>
-                            <p><strong>Location:</strong> Detroit, MI</p>
-                            <p><strong>Booth:</strong> #4022 | Live demonstrations of our latest AI-driven inspection systems.</p>
-                        </div>
-                    </div>
-                    <div class="event-card">
-                        <img src="images/event-2.jpg">
-                        <div class="event-info">
-                            <span class="event-year-badge">2026</span>
-                            <h4>Vision Expo 2026</h4>
-                            <p><strong>Date:</strong> Dec 05-08, 2026</p>
-                            <p><strong>Location:</strong> Stuttgart, Germany</p>
-                            <p><strong>Info:</strong> Join us to explore next-gen industrial camera solutions for European manufacturers.</p>
+                    <div id="events-list">
+                        <!-- 这里的默认展会会被 JS 自动替换为云端数据 -->
+                        <div class="event-card">
+                            <img src="images/event-1.jpg">
+                            <div class="event-info">
+                                <span class="event-year-badge">2026</span>
+                                <h4>Automate 2026</h4>
+                                <p><strong>Date:</strong> Nov 12-15, 2026</p>
+                                <p><strong>Location:</strong> Detroit, MI</p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Social (带 Logo 还原) -->
+                <!-- Social -->
                 <div id="view-social" class="view">
                     <h2 class="nr-title">Follow us</h2>
                     <div class="social-wrapper">
                         <div class="social-main">
                             <div class="social-main-img">
-                                <img src="images/social-linkedin.jpg">
+                                <img id="social-li-img" src="images/social-linkedin.jpg">
                                 <div class="social-logo"><svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" fill="#0077b5"/></svg></div>
                             </div>
                             <div class="social-main-text"><h3>LinkedIn</h3><p>Our main B2B channel for networking, corporate announcements, and technical thought leadership.</p></div>
@@ -248,14 +150,14 @@
                         <div class="social-sub">
                             <div class="social-card">
                                 <div class="social-card-img">
-                                    <img src="images/social-youtube.jpg">
+                                    <img id="social-yt-img" src="images/social-youtube.jpg">
                                     <div class="social-logo"><svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" fill="#ff0000"/></svg></div>
                                 </div>
                                 <div class="social-card-text"><h4>YouTube</h4><p>Watch product tutorials and customer case studies.</p></div>
                             </div>
                             <div class="social-card">
                                 <div class="social-card-img">
-                                    <img src="images/social-facebook.jpg">
+                                    <img id="social-fb-img" src="images/social-facebook.jpg">
                                     <div class="social-logo"><svg viewBox="0 0 24 24"><path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z" fill="#1877F2"/></svg></div>
                                 </div>
                                 <div class="social-card-text"><h4>Facebook</h4><p>Join our global community for the latest updates.</p></div>
@@ -264,12 +166,20 @@
                     </div>
                 </div>
 
-                <!-- Media (带注释还原) -->
+                <!-- Media -->
                 <div id="view-media" class="view">
                     <h2 class="nr-title">Media Contacts</h2>
                     <div class="media-grid">
-                        <div class="media-card"><img src="images/media-1.jpg"><h4>Jane Doe</h4><p>Senior PR Manager<br>pr@defcompany.com</p></div>
-                        <div class="media-card"><img src="images/media-2.jpg"><h4>Sarah Smith</h4><p>Communications Lead<br>press@defcompany.com</p></div>
+                        <div class="media-card">
+                            <img id="media-img-1" src="images/media-1.jpg">
+                            <h4>Jane Doe</h4>
+                            <p>Senior PR Manager<br>pr@defcompany.com</p>
+                        </div>
+                        <div class="media-card">
+                            <img id="media-img-2" src="images/media-2.jpg">
+                            <h4>Sarah Smith</h4>
+                            <p>Communications Lead<br>press@defcompany.com</p>
+                        </div>
                     </div>
                     <div class="note-box"><strong>Note:</strong> This is a mock website for my portfolio. All names and titles are fictional. Photos from Unsplash.</div>
                 </div>
@@ -326,39 +236,31 @@
         </div>
     </div>
 
-    <!-- Cookie 弹窗还原 -->
+    <!-- 完整 Cookie 弹窗 -->
     <div id="cookie-banner">
         <div class="cookie-content">
             <div>
                 <h3>Your privacy matters.</h3>
                 <p>We use cookies to ensure our website functions properly.</p>
             </div>
-            <div class="cookie-btns">
+            <div class="cookie-btns" id="cookie-main-btns">
                 <div class="c-btn" onclick="document.getElementById('cookie-banner').style.display='none'">Deny</div>
+                <div class="c-btn" onclick="document.getElementById('cookie-details').style.display='block'">Allow Selection</div>
                 <div class="c-btn btn-allow" onclick="document.getElementById('cookie-banner').style.display='none'">Allow All</div>
+            </div>
+        </div>
+        <div class="cookie-details" id="cookie-details">
+            <button class="c-btn" onclick="document.getElementById('cookie-details').style.display='none'">← Back</button>
+            <div class="c-grid" style="margin-top: 15px;">
+                <div><span>Necessary</span><br><div class="toggle-switch" style="background:var(--yellow)"></div></div>
+                <div><span>Preferences</span><br><div class="toggle-switch"></div></div>
+                <div><span>Statistics</span><br><div class="toggle-switch"></div></div>
+                <div><span>Marketing</span><br><div class="toggle-switch"></div></div>
             </div>
         </div>
     </div>
 
-    <script>
-        function showPage(id) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-            if(id === 'newsroom') switchView('ov');
-            window.scrollTo(0,0);
-        }
-        function switchView(viewId) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById('view-' + viewId).classList.add('active');
-            document.querySelectorAll('.nr-sidebar a').forEach(a => a.classList.remove('active'));
-            const navEl = document.getElementById('nav-' + viewId.replace('-detail', 's'));
-            if (navEl) navEl.classList.add('active');
-        }
-        
-        // 延迟半秒弹出 Cookie
-        setTimeout(() => {
-            document.getElementById('cookie-banner').style.display = 'block';
-        }, 500);
-    </script>
+    <!-- 引入我们拆分出来的 JS -->
+    <script src="app.js"></script>
 </body>
 </html>
