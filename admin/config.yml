@@ -26,7 +26,25 @@ collections:
                 widget: "select"
                 multiple: true
                 options: ["AI Vision", "Automation", "Case Study", "Company News"]
-              - { label: "正文内容 (支持多图/加粗)", name: "body", widget: "markdown" }
+              - { label: "正文内容", name: "body", widget: "markdown" }
+
+  - name: "events"
+    label: "Events (展会)"
+    files:
+      - file: "data/events.json"
+        label: "展会列表"
+        name: "events_list"
+        fields:
+          - label: "所有展会"
+            name: "exhibitions"
+            widget: "list"
+            fields:
+              - { label: "展会名称", name: "title", widget: "string" }
+              - { label: "年份", name: "year", widget: "string" }
+              - { label: "日期", name: "date", widget: "string" }
+              - { label: "地点", name: "loc", widget: "string" }
+              - { label: "简介", name: "desc", widget: "text" }
+              - { label: "封面图", name: "cover", widget: "image" }
 
   - name: "global_settings"
     label: "主页图片"
