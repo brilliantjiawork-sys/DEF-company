@@ -7,6 +7,7 @@ media_folder: "images"
 public_folder: "/images"
 
 collections:
+  # 1. 文章
   - name: "stories"
     label: "Stories (文章)"
     files:
@@ -28,6 +29,7 @@ collections:
                 options: ["AI Vision", "Automation", "Case Study", "Company News"]
               - { label: "正文内容", name: "body", widget: "markdown" }
 
+  # 2. 展会
   - name: "events"
     label: "Events (展会)"
     files:
@@ -46,12 +48,14 @@ collections:
               - { label: "简介", name: "desc", widget: "text" }
               - { label: "封面图", name: "cover", widget: "image" }
 
+  # 3. 主页专属快捷入口（含Logo）
   - name: "global_settings"
-    label: "主页图片"
+    label: "主页与Logo设置"
     files:
       - file: "data/home_images.json"
-        label: "首页与订阅区配图"
+        label: "首页与全局配图"
         name: "home_images"
         fields:
+          - { label: "网站Logo", name: "logo_img", widget: "image" }
           - { label: "首页大图", name: "hero_img", widget: "image" }
           - { label: "订阅区配图", name: "team_img", widget: "image" }
