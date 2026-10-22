@@ -1,8 +1,4 @@
-// ==========================================
-// app.js - 处理页面交互与云端数据拉取
-// ==========================================
-
-// 1. 最基础的页面切换逻辑（优先执行，永不报错）
+// 1. 页面切换
 function showPage(id) {
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
     const target = document.getElementById(id);
@@ -15,74 +11,65 @@ function switchView(viewId) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
     const target = document.getElementById('view-' + viewId);
     if (target) target.classList.add('active');
-
     document.querySelectorAll('.nr-sidebar a').forEach(a => a.classList.remove('active'));
     const navEl = document.getElementById('nav-' + viewId.replace('-detail', 's'));
     if (navEl) navEl.classList.add('active');
     window.scrollTo(0, 80);
 }
 
-// 2. 全局变量
+// 2. 全局数据
 let storiesData = [];
 let eventsData = [];
 
-// 3. 从云端拉取数据的逻辑（包含极强的容错）
-async function loadCloudData() {
-    // --- (1) 拉取并替换全局图片 ---
+// 3. 核心：读取云端数据
+async function loadData() {
     try {
-        const res = await fetch('data/global_settings.json');
-        if (res.ok) {
-            const json = await res.json();
-            const imgs = json.site_images || {};
-            
+        // 图片
+        const gRes = await fetch('data/global_settings.json');
+        if (gRes.ok) {
+            const gData = await gRes.json();
+            const imgs = gData.site_images || {};
             if (imgs.logo) document.querySelector('.logo img').src = imgs.logo;
             if (imgs.hero_bg) document.querySelector('.hero img').src = imgs.hero_bg;
             if (imgs.team) document.querySelector('.nl-img img').src = imgs.team;
-            
+            // 这里可以加更多图片的替换，假设你用全局配置覆盖了首页和社媒
             if (imgs.ov_social) document.getElementById('ov-img-social').src = imgs.ov_social;
             if (imgs.ov_stories) document.getElementById('ov-img-stories').src = imgs.ov_stories;
             if (imgs.ov_events) document.getElementById('ov-img-events').src = imgs.ov_events;
             if (imgs.ov_media) document.getElementById('ov-img-media').src = imgs.ov_media;
-
             if (imgs.social_linkedin) document.getElementById('social-li-img').src = imgs.social_linkedin;
             if (imgs.social_youtube) document.getElementById('social-yt-img').src = imgs.social_youtube;
             if (imgs.social_facebook) document.getElementById('social-fb-img').src = imgs.social_facebook;
-
             if (imgs.media_1) document.getElementById('media-img-1').src = imgs.media_1;
             if (imgs.media_2) document.getElementById('media-img-2').src = imgs.media_2;
         }
-    } catch (err) {
-        console.log("图片数据未加载，使用默认图片");
-    }
+    } catch (err) { console.log("图片读取跳过"); }
 
-    // --- (2) 拉取并渲染文章列表 ---
     try {
-        const res = await fetch('data/database.json');
-        if (res.ok) {
-            const json = await res.json();
-            storiesData = json.articles || [];
-            if (storiesData.length > 0) renderStories(storiesData);
+        // 文章
+        const sRes = await fetch('data/database.json');
+        if (sRes.ok) {
+            const sData = await sRes.json();
+            storiesData = sData.articles || [];
+            renderStories(storiesData);
         }
-    } catch (err) {
-        console.log("文章数据未加载，使用默认文章");
-    }
+    } catch (err) { console.log("文章读取跳过"); }
 
-    // --- (3) 拉取并渲染展会列表 ---
     try {
-        const res = await fetch('data/events.json');
-        if (res.ok) {
-            const json = await res.json();
-            eventsData = json.exhibitions || [];
-            if (eventsData.length > 0) renderEvents(eventsData);
+        // 展会
+        const eRes = await fetch('data/events.json');
+        if (eRes.ok) {
+            const eData = await eRes.json();
+            eventsData = eData.exhibitions || [];
+            renderEvents(eventsData);
         }
-    } catch (err) {
-        console.log("展会数据未加载，使用默认展会");
-    }
+    } catch (err) { console.log("展会读取跳过"); }
 }
 
-// 4. 渲染文章列表 (Kone 标签 + 阅读时间)
+// 4. 渲染文章列表
 function renderStories(data) {
     const container = document.getElementById('stories-list');
+    if(!container) return;
     container.innerHTML = '';
     data.forEach((story, index) => {
         const plainText = (story.body || "").replace(/<[^>]*>?/gm, '');
@@ -105,15 +92,13 @@ function renderStories(data) {
     });
 }
 
-// 5. 点击文章进入详情页
+// 5. 点击文章详情
 function showStoryDetail(index) {
     const story = storiesData[index];
     if (!story) return;
     document.getElementById('sd-img').src = story.image || 'images/story-cover.jpg';
     document.getElementById('sd-date').innerText = new Date(story.date).toLocaleDateString();
     document.getElementById('sd-title').innerText = story.title;
-    
-    // 使用 Markdown 解析多图、加粗、标题
     try {
         document.getElementById('sd-body').innerHTML = marked.parse(story.body || "");
     } catch(e) {
@@ -122,35 +107,70 @@ function showStoryDetail(index) {
     switchView('story-detail');
 }
 
-// 6. 渲染展会列表
+// 6. 渲染展会 (分为 Upcoming 和 Past)
 function renderEvents(data) {
     const container = document.getElementById('events-list');
-    container.innerHTML = '';
+    if(!container) return;
+    
+    let upcomingHtml = '';
+    let pastHtml = '';
+    // 设定一个当前参考年份 (2026)
+    const currentYear = 2026;
+
     data.forEach(ev => {
         const imgSrc = ev.cover || 'images/event-1.jpg';
-        container.innerHTML += `
+        const yearNum = parseInt(ev.year) || 2026;
+        
+        const cardHtml = `
             <div class="event-card">
                 <img src="${imgSrc}">
                 <div class="event-info">
                     <span class="event-year-badge">${ev.year}</span>
                     <h4>${ev.title}</h4>
+                    <p style="font-size: 18px; font-weight: 600; color: var(--dark); margin-bottom: 8px;">📍 ${ev.booth || 'Booth TBD'}</p>
                     <p><strong>Date:</strong> ${ev.date}</p>
                     <p><strong>Location:</strong> ${ev.loc}</p>
-                    <p><strong>Booth/Info:</strong> ${ev.desc || ''}</p>
+                    <p><strong>Theme:</strong> ${ev.theme || 'Industrial Vision'}</p>
+                    <p style="margin-top: 12px;">${ev.desc || ''}</p>
                 </div>
             </div>
         `;
+
+        if (yearNum >= currentYear) {
+            upcomingHtml += cardHtml;
+        } else {
+            pastHtml += cardHtml;
+        }
     });
+
+    let finalHtml = '';
+    if (upcomingHtml) {
+        finalHtml += `<h3 style="font-size:24px; margin: 20px 0; border-bottom: 2px solid var(--yellow); padding-bottom: 10px;">Upcoming Trade Shows</h3>`;
+        finalHtml += upcomingHtml;
+    }
+    if (pastHtml) {
+        finalHtml += `<h3 style="font-size:24px; margin: 40px 0 20px; border-bottom: 2px solid var(--line); padding-bottom: 10px;">Past Events & Reviews</h3>`;
+        finalHtml += pastHtml;
+    }
+    container.innerHTML = finalHtml;
 }
 
-// 7. 页面加载完成后的动作
+// 7. 页面初始化
 document.addEventListener("DOMContentLoaded", () => {
-    // 拉取云端数据
-    loadCloudData();
+    loadData();
     
-    // 延迟半秒弹出 Cookie
+    // 弹出 Cookie
     setTimeout(() => {
         const banner = document.getElementById('cookie-banner');
         if (banner) banner.style.display = 'block';
     }, 500);
+
+    // Cookie 按钮交互
+    document.querySelectorAll('.toggle-switch').forEach(t => {
+        t.addEventListener('click', function() {
+            if(!this.previousElementSibling.classList.contains('disabled')) {
+                this.classList.toggle('active');
+            }
+        });
+    });
 });

@@ -6,13 +6,10 @@
     <title>DEF Company | Newsroom</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="config.js"></script>
-    <!-- 引入我们刚拆分出来的 CSS -->
     <link rel="stylesheet" href="style.css">
-    <!-- 引入 Markdown 解析库 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    <!-- 导航 -->
     <div class="nav">
         <div class="logo" onclick="showPage('home')">
             <img src="images/logo.jpg" alt="DEF">
@@ -26,7 +23,6 @@
         </div>
     </div>
 
-    <!-- 首页 -->
     <div id="home" class="page active">
         <div class="hero">
             <div class="hero-text">
@@ -43,7 +39,7 @@
             </div>
             <div class="nl-form">
                 <h3>Subscribe to our Technical Newsletter</h3>
-                <p>Receive product releases, engineering case studies, and industry insights.</p>
+                <p>Receive exclusive product releases, in-depth engineering case studies, and industry insights tailored for B2B manufacturers.</p>
                 <div class="nl-input">
                     <input type="email" placeholder="Enter your Work Email">
                     <button class="btn-y" onclick="alert('Subscribed!')">Subscribe</button>
@@ -52,7 +48,6 @@
         </div>
     </div>
 
-    <!-- Newsroom -->
     <div id="newsroom" class="page">
         <div class="nr-layout">
             <div class="nr-sidebar">
@@ -63,8 +58,6 @@
                 <a onclick="switchView('media')" id="nav-media">Media</a>
             </div>
             <div class="nr-main">
-                
-                <!-- 总览 -->
                 <div id="view-ov" class="view active">
                     <h2 class="nr-title">Corporate Newsroom</h2>
                     <div class="ov-grid">
@@ -87,26 +80,20 @@
                     </div>
                 </div>
 
-                <!-- Stories 列表 -->
                 <div id="view-stories" class="view">
                     <h2 class="nr-title">Explore our stories</h2>
                     <div id="stories-list">
-                        <!-- 这里的默认文章会被 JS 自动替换为云端数据 -->
-                        <div class="list-card" onclick="alert('Loading data...')">
+                        <div class="list-card">
                             <img src="images/story-cover.jpg">
                             <div class="list-info">
                                 <div style="font-size: 13px; color: #888; margin-bottom: 8px;">Oct 15, 2026 • 4 mins read</div>
                                 <h4>How AI is Revolutionizing Defect Detection</h4>
-                                <div class="story-tags">
-                                    <span class="kone-tag">AI Vision</span>
-                                    <span class="kone-tag">Automation</span>
-                                </div>
+                                <div class="story-tags"><span class="kone-tag">AI Vision</span></div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Stories 详情 -->
                 <div id="view-story-detail" class="view">
                     <div class="back-btn" onclick="switchView('stories')">← Back to Stories</div>
                     <div class="detail-layout">
@@ -119,24 +106,11 @@
                     </div>
                 </div>
 
-                <!-- Events 列表 -->
                 <div id="view-events" class="view">
-                    <h2 class="nr-title">Trade Shows</h2>
-                    <div id="events-list">
-                        <!-- 这里的默认展会会被 JS 自动替换为云端数据 -->
-                        <div class="event-card">
-                            <img src="images/event-1.jpg">
-                            <div class="event-info">
-                                <span class="event-year-badge">2026</span>
-                                <h4>Automate 2026</h4>
-                                <p><strong>Date:</strong> Nov 12-15, 2026</p>
-                                <p><strong>Location:</strong> Detroit, MI</p>
-                            </div>
-                        </div>
-                    </div>
+                    <h2 class="nr-title">Trade Shows & Events</h2>
+                    <div id="events-list"></div>
                 </div>
 
-                <!-- Social -->
                 <div id="view-social" class="view">
                     <h2 class="nr-title">Follow us</h2>
                     <div class="social-wrapper">
@@ -145,7 +119,11 @@
                                 <img id="social-li-img" src="images/social-linkedin.jpg">
                                 <div class="social-logo"><svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" fill="#0077b5"/></svg></div>
                             </div>
-                            <div class="social-main-text"><h3>LinkedIn</h3><p>Our main B2B channel for networking, corporate announcements, and technical thought leadership.</p></div>
+                            <div class="social-main-text">
+                                <h3>LinkedIn</h3>
+                                <p>Our primary B2B channel for networking, corporate announcements, and technical thought leadership. Join our community of industrial automation professionals.</p>
+                                <a href="https://linkedin.com" target="_blank" class="btn-y" style="align-self: flex-start;">Follow us on LinkedIn</a>
+                            </div>
                         </div>
                         <div class="social-sub">
                             <div class="social-card">
@@ -153,20 +131,27 @@
                                     <img id="social-yt-img" src="images/social-youtube.jpg">
                                     <div class="social-logo"><svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" fill="#ff0000"/></svg></div>
                                 </div>
-                                <div class="social-card-text"><h4>YouTube</h4><p>Watch product tutorials and customer case studies.</p></div>
+                                <div class="social-card-text">
+                                    <h4>YouTube</h4>
+                                    <p>Watch deep-dive product tutorials, factory automation tests, and customer case studies.</p>
+                                    <a href="https://youtube.com" target="_blank" class="btn-y" style="padding: 8px 16px; font-size: 14px; align-self: flex-start;">Follow on YouTube</a>
+                                </div>
                             </div>
                             <div class="social-card">
                                 <div class="social-card-img">
                                     <img id="social-fb-img" src="images/social-facebook.jpg">
                                     <div class="social-logo"><svg viewBox="0 0 24 24"><path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z" fill="#1877F2"/></svg></div>
                                 </div>
-                                <div class="social-card-text"><h4>Facebook</h4><p>Join our global community for the latest updates.</p></div>
+                                <div class="social-card-text">
+                                    <h4>Facebook</h4>
+                                    <p>Join our global community for the latest industry news, event photos, and company milestones.</p>
+                                    <a href="https://facebook.com" target="_blank" class="btn-y" style="padding: 8px 16px; font-size: 14px; align-self: flex-start;">Follow on Facebook</a>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Media -->
                 <div id="view-media" class="view">
                     <h2 class="nr-title">Media Contacts</h2>
                     <div class="media-grid">
@@ -187,12 +172,11 @@
         </div>
     </div>
 
-    <!-- 完整表单 -->
     <div id="contact" class="page" style="background: var(--bg);">
         <div class="form-container">
             <div class="form-header">
                 <h2>Contact Sales</h2>
-                <p>Please provide your information so our team can get in touch with you.</p>
+                <p>Please fill out your business requirements below, and our machine vision experts will contact you within one business day to provide customized solutions.</p>
             </div>
             <form onsubmit="event.preventDefault(); alert('Inquiry Submitted!');">
                 <div class="form-group">
@@ -215,6 +199,13 @@
                             <option value="US">United States</option>
                             <option value="CN">China</option>
                             <option value="DE">Germany</option>
+                            <option value="UK">United Kingdom</option>
+                            <option value="JP">Japan</option>
+                            <option value="IN">India</option>
+                            <option value="FR">France</option>
+                            <option value="IT">Italy</option>
+                            <option value="BR">Brazil</option>
+                            <option value="Other">Other</option>
                         </select>
                     </div>
                     <div class="form-group"><label>Postal / Zip Code *</label><input type="text" required></div>
@@ -225,23 +216,28 @@
                         <option value="">Select Industry</option>
                         <option value="Automotive">Automotive</option>
                         <option value="Electronics">Electronics</option>
+                        <option value="Semiconductor">Semiconductor</option>
+                        <option value="Pharmaceuticals">Pharmaceuticals</option>
+                        <option value="Food & Beverage">Food & Beverage</option>
+                        <option value="Aerospace">Aerospace</option>
+                        <option value="Machinery">Machinery & Equipment</option>
+                        <option value="Other">Other</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Additional Comments</label>
-                    <textarea rows="4"></textarea>
+                    <textarea rows="4" placeholder="Please tell us about your specific application or project requirements..."></textarea>
                 </div>
                 <button type="submit" class="btn-submit">Submit Inquiry</button>
             </form>
         </div>
     </div>
 
-    <!-- 完整 Cookie 弹窗 -->
     <div id="cookie-banner">
         <div class="cookie-content">
             <div>
                 <h3>Your privacy matters.</h3>
-                <p>We use cookies to ensure our website functions properly.</p>
+                <p>We use cookies to ensure our website functions properly and to provide you with a smoother, more personalized browsing experience. You can manage your preferences below.</p>
             </div>
             <div class="cookie-btns" id="cookie-main-btns">
                 <div class="c-btn" onclick="document.getElementById('cookie-banner').style.display='none'">Deny</div>
@@ -252,15 +248,33 @@
         <div class="cookie-details" id="cookie-details">
             <button class="c-btn" onclick="document.getElementById('cookie-details').style.display='none'">← Back</button>
             <div class="c-grid" style="margin-top: 15px;">
-                <div><span>Necessary</span><br><div class="toggle-switch" style="background:var(--yellow)"></div></div>
-                <div><span>Preferences</span><br><div class="toggle-switch"></div></div>
-                <div><span>Statistics</span><br><div class="toggle-switch"></div></div>
-                <div><span>Marketing</span><br><div class="toggle-switch"></div></div>
+                <div>
+                    <h4>Necessary</h4>
+                    <p>Essential for basic website functions and security. Cannot be disabled.</p>
+                    <div class="toggle-switch active" style="cursor: not-allowed;"></div>
+                </div>
+                <div>
+                    <h4>Preferences</h4>
+                    <p>Remember your language, region, and custom settings.</p>
+                    <div class="toggle-switch"></div>
+                </div>
+                <div>
+                    <h4>Statistics</h4>
+                    <p>Help us analyze visitor behavior to optimize content and marketing strategies.</p>
+                    <div class="toggle-switch"></div>
+                </div>
+                <div>
+                    <h4>Marketing</h4>
+                    <p>Track campaign effectiveness to provide more relevant industry information.</p>
+                    <div class="toggle-switch"></div>
+                </div>
+            </div>
+            <div style="margin-top: 15px; text-align: right;">
+                <button class="c-btn btn-allow" onclick="document.getElementById('cookie-banner').style.display='none'">Save Preferences</button>
             </div>
         </div>
     </div>
 
-    <!-- 引入我们拆分出来的 JS -->
     <script src="app.js"></script>
 </body>
 </html>
