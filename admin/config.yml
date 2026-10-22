@@ -7,9 +7,8 @@ media_folder: "images"
 public_folder: "/images"
 
 collections:
-  # 1. 文章
   - name: "stories"
-    label: "Stories (文章)"
+    label: "Stories (深度文章)"
     files:
       - file: "data/database.json"
         label: "文章列表"
@@ -26,12 +25,11 @@ collections:
                 name: "tags"
                 widget: "select"
                 multiple: true
-                options: ["AI Vision", "Automation", "Case Study", "Company News"]
-              - { label: "正文内容", name: "body", widget: "markdown" }
+                options: ["AI Vision", "Automation", "Case Study", "Exhibition Review"]
+              - { label: "正文内容 (支持多图/多标题)", name: "body", widget: "markdown" }
 
-  # 2. 展会
   - name: "events"
-    label: "Events (展会)"
+    label: "Events (展会活动)"
     files:
       - file: "data/events.json"
         label: "展会列表"
@@ -42,29 +40,21 @@ collections:
             widget: "list"
             fields:
               - { label: "展会名称", name: "title", widget: "string" }
-              - { label: "年份", name: "year", widget: "string" }
-              - { label: "日期", name: "date", widget: "string" }
+              - { label: "年份 (用于分类未来/过去)", name: "year", widget: "string" }
+              - { label: "展位号 (Booth)", name: "booth", widget: "string" }
+              - { label: "展会主题 (Theme)", name: "theme", widget: "string" }
+              - { label: "具体日期", name: "date", widget: "string" }
               - { label: "地点", name: "loc", widget: "string" }
-              - { label: "简介", name: "desc", widget: "text" }
-              - { label: "封面图", name: "cover", widget: "image" }
+              - { label: "简介详情", name: "desc", widget: "text" }
+              - { label: "列表封面图", name: "cover", widget: "image" }
 
-  # 3. 官网全局视觉配置（100分的核心：把前端所有死图全部接管）
   - name: "global_settings"
-    label: "官网全局设置"
+    label: "全局图片配置"
     files:
       - file: "data/global_settings.json"
-        label: "全站图片与Logo"
-        name: "site_images"
+        label: "全站图片"
+        name: "home_images"
         fields:
-          - { label: "网站Logo (左上角)", name: "logo", widget: "image" }
-          - { label: "首页Hero大图", name: "hero_bg", widget: "image" }
-          - { label: "首页团队图", name: "team", widget: "image" }
-          - { label: "Overview-Social封面", name: "ov_social", widget: "image" }
-          - { label: "Overview-Stories封面", name: "ov_stories", widget: "image" }
-          - { label: "Overview-Events封面", name: "ov_events", widget: "image" }
-          - { label: "Overview-Media封面", name: "ov_media", widget: "image" }
-          - { label: "LinkedIn配图", name: "social_linkedin", widget: "image" }
-          - { label: "YouTube配图", name: "social_youtube", widget: "image" }
-          - { label: "Facebook配图", name: "social_facebook", widget: "image" }
-          - { label: "联系人1头像(Jane)", name: "media_1", widget: "image" }
-          - { label: "联系人2头像(Sarah)", name: "media_2", widget: "image" }
+          - { label: "网站Logo", name: "logo_img", widget: "image" }
+          - { label: "首页大图", name: "hero_img", widget: "image" }
+          - { label: "首页订阅图", name: "team_img", widget: "image" }
