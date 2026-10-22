@@ -6,13 +6,11 @@
     <title>DEF Company | Newsroom</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <script src="config.js"></script>
-    <!-- 引入 Markdown 解析库，让正文多标题多图生效 -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
         :root { --blue: #45b2d3; --yellow: #FFE817; --dark: #111; --gray: #555; --light: #888; --white: #fff; --bg: #f9f9f9; --line: #e0e0e0; }
         body { font-family: 'Inter', sans-serif; margin: 0; color: var(--dark); background: var(--white); line-height: 1.5; }
         a { text-decoration: none; color: inherit; cursor: pointer; }
-        
         .nav { border-bottom: 1px solid var(--line); padding: 16px 48px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; width: 100%; box-sizing: border-box; background: var(--white); z-index: 1000; }
         .logo { display: flex; align-items: center; gap: 16px; }
         .logo img { height: 48px; }
@@ -22,13 +20,11 @@
         .menu a:hover { color: var(--blue); }
         .btn-y { background: var(--yellow); padding: 12px 28px; border-radius: 2px; font-weight: 600; color: var(--dark); border: none; cursor: pointer; font-family: inherit; font-size: 15px; transition: 0.2s;}
         .btn-y:hover { background: #E6D000; }
-        
         .page { display: none; padding: 110px 48px 60px; max-width: 1300px; margin: 0 auto; }
         .page.active { display: block; }
         .view { display: none; }
         .view.active { display: block; animation: fade 0.3s; }
         @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
-
         .hero { display: flex; justify-content: space-between; align-items: center; gap: 40px; }
         .hero-text { width: 50%; }
         .hero h2 { font-size: 76px; font-weight: 300; margin: 0 0 20px; letter-spacing: -2px; line-height: 1.1; }
@@ -43,25 +39,21 @@
         .nl-form p { color: var(--gray); margin-bottom: 24px; font-size: 16px;}
         .nl-input { display: flex; gap: 12px; }
         .nl-input input { flex: 1; padding: 14px; border: 1px solid #ccc; border-radius: 2px; outline: none; font-family: inherit; font-size: 16px;}
-
         .nr-layout { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; min-height: 600px;}
         .nr-sidebar { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; background: var(--bg); border-right: 1px solid var(--line); padding: 24px; }
         .nr-sidebar a { font-size: 16px; color: var(--gray); padding: 12px 16px; border-radius: 4px; transition: 0.2s; }
         .nr-sidebar a:hover { color: var(--dark); background: rgba(255,255,255,0.6); }
         .nr-sidebar a.active { color: var(--dark); font-weight: 600; background: var(--white); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
         .nr-main { flex: 1; min-width: 0; padding: 40px; }
-        
         .breadcrumb { font-size: 13px; color: var(--light); margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;}
         .breadcrumb span { color: var(--dark); }
         .nr-title { font-size: 48px; font-weight: 300; margin: 0 0 12px; letter-spacing: -1px; }
         .nr-desc { font-size: 17px; color: var(--gray); margin-bottom: 30px; }
-
         .filter-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
         .filter-label { font-size: 14px; font-weight: 600; color: var(--dark); }
         .tags { display: flex; gap: 10px; flex-wrap: wrap; }
         .tag { padding: 6px 16px; border: 1px solid var(--line); border-radius: 2px; font-size: 14px; font-weight: 500; color: var(--gray); cursor: pointer; transition: 0.2s; }
         .tag:hover, .tag.active { background: var(--dark); color: var(--white); border-color: var(--dark); }
-
         .ov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
         .ov-card { position: relative; height: 260px; cursor: pointer; overflow: hidden; border-radius: 2px; background: #eee; }
         .ov-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
@@ -70,14 +62,12 @@
         .ov-card:hover .ov-overlay { background: rgba(0,0,0,0.6); }
         .ov-overlay h3 { color: white; font-size: 26px; font-weight: 300; margin: 0; }
         .ov-icon { width: 36px; height: 36px; background: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; }
-
         .list-card { display: flex; gap: 24px; border: 1px solid var(--line); padding: 20px; margin-bottom: 20px; cursor: pointer; transition: 0.2s; border-radius: 2px; align-items: center;}
         .list-card:hover { border-color: var(--dark); background: var(--bg); }
         .list-card img { width: 260px; height: 150px; object-fit: cover; border-radius: 2px; }
         .list-info { flex: 1; }
         .list-info h4 { font-size: 22px; font-weight: 500; margin: 0 0 6px; }
         .list-info p { color: var(--gray); margin: 0; font-size: 15px; }
-
         .story-detail-layout { display: flex; gap: 40px; align-items: flex-start; margin-top: 10px; }
         .story-detail-img { width: 45%; height: 380px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
         .story-detail-content { width: 55%; }
@@ -86,10 +76,8 @@
         .detail-text { font-size: 16px; color: var(--gray); line-height: 1.8; }
         .detail-text h2, .detail-text h3 { color: var(--dark); margin-top: 30px; margin-bottom: 15px; font-weight: 500; }
         .detail-text img { max-width: 100%; border-radius: 4px; margin: 20px 0; }
-        
         .back-btn { display: inline-flex; align-items: center; font-size: 14px; color: var(--gray); margin-bottom: 24px; cursor: pointer; font-weight: 500;}
         .back-btn:hover { color: var(--dark); }
-
         .event-card { display: flex; gap: 30px; border-bottom: 1px solid var(--line); padding: 30px 0; cursor: pointer; align-items: center; transition: 0.3s; }
         .event-card:hover { background: var(--bg); padding-left: 20px; padding-right: 20px; border-radius: 4px; border-bottom-color: transparent; }
         .event-card img { width: 320px; height: 200px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
@@ -98,13 +86,11 @@
         .event-info h4 { font-size: 24px; font-weight: 500; margin: 0 0 10px; }
         .event-info p { color: var(--gray); margin: 0 0 8px; font-size: 15px; }
         .event-detail-img { width: 100%; max-height: 400px; object-fit: cover; border-radius: 4px; margin-bottom: 24px; }
-
         .media-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .media-card img { width: 100%; height: 300px; object-fit: cover; border-radius: 4px; }
         .media-card h4 { font-size: 22px; font-weight: 500; margin: 16px 0 6px; }
         .media-card p { color: var(--gray); font-size: 15px; margin: 0 0 12px; }
         .note-box { background: var(--bg); border-left: 4px solid var(--yellow); padding: 20px; margin-top: 40px; font-size: 14px; color: var(--gray); line-height: 1.6;}
-
         .social-wrapper { display: flex; flex-direction: column; gap: 30px; }
         .social-main { display: flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; height: 380px;}
         .social-main-img { width: 50%; position: relative; background: #eee;}
@@ -121,7 +107,6 @@
         .social-card-text p { font-size: 15px; color: var(--gray); margin-bottom: 20px; flex: 1; line-height: 1.5;}
         .social-logo { position: absolute; bottom: 20px; left: 20px; background: rgba(255, 255, 255, 0.95); padding: 12px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(5px);}
         .social-logo svg { width: 32px; height: 32px; display: block; }
-
         .form-container { background-color: #ffffff; width: 100%; max-width: 700px; margin: 0 auto; padding: 48px; border-radius: 4px; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,0.03); box-sizing: border-box; text-align: left; }
         .form-header h2 { font-size: 32px; font-weight: 400; margin: 0 0 8px 0; }
         .form-header p { font-size: 15px; color: var(--gray); margin: 0 0 32px 0; }
@@ -138,7 +123,6 @@
         .success-message { display: none; text-align: center; padding: 60px 20px; }
         .success-message .check { font-size: 64px; color: var(--blue); margin-bottom: 20px; }
         .success-message h2 { font-size: 28px; font-weight: 500; margin: 0 0 10px 0; }
-
         #cookie-banner { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); border-top: 1px solid var(--line); box-shadow: 0 -10px 30px rgba(0,0,0,0.05); z-index: 9999; display: none; padding: 20px 48px; box-sizing: border-box; }
         .cookie-content { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 40px;}
         .cookie-text h3 { margin: 0 0 4px 0; font-size: 16px; font-weight: 600; }
@@ -173,7 +157,6 @@
             <a class="btn-y" onclick="showPage('contact')" style="padding:10px 24px; font-size:15px;">Contact Sales</a>
         </div>
     </div>
-
     <div id="home" class="page active">
         <div class="hero">
             <div class="hero-text">
@@ -198,7 +181,6 @@
             </div>
         </div>
     </div>
-
     <div id="newsroom" class="page">
         <div class="nr-layout">
             <div class="nr-sidebar">
@@ -210,7 +192,6 @@
             </div>
             <div class="nr-main">
                 <div class="breadcrumb">Home > Newsroom > <span id="bc-title">Overview</span></div>
-
                 <div id="view-ov" class="view active">
                     <h2 class="nr-title">Corporate Newsroom</h2>
                     <p class="nr-desc">Discover the latest stories, news, and media resources from DEF Company.</p>
@@ -233,7 +214,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div id="view-media" class="view">
                     <h2 class="nr-title">Media Contacts</h2>
                     <div class="media-grid">
@@ -242,7 +222,6 @@
                     </div>
                     <div class="note-box"><strong>Note:</strong> This is a mock website for my portfolio. All names and titles are fictional.</div>
                 </div>
-
                 <div id="view-stories" class="view">
                     <h2 class="nr-title">Explore our stories</h2>
                     <p class="nr-desc">Get the latest product updates, industry trends, and company news.</p>
@@ -256,7 +235,6 @@
                     </div>
                     <div id="stories-list"></div>
                 </div>
-
                 <div id="view-story-detail" class="view">
                     <div class="back-btn" onclick="switchView('stories')">← Back to Stories</div>
                     <div class="story-detail-layout">
@@ -268,7 +246,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div id="view-social" class="view">
                     <h2 class="nr-title">Follow us</h2>
                     <p class="nr-desc">Stay connected with DEF Company for the latest updates.</p>
@@ -310,7 +287,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div id="view-events" class="view">
                     <h2 class="nr-title">Trade Shows</h2>
                     <div class="filter-bar" id="event-filters">
@@ -323,18 +299,15 @@
                     </div>
                     <div id="events-list"></div>
                 </div>
-
                 <div id="view-event-detail" class="view">
                     <div class="back-btn" onclick="switchView('events')">← Back to Trade Shows</div>
                     <img id="ed-img" class="event-detail-img">
                     <h2 id="ed-title" class="detail-title"></h2>
                     <p class="detail-text" id="ed-desc"></p>
                 </div>
-
             </div>
         </div>
     </div>
-
     <div id="contact" class="page" style="background: var(--bg);">
         <div class="form-container">
             <div class="form-header" id="form-header">
@@ -354,7 +327,6 @@
             <div class="success-message" id="success-message"><h2>Submitted Successfully!</h2></div>
         </div>
     </div>
-
     <div id="cookie-banner">
         <div class="cookie-content">
             <div class="cookie-text">
@@ -378,26 +350,18 @@
             <div style="margin-top: 20px; text-align: right;"><div class="c-btn btn-allow" style="display: inline-block; padding: 10px 30px;" onclick="saveCustomCookies()">Save Preferences</div></div>
         </div>
     </div>
-
     <script>
-        // ==========================================
-        // 100分终极版：全局图片动态替换 + 动态文章渲染
-        // ==========================================
         let storiesData = [];
         let eventsData = [];
-
         async function loadData() {
             try {
-                // 1. 读取并替换所有全局图片
                 const globalRes = await fetch('data/global_settings.json');
                 if (globalRes.ok) {
                     const gData = await globalRes.json();
                     const imgs = gData.site_images || {};
-                    
                     if(imgs.logo) document.querySelector('.logo img').src = imgs.logo;
                     if(imgs.hero_bg) document.querySelector('.hero img').src = imgs.hero_bg;
                     if(imgs.team) document.querySelector('.nl-img img').src = imgs.team;
-                    
                     const ovCards = document.querySelectorAll('#view-ov .ov-card img');
                     if(ovCards.length >= 4) {
                         if(imgs.ov_social) ovCards[0].src = imgs.ov_social;
@@ -405,61 +369,49 @@
                         if(imgs.ov_events) ovCards[2].src = imgs.ov_events;
                         if(imgs.ov_media) ovCards[3].src = imgs.ov_media;
                     }
-
                     const mainSocial = document.querySelector('#view-social .social-main-img img');
                     if(mainSocial && imgs.social_linkedin) mainSocial.src = imgs.social_linkedin;
-                    
                     const subSocials = document.querySelectorAll('#view-social .social-card-img img');
                     if(subSocials.length >= 2) {
                         if(imgs.social_youtube) subSocials[0].src = imgs.social_youtube;
                         if(imgs.social_facebook) subSocials[1].src = imgs.social_facebook;
                     }
-
                     const mediaImgs = document.querySelectorAll('#view-media .media-card img');
                     if(mediaImgs.length >= 2) {
                         if(imgs.media_1) mediaImgs[0].src = imgs.media_1;
                         if(imgs.media_2) mediaImgs[1].src = imgs.media_2;
                     }
                 }
-
-                // 2. 读取文章数据
                 const res = await fetch('data/database.json');
                 if (res.ok) {
                     const data = await res.json();
                     storiesData = data.articles || [];
                 }
-
-                // 3. 读取展会数据
                 const eventRes = await fetch('data/events.json');
                 if (eventRes.ok) {
                     const data = await eventRes.json();
                     eventsData = data.exhibitions || [];
                 }
-                
                 renderStories();
                 renderEvents();
             } catch (error) {
                 console.log("等待云端数据...", error);
             }
         }
-
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById(id).classList.add('active');
             if(id === 'newsroom') switchView('ov');
             window.scrollTo(0,0);
         }
-
         function switchView(viewId) {
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
             const target = document.getElementById('view-' + viewId);
             if (target) target.classList.add('active');
-            
             document.querySelectorAll('.nr-sidebar a').forEach(a => a.classList.remove('active'));
             const navMap = { ov: 'nav-ov', stories: 'nav-stories', social: 'nav-social', media: 'nav-media', 'story-detail': 'nav-stories', events: 'nav-events', 'event-detail': 'nav-events' };
             const navEl = document.getElementById(navMap[viewId]);
             if (navEl) navEl.classList.add('active');
-            
             const bcTitle = document.getElementById('bc-title');
             if(bcTitle) {
                 const titles = { ov: 'Overview', stories: 'Stories', social: 'Social Media', media: 'Media', events: 'Events', 'story-detail': 'Stories', 'event-detail': 'Events' };
@@ -467,18 +419,15 @@
             }
             window.scrollTo(0, 80);
         }
-
         function renderStories(filter = 'All') {
             const container = document.getElementById('stories-list');
             if (!container) return;
             container.innerHTML = '';
             const filtered = filter === 'All' ? storiesData : storiesData.filter(s => (s.tags || []).includes(filter));
-            
             filtered.forEach((story, index) => {
                 const plainText = (story.body || "").replace(/<[^>]*>?/gm, '');
                 const readingTime = Math.max(1, Math.ceil(plainText.split(/\s+/).length / 150)) + " mins read";
                 const tagsHtml = (story.tags || []).map(t => `<span style="background: #e6f4f9; color: #45b2d3; padding: 4px 10px; border-radius: 2px; font-size: 12px; font-weight: 600; margin-right: 8px;">${t}</span>`).join('');
-                
                 container.innerHTML += `
                     <div class="list-card" onclick="showStoryDetail(${index})">
                         <img src="${story.image || 'images/story-cover.jpg'}">
@@ -493,13 +442,11 @@
                 `;
             });
         }
-
         function filterStories(topic, btn) {
             document.querySelectorAll('#story-filters .tag').forEach(t => t.classList.remove('active'));
             btn.classList.add('active');
             renderStories(topic);
         }
-
         function showStoryDetail(index) {
             const story = storiesData[index];
             if(!story) return;
@@ -509,7 +456,6 @@
             document.getElementById('sd-body').innerHTML = marked.parse(story.body || "");
             switchView('story-detail');
         }
-
         function renderEvents(filter = 'All') {
             const container = document.getElementById('events-list');
             if (!container) return;
@@ -528,13 +474,11 @@
                 `;
             });
         }
-
         function filterEvents(year, btn) {
             document.querySelectorAll('#event-filters .tag').forEach(t => t.classList.remove('active'));
             btn.classList.add('active');
             renderEvents(year);
         }
-
         function showEventDetail(index) {
             const ev = eventsData[index];
             if(!ev) return;
@@ -543,10 +487,8 @@
             document.getElementById('ed-desc').innerHTML = `<strong>Location:</strong> ${ev.loc}<br><br>${ev.desc || ''}`;
             switchView('event-detail');
         }
-
         document.addEventListener("DOMContentLoaded", function() {
             loadData(); 
-            
             const form = document.getElementById('detailed-contact-form');
             if(form) {
                 form.addEventListener('submit', function(e) {
@@ -562,18 +504,15 @@
                     });
                 });
             }
-            
             const cookieBanner = document.getElementById('cookie-banner');
             setTimeout(() => { if(cookieBanner) cookieBanner.style.display = 'block'; }, 500);
         });
-
         window.subscribeNewsletter = async function() {
             const email = document.getElementById('nl-email').value.trim();
             if (!email) return alert('Please enter your email.');
             await fetch(SITE_CONFIG.newsletterUrl, { method: 'POST', body: new URLSearchParams({ email }), mode: 'no-cors' });
             alert('Subscribed!');
         };
-
         function showCookieDetails() { document.getElementById('cookie-main-btns').style.display = 'none'; document.getElementById('cookie-details-area').style.display = 'block'; }
         function backToMain() { document.getElementById('cookie-main-btns').style.display = 'flex'; document.getElementById('cookie-details-area').style.display = 'none'; }
         function acceptAllCookies() { document.getElementById('cookie-pref').checked = true; document.getElementById('cookie-stat').checked = true; document.getElementById('cookie-mkt').checked = true; saveCustomCookies(); }
