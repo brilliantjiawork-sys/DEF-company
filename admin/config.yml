@@ -3,52 +3,37 @@ backend:
   repo: brilliantjiawork-sys/DEF-company
   branch: main
 
-# 1. 开启本地媒体存储（这是本地传图的根本）
 media_folder: "images"
 public_folder: "/images"
-
-# 2. 明确指定图库设置，只保留 Unsplash 和 Lorem Picsum（如果你想把 Lorem 也去掉，就把那行删掉即可）
-media_libraries:
-  stock_assets:
-    providers:
-      - unsplash
-      # - lorem_picsum  # 如果不需要这个占位图库，把这行前面的 - 删掉即可
 
 collections:
   - name: "stories"
     label: "Stories (文章)"
-    folder: "data/stories"
-    create: true
-    fields:
-      - { label: "文章标题", name: "title", widget: "string" }
-      - { label: "发布日期", name: "date", widget: "datetime" }
-      - { label: "封面图", name: "image", widget: "image" }
-      - label: "话题标签 (Topics)"
-        name: "tags"
-        widget: "select"
-        multiple: true
-        options: ["AI Vision", "Automation", "Case Study", "Company News"]
-      - { label: "正文内容 (支持多图/加粗)", name: "body", widget: "markdown" }
-
-  - name: "events"
-    label: "Events (展会)"
-    folder: "data/events"
-    create: true
-    fields:
-      - { label: "展会名称", name: "title", widget: "string" }
-      - { label: "年份", name: "year", widget: "select", options: ["2026", "2027", "2028"] }
-      - { label: "具体日期", name: "date", widget: "string" }
-      - { label: "地点", name: "loc", widget: "string" }
-      - { label: "展会简介", name: "desc", widget: "text" }
-      - { label: "列表封面图", name: "cover", widget: "image" }
-      - { label: "详情页大图", name: "detailImg", widget: "image" }
+    files:
+      - file: "data/database.json"
+        label: "文章列表"
+        name: "stories_list"
+        fields:
+          - label: "所有文章"
+            name: "articles"
+            widget: "list"
+            fields:
+              - { label: "文章标题", name: "title", widget: "string" }
+              - { label: "发布日期", name: "date", widget: "datetime" }
+              - { label: "封面图", name: "image", widget: "image" }
+              - label: "话题标签"
+                name: "tags"
+                widget: "select"
+                multiple: true
+                options: ["AI Vision", "Automation", "Case Study", "Company News"]
+              - { label: "正文内容 (支持多图/加粗)", name: "body", widget: "markdown" }
 
   - name: "global_settings"
     label: "主页图片"
     files:
-      - name: "home_images"
-        label: "首页大图与订阅区配图"
-        file: "data/home_images.json"
+      - file: "data/home_images.json"
+        label: "首页与订阅区配图"
+        name: "home_images"
         fields:
-          - { label: "首页大图 (Hero背景)", name: "hero_img", widget: "image" }
-          - { label: "首页订阅区配图 (Newsletter团队图)", name: "team_img", widget: "image" }
+          - { label: "首页大图", name: "hero_img", widget: "image" }
+          - { label: "订阅区配图", name: "team_img", widget: "image" }
