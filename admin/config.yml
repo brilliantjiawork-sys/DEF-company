@@ -48,14 +48,23 @@ collections:
               - { label: "简介", name: "desc", widget: "text" }
               - { label: "封面图", name: "cover", widget: "image" }
 
-  # 3. 主页专属快捷入口（含Logo）
+  # 3. 官网全局视觉配置（100分的核心：把前端所有死图全部接管）
   - name: "global_settings"
-    label: "主页与Logo设置"
+    label: "官网全局设置"
     files:
-      - file: "data/home_images.json"
-        label: "首页与全局配图"
-        name: "home_images"
+      - file: "data/global_settings.json"
+        label: "全站图片与Logo"
+        name: "site_images"
         fields:
-          - { label: "网站Logo", name: "logo_img", widget: "image" }
-          - { label: "首页大图", name: "hero_img", widget: "image" }
-          - { label: "订阅区配图", name: "team_img", widget: "image" }
+          - { label: "网站Logo (左上角)", name: "logo", widget: "image" }
+          - { label: "首页Hero大图", name: "hero_bg", widget: "image" }
+          - { label: "首页团队图", name: "team", widget: "image" }
+          - { label: "Overview-Social封面", name: "ov_social", widget: "image" }
+          - { label: "Overview-Stories封面", name: "ov_stories", widget: "image" }
+          - { label: "Overview-Events封面", name: "ov_events", widget: "image" }
+          - { label: "Overview-Media封面", name: "ov_media", widget: "image" }
+          - { label: "LinkedIn配图", name: "social_linkedin", widget: "image" }
+          - { label: "YouTube配图", name: "social_youtube", widget: "image" }
+          - { label: "Facebook配图", name: "social_facebook", widget: "image" }
+          - { label: "联系人1头像(Jane)", name: "media_1", widget: "image" }
+          - { label: "联系人2头像(Sarah)", name: "media_2", widget: "image" }
