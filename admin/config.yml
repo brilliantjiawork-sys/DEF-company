@@ -21,11 +21,11 @@ collections:
               - { label: "文章标题", name: "title", widget: "string" }
               - { label: "发布日期", name: "date", widget: "datetime" }
               - { label: "封面图", name: "image", widget: "image" }
-              - label: "话题标签"
+                           - label: "话题标签"
                 name: "tags"
                 widget: "select"
                 multiple: true
-                options: ["AI Vision", "Automation", "Case Study", "Exhibition Review"]
+                options: ["AI Vision", "Automation", "Case Study", "Industry Insights", "Product Updates"]
               - { label: "正文内容 (支持多图/多标题)", name: "body", widget: "markdown" }
 
   - name: "events"
