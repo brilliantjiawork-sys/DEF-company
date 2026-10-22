@@ -5,17 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DEF Company | Newsroom</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <!-- 配置文件绝不改动 -->
     <script src="config.js"></script>
+    <!-- 引入 Markdown 解析库，让正文多标题多图生效 -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <style>
-        /* =========================================
-           全局变量与基础设置
-           ========================================= */
         :root { --blue: #45b2d3; --yellow: #FFE817; --dark: #111; --gray: #555; --light: #888; --white: #fff; --bg: #f9f9f9; --line: #e0e0e0; }
         body { font-family: 'Inter', sans-serif; margin: 0; color: var(--dark); background: var(--white); line-height: 1.5; }
         a { text-decoration: none; color: inherit; cursor: pointer; }
         
-        /* 顶部导航 */
         .nav { border-bottom: 1px solid var(--line); padding: 16px 48px; display: flex; justify-content: space-between; align-items: center; position: fixed; top: 0; width: 100%; box-sizing: border-box; background: var(--white); z-index: 1000; }
         .logo { display: flex; align-items: center; gap: 16px; }
         .logo img { height: 48px; }
@@ -26,14 +23,12 @@
         .btn-y { background: var(--yellow); padding: 12px 28px; border-radius: 2px; font-weight: 600; color: var(--dark); border: none; cursor: pointer; font-family: inherit; font-size: 15px; transition: 0.2s;}
         .btn-y:hover { background: #E6D000; }
         
-        /* 页面容器 */
         .page { display: none; padding: 110px 48px 60px; max-width: 1300px; margin: 0 auto; }
         .page.active { display: block; }
         .view { display: none; }
         .view.active { display: block; animation: fade 0.3s; }
         @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
 
-        /* 首页 */
         .hero { display: flex; justify-content: space-between; align-items: center; gap: 40px; }
         .hero-text { width: 50%; }
         .hero h2 { font-size: 76px; font-weight: 300; margin: 0 0 20px; letter-spacing: -2px; line-height: 1.1; }
@@ -49,35 +44,26 @@
         .nl-input { display: flex; gap: 12px; }
         .nl-input input { flex: 1; padding: 14px; border: 1px solid #ccc; border-radius: 2px; outline: none; font-family: inherit; font-size: 16px;}
 
-        /* Newsroom 布局 */
-                /* 1. 给新闻室整体加外框，去掉中间缝隙 */
-        .nr-layout { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; }
-        
-        /* 2. 左侧边栏：加浅灰底色、右分割线、内边距 */
+        .nr-layout { display: flex; gap: 0; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; min-height: 600px;}
         .nr-sidebar { width: 220px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px; background: var(--bg); border-right: 1px solid var(--line); padding: 24px; }
-        
-        /* 3. 左侧菜单文字：变成按钮状，点中时变白底带阴影 */
         .nr-sidebar a { font-size: 16px; color: var(--gray); padding: 12px 16px; border-radius: 4px; transition: 0.2s; }
         .nr-sidebar a:hover { color: var(--dark); background: rgba(255,255,255,0.6); }
         .nr-sidebar a.active { color: var(--dark); font-weight: 600; background: var(--white); box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        
-        /* 4. 右侧主内容区：加内边距，让它不贴边 */
         .nr-main { flex: 1; min-width: 0; padding: 40px; }
-        .breadcrumb { font-size: 13px; color: var(--light); margin-bottom: 20px; }
+        
+        .breadcrumb { font-size: 13px; color: var(--light); margin-bottom: 20px; padding-bottom: 15px; border-bottom: 1px solid #f0f0f0;}
         .breadcrumb span { color: var(--dark); }
         .nr-title { font-size: 48px; font-weight: 300; margin: 0 0 12px; letter-spacing: -1px; }
         .nr-desc { font-size: 17px; color: var(--gray); margin-bottom: 30px; }
 
-        /* 标签筛选 */
         .filter-bar { display: flex; align-items: center; gap: 16px; margin-bottom: 24px; }
         .filter-label { font-size: 14px; font-weight: 600; color: var(--dark); }
         .tags { display: flex; gap: 10px; flex-wrap: wrap; }
         .tag { padding: 6px 16px; border: 1px solid var(--line); border-radius: 2px; font-size: 14px; font-weight: 500; color: var(--gray); cursor: pointer; transition: 0.2s; }
         .tag:hover, .tag.active { background: var(--dark); color: var(--white); border-color: var(--dark); }
 
-        /* 总览 四宫格 */
         .ov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-        .ov-card { position: relative; height: 260px; cursor: pointer; overflow: hidden; border-radius: 2px; }
+        .ov-card { position: relative; height: 260px; cursor: pointer; overflow: hidden; border-radius: 2px; background: #eee; }
         .ov-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         .ov-card:hover img { transform: scale(1.05); }
         .ov-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; justify-content: space-between; align-items: flex-end; padding: 24px; transition: 0.3s; }
@@ -85,20 +71,25 @@
         .ov-overlay h3 { color: white; font-size: 26px; font-weight: 300; margin: 0; }
         .ov-icon { width: 36px; height: 36px; background: white; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 18px; }
 
-        /* 列表卡片 (Stories 列表) */
         .list-card { display: flex; gap: 24px; border: 1px solid var(--line); padding: 20px; margin-bottom: 20px; cursor: pointer; transition: 0.2s; border-radius: 2px; align-items: center;}
         .list-card:hover { border-color: var(--dark); background: var(--bg); }
         .list-card img { width: 260px; height: 150px; object-fit: cover; border-radius: 2px; }
         .list-info { flex: 1; }
         .list-info h4 { font-size: 22px; font-weight: 500; margin: 0 0 6px; }
-        .list-info .date { font-size: 13px; color: var(--light); font-weight: 500; margin-bottom: 8px; display: block;}
         .list-info p { color: var(--gray); margin: 0; font-size: 15px; }
-        .story-tags { margin-top: 10px; display: flex; gap: 8px;}
-        .story-tag-item { font-size: 12px; color: var(--blue); font-weight: 600; text-transform: uppercase;}
 
-        /* =========================================
-           需求 6 修复：Events 展会改成左图右文
-           ========================================= */
+        .story-detail-layout { display: flex; gap: 40px; align-items: flex-start; margin-top: 10px; }
+        .story-detail-img { width: 45%; height: 380px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
+        .story-detail-content { width: 55%; }
+        .detail-date { font-size: 14px; color: var(--light); font-weight: 600; margin-bottom: 12px; display: block; text-transform: uppercase; letter-spacing: 1px;}
+        .detail-title { font-size: 36px; font-weight: 400; margin: 0 0 20px; line-height: 1.2; }
+        .detail-text { font-size: 16px; color: var(--gray); line-height: 1.8; }
+        .detail-text h2, .detail-text h3 { color: var(--dark); margin-top: 30px; margin-bottom: 15px; font-weight: 500; }
+        .detail-text img { max-width: 100%; border-radius: 4px; margin: 20px 0; }
+        
+        .back-btn { display: inline-flex; align-items: center; font-size: 14px; color: var(--gray); margin-bottom: 24px; cursor: pointer; font-weight: 500;}
+        .back-btn:hover { color: var(--dark); }
+
         .event-card { display: flex; gap: 30px; border-bottom: 1px solid var(--line); padding: 30px 0; cursor: pointer; align-items: center; transition: 0.3s; }
         .event-card:hover { background: var(--bg); padding-left: 20px; padding-right: 20px; border-radius: 4px; border-bottom-color: transparent; }
         .event-card img { width: 320px; height: 200px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
@@ -106,61 +97,31 @@
         .event-year-badge { display: inline-block; background: var(--yellow); color: var(--dark); font-size: 13px; font-weight: 700; padding: 4px 10px; border-radius: 2px; margin-bottom: 12px;}
         .event-info h4 { font-size: 24px; font-weight: 500; margin: 0 0 10px; }
         .event-info p { color: var(--gray); margin: 0 0 8px; font-size: 15px; }
-
-        /* =========================================
-           需求 1 修复：Stories 详情页 (左图右文, 图片缩小, 日期在上)
-           ========================================= */
-        .back-btn { display: inline-flex; align-items: center; font-size: 14px; color: var(--gray); margin-bottom: 24px; cursor: pointer; font-weight: 500;}
-        .back-btn:hover { color: var(--dark); }
-        .story-detail-layout { display: flex; gap: 40px; align-items: flex-start; margin-top: 10px; }
-        /* 图片限制在45%宽度，高度自适应，不再巨大 */
-        .story-detail-img { width: 45%; height: 380px; object-fit: cover; border-radius: 4px; flex-shrink: 0; }
-        .story-detail-content { width: 55%; }
-        .detail-date { font-size: 14px; color: var(--light); font-weight: 600; margin-bottom: 12px; display: block; text-transform: uppercase; letter-spacing: 1px;}
-        .detail-title { font-size: 36px; font-weight: 400; margin: 0 0 20px; line-height: 1.2; }
-        .detail-text { font-size: 16px; color: var(--gray); line-height: 1.8; }
-
-        /* Events 详情页复用同样布局，图片限制高度 */
         .event-detail-img { width: 100%; max-height: 400px; object-fit: cover; border-radius: 4px; margin-bottom: 24px; }
 
-        /* Media 页 */
         .media-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
         .media-card img { width: 100%; height: 300px; object-fit: cover; border-radius: 4px; }
         .media-card h4 { font-size: 22px; font-weight: 500; margin: 16px 0 6px; }
         .media-card p { color: var(--gray); font-size: 15px; margin: 0 0 12px; }
         .note-box { background: var(--bg); border-left: 4px solid var(--yellow); padding: 20px; margin-top: 40px; font-size: 14px; color: var(--gray); line-height: 1.6;}
 
-        /* =========================================
-           需求 2 修复：Social Media (图片铺满, Logo 放左下角不挡脸)
-           ========================================= */
         .social-wrapper { display: flex; flex-direction: column; gap: 30px; }
-        
         .social-main { display: flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; height: 380px;}
-        .social-main-img { width: 50%; position: relative; }
-        .social-main-img img { width: 100%; height: 100%; object-fit: cover; /* 铺满不留白 */ }
+        .social-main-img { width: 50%; position: relative; background: #eee;}
+        .social-main-img img { width: 100%; height: 100%; object-fit: cover; }
         .social-main-text { width: 50%; padding: 40px; display: flex; flex-direction: column; justify-content: center; background: var(--bg);}
         .social-main-text h3 { font-size: 28px; font-weight: 400; margin: 0 0 12px; }
         .social-main-text p { font-size: 16px; color: var(--gray); margin-bottom: 24px; line-height: 1.6;}
-
         .social-sub { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
         .social-card { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; }
-        .social-card-img { position: relative; height: 240px; }
-        .social-card-img img { width: 100%; height: 100%; object-fit: cover; /* 铺满不留白 */ }
+        .social-card-img { position: relative; height: 240px; background: #eee;}
+        .social-card-img img { width: 100%; height: 100%; object-fit: cover; }
         .social-card-text { padding: 24px; flex: 1; display: flex; flex-direction: column; }
         .social-card-text h4 { font-size: 22px; font-weight: 500; margin: 0 0 8px; }
         .social-card-text p { font-size: 15px; color: var(--gray); margin-bottom: 20px; flex: 1; line-height: 1.5;}
-
-        /* 核心修复：Logo 做成半透明卡片放左下角 */
-        .social-logo { 
-            position: absolute; bottom: 20px; left: 20px; 
-            background: rgba(255, 255, 255, 0.95); padding: 12px; border-radius: 8px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(5px);
-        }
+        .social-logo { position: absolute; bottom: 20px; left: 20px; background: rgba(255, 255, 255, 0.95); padding: 12px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); backdrop-filter: blur(5px);}
         .social-logo svg { width: 32px; height: 32px; display: block; }
 
-        /* =========================================
-           需求 4 修复：详细的 B2B 表单样式
-           ========================================= */
         .form-container { background-color: #ffffff; width: 100%; max-width: 700px; margin: 0 auto; padding: 48px; border-radius: 4px; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,0.03); box-sizing: border-box; text-align: left; }
         .form-header h2 { font-size: 32px; font-weight: 400; margin: 0 0 8px 0; }
         .form-header p { font-size: 15px; color: var(--gray); margin: 0 0 32px 0; }
@@ -178,9 +139,6 @@
         .success-message .check { font-size: 64px; color: var(--blue); margin-bottom: 20px; }
         .success-message h2 { font-size: 28px; font-weight: 500; margin: 0 0 10px 0; }
 
-        /* =========================================
-           需求 5 修复：Cookie 弹窗完整样式
-           ========================================= */
         #cookie-banner { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.98); backdrop-filter: blur(10px); border-top: 1px solid var(--line); box-shadow: 0 -10px 30px rgba(0,0,0,0.05); z-index: 9999; display: none; padding: 20px 48px; box-sizing: border-box; }
         .cookie-content { max-width: 1300px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; gap: 40px;}
         .cookie-text h3 { margin: 0 0 4px 0; font-size: 16px; font-weight: 600; }
@@ -203,7 +161,6 @@
     </style>
 </head>
 <body>
-    <!-- 顶部导航 -->
     <div class="nav">
         <div class="logo" onclick="showPage('home')">
             <img src="images/logo.jpg" alt="DEF">
@@ -217,7 +174,6 @@
         </div>
     </div>
 
-    <!-- 首页 -->
     <div id="home" class="page active">
         <div class="hero">
             <div class="hero-text">
@@ -243,22 +199,18 @@
         </div>
     </div>
 
-    <!-- Newsroom 主容器 -->
     <div id="newsroom" class="page">
         <div class="nr-layout">
-            <!-- 左侧菜单 -->
-                    <div class="nr-sidebar">
+            <div class="nr-sidebar">
                 <a onclick="switchView('ov')" id="nav-ov" class="active">Overview</a>
                 <a onclick="switchView('stories')" id="nav-stories">Stories</a>
                 <a onclick="switchView('events')" id="nav-events">Events</a>
                 <a onclick="switchView('social')" id="nav-social">Social Media</a>
                 <a onclick="switchView('media')" id="nav-media">Media</a>
             </div>
-            <!-- 右侧内容 -->
             <div class="nr-main">
                 <div class="breadcrumb">Home > Newsroom > <span id="bc-title">Overview</span></div>
 
-                <!-- 总览 -->
                 <div id="view-ov" class="view active">
                     <h2 class="nr-title">Corporate Newsroom</h2>
                     <p class="nr-desc">Discover the latest stories, news, and media resources from DEF Company.</p>
@@ -282,10 +234,8 @@
                     </div>
                 </div>
 
-                <!-- Media 页面 (去掉了巨大的横幅图) -->
                 <div id="view-media" class="view">
                     <h2 class="nr-title">Media Contacts</h2>
-                    <p class="nr-desc">Reach out to our PR team for media inquiries and interviews.</p>
                     <div class="media-grid">
                         <div class="media-card"><img src="images/media-1.jpg"><h4>Jane Doe</h4><p>Senior PR Manager<br>pr@defcompany.com</p></div>
                         <div class="media-card"><img src="images/media-2.jpg"><h4>Sarah Smith</h4><p>Communications Lead<br>press@defcompany.com</p></div>
@@ -293,7 +243,6 @@
                     <div class="note-box"><strong>Note:</strong> This is a mock website for my portfolio. All names and titles are fictional.</div>
                 </div>
 
-                <!-- Stories 列表 -->
                 <div id="view-stories" class="view">
                     <h2 class="nr-title">Explore our stories</h2>
                     <p class="nr-desc">Get the latest product updates, industry trends, and company news.</p>
@@ -308,30 +257,22 @@
                     <div id="stories-list"></div>
                 </div>
 
-                <!-- Stories 详情页 -->
                 <div id="view-story-detail" class="view">
                     <div class="back-btn" onclick="switchView('stories')">← Back to Stories</div>
                     <div class="story-detail-layout">
                         <img id="sd-img" class="story-detail-img">
                         <div class="story-detail-content">
-                            <!-- 日期移到最上面 -->
                             <span id="sd-date" class="detail-date"></span>
                             <h2 id="sd-title" class="detail-title"></h2>
-                            <p class="detail-text">
-                                Industrial automation is evolving faster than ever. At DEF Company, we leverage state-of-the-art neural networks to push the boundaries of what's possible in high-speed quality inspection.<br><br>
-                                This deep dive explores how our latest sensor technology integrates seamlessly into existing production lines, reducing downtime and eliminating manual inspection bottlenecks.
-                            </p>
+                            <div class="detail-text" id="sd-body"></div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Social 页面 -->
                 <div id="view-social" class="view">
                     <h2 class="nr-title">Follow us</h2>
-                    <p class="nr-desc">Stay connected with DEF Company for the latest updates and community highlights.</p>
-                    
+                    <p class="nr-desc">Stay connected with DEF Company for the latest updates.</p>
                     <div class="social-wrapper">
-                        <!-- LinkedIn -->
                         <div class="social-main">
                             <div class="social-main-img">
                                 <img src="images/social-linkedin.jpg">
@@ -343,8 +284,6 @@
                                 <a href="https://linkedin.com" target="_blank" class="btn-y" style="align-self: flex-start;">Follow us on LinkedIn</a>
                             </div>
                         </div>
-
-                        <!-- YouTube & Facebook -->
                         <div class="social-sub">
                             <div class="social-card">
                                 <div class="social-card-img">
@@ -372,7 +311,6 @@
                     </div>
                 </div>
 
-                <!-- Events 列表 -->
                 <div id="view-events" class="view">
                     <h2 class="nr-title">Trade Shows</h2>
                     <div class="filter-bar" id="event-filters">
@@ -386,106 +324,42 @@
                     <div id="events-list"></div>
                 </div>
 
-                <!-- Events 详情 -->
                 <div id="view-event-detail" class="view">
                     <div class="back-btn" onclick="switchView('events')">← Back to Trade Shows</div>
                     <img id="ed-img" class="event-detail-img">
                     <h2 id="ed-title" class="detail-title"></h2>
                     <p class="detail-text" id="ed-desc"></p>
-                    <button class="btn-y" style="margin-top: 24px;" onclick="alert('Redirecting to registration...')">Book a Meeting →</button>
                 </div>
 
             </div>
         </div>
     </div>
 
-    <!-- 联系页 (详细 B2B 表单) -->
     <div id="contact" class="page" style="background: var(--bg);">
         <div class="form-container">
             <div class="form-header" id="form-header">
                 <h2>Contact Sales</h2>
-                <p>Please provide your information so our team can get in touch with you regarding our solutions.</p>
             </div>
-            <!-- 表单本体 -->
             <form id="detailed-contact-form">
                 <div class="form-group">
                     <label>Work Email <span>*</span></label>
-                    <input type="email" name="email" placeholder="name@company.com" required>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label>First Name <span>*</span></label>
-                        <input type="text" name="first_name" placeholder="First Name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Last Name <span>*</span></label>
-                        <input type="text" name="last_name" placeholder="Last Name" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label>Company <span>*</span></label>
-                        <input type="text" name="company" placeholder="Company Name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Phone <span>*</span></label>
-                        <input type="tel" name="phone" placeholder="Work Phone" required>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label>Country/Region <span>*</span></label>
-                        <select name="country" required>
-                            <option value="">Select Country</option>
-                            <option value="US">United States</option>
-                            <option value="CN">China</option>
-                            <option value="UK">United Kingdom</option>
-                            <option value="DE">Germany</option>
-                            <option value="JP">Japan</option>
-                            <option value="IN">India</option>
-                            <option value="Other">Other</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Postal / Zip Code <span>*</span></label>
-                        <input type="text" name="zip_code" placeholder="Postal Code" required>
-                    </div>
+                    <input type="email" name="email" required>
                 </div>
                 <div class="form-group">
-                    <label>Industry</label>
-                    <select name="industry">
-                        <option value="">Select Industry</option>
-                        <option value="Automotive">Automotive</option>
-                        <option value="Electronics">Electronics</option>
-                        <option value="Semiconductor">Semiconductor</option>
-                        <option value="Pharmaceuticals">Pharmaceuticals</option>
-                        <option value="Food & Beverage">Food & Beverage</option>
-                        <option value="Aerospace">Aerospace</option>
-                        <option value="Machinery">Machinery & Equipment</option>
-                        <option value="Other">Other</option>
-                    </select>
+                    <label>Company <span>*</span></label>
+                    <input type="text" name="company" required>
                 </div>
-                <div class="form-group">
-                    <label>Additional Comments</label>
-                    <textarea name="message" placeholder="Please tell us your specific application or needs..."></textarea>
-                </div>
-                <button type="submit" id="submit-btn" class="btn-submit">Submit Inquiry</button>
+                <button type="submit" class="btn-submit">Submit Inquiry</button>
             </form>
-
-            <div class="success-message" id="success-message">
-                <div class="check">✔</div>
-                <h2>Submitted Successfully!</h2>
-                <p>We have received your inquiry. Our team will contact you shortly.</p>
-            </div>
+            <div class="success-message" id="success-message"><h2>Submitted Successfully!</h2></div>
         </div>
     </div>
 
-    <!-- Cookie 弹窗 (完整 4 项定制版) -->
     <div id="cookie-banner">
         <div class="cookie-content">
             <div class="cookie-text">
                 <h3>Your privacy matters.</h3>
-                <p>We use cookies to ensure our website functions properly and to provide you with a smoother browsing experience.</p>
+                <p>We use cookies to ensure our website functions properly.</p>
             </div>
             <div class="cookie-btns" id="cookie-main-btns">
                 <div class="c-btn btn-outline" onclick="denyAllCookies()">Deny</div>
@@ -496,39 +370,72 @@
         <div class="cookie-details" id="cookie-details-area">
             <button class="cookie-toggle" onclick="backToMain()">← Back to options</button>
             <div class="c-grid">
-                <div class="cookie-category"><div class="c-cat-text"><span class="c-cat-title">Necessary</span><span class="c-cat-desc">Essential for basic website functions.</span></div><label class="toggle-switch"><input type="checkbox" checked disabled><span class="slider"></span></label></div>
-                <div class="cookie-category"><div class="c-cat-text"><span class="c-cat-title">Preferences</span><span class="c-cat-desc">Remember your settings.</span></div><label class="toggle-switch"><input type="checkbox" id="cookie-pref"><span class="slider"></span></label></div>
-                <div class="cookie-category"><div class="c-cat-text"><span class="c-cat-title">Statistics</span><span class="c-cat-desc">Help us understand visitors.</span></div><label class="toggle-switch"><input type="checkbox" id="cookie-stat"><span class="slider"></span></label></div>
-                <div class="cookie-category"><div class="c-cat-text"><span class="c-cat-title">Marketing</span><span class="c-cat-desc">Track campaign effectiveness.</span></div><label class="toggle-switch"><input type="checkbox" id="cookie-mkt"><span class="slider"></span></label></div>
+                <div class="cookie-category"><div class="c-cat-text"><span class="c-cat-title">Necessary</span></div><label class="toggle-switch"><input type="checkbox" checked disabled><span class="slider"></span></label></div>
+                <div class="cookie-category"><div class="c-cat-text"><span class="c-cat-title">Preferences</span></div><label class="toggle-switch"><input type="checkbox" id="cookie-pref"><span class="slider"></span></label></div>
+                <div class="cookie-category"><div class="c-cat-text"><span class="c-cat-title">Statistics</span></div><label class="toggle-switch"><input type="checkbox" id="cookie-stat"><span class="slider"></span></label></div>
+                <div class="cookie-category"><div class="c-cat-text"><span class="c-cat-title">Marketing</span></div><label class="toggle-switch"><input type="checkbox" id="cookie-mkt"><span class="slider"></span></label></div>
             </div>
             <div style="margin-top: 20px; text-align: right;"><div class="c-btn btn-allow" style="display: inline-block; padding: 10px 30px;" onclick="saveCustomCookies()">Save Preferences</div></div>
         </div>
     </div>
 
-    <!-- =========================================
-         JavaScript 逻辑
-         ========================================= -->
     <script>
-            // ==========================================
-        // 全新动态读取逻辑（不再写死假数据）
+        // ==========================================
+        // 100分终极版：全局图片动态替换 + 动态文章渲染
         // ==========================================
         let storiesData = [];
         let eventsData = [];
 
         async function loadData() {
             try {
-                // 读取云端 CMS 生成的文章数据
+                // 1. 读取并替换所有全局图片
+                const globalRes = await fetch('data/global_settings.json');
+                if (globalRes.ok) {
+                    const gData = await globalRes.json();
+                    const imgs = gData.site_images || {};
+                    
+                    if(imgs.logo) document.querySelector('.logo img').src = imgs.logo;
+                    if(imgs.hero_bg) document.querySelector('.hero img').src = imgs.hero_bg;
+                    if(imgs.team) document.querySelector('.nl-img img').src = imgs.team;
+                    
+                    const ovCards = document.querySelectorAll('#view-ov .ov-card img');
+                    if(ovCards.length >= 4) {
+                        if(imgs.ov_social) ovCards[0].src = imgs.ov_social;
+                        if(imgs.ov_stories) ovCards[1].src = imgs.ov_stories;
+                        if(imgs.ov_events) ovCards[2].src = imgs.ov_events;
+                        if(imgs.ov_media) ovCards[3].src = imgs.ov_media;
+                    }
+
+                    const mainSocial = document.querySelector('#view-social .social-main-img img');
+                    if(mainSocial && imgs.social_linkedin) mainSocial.src = imgs.social_linkedin;
+                    
+                    const subSocials = document.querySelectorAll('#view-social .social-card-img img');
+                    if(subSocials.length >= 2) {
+                        if(imgs.social_youtube) subSocials[0].src = imgs.social_youtube;
+                        if(imgs.social_facebook) subSocials[1].src = imgs.social_facebook;
+                    }
+
+                    const mediaImgs = document.querySelectorAll('#view-media .media-card img');
+                    if(mediaImgs.length >= 2) {
+                        if(imgs.media_1) mediaImgs[0].src = imgs.media_1;
+                        if(imgs.media_2) mediaImgs[1].src = imgs.media_2;
+                    }
+                }
+
+                // 2. 读取文章数据
                 const res = await fetch('data/database.json');
                 if (res.ok) {
                     const data = await res.json();
                     storiesData = data.articles || [];
                 }
-                // 读取云端展会数据（如果有）
-                const resEvents = await fetch('data/events.json');
-                if (resEvents.ok) {
-                    const data = await resEvents.json();
+
+                // 3. 读取展会数据
+                const eventRes = await fetch('data/events.json');
+                if (eventRes.ok) {
+                    const data = await eventRes.json();
                     eventsData = data.exhibitions || [];
                 }
+                
                 renderStories();
                 renderEvents();
             } catch (error) {
@@ -538,8 +445,7 @@
 
         function showPage(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            const target = document.getElementById(id);
-            if(target) target.classList.add('active');
+            document.getElementById(id).classList.add('active');
             if(id === 'newsroom') switchView('ov');
             window.scrollTo(0,0);
         }
@@ -632,15 +538,14 @@
         function showEventDetail(index) {
             const ev = eventsData[index];
             if(!ev) return;
-            document.getElementById('ed-img').src = ev.detailImg || 'images/event-1.jpg';
+            document.getElementById('ed-img').src = ev.cover || 'images/event-1.jpg';
             document.getElementById('ed-title').innerText = ev.title;
             document.getElementById('ed-desc').innerHTML = `<strong>Location:</strong> ${ev.loc}<br><br>${ev.desc || ''}`;
             switchView('event-detail');
         }
 
-        // 表单提交与 Cookie 逻辑
         document.addEventListener("DOMContentLoaded", function() {
-            loadData(); // 页面一打开就去拉取文章
+            loadData(); 
             
             const form = document.getElementById('detailed-contact-form');
             if(form) {
@@ -683,4 +588,4 @@
         }
     </script>
 </body>
-</html>    
+</html>
