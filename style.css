@@ -69,11 +69,13 @@ a { text-decoration: none; color: inherit; cursor: pointer; }
 .kone-tag { background: #e6f4f9; color: #45b2d3; padding: 4px 10px; border-radius: 2px; font-size: 12px; font-weight: 600; }
 
 /* 文章详情页 */
-.detail-layout { display: flex; gap: 40px; align-items: flex-start; }
-.detail-img { width: 45%; height: 380px; object-fit: cover; border-radius: 4px; }
-.detail-content { width: 55%; }
-.detail-date { font-size: 14px; color: var(--light); font-weight: 600; margin-bottom: 12px; display: block; text-transform: uppercase; }
-.detail-title { font-size: 36px; font-weight: 400; margin: 0 0 20px; }
+/* 大厂通栏大图模式 */
+.detail-layout { display: flex; flex-direction: column; gap: 40px; align-items: center; }
+.detail-img { width: 100%; height: 480px; object-fit: cover; border-radius: 8px; }
+.detail-content { width: 100%; max-width: 800px; margin: 0 auto; }
+.detail-title { font-size: 42px; font-weight: 400; margin: 0 0 24px; line-height: 1.2; text-align: center; }
+/* 让日期也居中 */
+.detail-date { text-align: center; display: block; margin-bottom: 30px; color: var(--blue); }
 .detail-text { font-size: 16px; color: var(--gray); line-height: 1.8; }
 .detail-text h2 { font-size: 24px; color: var(--dark); margin-top: 30px; margin-bottom: 15px; }
 .detail-text img { max-width: 100%; border-radius: 4px; margin: 20px 0; }

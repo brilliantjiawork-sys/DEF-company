@@ -1,0 +1,63 @@
+backend:
+  name: github
+  repo: brilliantjiawork-sys/DEF-company
+  branch: main
+
+media_folder: "images"
+public_folder: "/images"
+
+collections:
+  # 1. 文章管理
+  - name: "stories"
+    label: "Stories (深度文章)"
+    files:
+      - file: "data/database.json"
+        label: "文章列表"
+        name: "stories_list"
+        fields:
+          - label: "所有文章"
+            name: "articles"
+            widget: "list"
+            fields:
+              - { label: "文章标题", name: "title", widget: "string" }
+              - { label: "发布日期", name: "date", widget: "datetime" }
+              - { label: "封面图", name: "image", widget: "image" }
+              - label: "话题标签 (用于分类)"
+                name: "tags"
+                widget: "select"
+                multiple: true
+                options: ["AI Vision", "Automation", "Case Study", "Industry Insights", "Product Updates"]
+              - { label: "正文内容 (支持多图/多标题)", name: "body", widget: "markdown" }
+
+  # 2. 展会管理 (新增了 Booth 和 Theme)
+  - name: "events"
+    label: "Events (展会活动)"
+    files:
+      - file: "data/events.json"
+        label: "展会列表"
+        name: "events_list"
+        fields:
+          - label: "所有展会"
+            name: "exhibitions"
+            widget: "list"
+            fields:
+              - { label: "展会名称", name: "title", widget: "string" }
+              - { label: "年份 (用于分类未来/过去)", name: "year", widget: "string" }
+              - { label: "展位号 (Booth)", name: "booth", widget: "string" }
+              - { label: "展会主题 (Theme)", name: "theme", widget: "string" }
+              - { label: "具体日期", name: "date", widget: "string" }
+              - { label: "地点", name: "loc", widget: "string" }
+              - { label: "简介详情", name: "desc", widget: "text" }
+              - { label: "列表封面图", name: "cover", widget: "image" }
+
+  # 3. 全局设置
+  - name: "global_settings"
+    label: "全局图片配置"
+    files:
+      - file: "data/global_settings.json"
+        label: "全站图片"
+        name: "home_images"
+        fields:
+          - { label: "网站Logo", name: "logo_img", widget: "image" }
+          - { label: "首页大图", name: "hero_img", widget: "image" }
+          - { label: "首页订阅图", name: "team_img", widget: "image" }
