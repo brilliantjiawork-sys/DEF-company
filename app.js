@@ -165,7 +165,6 @@ document.addEventListener("DOMContentLoaded", () => {
         if (banner) banner.style.display = 'block';
     }, 500);
 
-    // Cookie 按钮交互
     document.querySelectorAll('.toggle-switch').forEach(t => {
         t.addEventListener('click', function() {
             if(!this.previousElementSibling || !this.previousElementSibling.classList.contains('disabled')) {
@@ -174,42 +173,68 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     });
 
-    // ==========================================
-    // 完美表单提交逻辑
-    // ==========================================
+    // 1. Contact Sales 表单逻辑
     const contactForm = document.getElementById('detailed-contact-form');
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
-            e.preventDefault(); // 阻止页面刷新
-            
+            e.preventDefault(); 
+            const formElement = this;
             const submitBtn = document.getElementById('submit-btn');
             const originalText = submitBtn.innerText;
             
-            // 按钮状态改为提交中
             submitBtn.innerText = 'Submitting...';
             submitBtn.disabled = true;
             submitBtn.style.opacity = '0.7';
 
             const formData = new FormData(this);
 
-            // 发送到你的 Google Sheet
             fetch(SITE_CONFIG.contactUrl, { method: 'POST', mode: 'no-cors', body: formData })
             .then(() => {
-                // 1. 触发 GTM 信号弹 (告诉 GTM 表单提交成功了)
-                window.dataLayer = window.dataLayer || [];
-                window.dataLayer.push({'event': 'form_submit_success'});
-
-                // 2. 隐藏表单，显示精美的成功页面
+                // 触发标准 GTM 事件
+                formElement.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+                // 切换 UI
                 document.getElementById('form-container-box').style.display = 'none';
                 document.getElementById('success-screen').style.display = 'block';
             })
             .catch(error => {
-                // 失败处理
-                alert('Submission failed. Please check your network and try again.');
+                alert('Submission failed. Please check your network.');
                 submitBtn.innerText = originalText;
                 submitBtn.disabled = false;
                 submitBtn.style.opacity = '1';
             });
+        });
+    }
+
+    // 2. Newsletter 表单逻辑 (现在它是标准的 form 了)
+    const newsletterForm = document.getElementById('newsletter-form');
+    if (newsletterForm) {
+        newsletterForm.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formElement = this;
+            const email = document.getElementById('nl-email').value.trim();
+            if (!email) return alert('Please enter your email.');
+
+            const btn = formElement.querySelector('button');
+            const originalText = btn.innerText;
+            btn.innerText = 'Subscribing...';
+            btn.disabled = true;
+            btn.style.opacity = '0.7';
+
+            try {
+                await fetch(SITE_CONFIG.newsletterUrl, { method: 'POST', body: new URLSearchParams({ email }), mode: 'no-cors' });
+                
+                // 触发标准 GTM 事件
+                formElement.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+
+                // 切换 UI
+                document.getElementById('nl-form-container').style.display = 'none';
+                document.getElementById('nl-success-box').style.display = 'block';
+            } catch (error) {
+                alert('Subscription failed. Please try again.');
+                btn.innerText = originalText;
+                btn.disabled = false;
+                btn.style.opacity = '1';
+            }
         });
     }
 });

@@ -48,16 +48,26 @@
                 <img src="images/team.jpg" alt="Team">
                 <p>* The DEF Company engineering team collaborating on next-generation systems.</p>
             </div>
-            <div class="nl-form">
-                <h3>Subscribe to our Technical Newsletter</h3>
-                <p>Receive exclusive product releases, in-depth engineering case studies, and industry insights tailored for B2B manufacturers.</p>
-                <div class="nl-input">
-                    <input type="email" placeholder="Enter your Work Email">
-                    <button class="btn-y" onclick="alert('Subscribed!')">Subscribe</button>
-                </div>
+                    <!-- Newsletter 表单区 -->
+            <div class="nl-form" id="nl-form-container">
+                <form id="newsletter-form">
+                    <h3>Subscribe to our Technical Newsletter</h3>
+                    <p>Receive exclusive product releases, engineering case studies, and industry insights tailored for B2B manufacturers.</p>
+                    <div class="nl-input">
+                        <input type="email" name="email" id="nl-email" placeholder="Enter your Work Email" required>
+                        <button type="submit" class="btn-y">Subscribe</button>
+                    </div>
+                </form>
             </div>
-        </div>
-    </div>
+
+            <!-- Newsletter 成功提示（默认隐藏，风格统一） -->
+            <div class="nl-form success-screen" id="nl-success-box" style="display: none; padding: 40px; border: none; box-shadow: none; background: transparent;">
+                <div class="success-icon" style="background: #e6f4f9; color: var(--blue); margin-bottom: 16px;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                </div>
+                <h3 style="font-size: 28px; margin-bottom: 12px;">Welcome to DEF Insights!</h3>
+                <p style="font-size: 16px; color: var(--gray); margin-bottom: 0;">Thank you for subscribing. You will now receive our latest B2B industry trends, technical case studies, and product updates directly in your inbox.</p>
+            </div>    
 
     <div id="newsroom" class="page">
         <div class="nr-layout">
