@@ -21,11 +21,11 @@ collections:
               - { label: "文章标题", name: "title", widget: "string" }
               - { label: "发布日期", name: "date", widget: "datetime" }
               - { label: "封面图", name: "image", widget: "image" }
-                           - label: "话题标签"
+              - label: "话题标签"
                 name: "tags"
                 widget: "select"
                 multiple: true
-                options: ["AI Vision", "Automation", "Case Study", "Industry Insights", "Product Updates"]
+                options: ["AI Vision", "Automation", "Case Study", "Industry Insights"]
               - { label: "正文内容 (支持多图/多标题)", name: "body", widget: "markdown" }
 
   - name: "events"
@@ -40,21 +40,10 @@ collections:
             widget: "list"
             fields:
               - { label: "展会名称", name: "title", widget: "string" }
-              - { label: "年份 (用于分类未来/过去)", name: "year", widget: "string" }
+              - { label: "年份 (用于分类)", name: "year", widget: "string" }
               - { label: "展位号 (Booth)", name: "booth", widget: "string" }
               - { label: "展会主题 (Theme)", name: "theme", widget: "string" }
               - { label: "具体日期", name: "date", widget: "string" }
               - { label: "地点", name: "loc", widget: "string" }
               - { label: "简介详情", name: "desc", widget: "text" }
               - { label: "列表封面图", name: "cover", widget: "image" }
-
-  - name: "global_settings"
-    label: "全局图片配置"
-    files:
-      - file: "data/global_settings.json"
-        label: "全站图片"
-        name: "home_images"
-        fields:
-          - { label: "网站Logo", name: "logo_img", widget: "image" }
-          - { label: "首页大图", name: "hero_img", widget: "image" }
-          - { label: "首页订阅图", name: "team_img", widget: "image" }
