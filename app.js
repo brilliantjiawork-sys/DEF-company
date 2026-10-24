@@ -155,11 +155,11 @@ function renderEvents(data) {
     container.innerHTML = finalHtml;
 }
 
-// 7. 页面初始化
+// 7. 页面初始化与表单提交逻辑
 document.addEventListener("DOMContentLoaded", () => {
     loadData();
     
-    // 弹出 Cookie
+    // Cookie 弹窗
     setTimeout(() => {
         const banner = document.getElementById('cookie-banner');
         if (banner) banner.style.display = 'block';
@@ -168,9 +168,48 @@ document.addEventListener("DOMContentLoaded", () => {
     // Cookie 按钮交互
     document.querySelectorAll('.toggle-switch').forEach(t => {
         t.addEventListener('click', function() {
-            if(!this.previousElementSibling.classList.contains('disabled')) {
+            if(!this.previousElementSibling || !this.previousElementSibling.classList.contains('disabled')) {
                 this.classList.toggle('active');
             }
         });
     });
+
+    // ==========================================
+    // 完美表单提交逻辑
+    // ==========================================
+    const contactForm = document.getElementById('detailed-contact-form');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function(e) {
+            e.preventDefault(); // 阻止页面刷新
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const originalText = submitBtn.innerText;
+            
+            // 按钮状态改为提交中
+            submitBtn.innerText = 'Submitting...';
+            submitBtn.disabled = true;
+            submitBtn.style.opacity = '0.7';
+
+            const formData = new FormData(this);
+
+            // 发送到你的 Google Sheet
+            fetch(SITE_CONFIG.contactUrl, { method: 'POST', mode: 'no-cors', body: formData })
+            .then(() => {
+                // 1. 触发 GTM 信号弹 (告诉 GTM 表单提交成功了)
+                window.dataLayer = window.dataLayer || [];
+                window.dataLayer.push({'event': 'form_submit_success'});
+
+                // 2. 隐藏表单，显示精美的成功页面
+                document.getElementById('form-container-box').style.display = 'none';
+                document.getElementById('success-screen').style.display = 'block';
+            })
+            .catch(error => {
+                // 失败处理
+                alert('Submission failed. Please check your network and try again.');
+                submitBtn.innerText = originalText;
+                submitBtn.disabled = false;
+                submitBtn.style.opacity = '1';
+            });
+        });
+    }
 });

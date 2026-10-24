@@ -183,29 +183,29 @@
         </div>
     </div>
 
-    <div id="contact" class="page" style="background: var(--bg);">
-        <div class="form-container">
-            <div class="form-header">
+       <div id="contact" class="page" style="background: var(--bg);">
+        <div class="form-container" id="form-container-box">
+            <div class="form-header" id="form-header">
                 <h2>Contact Sales</h2>
-                <p>Please fill out your business requirements below, and our machine vision experts will contact you within one business day to provide customized solutions.</p>
+                <p>Please fill out your business requirements below, and our machine vision experts will contact you within one business day.</p>
             </div>
-            <form onsubmit="event.preventDefault(); alert('Inquiry Submitted!');">
+            <form id="detailed-contact-form">
                 <div class="form-group">
                     <label>Work Email *</label>
-                    <input type="email" placeholder="name@company.com" required>
+                    <input type="email" name="email" placeholder="name@company.com" required>
                 </div>
                 <div class="row">
-                    <div class="form-group"><label>First Name *</label><input type="text" required></div>
-                    <div class="form-group"><label>Last Name *</label><input type="text" required></div>
+                    <div class="form-group"><label>First Name *</label><input type="text" name="first_name" required></div>
+                    <div class="form-group"><label>Last Name *</label><input type="text" name="last_name" required></div>
                 </div>
                 <div class="row">
-                    <div class="form-group"><label>Company *</label><input type="text" required></div>
-                    <div class="form-group"><label>Phone *</label><input type="tel" required></div>
+                    <div class="form-group"><label>Company *</label><input type="text" name="company" required></div>
+                    <div class="form-group"><label>Phone *</label><input type="tel" name="phone" required></div>
                 </div>
                 <div class="row">
                     <div class="form-group">
                         <label>Country/Region *</label>
-                        <select required>
+                        <select name="country" required>
                             <option value="">Select Country</option>
                             <option value="US">United States</option>
                             <option value="CN">China</option>
@@ -213,36 +213,40 @@
                             <option value="UK">United Kingdom</option>
                             <option value="JP">Japan</option>
                             <option value="IN">India</option>
-                            <option value="FR">France</option>
-                            <option value="IT">Italy</option>
-                            <option value="BR">Brazil</option>
                             <option value="Other">Other</option>
                         </select>
                     </div>
-                    <div class="form-group"><label>Postal / Zip Code *</label><input type="text" required></div>
+                    <div class="form-group"><label>Postal / Zip Code *</label><input type="text" name="zip_code" required></div>
                 </div>
                 <div class="form-group">
                     <label>Industry</label>
-                    <select>
+                    <select name="industry">
                         <option value="">Select Industry</option>
                         <option value="Automotive">Automotive</option>
                         <option value="Electronics">Electronics</option>
                         <option value="Semiconductor">Semiconductor</option>
                         <option value="Pharmaceuticals">Pharmaceuticals</option>
-                        <option value="Food & Beverage">Food & Beverage</option>
-                        <option value="Aerospace">Aerospace</option>
                         <option value="Machinery">Machinery & Equipment</option>
-                        <option value="Other">Other</option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Additional Comments</label>
-                    <textarea rows="4" placeholder="Please tell us about your specific application or project requirements..."></textarea>
+                    <textarea name="message" rows="4" placeholder="Please tell us about your specific application..."></textarea>
                 </div>
-                <button type="submit" class="btn-submit">Submit Inquiry</button>
+                <button type="submit" id="submit-btn" class="btn-submit">Submit Inquiry</button>
             </form>
         </div>
-    </div>
+
+        <!-- 大厂级别的成功提示页面（默认隐藏） -->
+        <div id="success-screen" class="success-screen">
+            <div class="success-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+            </div>
+            <h2>Inquiry Received</h2>
+            <p>Thank you for reaching out. Our machine vision experts will review your requirements and contact you within one business day.</p>
+            <button class="btn-y" onclick="showPage('home')" style="padding: 14px 32px; font-size: 16px;">Return to Home</button>
+        </div>
+    </div> 
 
     <div id="cookie-banner">
         <div class="cookie-content">
