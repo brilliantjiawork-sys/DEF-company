@@ -1,9 +1,8 @@
 /* ========================================================
-   DEF B2B 官网核心引擎 (模块化解耦版)
-   以后加新功能，直接在最下面加新的模块，绝不影响老代码。
+   DEF B2B 官网核心引擎 (企业级工程化标准版)
    ======================================================== */
 
-// 模块一：页面路由（防弹版）
+// 模块一：页面路由
 const Router = {
     showPage: function(id) {
         document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -23,16 +22,14 @@ const Router = {
     }
 };
 
-// 全局暴露给HTML的 onclick 使用
 function showPage(id) { Router.showPage(id); }
 function switchView(viewId) { Router.switchView(viewId); }
 
-// 模块二：数据读取引擎 (自带断网保护，绝不卡死页面)
+// 模块二：数据读取引擎
 let storiesData = [];
 let eventsData = [];
 
 async function loadCloudData() {
-    // 1. 读图片
     try {
         const res = await fetch('data/global_settings.json');
         if (res.ok) {
@@ -51,9 +48,8 @@ async function loadCloudData() {
             if (imgs.media_1) document.getElementById('media-img-1').src = imgs.media_1;
             if (imgs.media_2) document.getElementById('media-img-2').src = imgs.media_2;
         }
-    } catch (e) { console.log("图片加载跳过"); }
+    } catch (e) {}
 
-    // 2. 读文章
     try {
         const res = await fetch('data/database.json');
         if (res.ok) {
@@ -61,9 +57,8 @@ async function loadCloudData() {
             storiesData = data.articles || [];
             renderStories(storiesData);
         }
-    } catch (e) { console.log("文章加载跳过"); }
+    } catch (e) {}
 
-    // 3. 读展会
     try {
         const res = await fetch('data/events.json');
         if (res.ok) {
@@ -71,10 +66,9 @@ async function loadCloudData() {
             eventsData = data.exhibitions || [];
             renderEvents(eventsData);
         }
-    } catch (e) { console.log("展会加载跳过"); }
+    } catch (e) {}
 }
 
-// 渲染文章
 function renderStories(data) {
     const container = document.getElementById('stories-list');
     if(!container) return;
@@ -108,7 +102,6 @@ function showStoryDetail(index) {
     switchView('story-detail');
 }
 
-// 渲染展会
 function renderEvents(data) {
     const container = document.getElementById('events-list');
     if(!container) return;
@@ -138,25 +131,24 @@ function renderEvents(data) {
 }
 
 // ========================================================
-// 模块三：GA4 / GTM 数据追踪中心 (最标准的做法)
+// 模块三：标准化数据通信总线 (DataLayer 工业标准)
 // ========================================================
 const Tracker = {
+    // 标准推送接口
     pushEvent: function(eventName, params = {}) {
         window.dataLayer = window.dataLayer || [];
         window.dataLayer.push({
             'event': eventName,
             ...params
         });
-        console.log("✅ GTM 事件已发送:", eventName, params);
+        console.log(`[GTM DataLayer]: Sent -> ${eventName}`);
     }
 };
 
-// ========================================================
-// 模块四：表单处理器 (独立监听，互不干扰)
-// ========================================================
-const FormHandler = {
+// 模块四：表单监听器
+const ActionListener = {
     init: function() {
-        // 1. Contact Sales 表单
+        // 1. Contact Sales
         const contactForm = document.getElementById('detailed-contact-form');
         if (contactForm) {
             contactForm.addEventListener('submit', function(e) {
@@ -166,7 +158,10 @@ const FormHandler = {
                 
                 fetch(SITE_CONFIG.contactUrl, { method: 'POST', mode: 'no-cors', body: new FormData(this) })
                 .then(() => {
-                    Tracker.pushEvent('contact_sales_lead'); // 触发 GA4 事件
+                    // 1. 标准数据抛出
+                    Tracker.pushEvent('lead_form_submit', { form_type: 'contact_sales' });
+                    
+                    // 2. UI 切换
                     document.getElementById('form-container-box').style.display = 'none';
                     document.getElementById('success-screen').style.display = 'block';
                 })
@@ -177,7 +172,7 @@ const FormHandler = {
             });
         }
 
-        // 2. Newsletter 表单
+        // 2. Newsletter
         const newsForm = document.getElementById('newsletter-form');
         if (newsForm) {
             newsForm.addEventListener('submit', async function(e) {
@@ -189,8 +184,11 @@ const FormHandler = {
 
                 try {
                     await fetch(SITE_CONFIG.newsletterUrl, { method: 'POST', body: new URLSearchParams({ email }), mode: 'no-cors' });
-                    Tracker.pushEvent('newsletter_signup'); // 触发 GA4 事件
                     
+                    // 1. 标准数据抛出
+                    Tracker.pushEvent('newsletter_signup');
+                    
+                    // 2. UI 切换
                     document.getElementById('nl-form-container').style.display = 'none';
                     document.getElementById('nl-success-box').style.display = 'block';
                 } catch (e) {
@@ -202,17 +200,10 @@ const FormHandler = {
     }
 };
 
-// ========================================================
-// 引擎启动入口：只管初始化
-// ========================================================
+// 启动
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. 启动表单监听
-    FormHandler.init();
-    
-    // 2. 去云端拉数据
+    ActionListener.init();
     loadCloudData();
-    
-    // 3. Cookie 弹窗
     setTimeout(() => {
         const banner = document.getElementById('cookie-banner');
         if (banner) banner.style.display = 'block';
