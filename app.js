@@ -18,7 +18,7 @@ let storiesData = [];
 let eventsData = [];
 
 async function loadCloudData() {
-    // 加载文章
+    // 1. 加载文章
     try {
         const res = await fetch('data/database.json');
         if (res.ok) {
@@ -29,7 +29,6 @@ async function loadCloudData() {
                 container.innerHTML = '';
                 storiesData.forEach((story, index) => {
                     const tagsHtml = (story.tags || []).map(t => `<span class="kone-tag">${t}</span>`).join('');
-                    // 🎯 注意这里：把 img 包进了 .image-container
                     container.innerHTML += `
                         <div class="list-card" onclick="showStoryDetail(${index})">
                             <div class="image-container">
@@ -46,7 +45,7 @@ async function loadCloudData() {
         }
     } catch (e) {}
 
-    // 加载展会
+    // 2. 加载展会 (自动分类)
     try {
         const res = await fetch('data/events.json');
         if (res.ok) {
@@ -55,9 +54,13 @@ async function loadCloudData() {
             const container = document.getElementById('events-list');
             if(container) {
                 container.innerHTML = '';
+                let upcomingHtml = '';
+                let pastHtml = '';
+                const currentYear = 2026; // 以 2026 年为界
+
                 eventsData.forEach(ev => {
-                    // 🎯 展会也放入画框
-                    container.innerHTML += `
+                    const yearNum = parseInt(ev.year) || 2026;
+                    const cardHtml = `
                         <div class="list-card">
                             <div class="image-container">
                                 <img src="${ev.cover || 'images/event-1.jpg'}">
@@ -66,10 +69,26 @@ async function loadCloudData() {
                                 <span class="kone-tag">${ev.year}</span>
                                 <h4 style="margin-top:8px;">${ev.title}</h4>
                                 <p style="font-size:16px; font-weight:600; margin:4px 0;">📍 ${ev.booth || 'Booth TBD'}</p>
-                                <p style="color:var(--gray); margin:0; font-size:14px;">${ev.date} • ${ev.loc}</p>
+                                <p style="color:var(--gray); margin:0; font-size:14px;">
+                                    <strong>Date:</strong> ${ev.date} | <strong>Location:</strong> ${ev.loc}<br>
+                                    <strong>Theme:</strong> ${ev.theme || 'Industrial Vision'}
+                                </p>
                             </div>
                         </div>`;
+                    
+                    if (yearNum >= currentYear) {
+                        upcomingHtml += cardHtml;
+                    } else {
+                        pastHtml += cardHtml;
+                    }
                 });
+
+                if(upcomingHtml) {
+                    container.innerHTML += `<h3 style="font-size:24px; margin: 20px 0; border-bottom: 2px solid var(--yellow); padding-bottom: 10px;">Upcoming Global Expos</h3>` + upcomingHtml;
+                }
+                if(pastHtml) {
+                    container.innerHTML += `<h3 style="font-size:24px; margin: 40px 0 20px; border-bottom: 2px solid var(--line); padding-bottom: 10px;">Past Engagements & Reviews</h3>` + pastHtml;
+                }
             }
         }
     } catch (e) {}
@@ -78,7 +97,6 @@ async function loadCloudData() {
 function showStoryDetail(index) {
     const story = storiesData[index];
     if(!story) return;
-    // 🎯 详情页图片放入画框
     document.querySelector('.detail-img-container img').src = story.image || 'images/story-cover.jpg';
     document.getElementById('sd-date').innerText = new Date(story.date).toLocaleDateString();
     document.getElementById('sd-title').innerText = story.title;
