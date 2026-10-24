@@ -146,24 +146,30 @@ const Tracker = {
 };
 
 // 模块四：表单监听器
+// ========================================================
+// 模块三：表单监听（精准触发 Form Submission + 高级平滑跳转）
+// ========================================================
 const ActionListener = {
     init: function() {
-        // 1. Contact Sales
+        // 1. Contact Sales 表单
         const contactForm = document.getElementById('detailed-contact-form');
         if (contactForm) {
             contactForm.addEventListener('submit', function(e) {
+                // 拦截默认的页面刷新
                 e.preventDefault();
+                const formElement = this; 
                 const btn = document.getElementById('submit-btn');
                 if(btn) { btn.innerText = 'Submitting...'; btn.disabled = true; }
                 
                 fetch(SITE_CONFIG.contactUrl, { method: 'POST', mode: 'no-cors', body: new FormData(this) })
                 .then(() => {
-                    // 1. 标准数据抛出
-                    Tracker.pushEvent('lead_form_submit', { form_type: 'contact_sales' });
+                    // 1. 触发原生提交信号，让 GTM 100% 捕捉到
+                    formElement.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
                     
-                    // 2. UI 切换
+                    // 2. 平滑切换到高级感谢页
                     document.getElementById('form-container-box').style.display = 'none';
                     document.getElementById('success-screen').style.display = 'block';
+                    window.scrollTo(0, 0); // 滚回顶部，像真实跳转一样
                 })
                 .catch(() => {
                     alert('Network Error. Please try again.');
@@ -171,6 +177,35 @@ const ActionListener = {
                 });
             });
         }
+
+        // 2. Newsletter 表单
+        const newsForm = document.getElementById('newsletter-form');
+        if (newsForm) {
+            newsForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const formElement = this;
+                const email = document.getElementById('nl-email').value.trim();
+                if (!email) return alert('Please enter your email.');
+                const btn = this.querySelector('button');
+                if(btn) { btn.innerText = 'Subscribing...'; btn.disabled = true; }
+
+                try {
+                    await fetch(SITE_CONFIG.newsletterUrl, { method: 'POST', body: new URLSearchParams({ email }), mode: 'no-cors' });
+                    
+                    // 1. 触发原生提交信号
+                    formElement.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+                    
+                    // 2. 平滑切换到欢迎页
+                    document.getElementById('nl-form-container').style.display = 'none';
+                    document.getElementById('nl-success-box').style.display = 'block';
+                } catch (e) {
+                    alert('Subscription failed.');
+                    if(btn) { btn.innerText = 'Subscribe'; btn.disabled = false; }
+                }
+            });
+        }
+    }
+};
 
         // 2. Newsletter
         const newsForm = document.getElementById('newsletter-form');
