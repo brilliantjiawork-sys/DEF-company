@@ -18,6 +18,7 @@ let storiesData = [];
 let eventsData = [];
 
 async function loadCloudData() {
+    // 加载文章
     try {
         const res = await fetch('data/database.json');
         if (res.ok) {
@@ -28,11 +29,14 @@ async function loadCloudData() {
                 container.innerHTML = '';
                 storiesData.forEach((story, index) => {
                     const tagsHtml = (story.tags || []).map(t => `<span class="kone-tag">${t}</span>`).join('');
+                    // 🎯 注意这里：把 img 包进了 .image-container
                     container.innerHTML += `
                         <div class="list-card" onclick="showStoryDetail(${index})">
-                            <img src="${story.image || 'images/story-cover.jpg'}">
+                            <div class="image-container">
+                                <img src="${story.image || 'images/story-cover.jpg'}">
+                            </div>
                             <div class="list-info">
-                                <div style="font-size: 13px; color: #888; margin-bottom: 8px;">${new Date(story.date).toLocaleDateString()}</div>
+                                <span class="date">${new Date(story.date).toLocaleDateString()}</span>
                                 <h4>${story.title}</h4>
                                 <div style="margin-top:12px;">${tagsHtml}</div>
                             </div>
@@ -42,6 +46,7 @@ async function loadCloudData() {
         }
     } catch (e) {}
 
+    // 加载展会
     try {
         const res = await fetch('data/events.json');
         if (res.ok) {
@@ -51,9 +56,12 @@ async function loadCloudData() {
             if(container) {
                 container.innerHTML = '';
                 eventsData.forEach(ev => {
+                    // 🎯 展会也放入画框
                     container.innerHTML += `
                         <div class="list-card">
-                            <img src="${ev.cover || 'images/event-1.jpg'}">
+                            <div class="image-container">
+                                <img src="${ev.cover || 'images/event-1.jpg'}">
+                            </div>
                             <div class="list-info">
                                 <span class="kone-tag">${ev.year}</span>
                                 <h4 style="margin-top:8px;">${ev.title}</h4>
@@ -70,7 +78,8 @@ async function loadCloudData() {
 function showStoryDetail(index) {
     const story = storiesData[index];
     if(!story) return;
-    document.getElementById('sd-img').src = story.image || 'images/story-cover.jpg';
+    // 🎯 详情页图片放入画框
+    document.querySelector('.detail-img-container img').src = story.image || 'images/story-cover.jpg';
     document.getElementById('sd-date').innerText = new Date(story.date).toLocaleDateString();
     document.getElementById('sd-title').innerText = story.title;
     try { document.getElementById('sd-body').innerHTML = marked.parse(story.body || ""); } catch(e) {}
@@ -80,7 +89,7 @@ function showStoryDetail(index) {
 document.addEventListener("DOMContentLoaded", () => {
     loadCloudData();
 
-    // Contact Sales 表单提交与 GTM 触发
+    // Contact Sales 表单
     const contactForm = document.getElementById('detailed-contact-form');
     if (contactForm) {
         contactForm.addEventListener('submit', function(e) {
@@ -90,13 +99,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
             fetch(SITE_CONFIG.contactUrl, { method: 'POST', mode: 'no-cors', body: new FormData(this) })
             .then(() => {
-                // 🎯 空投 GTM 底层事件，100% 触发你的 Form Submission
                 window.dataLayer = window.dataLayer || [];
-                window.dataLayer.push({
-                    'event': 'gtm.formSubmit',
-                    'form_id': 'contact_sales_form'
-                });
-
+                window.dataLayer.push({'event': 'gtm.formSubmit', 'form_id': 'contact_sales_form'});
                 document.getElementById('form-container-box').style.display = 'none';
                 document.getElementById('success-screen').style.display = 'block';
                 window.scrollTo(0,0);
@@ -104,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Newsletter 表单提交与 GTM 触发
+    // Newsletter 表单
     const newsForm = document.getElementById('newsletter-form');
     if (newsForm) {
         newsForm.addEventListener('submit', async function(e) {
@@ -115,20 +119,13 @@ document.addEventListener("DOMContentLoaded", () => {
             if(btn) { btn.innerText = 'Subscribing...'; btn.disabled = true; }
 
             await fetch(SITE_CONFIG.newsletterUrl, { method: 'POST', body: new URLSearchParams({ email }), mode: 'no-cors' });
-            
-            // 🎯 空投 GTM 底层事件，100% 触发你的 Form Submission
             window.dataLayer = window.dataLayer || [];
-            window.dataLayer.push({
-                'event': 'gtm.formSubmit',
-                'form_id': 'newsletter_form'
-            });
-            
+            window.dataLayer.push({'event': 'gtm.formSubmit', 'form_id': 'newsletter_form'});
             document.getElementById('nl-form-container').style.display = 'none';
             document.getElementById('nl-success-box').style.display = 'block';
         });
     }
 
-    // Cookie 弹窗
     setTimeout(() => {
         const banner = document.getElementById('cookie-banner');
         if (banner) banner.style.display = 'block';

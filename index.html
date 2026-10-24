@@ -10,7 +10,6 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
-    <!-- 导航栏：Logo在左，菜单在右上角 -->
     <div class="nav">
         <div class="logo" onclick="showPage('home')">
             <img src="images/logo.jpg" alt="DEF">
@@ -24,7 +23,6 @@
         </div>
     </div>
 
-    <!-- 首页 -->
     <div id="home" class="page active">
         <div class="hero">
             <div class="hero-text">
@@ -56,7 +54,7 @@
             </div>
         </div>
     </div>
-      <!-- Newsroom -->
+
     <div id="newsroom" class="page">
         <div class="nr-layout">
             <div class="nr-sidebar">
@@ -80,12 +78,12 @@
                 <div id="view-story-detail" class="view">
                     <div class="back-btn" onclick="switchView('stories')">← Back to Stories</div>
                     <div class="detail-layout">
-                        <img id="sd-img" class="detail-img">
+                        <div class="detail-img-container"><img id="sd-img" src="images/story-cover.jpg"></div>
                         <div class="detail-content"><span id="sd-date" class="detail-date"></span><h2 id="sd-title" class="detail-title"></h2><div id="sd-body" class="detail-text"></div></div>
                     </div>
                 </div>
                 <div id="view-events" class="view"><h2 class="nr-title">Trade Shows & Events</h2><div id="events-list"></div></div>
-                <div id="view-social" class="view">
+                               <div id="view-social" class="view">
                     <h2 class="nr-title">Follow us</h2>
                     <div class="social-wrapper">
                         <div class="social-main">
@@ -98,17 +96,24 @@
                         </div>
                     </div>
                 </div>
+
                 <div id="view-media" class="view">
                     <h2 class="nr-title">Media Contacts</h2>
                     <div class="media-grid">
-                        <div class="media-card"><img id="media-img-1" src="images/media-1.jpg"><h4>Jane Doe</h4><p>Senior PR Manager<br>pr@defcompany.com</p></div>
-                        <div class="media-card"><img id="media-img-2" src="images/media-2.jpg"><h4>Sarah Smith</h4><p>Communications Lead<br>press@defcompany.com</p></div>
+                        <div class="media-card">
+                            <div class="media-card-img-container"><img id="media-img-1" src="images/media-1.jpg"></div>
+                            <h4>Jane Doe</h4><p>Senior PR Manager<br>pr@defcompany.com</p>
+                        </div>
+                        <div class="media-card">
+                            <div class="media-card-img-container"><img id="media-img-2" src="images/media-2.jpg"></div>
+                            <h4>Sarah Smith</h4><p>Communications Lead<br>press@defcompany.com</p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-      <!-- 联系页 -->
+
     <div id="contact" class="page" style="background: var(--bg);">
         <div class="form-container" id="form-container-box">
             <div class="form-header">
@@ -117,29 +122,13 @@
             </div>
             <form id="detailed-contact-form">
                 <div class="form-group"><label>Work Email *</label><input type="email" name="email" placeholder="name@company.com" required></div>
+                <div class="row"><div class="form-group"><label>First Name *</label><input type="text" name="first_name" required></div><div class="form-group"><label>Last Name *</label><input type="text" name="last_name" required></div></div>
+                <div class="row"><div class="form-group"><label>Company *</label><input type="text" name="company" required></div><div class="form-group"><label>Phone *</label><input type="tel" name="phone" required></div></div>
                 <div class="row">
-                    <div class="form-group"><label>First Name *</label><input type="text" name="first_name" required></div>
-                    <div class="form-group"><label>Last Name *</label><input type="text" name="last_name" required></div>
-                </div>
-                <div class="row">
-                    <div class="form-group"><label>Company *</label><input type="text" name="company" required></div>
-                    <div class="form-group"><label>Phone *</label><input type="tel" name="phone" required></div>
-                </div>
-                <div class="row">
-                    <div class="form-group">
-                        <label>Country/Region *</label>
-                        <select name="country" required>
-                            <option value="">Select Country</option><option value="US">United States</option><option value="CN">China</option><option value="DE">Germany</option><option value="UK">United Kingdom</option><option value="JP">Japan</option><option value="IN">India</option><option value="Other">Other</option>
-                        </select>
-                    </div>
+                    <div class="form-group"><label>Country/Region *</label><select name="country" required><option value="">Select Country</option><option value="US">United States</option><option value="CN">China</option><option value="DE">Germany</option><option value="UK">United Kingdom</option><option value="JP">Japan</option><option value="IN">India</option><option value="Other">Other</option></select></div>
                     <div class="form-group"><label>Postal / Zip Code *</label><input type="text" name="zip_code" required></div>
                 </div>
-                <div class="form-group">
-                    <label>Industry</label>
-                    <select name="industry">
-                        <option value="">Select Industry</option><option value="Automotive">Automotive</option><option value="Electronics">Electronics</option><option value="Semiconductor">Semiconductor</option><option value="Pharmaceuticals">Pharmaceuticals</option><option value="Machinery">Machinery & Equipment</option>
-                    </select>
-                </div>
+                <div class="form-group"><label>Industry</label><select name="industry"><option value="">Select Industry</option><option value="Automotive">Automotive</option><option value="Electronics">Electronics</option><option value="Semiconductor">Semiconductor</option><option value="Pharmaceuticals">Pharmaceuticals</option><option value="Machinery">Machinery & Equipment</option></select></div>
                 <div class="form-group"><label>Additional Comments</label><textarea name="message" rows="4" placeholder="Please tell us about your specific application..."></textarea></div>
                 <button type="submit" class="btn-submit">Submit Inquiry</button>
             </form>
@@ -152,14 +141,12 @@
         </div>
     </div>
 
-    <!-- Cookie 弹窗 -->
     <div id="cookie-banner">
         <div class="cookie-content">
             <div><h3>Your privacy matters.</h3><p>We use cookies to ensure our website functions properly and to provide you with a smoother experience.</p></div>
             <div class="cookie-btns" id="cookie-main-btns"><div class="c-btn" onclick="document.getElementById('cookie-banner').style.display='none'">Deny</div><div class="c-btn btn-allow" onclick="document.getElementById('cookie-banner').style.display='none'">Allow All</div></div>
         </div>
     </div>
-
     <script src="app.js"></script>
 </body>
-</html>    
+</html> 
