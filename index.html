@@ -1,18 +1,20 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <!-- ① 隐私同意默认值 (Consent Mode)：必须放在 GTM 代码之前 -->
+    <script src="config.js"></script>
+
   <!-- Google Tag Manager -->
 <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
 new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
 j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
 'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
 })(window,document,'script','dataLayer','GTM-P6HXR6VF');</script>
-<!-- End Google Tag Manager -->  
-    <meta charset="UTF-8">
+<!-- End Google Tag Manager -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DEF Company | Newsroom</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <script src="config.js"></script>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
@@ -30,7 +32,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <a onclick="showPage('home')">Home</a>
             <a>Products</a><a>Solutions</a><a>Support</a>
             <a onclick="showPage('newsroom')">Newsroom</a>
-            <a class="btn-y" onclick="showPage('contact')" style="padding:10px 24px; font-size:15px;">Contact Sales</a>
+            <a class="btn-y" onclick="openContact('contact_sales')" style="padding:10px 24px; font-size:15px;">Contact Sales</a>
         </div>
     </div>
 
@@ -39,7 +41,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="hero-text">
                 <h2>Precision Industrial Vision.</h2>
                 <p>DEF Company designs high-performance machine vision systems to help global manufacturers optimize quality control and increase throughput.</p>
-                <button class="btn-y" onclick="showPage('contact')">Book a Demo</button>
+                <button class="btn-y" onclick="openContact('book_demo')">Book a Demo</button>
             </div>
             <img src="images/hero-bg.jpg" alt="Vision">
         </div>
@@ -152,12 +154,35 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
 
-    <div id="cookie-banner">
+    <div id="cookie-banner" role="dialog" aria-label="Cookie preferences">
         <div class="cookie-content">
-            <div><h3>Your privacy matters.</h3><p>We use cookies to ensure our website functions properly and to provide you with a smoother experience.</p></div>
-            <div class="cookie-btns" id="cookie-main-btns"><div class="c-btn" onclick="document.getElementById('cookie-banner').style.display='none'">Deny</div><div class="c-btn btn-allow" onclick="document.getElementById('cookie-banner').style.display='none'">Allow All</div></div>
+            <div>
+                <h3>Your privacy matters.</h3>
+                <p>We use cookies to make our website work and, with your permission, to understand how it is used and to measure our marketing. You can change your choice at any time.</p>
+            </div>
+            <div class="cookie-btns" id="cookie-main-btns">
+                <button type="button" class="c-btn" id="cookie-reject">Reject all</button>
+                <button type="button" class="c-btn" id="cookie-customize">Customize</button>
+                <button type="button" class="c-btn btn-allow" id="cookie-accept">Accept all</button>
+            </div>
+        </div>
+        <div class="cookie-panel" id="cookie-panel" hidden>
+            <label class="cookie-row">
+                <div><strong>Strictly necessary</strong><span>Required for the website to work. Always on.</span></div>
+                <input type="checkbox" checked disabled>
+            </label>
+            <label class="cookie-row">
+                <div><strong>Analytics</strong><span>Helps us understand which pages and content are useful (Google Analytics).</span></div>
+                <input type="checkbox" id="cookie-analytics">
+            </label>
+            <label class="cookie-row">
+                <div><strong>Marketing</strong><span>Lets us measure advertising performance and show more relevant ads.</span></div>
+                <input type="checkbox" id="cookie-marketing">
+            </label>
+            <div class="cookie-btns"><button type="button" class="c-btn btn-allow" id="cookie-save">Save my choices</button></div>
         </div>
     </div>
+    <button type="button" id="cookie-reopen">Cookie settings</button>
     <script src="app.js"></script>
 </body>
 </html> 
