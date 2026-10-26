@@ -11,12 +11,6 @@ media_libraries:
   default:
     config:
       slugify_filename: true
-      transformations:
-        raster_image:
-          format: webp
-          quality: 88
-        svg:
-          optimize: true
   stock_assets:
     providers: []
 
@@ -116,7 +110,12 @@ collections:
               - { label: "Events 页面标题", name: "events_title", widget: "string" }
               - { label: "Events 页面介绍", name: "events_intro", widget: "text" }
               - { label: "Events：未来展会切换标签", name: "events_upcoming_tab", widget: "string" }
-              - { label: "Events：历史展会与报道切换标签", name: "events_past_tab", widget: "string" }
+              - { label: "Events：历史展会切换标签", name: "events_past_tab", widget: "string" }
+              - { label: "Stories 详情页返回按钮文字", name: "stories_back_button", widget: "string" }
+              - { label: "Trade Shows 详情页返回按钮文字", name: "events_back_button", widget: "string" }
+              - { label: "Upcoming Trade Shows 区块标题", name: "events_upcoming_heading", widget: "string" }
+              - { label: "Past Trade Shows 区块标题", name: "events_past_heading", widget: "string" }
+              - { label: "日期待确认区块标题", name: "events_unknown_heading", widget: "string" }
               - { label: "历史展会年份筛选提示", name: "events_year_label", widget: "string" }
               - { label: "展会详情的外链按钮文字", name: "events_visit_link", widget: "string" }
               - { label: "Social Media 页面标题", name: "social_title", widget: "string" }
@@ -183,7 +182,6 @@ collections:
             widget: "list"
             label_singular: "添加社交媒体渠道"
             collapsed: auto
-            minimize_collapsed: auto
             add_to_top: true
             summary: "{{platform}}"
             thumbnail: "image"
@@ -212,7 +210,6 @@ collections:
             widget: "list"
             label_singular: "添加媒体联系人"
             collapsed: auto
-            minimize_collapsed: auto
             add_to_top: true
             summary: "{{name}} · {{title}}"
             thumbnail: "portrait"
@@ -240,7 +237,6 @@ collections:
             widget: "list"
             label_singular: "添加一篇深度文章"
             collapsed: auto
-            minimize_collapsed: auto
             add_to_top: true
             summary: "{{title}} · {{date}}"
             thumbnail: "image"
@@ -271,99 +267,98 @@ collections:
                 hint: "用正文编辑器工具栏插入图片；图片的替代文本用于无障碍阅读，不需要另设跳转链接。"
 
   - name: "events"
-    label: "Events — 展会预告与报道"
-    description: "创建时选择一种编辑表单：未来展会使用‘预告短卡片’，已参加展会使用‘完整报道文章’。已有项目可打开后继续编辑。"
+    label: "Trade Shows — 展会预告与报道"
+    description: "分开管理两类内容：Upcoming Trade Shows 负责预告短卡片；Past Trade Shows Reports 负责完整文章。已发布项目保留在列表中，可随时展开编辑文字、日期、话题和图片。"
     files:
       - file: "data/events.json"
-        label: "展会内容列表"
-        name: "events_list"
+        label: "展会内容"
+        name: "events_content"
         format: "json"
         editor:
           preview: false
         fields:
-          - label: "展会内容（已填项目默认折叠；点击标题展开编辑）"
-            name: "exhibitions"
+          - label: "Upcoming Trade Shows — 展会预告（短卡片）"
+            name: "announcements"
             widget: "list"
-            label_singular: "添加一个展会内容"
+            label_singular: "添加展会预告"
             collapsed: auto
-            minimize_collapsed: auto
             add_to_top: true
-            summary: "{{title}}"
+            summary: "{{title}} · {{start_date}}"
             thumbnail: "cover"
-            typeKey: "content_type"
-            hint: "选择‘展会预告’管理展位、日期和到访信息；选择‘展会报道’撰写完整文章。"
-            types:
-              - name: "announcement"
-                label: "展会预告 — 短卡片"
-                summary: "{{title}} · 预告"
-                fields:
-                  - { label: "展会名称（必填）", name: "title", widget: "string", required: true }
-                  - { label: "开始日期（必填）", name: "start_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true }
-                  - { label: "结束日期（必填）", name: "end_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true }
-                  - { label: "地点（城市、国家/地区）", name: "loc", widget: "string", required: true }
-                  - { label: "展位号（未确定可留空）", name: "booth", widget: "string", required: false, hint: "例如 Hall 4, Booth 4A12。留空时网页显示 To be confirmed。" }
-                  - { label: "展示主题（可选）", name: "theme", widget: "string", required: false }
-                  - { label: "预告简介（必填，1–3 句话）", name: "desc", widget: "text", required: true, hint: "说明现场展示什么、适合哪些客户到访；只写已确认的信息。" }
-                  - label: "展会话题（可多选）"
-                    name: "tags"
-                    widget: "select"
-                    multiple: true
-                    required: false
-                    options:
-                      - "Trade Shows & Exhibitions"
-                      - "Product Demonstrations"
-                      - "New Product Launch"
-                      - "Industry Conference"
-                      - "AI Vision"
-                      - "Machine Vision"
-                      - "Automation"
-                      - "Quality Inspection"
-                  - { label: "展会封面图（可选，Browse 上传本地图片）", name: "cover", widget: "image", choose_url: false, required: false }
-                  - { label: "展会官网 / 注册链接（可选）", name: "url", widget: "string", required: false, hint: "完整的 https:// 链接；留空时不显示外链按钮。" }
-              - name: "report"
-                label: "展会报道 — 完整文章"
-                summary: "{{title}} · 报道"
-                fields:
-                  - { label: "文章标题（必填）", name: "title", widget: "string", required: true }
-                  - { label: "展会年份（必填）", name: "event_year", widget: "string", required: true, hint: "例如 2025，用于历史展会按年份筛选。" }
-                  - { label: "文章发布日期（必填）", name: "published_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true }
-                  - { label: "展会开始日期（可选）", name: "start_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
-                  - { label: "展会结束日期（可选）", name: "end_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
-                  - { label: "地点（城市、国家/地区）", name: "loc", widget: "string", required: false }
-                  - { label: "展位号（可选）", name: "booth", widget: "string", required: false }
-                  - { label: "展会主题（可选）", name: "theme", widget: "string", required: false }
-                  - { label: "文章摘要（可选）", name: "summary", widget: "text", required: false, hint: "1–3 句话概括展会报道亮点；显示在历史展会卡片上。" }
-                  - label: "展会话题（可多选）"
-                    name: "tags"
-                    widget: "select"
-                    multiple: true
-                    required: false
-                    options:
-                      - "Trade Shows & Exhibitions"
-                      - "Product Demonstrations"
-                      - "New Product Launch"
-                      - "Industry Conference"
-                      - "AI Vision"
-                      - "Machine Vision"
-                      - "Automation"
-                      - "Quality Inspection"
-                  - { label: "报道封面图（可选，Browse 上传本地图片）", name: "cover", widget: "image", choose_url: false, required: false }
-                  - label: "完整报道正文（必填，可插入多张图片）"
-                    name: "body"
-                    widget: "markdown"
-                    required: true
-                    linked_images: false
-                    hint: "像 Stories 一样撰写完整文章；可用小标题、段落、列表、链接和多张图片。只写有依据的实际内容。"
-                  - label: "额外现场图片（可选）"
-                    name: "gallery"
-                    widget: "list"
-                    required: false
-                    label_singular: "添加一张现场图片"
-                    collapsed: true
-                    minimize_collapsed: true
-                    field:
-                      label: "本地图片（Browse 上传）"
-                      name: "image"
-                      widget: "image"
-                      choose_url: false
-                  - { label: "展会官网 / 相关链接（可选）", name: "url", widget: "string", required: false, hint: "完整的 https:// 链接；留空时不显示外链按钮。" }
+            hint: "填写确定要参加的未来展会。已有展会显示为折叠的标题行，点击标题即可编辑；需要修改日期、文案、展位或封面时直接打开原项目。"
+            fields:
+              - { label: "展会名称", name: "title", widget: "string", required: true }
+              - { label: "开始日期", name: "start_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true }
+              - { label: "结束日期", name: "end_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true }
+              - { label: "地点（城市、国家/地区）", name: "loc", widget: "string", required: true }
+              - { label: "展位号（未确定可留空）", name: "booth", widget: "string", required: false, hint: "例如 Hall 4, Booth 4A12。未确定时留空，网站显示 To be confirmed。" }
+              - { label: "展示主题", name: "theme", widget: "string", required: false }
+              - { label: "预告简介（1–3 句话）", name: "desc", widget: "text", required: true, hint: "说明现场展示什么、适合哪些客户到访；只写已确认的信息。" }
+              - label: "展会话题（可多选）"
+                name: "tags"
+                widget: "select"
+                multiple: true
+                required: false
+                options:
+                  - "Trade Shows & Exhibitions"
+                  - "Product Demonstrations"
+                  - "New Product Launch"
+                  - "Industry Conference"
+                  - "AI Vision"
+                  - "Machine Vision"
+                  - "Automation"
+                  - "Quality Inspection"
+              - { label: "封面图片（从电脑 Browse 上传；不自动转换图片格式）", name: "cover", widget: "image", choose_url: false, required: false }
+              - { label: "展会官网 / 注册链接（可选）", name: "url", widget: "string", required: false, hint: "完整 https:// 链接；留空则不显示外链按钮。" }
+          - label: "Past Trade Shows — 展会完整报道"
+            name: "reports"
+            widget: "list"
+            label_singular: "添加展会报道"
+            collapsed: auto
+            add_to_top: true
+            summary: "{{title}} · {{event_year}}"
+            thumbnail: "cover"
+            hint: "用于展前/展中/展后深度文章。已有报道可以展开修改标题、摘要、正文、封面和现场图片；不需要新建一篇来修正旧文章。"
+            fields:
+              - { label: "报道标题", name: "title", widget: "string", required: true }
+              - { label: "展会年份（用于年份筛选）", name: "event_year", widget: "string", required: true, hint: "例如 2025。" }
+              - { label: "文章发布日期", name: "published_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true }
+              - { label: "展会开始日期（可选）", name: "start_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
+              - { label: "展会结束日期（可选）", name: "end_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
+              - { label: "地点（城市、国家/地区）", name: "loc", widget: "string", required: false }
+              - { label: "展位号（可选）", name: "booth", widget: "string", required: false }
+              - { label: "展会主题（可选）", name: "theme", widget: "string", required: false }
+              - { label: "文章摘要（1–3 句话，可选）", name: "summary", widget: "text", required: false, hint: "概括读者从这篇展会报道中能了解到什么；显示在历史展会卡片和文章标题下。" }
+              - label: "展会话题（可多选）"
+                name: "tags"
+                widget: "select"
+                multiple: true
+                required: false
+                options:
+                  - "Trade Shows & Exhibitions"
+                  - "Product Demonstrations"
+                  - "New Product Launch"
+                  - "Industry Conference"
+                  - "AI Vision"
+                  - "Machine Vision"
+                  - "Automation"
+                  - "Quality Inspection"
+              - { label: "报道封面图（Browse 上传；不自动转换图片格式）", name: "cover", widget: "image", choose_url: false, required: false }
+              - label: "完整报道正文（支持多张图片）"
+                name: "body"
+                widget: "markdown"
+                required: true
+                linked_images: false
+                hint: "像 Stories 一样写标题、小标题、段落、列表、链接和多张正文图片。修改旧文直接编辑这里后保存。"
+              - label: "额外现场图片（可选）"
+                name: "gallery"
+                widget: "list"
+                required: false
+                label_singular: "添加一张现场图片"
+                collapsed: true
+                field:
+                  label: "现场图片（Browse 上传原图）"
+                  name: "image"
+                  widget: "image"
+                  choose_url: false
+              - { label: "展会官网 / 相关链接（可选）", name: "url", widget: "string", required: false, hint: "完整 https:// 链接；留空则不显示外链按钮。" }
