@@ -1,0 +1,114 @@
+{
+  "brand": {
+    "page_title": "DEF Company | Industrial Vision",
+    "name": "DEF Company",
+    "tagline": "DEFINE THE STANDARD OF SIGHT.",
+    "logo": "images/logo.jpg",
+    "logo_alt": "DEF Company"
+  },
+  "navigation": {
+    "home": "Home",
+    "products": "Products",
+    "solutions": "Solutions",
+    "support": "Support",
+    "newsroom": "Newsroom",
+    "contact_sales": "Contact Sales"
+  },
+  "home": {
+    "hero_title": "Precision Industrial Vision.",
+    "hero_description": "DEF Company designs high-performance machine vision systems to help global manufacturers optimize quality control and increase throughput.",
+    "hero_button": "Book a Demo",
+    "hero_image": "images/hero-bg.jpg",
+    "hero_image_alt": "Industrial machine vision systems",
+    "newsletter_image": "images/team.jpg",
+    "newsletter_image_alt": "Engineering team collaborating on industrial vision systems",
+    "newsletter_image_caption": "* The DEF Company engineering team collaborating on next-generation systems.",
+    "newsletter_title": "Subscribe to our Technical Newsletter",
+    "newsletter_description": "Receive exclusive product releases, engineering case studies, and industry insights tailored for B2B manufacturers.",
+    "newsletter_email_placeholder": "Enter your Work Email",
+    "newsletter_button": "Subscribe",
+    "newsletter_success_title": "Welcome to DEF Insights!",
+    "newsletter_success_description": "Thank you for subscribing. You will now receive our latest B2B industry trends directly in your inbox."
+  },
+  "newsroom": {
+    "sidebar_overview": "Overview",
+    "sidebar_stories": "Stories",
+    "sidebar_events": "Events",
+    "sidebar_social": "Social Media",
+    "sidebar_media": "Media",
+    "overview_title": "Corporate Newsroom",
+    "overview_cards": {
+      "social": {
+        "title": "Social Media",
+        "image": "images/11.jpg",
+        "image_alt": "DEF Company social media channels"
+      },
+      "stories": {
+        "title": "Stories",
+        "image": "images/story-cover.jpg",
+        "image_alt": "Industrial vision stories"
+      },
+      "events": {
+        "title": "Events",
+        "image": "images/event-1.jpg",
+        "image_alt": "Industrial automation trade show"
+      },
+      "media": {
+        "title": "Media",
+        "image": "images/media-cover.jpg",
+        "image_alt": "Media contacts and press resources"
+      }
+    },
+    "stories_title": "Explore our stories",
+    "stories_intro": "Product updates, application insights, customer stories and company news.",
+    "events_title": "Trade Shows & Events",
+    "events_intro": "Meet our team at upcoming exhibitions, or explore highlights and technical stories from past events.",
+    "events_upcoming_tab": "Upcoming Events",
+    "events_past_tab": "Past Events & Reports",
+    "events_year_label": "Filter by year",
+    "events_visit_link": "Visit event website",
+    "social_title": "Follow us",
+    "social_disclaimer_lead": "Learning & portfolio notice:",
+    "social_disclaimer_text": "DEF Company is a fictional project created only for learning and portfolio presentation. The social media cards on this page are examples, not official DEF Company accounts. The photos are from ",
+    "media_title": "Media Contacts",
+    "media_disclaimer_lead": "Learning & portfolio notice:",
+    "media_disclaimer_text": "This Media Contacts page is a fictional example for learning and portfolio presentation. All names, job titles, and email addresses shown here are made up and do not refer to real media contacts. The portrait photos are from ",
+    "image_source_label": "Unsplash",
+    "image_source_url": "https://unsplash.com/"
+  },
+  "contact": {
+    "title": "Contact Sales",
+    "description": "Please fill out your business requirements below, and our experts will contact you within one business day.",
+    "email_label": "Work Email *",
+    "first_name_label": "First Name *",
+    "last_name_label": "Last Name *",
+    "company_label": "Company *",
+    "phone_label": "Phone *",
+    "country_label": "Country/Region *",
+    "zip_code_label": "Postal / Zip Code *",
+    "industry_label": "Industry",
+    "message_label": "Additional Comments",
+    "country_placeholder": "Select Country",
+    "industry_placeholder": "Select Industry",
+    "message_placeholder": "Please tell us about your specific application...",
+    "submit_button": "Submit Inquiry",
+    "success_title": "Inquiry Received",
+    "success_description": "Thank you for reaching out to DEF Company. Our machine vision experts are currently reviewing your requirements and will contact you within one business day.",
+    "return_button": "Return to Home"
+  },
+  "cookie": {
+    "title": "Your privacy matters.",
+    "description": "We use cookies to make our website work and, with your permission, to understand how it is used and to measure our marketing. You can change your choice at any time.",
+    "reject_button": "Reject all",
+    "customize_button": "Customize",
+    "accept_button": "Accept all",
+    "necessary_title": "Strictly necessary",
+    "necessary_description": "Required for the website to work. Always on.",
+    "analytics_title": "Analytics",
+    "analytics_description": "Helps us understand which pages and content are useful (Google Analytics).",
+    "marketing_title": "Marketing",
+    "marketing_description": "Lets us measure advertising performance and show more relevant ads.",
+    "save_button": "Save my choices",
+    "reopen_button": "Cookie settings"
+  }
+}
