@@ -108,21 +108,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </div>
                 </div>
                 <div id="view-events" class="view">
-                    <h2 class="nr-title">Trade Shows &amp; Events</h2>
+                    <h2 class="nr-title">Trade Shows</h2>
                     <p class="events-intro">Meet our team at upcoming exhibitions, or explore highlights and technical stories from past events.</p>
                     <div class="events-view-tabs" role="tablist" aria-label="Event views">
-                        <button type="button" class="event-tab is-active" data-events-tab="upcoming" role="tab" aria-selected="true">Upcoming Events</button>
-                        <button type="button" class="event-tab" data-events-tab="past" role="tab" aria-selected="false">Past Events &amp; Reports</button>
+                        <button type="button" class="event-tab is-active" data-events-tab="upcoming" role="tab" aria-selected="true">Upcoming Trade Shows</button>
+                        <button type="button" class="event-tab" data-events-tab="past" role="tab" aria-selected="false">Past Trade Shows</button>
                     </div>
                     <div id="events-year-filter" class="events-year-filter" hidden>
-                        <label for="events-year-select">Filter by year</label>
+                        <label for="events-year-select">Filter past trade shows by year</label>
                         <select id="events-year-select"><option value="all">All years</option></select>
                     </div>
                     <div id="events-filters" class="events-filters" aria-label="Filter events by topic"></div>
                     <div id="events-list"></div>
                 </div>
                 <div id="view-event-detail" class="view">
-                    <div class="back-btn" onclick="switchView('events')">← Back to Events</div>
+                    <div class="back-btn" onclick="switchView('events')">← Back to Trade Shows</div>
                     <article class="event-detail-article">
                         <span id="ed-published-date" class="detail-date"></span>
                         <div id="ed-tags" class="story-tags" hidden></div>
@@ -227,6 +227,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
     <button type="button" id="cookie-reopen">Cookie settings</button>
+    <script src="events-adapter.js"></script>
     <script src="app.js"></script>
     <script src="marketing-content.js"></script>
 </body>

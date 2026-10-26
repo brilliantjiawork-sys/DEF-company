@@ -7,6 +7,35 @@
   'use strict';
 
   const safeText = (value, max = 5000) => String(value ?? '').trim().slice(0, max);
+  let activeNewsroomCopy = {};
+
+  function applyEventSectionHeadings() {
+    document.querySelectorAll('#events-list .events-section-title').forEach((heading) => {
+      const original = safeText(heading.textContent, 300).toLowerCase();
+      let desired = '';
+      if (/upcoming|future|exhibition/.test(original)) {
+        desired = safeText(activeNewsroomCopy.events_upcoming_heading || 'Upcoming Trade Shows');
+      } else if (/past|report|highlight|historical/.test(original)) {
+        desired = safeText(activeNewsroomCopy.events_past_heading || 'Past Trade Shows');
+      } else if (/confirm|unknown|date/.test(original)) {
+        desired = safeText(activeNewsroomCopy.events_unknown_heading || 'Trade Shows — Dates to Be Confirmed');
+      }
+      if (desired && heading.textContent.trim() !== desired) heading.textContent = desired;
+    });
+    const visitLabel = safeText(activeNewsroomCopy.events_visit_link || 'Visit trade show website');
+    document.querySelectorAll('#events-list a.event-link').forEach((link) => {
+      if (link.textContent.trim() !== visitLabel) link.textContent = visitLabel;
+    });
+  }
+
+  function watchEventSectionHeadings() {
+    const container = document.getElementById('events-list');
+    if (!container || container.dataset.headingObserverReady === 'true') return;
+    container.dataset.headingObserverReady = 'true';
+    const observer = new MutationObserver(applyEventSectionHeadings);
+    observer.observe(container, { childList: true, subtree: true, characterData: true });
+    applyEventSectionHeadings();
+  }
   const get = (object, path) => path.split('.').reduce((value, key) => value && value[key], object);
   const setText = (selector, value) => {
     const element = document.querySelector(selector);
@@ -42,6 +71,7 @@
     const nav = data.navigation || {};
     const home = data.home || {};
     const newsroom = data.newsroom || {};
+    activeNewsroomCopy = newsroom;
     const contact = data.contact || {};
     const cookie = data.cookie || {};
 
@@ -84,10 +114,13 @@
     renderOverviewCards(newsroom.overview_cards || {});
     setText('#view-stories > .nr-title', newsroom.stories_title);
     setText('#view-stories .stories-intro', newsroom.stories_intro);
+    setText('#view-story-detail .back-btn', newsroom.stories_back_button);
     setText('#view-events > .nr-title', newsroom.events_title);
     setText('#view-events .events-intro', newsroom.events_intro);
+    setText('#view-event-detail .back-btn', newsroom.events_back_button);
     setText('[data-events-tab="upcoming"]', newsroom.events_upcoming_tab);
     setText('[data-events-tab="past"]', newsroom.events_past_tab);
+    applyEventSectionHeadings();
     setText('#events-year-filter label', newsroom.events_year_label);
     const eventVisit = document.getElementById('ed-url');
     if (eventVisit && newsroom.events_visit_link) eventVisit.textContent = safeText(newsroom.events_visit_link, 100);
@@ -278,6 +311,7 @@
   }
 
   document.addEventListener('DOMContentLoaded', async () => {
+    watchEventSectionHeadings();
     // Load each file independently so a missing optional file does not block all CMS-managed content.
     const results = await Promise.allSettled([
       readJson('/data/site-content.json'),
