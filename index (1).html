@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- ① 隐私同意默认值 (Consent Mode)：必须放在 GTM 代码之前 -->
+    <script src="config.js"></script>
+
+  <!-- Google Tag Manager -->
+<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+})(window,document,'script','dataLayer','GTM-P6HXR6VF');</script>
+<!-- End Google Tag Manager -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DEF Company | Newsroom</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+</head>
+<body>
+  <!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-P6HXR6VF"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->  
+    <div class="nav">
+        <div class="logo" onclick="showPage('home')">
+            <img src="images/logo.jpg" alt="DEF">
+            <div><h1>DEF Company</h1><span>DEFINE THE STANDARD OF SIGHT.</span></div>
+        </div>
+        <div class="menu">
+            <a onclick="showPage('home')">Home</a>
+            <a>Products</a><a>Solutions</a><a>Support</a>
+            <a onclick="showPage('newsroom')">Newsroom</a>
+            <a class="btn-y" onclick="openContact('contact_sales')" style="padding:10px 24px; font-size:15px;">Contact Sales</a>
+        </div>
+    </div>
+
+    <div id="home" class="page active">
+        <div class="hero">
+            <div class="hero-text">
+                <h2>Precision Industrial Vision.</h2>
+                <p>DEF Company designs high-performance machine vision systems to help global manufacturers optimize quality control and increase throughput.</p>
+                <button class="btn-y" onclick="openContact('book_demo')">Book a Demo</button>
+            </div>
+            <img src="images/hero-bg.jpg" alt="Vision">
+        </div>
+        <div class="newsletter">
+            <div class="nl-img">
+                <img src="images/team.jpg" alt="Team">
+                <p>* The DEF Company engineering team collaborating on next-generation systems.</p>
+            </div>
+            <div class="nl-form" id="nl-form-container">
+                <form id="newsletter-form">
+                    <h3>Subscribe to our Technical Newsletter</h3>
+                    <p>Receive exclusive product releases, engineering case studies, and industry insights tailored for B2B manufacturers.</p>
+                    <div class="nl-input">
+                        <input type="email" name="email" id="nl-email" placeholder="Enter your Work Email" required>
+                        <button type="submit" class="btn-y">Subscribe</button>
+                    </div>
+                </form>
+            </div>
+            <div class="nl-form success-screen" id="nl-success-box" style="display: none; padding: 40px; border: none; box-shadow: none; background: transparent;">
+                <div class="success-icon" style="background: #e6f4f9; color: var(--blue); margin-bottom: 16px;"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+                <h3 style="font-size: 28px; margin-bottom: 12px;">Welcome to DEF Insights!</h3>
+                <p style="font-size: 16px; color: var(--gray);">Thank you for subscribing. You will now receive our latest B2B industry trends directly in your inbox.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="newsroom" class="page">
+        <div class="nr-layout">
+            <div class="nr-sidebar">
+                <a onclick="switchView('ov')" id="nav-ov" class="active">Overview</a>
+                <a onclick="switchView('stories')" id="nav-stories">Stories</a>
+                <a onclick="switchView('events')" id="nav-events">Events</a>
+                <a onclick="switchView('social')" id="nav-social">Social Media</a>
+                <a onclick="switchView('media')" id="nav-media">Media</a>
+            </div>
+            <div class="nr-main">
+                <div id="view-ov" class="view active">
+                    <h2 class="nr-title">Corporate Newsroom</h2>
+                    <div class="ov-grid">
+                        <div class="ov-card" onclick="switchView('social')"><img id="ov-img-social" src="images/11.jpg"><div class="ov-overlay"><h3>Social Media</h3></div></div>
+                        <div class="ov-card" onclick="switchView('stories')"><img id="ov-img-stories" src="images/story-cover.jpg"><div class="ov-overlay"><h3>Stories</h3></div></div>
+                        <div class="ov-card" onclick="switchView('events')"><img id="ov-img-events" src="images/event-1.jpg"><div class="ov-overlay"><h3>Events</h3></div></div>
+                        <div class="ov-card" onclick="switchView('media')"><img id="ov-img-media" src="images/media-cover.jpg"><div class="ov-overlay"><h3>Media</h3></div></div>
+                    </div>
+                </div>
+                <div id="view-stories" class="view">
+                    <h2 class="nr-title">Explore our stories</h2>
+                    <p class="stories-intro">Product updates, application insights, customer stories and company news.</p>
+                    <div id="stories-filters" class="stories-filters" aria-label="Filter stories by topic"></div>
+                    <div id="stories-list"></div>
+                </div>
+                <div id="view-story-detail" class="view">
+                    <div class="back-btn" onclick="switchView('stories')">← Back to Stories</div>
+                    <div class="detail-layout">
+                        <div class="detail-content">
+                            <span id="sd-date" class="detail-date"></span>
+                            <div id="sd-tags" class="story-tags" hidden></div>
+                            <h2 id="sd-title" class="detail-title"></h2>
+                            <p id="sd-summary" class="detail-summary" hidden></p>
+                            <div id="sd-body" class="detail-text"></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="view-events" class="view"><h2 class="nr-title">Trade Shows & Events</h2><div id="events-list"></div></div>
+                               <div id="view-social" class="view">
+                    <h2 class="nr-title">Follow us</h2>
+                    <div class="social-wrapper">
+                        <div class="social-main">
+                            <div class="social-main-img"><img id="social-li-img" src="images/social-linkedin.jpg"><div class="social-logo"><svg viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" fill="#0077b5"/></svg></div></div>
+                            <div class="social-main-text"><h3>LinkedIn</h3><p>Our primary B2B channel for networking and technical thought leadership.</p><a href="https://linkedin.com" target="_blank" class="btn-y" style="align-self: flex-start;">Follow us</a></div>
+                        </div>
+                        <div class="social-sub">
+                            <div class="social-card"><div class="social-card-img"><img id="social-yt-img" src="images/social-youtube.jpg"><div class="social-logo"><svg viewBox="0 0 24 24"><path d="M19.615 3.184c-3.604-.246-11.631-.245-15.23 0-3.897.266-4.356 2.62-4.385 8.816.029 6.185.484 8.549 4.385 8.816 3.6.245 11.626.246 15.23 0 3.897-.266 4.356-2.62 4.385-8.816-.029-6.185-.484-8.549-4.385-8.816zm-10.615 12.816v-8l8 3.993-8 4.007z" fill="#ff0000"/></svg></div></div><div class="social-card-text"><h4>YouTube</h4><p>Watch product tutorials and customer case studies.</p><a href="https://youtube.com" target="_blank" class="btn-y" style="padding: 8px 16px; font-size: 14px; align-self: flex-start;">Follow</a></div></div>
+                            <div class="social-card"><div class="social-card-img"><img id="social-fb-img" src="images/social-facebook.jpg"><div class="social-logo"><svg viewBox="0 0 24 24"><path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z" fill="#1877F2"/></svg></div></div><div class="social-card-text"><h4>Facebook</h4><p>Join our global community for the latest updates.</p><a href="https://facebook.com" target="_blank" class="btn-y" style="padding: 8px 16px; font-size: 14px; align-self: flex-start;">Follow</a></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="view-media" class="view">
+                    <h2 class="nr-title">Media Contacts</h2>
+                    <div class="media-grid">
+                        <div class="media-card">
+                            <div class="media-card-img-container"><img id="media-img-1" src="images/media-1.jpg" alt="Portfolio demonstration portrait"></div>
+                            <h4>Jane Doe</h4><p>Senior PR Manager<br>pr@defcompany.com</p>
+                        </div>
+                        <div class="media-card">
+                            <div class="media-card-img-container"><img id="media-img-2" src="images/media-2.jpg" alt="Portfolio demonstration portrait"></div>
+                            <h4>Sarah Smith</h4><p>Communications Lead<br>press@defcompany.com</p>
+                        </div>
+                    </div>
+                    <div class="media-disclaimer" role="note">
+                        <strong>Portfolio demo notice:</strong> This Media Contacts section is fictional and is included solely for educational and portfolio demonstration purposes. The portrait photos are sourced from <a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>. The names, job titles, and email addresses are fictional placeholders and do not represent real media contacts. This project is not affiliated with or endorsed by the people pictured.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="contact" class="page" style="background: var(--bg);">
+        <div class="form-container" id="form-container-box">
+            <div class="form-header">
+                <h2>Contact Sales</h2>
+                <p>Please fill out your business requirements below, and our experts will contact you within one business day.</p>
+            </div>
+            <form id="detailed-contact-form">
+                <div class="form-group"><label>Work Email *</label><input type="email" name="email" placeholder="name@company.com" required></div>
+                <div class="row"><div class="form-group"><label>First Name *</label><input type="text" name="first_name" required></div><div class="form-group"><label>Last Name *</label><input type="text" name="last_name" required></div></div>
+                <div class="row"><div class="form-group"><label>Company *</label><input type="text" name="company" required></div><div class="form-group"><label>Phone *</label><input type="tel" name="phone" required></div></div>
+                <div class="row">
+                    <div class="form-group"><label>Country/Region *</label><select name="country" required><option value="">Select Country</option><option value="US">United States</option><option value="CN">China</option><option value="DE">Germany</option><option value="UK">United Kingdom</option><option value="JP">Japan</option><option value="IN">India</option><option value="Other">Other</option></select></div>
+                    <div class="form-group"><label>Postal / Zip Code *</label><input type="text" name="zip_code" required></div>
+                </div>
+                <div class="form-group"><label>Industry</label><select name="industry"><option value="">Select Industry</option><option value="Automotive">Automotive</option><option value="Electronics">Electronics</option><option value="Semiconductor">Semiconductor</option><option value="Pharmaceuticals">Pharmaceuticals</option><option value="Machinery">Machinery & Equipment</option></select></div>
+                <div class="form-group"><label>Additional Comments</label><textarea name="message" rows="4" placeholder="Please tell us about your specific application..."></textarea></div>
+                <button type="submit" class="btn-submit">Submit Inquiry</button>
+            </form>
+        </div>
+        <div id="success-screen" class="success-screen">
+            <div class="success-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg></div>
+            <h2>Inquiry Received</h2>
+            <p>Thank you for reaching out to DEF Company. Our machine vision experts are currently reviewing your requirements and will contact you within one business day.</p>
+            <button class="btn-y" onclick="showPage('home')">Return to Home</button>
+        </div>
+    </div>
+
+    <div id="cookie-banner" role="dialog" aria-label="Cookie preferences">
+        <div class="cookie-content">
+            <div>
+                <h3>Your privacy matters.</h3>
+                <p>We use cookies to make our website work and, with your permission, to understand how it is used and to measure our marketing. You can change your choice at any time.</p>
+            </div>
+            <div class="cookie-btns" id="cookie-main-btns">
+                <button type="button" class="c-btn" id="cookie-reject">Reject all</button>
+                <button type="button" class="c-btn" id="cookie-customize">Customize</button>
+                <button type="button" class="c-btn btn-allow" id="cookie-accept">Accept all</button>
+            </div>
+        </div>
+        <div class="cookie-panel" id="cookie-panel" hidden>
+            <label class="cookie-row">
+                <div><strong>Strictly necessary</strong><span>Required for the website to work. Always on.</span></div>
+                <input type="checkbox" checked disabled>
+            </label>
+            <label class="cookie-row">
+                <div><strong>Analytics</strong><span>Helps us understand which pages and content are useful (Google Analytics).</span></div>
+                <input type="checkbox" id="cookie-analytics">
+            </label>
+            <label class="cookie-row">
+                <div><strong>Marketing</strong><span>Lets us measure advertising performance and show more relevant ads.</span></div>
+                <input type="checkbox" id="cookie-marketing">
+            </label>
+            <div class="cookie-btns"><button type="button" class="c-btn btn-allow" id="cookie-save">Save my choices</button></div>
+        </div>
+    </div>
+    <button type="button" id="cookie-reopen">Cookie settings</button>
+    <script src="app.js"></script>
+</body>
+</html> 
