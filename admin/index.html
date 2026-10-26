@@ -1,5 +1,39 @@
 <!DOCTYPE html>
-<html>
-  <head><meta charset="utf-8" /></head>
-  <body><script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script></body>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DEF Company Content Editor</title>
+</head>
+<body>
+  <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
+  <script>
+    // Hide only a standalone Paste/Paste image button inside an image/file picker.
+    // Sveltia CMS has no documented config option for removing this specific button.
+    (() => {
+      const isPasteButton = (button) => {
+        const text = (button.getAttribute('aria-label') || button.getAttribute('title') || button.textContent || '')
+          .replace(/\s+/g, ' ').trim().toLowerCase();
+        return ['paste', 'paste image', '粘贴', '粘贴图片'].includes(text);
+      };
+      const inMediaPicker = (button) => {
+        const context = button.closest('[role="dialog"], [role="menu"], [data-radix-popper-content-wrapper]') || button.parentElement?.parentElement;
+        const text = (context?.textContent || '').toLowerCase();
+        return /browse|upload|image|images|media|asset|choose image|select image|浏览|上传|图片|媒体|素材/.test(text);
+      };
+      const hidePasteButtons = () => {
+        document.querySelectorAll('button').forEach(button => {
+          if (isPasteButton(button) && inMediaPicker(button) && button.dataset.portfolioPasteHidden !== 'true') {
+            button.style.display = 'none';
+            button.setAttribute('aria-hidden', 'true');
+            button.dataset.portfolioPasteHidden = 'true';
+          }
+        });
+      };
+      hidePasteButtons();
+      const observer = new MutationObserver(hidePasteButtons);
+      observer.observe(document.documentElement, { childList: true, subtree: true });
+    })();
+  </script>
+</body>
 </html>
