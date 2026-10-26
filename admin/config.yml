@@ -6,6 +6,20 @@ backend:
 media_folder: "images"
 public_folder: "/images"
 
+media_libraries:
+  default:
+    config:
+      max_file_size: 15728640
+      slugify_filename: true
+      transformations:
+        raster_image:
+          format: webp
+          quality: 88
+          width: 2400
+          height: 2400
+        svg:
+          optimize: true
+
 collections:
   - name: "stories"
     label: "Stories (深度文章)"
@@ -28,7 +42,7 @@ collections:
               - label: "封面图"
                 name: "image"
                 widget: "image"
-                hint: "建议横向 16:9、约 1600×900 px，优先使用高清 JPG/WebP。文件建议不超过 10 MB。重要内容不要贴近图片边缘，前端会保持比例展示。"
+                hint: "建议横向 16:9，约 1600×900 px。原始文件最大约 15 MB。需要选图？[打开 Unsplash 图片库](https://unsplash.com/)，下载合适图片后，点击本字段的上传控件，从电脑上传本地文件；无需 API Key。新上传的图片会适度压缩并转成 WebP。"
               - label: "话题标签"
                 name: "tags"
                 widget: "select"
@@ -37,7 +51,7 @@ collections:
               - label: "正文内容（支持标题、加粗、列表、链接和多张图片）"
                 name: "body"
                 widget: "markdown"
-                hint: "可以在正文中插入多张图片。建议图片宽度约 1200–1800 px；不要上传模糊的小图，也不要为了适配页面而手动拉伸图片。先从 Unsplash 等来源选择并下载合适图片，再通过图片上传控件上传本地文件。"
+                hint: "正文可以插入多个标题、加粗文字、列表、链接和图片。图片建议宽度约 1200–1800 px，保持原始比例。需要配图？[打开 Unsplash 图片库](https://unsplash.com/)，下载图片后使用正文编辑器的图片功能上传本地文件；无需 API Key。"
 
   - name: "events"
     label: "Events (展会预告与回顾)"
@@ -63,7 +77,7 @@ collections:
               - label: "展会封面图"
                 name: "cover"
                 widget: "image"
-                hint: "建议横向 16:9、约 1600×900 px。优先使用清晰的展台、产品演示或现场照片，避免低分辨率截图。"
+                hint: "建议横向 16:9，约 1600×900 px。优先选择清晰的展台、产品演示或现场照片。需要选图？[打开 Unsplash 图片库](https://unsplash.com/)，下载后通过本字段上传本地文件；无需 API Key。新上传的图片会适度压缩并转成 WebP。"
               - label: "展会图片（可选）"
                 name: "gallery"
                 widget: "list"
@@ -73,4 +87,3 @@ collections:
                   name: "image"
                   widget: "image"
               - { label: "官方活动网址（可选）", name: "url", widget: "string", required: false, hint: "请填写完整的 https:// 链接；留空时网站不会显示外部链接。" }
-
