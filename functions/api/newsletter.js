@@ -8,6 +8,6 @@ export async function onRequestPost({ request, env }) {
     env,
     envKey: 'NEWSLETTER_APPS_SCRIPT_URL',
     allowedFields: ALLOWED_FIELDS,
-    requiredFields: ['email', 'submission_id']
+    requiredFields: ['email']
   });
 }
