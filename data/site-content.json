@@ -33,7 +33,7 @@
   "newsroom": {
     "sidebar_overview": "Overview",
     "sidebar_stories": "Stories",
-    "sidebar_events": "Events",
+    "sidebar_events": "Trade Shows",
     "sidebar_social": "Social Media",
     "sidebar_media": "Media",
     "overview_title": "Corporate Newsroom",
@@ -49,7 +49,7 @@
         "image_alt": "Industrial vision stories"
       },
       "events": {
-        "title": "Events",
+        "title": "Trade Shows",
         "image": "images/event-1.jpg",
         "image_alt": "Industrial automation trade show"
       },
@@ -61,12 +61,12 @@
     },
     "stories_title": "Explore our stories",
     "stories_intro": "Product updates, application insights, customer stories and company news.",
-    "events_title": "Trade Shows & Events",
-    "events_intro": "Meet our team at upcoming exhibitions, or explore highlights and technical stories from past events.",
-    "events_upcoming_tab": "Upcoming Events",
-    "events_past_tab": "Past Events & Reports",
-    "events_year_label": "Filter by year",
-    "events_visit_link": "Visit event website",
+    "events_title": "Trade Shows",
+    "events_intro": "Meet our team at upcoming trade shows, or explore highlights from past exhibitions.",
+    "events_upcoming_tab": "Upcoming Trade Shows",
+    "events_past_tab": "Past Trade Shows",
+    "events_year_label": "Filter past trade shows by year",
+    "events_visit_link": "Visit trade show website",
     "social_title": "Follow us",
     "social_disclaimer_lead": "Learning & portfolio notice:",
     "social_disclaimer_text": "DEF Company is a fictional project created only for learning and portfolio presentation. The social media cards on this page are examples, not official DEF Company accounts. The photos are from ",
@@ -74,7 +74,12 @@
     "media_disclaimer_lead": "Learning & portfolio notice:",
     "media_disclaimer_text": "This Media Contacts page is a fictional example for learning and portfolio presentation. All names, job titles, and email addresses shown here are made up and do not refer to real media contacts. The portrait photos are from ",
     "image_source_label": "Unsplash",
-    "image_source_url": "https://unsplash.com/"
+    "image_source_url": "https://unsplash.com/",
+    "events_upcoming_heading": "Upcoming Trade Shows",
+    "events_past_heading": "Past Trade Shows",
+    "events_unknown_heading": "Trade Shows — Dates to Be Confirmed",
+    "stories_back_button": "← Back to Stories",
+    "events_back_button": "← Back to Trade Shows"
   },
   "contact": {
     "title": "Contact Sales",
