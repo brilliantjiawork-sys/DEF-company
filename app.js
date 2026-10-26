@@ -58,6 +58,66 @@ function track(eventName, params) {
     window.dataLayer.push(Object.assign({ event: eventName }, params || {}));
 }
 
+// Form tracking fields sent to the server-side endpoint and the Google Sheets script.
+const DEF_ATTRIBUTION_KEY = 'def_utm_attribution_v1';
+function defGetAttributionFields() {
+    const keys = ['utm_source', 'utm_medium', 'utm_campaign'];
+    let stored = { first: {}, latest: {} };
+    try {
+        const saved = JSON.parse(localStorage.getItem(DEF_ATTRIBUTION_KEY) || 'null');
+        if (saved && saved.first && saved.latest) stored = saved;
+    } catch (_) {}
+
+    const params = new URLSearchParams(window.location.search);
+    let hasCurrentUtm = false;
+    keys.forEach((key) => {
+        const value = (params.get(key) || '').trim().slice(0, 200);
+        if (!value) return;
+        hasCurrentUtm = true;
+        if (!stored.first[key]) stored.first[key] = value;
+        stored.latest[key] = value;
+    });
+    if (hasCurrentUtm) {
+        try { localStorage.setItem(DEF_ATTRIBUTION_KEY, JSON.stringify(stored)); } catch (_) {}
+    }
+
+    const result = {};
+    keys.forEach((key) => {
+        const shortName = key.replace('utm_', '');
+        result['first_utm_' + shortName] = (stored.first[key] || '').slice(0, 200);
+        result['latest_utm_' + shortName] = (stored.latest[key] || '').slice(0, 200);
+    });
+    return result;
+}
+
+function defNewSubmissionId() {
+    const randomPart = (window.crypto && typeof window.crypto.randomUUID === 'function')
+        ? window.crypto.randomUUID()
+        : (Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 12));
+    return 'def-' + randomPart;
+}
+
+function defAddSubmissionFields(data, leadSource) {
+    data.set('submission_id', defNewSubmissionId());
+    if (leadSource) data.set('lead_source', leadSource);
+    const attribution = defGetAttributionFields();
+    Object.keys(attribution).forEach((key) => data.set(key, attribution[key]));
+    return data;
+}
+
+async function defPostForm(endpoint, body) {
+    if (typeof endpoint !== 'string' || !endpoint.startsWith('/api/')) {
+        throw new Error('Form endpoint is not configured.');
+    }
+    const response = await fetch(endpoint, { method: 'POST', body });
+    let payload = null;
+    try { payload = await response.json(); } catch (_) {}
+    if (!response.ok || !payload || payload.ok !== true) {
+        throw new Error((payload && payload.code) || 'submission_failed');
+    }
+    return payload;
+}
+
 // ==========================================
 // 加载 CMS 内容
 // ==========================================
@@ -659,30 +719,31 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     initCookieConsent();
 
-    // Contact Sales / Book a Demo 表单（同一张表）
+    // Contact Sales / Book a Demo：只有后端确认成功写入 Google Sheets，才显示成功状态并追踪线索事件。
     const contactForm = document.getElementById('detailed-contact-form');
     if (contactForm) {
-        contactForm.addEventListener('submit', function(e) {
+        contactForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             const btn = this.querySelector('button[type="submit"]');
-            if(btn) { btn.innerText = 'Submitting...'; btn.disabled = true; }
+            const originalText = btn ? btn.innerText : 'Submit Inquiry';
+            if (btn) { btn.innerText = 'Submitting...'; btn.disabled = true; }
 
-            fetch(SITE_CONFIG.contactUrl, { method: 'POST', mode: 'no-cors', body: new FormData(this) })
-            .then(() => {
-                // 线索事件：高意向
+            try {
+                const formData = defAddSubmissionFields(new FormData(this), currentLeadSource);
+                await defPostForm(SITE_CONFIG.contactEndpoint, formData);
                 track('generate_lead', { form_id: 'contact_sales_form', lead_source: currentLeadSource });
                 document.getElementById('form-container-box').style.display = 'none';
                 document.getElementById('success-screen').style.display = 'block';
-                window.scrollTo(0,0);
-            }, () => {
-                // 网络失败：恢复按钮，别让用户卡在 "Submitting..."
-                if(btn) { btn.innerText = 'Submit Inquiry'; btn.disabled = false; }
-                alert('Network error. Please try again.');
-            });
+                window.scrollTo(0, 0);
+            } catch (err) {
+                console.error('Contact form submission failed:', err);
+                if (btn) { btn.innerText = originalText; btn.disabled = false; }
+                alert('Your inquiry was not confirmed. Please try again.');
+            }
         });
     }
 
-    // Newsletter 表单
+    // Newsletter：只有后端确认写入 Google Sheets，才显示成功状态并追踪订阅事件。
     const newsForm = document.getElementById('newsletter-form');
     if (newsForm) {
         newsForm.addEventListener('submit', async function(e) {
@@ -690,16 +751,19 @@ document.addEventListener("DOMContentLoaded", () => {
             const email = document.getElementById('nl-email').value.trim();
             if (!email) return;
             const btn = this.querySelector('button');
-            if(btn) { btn.innerText = 'Subscribing...'; btn.disabled = true; }
+            const originalText = btn ? btn.innerText : 'Subscribe';
+            if (btn) { btn.innerText = 'Subscribing...'; btn.disabled = true; }
 
             try {
-                await fetch(SITE_CONFIG.newsletterUrl, { method: 'POST', body: new URLSearchParams({ email }), mode: 'no-cors' });
+                const payload = defAddSubmissionFields(new URLSearchParams({ email }), 'newsletter');
+                await defPostForm(SITE_CONFIG.newsletterEndpoint, payload);
             } catch (err) {
-                if(btn) { btn.innerText = 'Subscribe'; btn.disabled = false; }
-                alert('Network error. Please try again.');
+                console.error('Newsletter submission failed:', err);
+                if (btn) { btn.innerText = originalText; btn.disabled = false; }
+                alert('Your subscription was not confirmed. Please try again.');
                 return;
             }
-            // 订阅事件：低意向
+
             track('newsletter_signup', { form_id: 'newsletter_form' });
             document.getElementById('nl-form-container').style.display = 'none';
             document.getElementById('nl-success-box').style.display = 'block';
