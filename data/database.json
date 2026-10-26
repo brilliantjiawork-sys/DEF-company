@@ -1,14 +1,3 @@
 {
-  "articles": [
-    {
-      "title": "Vision Expo 2025: A Milestone in AI-Driven Quality Control",
-      "date": "2026-10-23T04:54:00",
-      "image": "/images/social-youtube.jpg",
-      "tags": [
-        "AI Vision",
-        "Automation"
-      ],
-      "body": " **A Record-Breaking Event**\n\n![onsite at the exhibition](/images/event-3.jpg)\n\nThe Vision Expo 2025 in Stuttgart was a tremendous success for DEF Company. We welcomed over \\*\\*500 industry professionals\\*\\* to our booth to discuss the future of automated inspection.\n\n**Showcasing the X1 Smart Camera**\n\nOur highlight of the event was the live demonstration of the new X1 Smart Camera. Visitors were impressed by its ability to process 10,000 frames per second.\n\n **Key Highlights:**\n\n- Real-time Defect Detection:\\*\\* Showcased flaw detection as small as 0.1mm.\n- Seamless Integration:\\*\\* Demonstrated plug-and-play compatibility with major PLC networks.\n- Predictive Analytics:\\*\\* Introduced our new dashboard for predictive maintenance.\n\n**What's Next?**\n\nMissed us at the show? Don't worry. We will be attending Automate 2026 in Detroit this coming November. Stay tuned for more updates on our upcoming trade shows!"
-    }
-  ]
+  "articles": []
 }

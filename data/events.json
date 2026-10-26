@@ -1,28 +1,78 @@
 {
   "exhibitions": [
     {
+      "content_type": "announcement",
       "title": "Automate 2026",
-      "year": "2026",
-      "date": "Nov 12-15, 2026",
+      "start_date": "2026-11-12",
+      "end_date": "2026-11-15",
+      "booth": "#4022",
       "loc": "Detroit, MI",
-      "desc": "Booth #4022 | Live demonstrations of our latest AI-driven inspection systems.",
-      "cover": "/images/event-1.jpg"
+      "theme": "AI-driven inspection systems",
+      "desc": "Live demonstrations of our latest AI-driven inspection systems.",
+      "tags": [
+        "Trade Shows & Exhibitions",
+        "Product Demonstrations",
+        "AI Vision",
+        "Automation"
+      ],
+      "cover": "/images/event-1.jpg",
+      "url": ""
     },
     {
+      "content_type": "announcement",
       "title": "Vision Expo 2026",
-      "year": "2026",
-      "date": "Dec 05-08, 2026",
+      "start_date": "2026-12-05",
+      "end_date": "2026-12-08",
+      "booth": "",
       "loc": "Stuttgart, Germany",
-      "desc": "Join us to explore next-gen industrial camera solutions for European manufacturers.",
-      "cover": "/images/event-2.jpg"
+      "theme": "Industrial camera solutions",
+      "desc": "Join us to explore next-generation industrial camera solutions for European manufacturers.",
+      "tags": [
+        "Trade Shows & Exhibitions",
+        "Product Demonstrations",
+        "Machine Vision"
+      ],
+      "cover": "/images/event-2.jpg",
+      "url": ""
     },
     {
+      "content_type": "announcement",
       "title": "Automate 2027",
-      "year": "2027",
-      "date": "May 10-13, 2027",
+      "start_date": "2027-05-10",
+      "end_date": "2027-05-13",
+      "booth": "",
       "loc": "Chicago, IL",
+      "theme": "Ultra-compact smart cameras",
       "desc": "Showcasing our first generation of ultra-compact smart cameras.",
-      "cover": "/images/event-3.jpg"
+      "tags": [
+        "Trade Shows & Exhibitions",
+        "New Product Launch",
+        "Machine Vision"
+      ],
+      "cover": "/images/event-3.jpg",
+      "url": ""
+    },
+    {
+      "content_type": "report",
+      "title": "Vision Expo 2025: A Milestone in AI-Driven Quality Control",
+      "event_year": "2025",
+      "published_date": "2026-10-23",
+      "start_date": "",
+      "end_date": "",
+      "loc": "Stuttgart, Germany",
+      "booth": "",
+      "theme": "AI-driven quality control",
+      "summary": "A recap of DEF Company’s fictional Vision Expo 2025 showcase, including the X1 Smart Camera demonstration and automated inspection applications.",
+      "tags": [
+        "Trade Shows & Exhibitions",
+        "Product Demonstrations",
+        "AI Vision",
+        "Automation"
+      ],
+      "cover": "/images/event-3.jpg",
+      "body": "## A Record-Breaking Event\n\n![Onsite at the exhibition](/images/event-3.jpg)\n\nThe Vision Expo 2025 in Stuttgart was a tremendous success for DEF Company. We welcomed over **500 industry professionals** to our booth to discuss the future of automated inspection.\n\n## Showcasing the X1 Smart Camera\n\nOur highlight of the event was the live demonstration of the new X1 Smart Camera. Visitors were impressed by its ability to process 10,000 frames per second.\n\n## Key Highlights\n\n- **Real-time Defect Detection:** Showcased flaw detection as small as 0.1 mm.\n- **Seamless Integration:** Demonstrated plug-and-play compatibility with major PLC networks.\n- **Predictive Analytics:** Introduced our new dashboard for predictive maintenance.\n\n## What’s Next?\n\nMissed us at the show? We will be attending Automate 2026 in Detroit this coming November. Stay tuned for more updates on our upcoming trade shows!",
+      "gallery": [],
+      "url": ""
     }
   ]
 }
