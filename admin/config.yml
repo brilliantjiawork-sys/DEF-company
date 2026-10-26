@@ -6,8 +6,7 @@ backend:
 media_folder: "images"
 public_folder: "/images"
 
-# Store images in the GitHub repository. Do not impose a file-size or pixel-dimension limit.
-# New raster images are converted to WebP to reduce website payload; original aspect ratio is kept.
+# Only use files stored in this repository. Do not add third-party stock libraries.
 media_libraries:
   default:
     config:
@@ -22,40 +21,235 @@ media_libraries:
     providers: []
 
 collections:
+  - name: "site-content"
+    label: "Website Content — 网站文案与图片"
+    description: "维护首页、Newsroom、表单说明和 Cookie 文案，以及首页与栏目卡片图片。一般运营更新内容无需修改 HTML。"
+    files:
+      - file: "data/site-content.json"
+        name: "site_content"
+        label: "页面文案与图片"
+        format: "json"
+        editor:
+          preview: false
+        fields:
+          - label: "品牌信息"
+            name: "brand"
+            widget: "object"
+            fields:
+              - { label: "浏览器页面标题", name: "page_title", widget: "string", required: true }
+              - { label: "品牌名称", name: "name", widget: "string", required: true }
+              - { label: "品牌标语", name: "tagline", widget: "string", required: false }
+              - { label: "Logo 图片（Browse 上传本地图片）", name: "logo", widget: "image", choose_url: false, required: false }
+              - { label: "Logo 替代文本", name: "logo_alt", widget: "string", required: false }
+          - label: "导航栏文字"
+            name: "navigation"
+            widget: "object"
+            fields:
+              - { label: "首页", name: "home", widget: "string" }
+              - { label: "产品", name: "products", widget: "string" }
+              - { label: "解决方案", name: "solutions", widget: "string" }
+              - { label: "支持", name: "support", widget: "string" }
+              - { label: "Newsroom", name: "newsroom", widget: "string" }
+              - { label: "联系销售按钮", name: "contact_sales", widget: "string" }
+          - label: "首页 — 主视觉与订阅区"
+            name: "home"
+            widget: "object"
+            fields:
+              - { label: "主标题", name: "hero_title", widget: "string", required: true }
+              - { label: "主标题下的说明", name: "hero_description", widget: "text", required: true }
+              - { label: "主按钮文字", name: "hero_button", widget: "string", required: true }
+              - { label: "主视觉图片（Browse 上传本地图片）", name: "hero_image", widget: "image", choose_url: false, required: false }
+              - { label: "主视觉图片替代文本", name: "hero_image_alt", widget: "string", required: false }
+              - { label: "订阅区图片（Browse 上传本地图片）", name: "newsletter_image", widget: "image", choose_url: false, required: false }
+              - { label: "订阅区图片替代文本", name: "newsletter_image_alt", widget: "string", required: false }
+              - { label: "订阅区图片说明", name: "newsletter_image_caption", widget: "text", required: false }
+              - { label: "订阅区标题", name: "newsletter_title", widget: "string", required: true }
+              - { label: "订阅区说明", name: "newsletter_description", widget: "text", required: true }
+              - { label: "邮箱输入框提示", name: "newsletter_email_placeholder", widget: "string", required: true }
+              - { label: "订阅按钮文字", name: "newsletter_button", widget: "string", required: true }
+              - { label: "订阅成功后标题", name: "newsletter_success_title", widget: "string", required: true }
+              - { label: "订阅成功后说明", name: "newsletter_success_description", widget: "text", required: true }
+          - label: "Newsroom — 栏目与栏目卡片"
+            name: "newsroom"
+            widget: "object"
+            fields:
+              - { label: "侧边栏：Overview", name: "sidebar_overview", widget: "string" }
+              - { label: "侧边栏：Stories", name: "sidebar_stories", widget: "string" }
+              - { label: "侧边栏：Events", name: "sidebar_events", widget: "string" }
+              - { label: "侧边栏：Social Media", name: "sidebar_social", widget: "string" }
+              - { label: "侧边栏：Media", name: "sidebar_media", widget: "string" }
+              - { label: "Newsroom 总标题", name: "overview_title", widget: "string" }
+              - label: "Overview 卡片 — Social Media"
+                name: "overview_cards"
+                widget: "object"
+                fields:
+                  - label: "Social Media 卡片"
+                    name: "social"
+                    widget: "object"
+                    fields:
+                      - { label: "卡片标题", name: "title", widget: "string" }
+                      - { label: "卡片图片（Browse 上传本地图片）", name: "image", widget: "image", choose_url: false }
+                      - { label: "图片替代文本", name: "image_alt", widget: "string", required: false }
+                  - label: "Stories 卡片"
+                    name: "stories"
+                    widget: "object"
+                    fields:
+                      - { label: "卡片标题", name: "title", widget: "string" }
+                      - { label: "卡片图片（Browse 上传本地图片）", name: "image", widget: "image", choose_url: false }
+                      - { label: "图片替代文本", name: "image_alt", widget: "string", required: false }
+                  - label: "Events 卡片"
+                    name: "events"
+                    widget: "object"
+                    fields:
+                      - { label: "卡片标题", name: "title", widget: "string" }
+                      - { label: "卡片图片（Browse 上传本地图片）", name: "image", widget: "image", choose_url: false }
+                      - { label: "图片替代文本", name: "image_alt", widget: "string", required: false }
+                  - label: "Media 卡片"
+                    name: "media"
+                    widget: "object"
+                    fields:
+                      - { label: "卡片标题", name: "title", widget: "string" }
+                      - { label: "卡片图片（Browse 上传本地图片）", name: "image", widget: "image", choose_url: false }
+                      - { label: "图片替代文本", name: "image_alt", widget: "string", required: false }
+              - { label: "Stories 页面标题", name: "stories_title", widget: "string" }
+              - { label: "Stories 页面介绍", name: "stories_intro", widget: "text" }
+              - { label: "Events 页面标题", name: "events_title", widget: "string" }
+              - { label: "Events 页面介绍", name: "events_intro", widget: "text" }
+              - { label: "Events：未来展会切换标签", name: "events_upcoming_tab", widget: "string" }
+              - { label: "Events：历史展会与报道切换标签", name: "events_past_tab", widget: "string" }
+              - { label: "历史展会年份筛选提示", name: "events_year_label", widget: "string" }
+              - { label: "展会详情的外链按钮文字", name: "events_visit_link", widget: "string" }
+              - { label: "Social Media 页面标题", name: "social_title", widget: "string" }
+              - { label: "Social Media 免责声明开头", name: "social_disclaimer_lead", widget: "string" }
+              - { label: "Social Media 免责声明正文", name: "social_disclaimer_text", widget: "text" }
+              - { label: "Media Contacts 页面标题", name: "media_title", widget: "string" }
+              - { label: "Media Contacts 免责声明开头", name: "media_disclaimer_lead", widget: "string" }
+              - { label: "Media Contacts 免责声明正文", name: "media_disclaimer_text", widget: "text" }
+              - { label: "图片来源名称", name: "image_source_label", widget: "string" }
+              - { label: "图片来源网址", name: "image_source_url", widget: "string", hint: "例如 https://unsplash.com/" }
+          - label: "Contact Sales — 表单与成功提示文字"
+            name: "contact"
+            widget: "object"
+            fields:
+              - { label: "表单标题", name: "title", widget: "string" }
+              - { label: "表单说明", name: "description", widget: "text" }
+              - { label: "Work Email 标签", name: "email_label", widget: "string" }
+              - { label: "First Name 标签", name: "first_name_label", widget: "string" }
+              - { label: "Last Name 标签", name: "last_name_label", widget: "string" }
+              - { label: "Company 标签", name: "company_label", widget: "string" }
+              - { label: "Phone 标签", name: "phone_label", widget: "string" }
+              - { label: "Country/Region 标签", name: "country_label", widget: "string" }
+              - { label: "Postal / Zip Code 标签", name: "zip_code_label", widget: "string" }
+              - { label: "Industry 标签", name: "industry_label", widget: "string" }
+              - { label: "Additional Comments 标签", name: "message_label", widget: "string" }
+              - { label: "国家下拉框提示", name: "country_placeholder", widget: "string" }
+              - { label: "行业下拉框提示", name: "industry_placeholder", widget: "string" }
+              - { label: "留言输入提示", name: "message_placeholder", widget: "string" }
+              - { label: "提交按钮文字", name: "submit_button", widget: "string" }
+              - { label: "提交成功标题", name: "success_title", widget: "string" }
+              - { label: "提交成功说明", name: "success_description", widget: "text" }
+              - { label: "返回首页按钮文字", name: "return_button", widget: "string" }
+          - label: "Cookie 同意提示"
+            name: "cookie"
+            widget: "object"
+            fields:
+              - { label: "标题", name: "title", widget: "string" }
+              - { label: "说明", name: "description", widget: "text" }
+              - { label: "Reject all 按钮", name: "reject_button", widget: "string" }
+              - { label: "Customize 按钮", name: "customize_button", widget: "string" }
+              - { label: "Accept all 按钮", name: "accept_button", widget: "string" }
+              - { label: "必要 Cookie 标题", name: "necessary_title", widget: "string" }
+              - { label: "必要 Cookie 说明", name: "necessary_description", widget: "string" }
+              - { label: "Analytics 标题", name: "analytics_title", widget: "string" }
+              - { label: "Analytics 说明", name: "analytics_description", widget: "string" }
+              - { label: "Marketing 标题", name: "marketing_title", widget: "string" }
+              - { label: "Marketing 说明", name: "marketing_description", widget: "string" }
+              - { label: "保存 Cookie 设置按钮", name: "save_button", widget: "string" }
+              - { label: "重新打开 Cookie 设置", name: "reopen_button", widget: "string" }
+
+  - name: "social-media"
+    label: "Social Media — 社交媒体渠道"
+    description: "在这里维护社交平台名称、简介、链接和展示图片。第一个启用的渠道显示为主卡片，其余显示为小卡片。"
+    files:
+      - file: "data/social-media.json"
+        name: "social_media"
+        label: "社交媒体渠道列表"
+        format: "json"
+        editor:
+          preview: false
+        fields:
+          - label: "社交媒体渠道（已填项目默认折叠，点击标题编辑）"
+            name: "channels"
+            widget: "list"
+            label_singular: "添加社交媒体渠道"
+            collapsed: auto
+            minimize_collapsed: auto
+            add_to_top: true
+            summary: "{{platform}}"
+            thumbnail: "image"
+            fields:
+              - { label: "平台名称", name: "platform", widget: "select", options: ["LinkedIn", "YouTube", "Facebook", "Instagram", "X", "Other"], required: true }
+              - { label: "平台简介", name: "description", widget: "text", required: true }
+              - { label: "平台主页链接（完整 https:// 地址）", name: "url", widget: "string", required: true }
+              - { label: "按钮文字", name: "button_text", widget: "string", required: true }
+              - { label: "展示图片（Browse 上传本地图片）", name: "image", widget: "image", choose_url: false, required: true }
+              - { label: "图片替代文本", name: "image_alt", widget: "string", required: false }
+              - { label: "在网站显示", name: "active", widget: "boolean", default: true }
+
+  - name: "media-contacts"
+    label: "Media Contacts — 媒体联系人"
+    description: "联系人姓名、职位、邮箱、头像都在这里维护。修改已发布内容后保存即可更新网站，不需要修改 HTML。"
+    files:
+      - file: "data/media-contacts.json"
+        name: "media_contacts"
+        label: "媒体联系人列表"
+        format: "json"
+        editor:
+          preview: false
+        fields:
+          - label: "媒体联系人（已填项目默认折叠，点击标题编辑）"
+            name: "contacts"
+            widget: "list"
+            label_singular: "添加媒体联系人"
+            collapsed: auto
+            minimize_collapsed: auto
+            add_to_top: true
+            summary: "{{name}} · {{title}}"
+            thumbnail: "portrait"
+            fields:
+              - { label: "姓名（虚构示例）", name: "name", widget: "string", required: true }
+              - { label: "职位（虚构示例）", name: "title", widget: "string", required: true }
+              - { label: "邮箱（虚构示例）", name: "email", widget: "string", required: true }
+              - { label: "头像（Browse 上传本地图片）", name: "portrait", widget: "image", choose_url: false, required: true }
+              - { label: "头像替代文本", name: "portrait_alt", widget: "string", required: false }
+              - { label: "在网站显示", name: "active", widget: "boolean", default: true }
+
   - name: "stories"
     label: "Stories — 深度文章"
-    description: "用于产品技术、应用场景、客户案例和行业洞察等完整文章。已填写的文章默认折叠；点标题即可展开编辑。"
+    description: "用于产品技术、应用场景、客户案例和行业洞察。已发布文章可重新展开编辑；新文章排在最前面。"
     files:
       - file: "data/database.json"
         label: "文章列表"
         name: "stories_list"
+        format: "json"
         editor:
           preview: false
         fields:
-          - label: "文章"
+          - label: "文章（已填文章默认折叠；点击标题展开编辑）"
             name: "articles"
             widget: "list"
-            label_singular: "添加一篇文章"
+            label_singular: "添加一篇深度文章"
             collapsed: auto
             minimize_collapsed: auto
             add_to_top: true
             summary: "{{title}} · {{date}}"
-            hint: "新增文章请点击下方“添加一篇文章”。已发布的文章会折叠起来；点标题展开即可编辑。"
+            thumbnail: "image"
             fields:
               - { label: "文章标题（必填）", name: "title", widget: "string", required: true }
               - { label: "发布日期（必填）", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true }
-              - label: "文章摘要（可选）"
-                name: "summary"
-                widget: "text"
-                required: false
-                hint: "用 1–3 句话说明这篇文章能帮读者了解什么。它会显示在文章列表标题下；留空就不显示。"
-              - label: "封面图（可选，点击 Browse 从电脑上传）"
-                name: "image"
-                widget: "image"
-                choose_url: false
-                required: false
-                hint: "从电脑本地选择图片即可。建议使用清晰的横向图片；没有强制像素尺寸或文件大小限制。新图片会自动转为 WebP 以减小体积。"
-              - label: "文章话题（可多选）"
+              - { label: "文章摘要（可选）", name: "summary", widget: "text", required: false, hint: "1–3 句话概括文章价值。它会显示在文章卡片和正文标题下，留空则不显示。" }
+              - { label: "封面图（可选，Browse 上传本地图片）", name: "image", widget: "image", choose_url: false, required: false }
+              - label: "文章话题（可多选；不包含展会话题）"
                 name: "tags"
                 widget: "select"
                 multiple: true
@@ -69,45 +263,47 @@ collections:
                   - "Industry Insights"
                   - "AI Vision"
                   - "Automation"
-              - label: "正文（可插入图片）"
+              - label: "正文（支持标题、段落、列表、链接和多张图片）"
                 name: "body"
                 widget: "markdown"
                 required: true
                 linked_images: false
-                hint: "在正文编辑器工具栏中插入图片，或先把图片下载到电脑再上传。图片替代文本用于无障碍阅读；正文图片不需要设置跳转链接。"
+                hint: "用正文编辑器工具栏插入图片；图片的替代文本用于无障碍阅读，不需要另设跳转链接。"
 
   - name: "events"
     label: "Events — 展会预告与报道"
-    description: "点击添加展会后，选择“展会预告（短卡片）”或“展会报道（完整文章）”。旧项目默认折叠，新建空项目会展开。"
+    description: "创建时选择一种编辑表单：未来展会使用‘预告短卡片’，已参加展会使用‘完整报道文章’。已有项目可打开后继续编辑。"
     files:
       - file: "data/events.json"
-        label: "展会列表"
+        label: "展会内容列表"
         name: "events_list"
+        format: "json"
         editor:
           preview: false
         fields:
-          - label: "展会项目"
+          - label: "展会内容（已填项目默认折叠；点击标题展开编辑）"
             name: "exhibitions"
             widget: "list"
-            label_singular: "添加一个展会项目"
+            label_singular: "添加一个展会内容"
             collapsed: auto
             minimize_collapsed: auto
             add_to_top: true
             summary: "{{title}}"
-            hint: "点击下方添加项目，然后选择一种形式：预告用于未来展会；报道用于已经参加的展会长文。已填项目默认折叠，点击标题编辑。"
+            thumbnail: "cover"
             typeKey: "content_type"
+            hint: "选择‘展会预告’管理展位、日期和到访信息；选择‘展会报道’撰写完整文章。"
             types:
               - name: "announcement"
-                label: "展会预告（短卡片）"
+                label: "展会预告 — 短卡片"
                 summary: "{{title}} · 预告"
                 fields:
                   - { label: "展会名称（必填）", name: "title", widget: "string", required: true }
                   - { label: "开始日期（必填）", name: "start_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true }
                   - { label: "结束日期（必填）", name: "end_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true }
                   - { label: "地点（城市、国家/地区）", name: "loc", widget: "string", required: true }
-                  - { label: "展位号（没有确定可留空）", name: "booth", widget: "string", required: false, hint: "例如 Hall 4, Booth 4A12。留空时网站显示 To be confirmed。" }
+                  - { label: "展位号（未确定可留空）", name: "booth", widget: "string", required: false, hint: "例如 Hall 4, Booth 4A12。留空时网页显示 To be confirmed。" }
                   - { label: "展示主题（可选）", name: "theme", widget: "string", required: false }
-                  - { label: "预告简介（必填，1–3 句话）", name: "desc", widget: "text", required: true, hint: "说明会展示什么、适合哪些客户到访。只写确定的信息。" }
+                  - { label: "预告简介（必填，1–3 句话）", name: "desc", widget: "text", required: true, hint: "说明现场展示什么、适合哪些客户到访；只写已确认的信息。" }
                   - label: "展会话题（可多选）"
                     name: "tags"
                     widget: "select"
@@ -122,26 +318,21 @@ collections:
                       - "Machine Vision"
                       - "Automation"
                       - "Quality Inspection"
-                  - label: "展会封面图（可选，点击 Browse 上传本地图片）"
-                    name: "cover"
-                    widget: "image"
-                    choose_url: false
-                    required: false
-                    hint: "建议清晰的横向图片或展会宣传图；没有强制像素尺寸或文件大小限制。新图片会自动转为 WebP。"
-                  - { label: "展会官网 / 注册链接（可选）", name: "url", widget: "string", required: false, hint: "请填写完整的 https:// 链接；留空时不显示外链按钮。" }
+                  - { label: "展会封面图（可选，Browse 上传本地图片）", name: "cover", widget: "image", choose_url: false, required: false }
+                  - { label: "展会官网 / 注册链接（可选）", name: "url", widget: "string", required: false, hint: "完整的 https:// 链接；留空时不显示外链按钮。" }
               - name: "report"
-                label: "展会报道（完整文章）"
+                label: "展会报道 — 完整文章"
                 summary: "{{title}} · 报道"
                 fields:
                   - { label: "文章标题（必填）", name: "title", widget: "string", required: true }
-                  - { label: "展会年份（必填）", name: "event_year", widget: "string", required: true, hint: "填写展会举办年份，例如 2025。用于历史展会按年份筛选。" }
+                  - { label: "展会年份（必填）", name: "event_year", widget: "string", required: true, hint: "例如 2025，用于历史展会按年份筛选。" }
                   - { label: "文章发布日期（必填）", name: "published_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true }
-                  - { label: "展会开始日期（知道准确日期时填写）", name: "start_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
-                  - { label: "展会结束日期（知道准确日期时填写）", name: "end_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
+                  - { label: "展会开始日期（可选）", name: "start_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
+                  - { label: "展会结束日期（可选）", name: "end_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
                   - { label: "地点（城市、国家/地区）", name: "loc", widget: "string", required: false }
-                  - { label: "展位号（不知道可留空）", name: "booth", widget: "string", required: false }
+                  - { label: "展位号（可选）", name: "booth", widget: "string", required: false }
                   - { label: "展会主题（可选）", name: "theme", widget: "string", required: false }
-                  - { label: "文章摘要（可选，1–3 句话）", name: "summary", widget: "text", required: false, hint: "简要说明文章亮点；显示在历史展会卡片上。" }
+                  - { label: "文章摘要（可选）", name: "summary", widget: "text", required: false, hint: "1–3 句话概括展会报道亮点；显示在历史展会卡片上。" }
                   - label: "展会话题（可多选）"
                     name: "tags"
                     widget: "select"
@@ -156,18 +347,13 @@ collections:
                       - "Machine Vision"
                       - "Automation"
                       - "Quality Inspection"
-                  - label: "文章封面图（可选，点击 Browse 上传本地图片）"
-                    name: "cover"
-                    widget: "image"
-                    choose_url: false
-                    required: false
-                    hint: "建议使用清晰的现场、展台或产品演示照片；没有强制像素尺寸或文件大小限制。新图片会自动转为 WebP。"
+                  - { label: "报道封面图（可选，Browse 上传本地图片）", name: "cover", widget: "image", choose_url: false, required: false }
                   - label: "完整报道正文（必填，可插入多张图片）"
                     name: "body"
                     widget: "markdown"
                     required: true
                     linked_images: false
-                    hint: "按完整文章撰写，可加小标题、正文段落和图片。正文图片无需设置跳转链接；请只写实际发生、可以核实的内容。"
+                    hint: "像 Stories 一样撰写完整文章；可用小标题、段落、列表、链接和多张图片。只写有依据的实际内容。"
                   - label: "额外现场图片（可选）"
                     name: "gallery"
                     widget: "list"
@@ -176,8 +362,8 @@ collections:
                     collapsed: true
                     minimize_collapsed: true
                     field:
-                      label: "本地图片（点击 Browse）"
+                      label: "本地图片（Browse 上传）"
                       name: "image"
                       widget: "image"
                       choose_url: false
-                  - { label: "展会官网 / 相关链接（可选）", name: "url", widget: "string", required: false, hint: "请填写完整的 https:// 链接；留空时不显示外链按钮。" }
+                  - { label: "展会官网 / 相关链接（可选）", name: "url", widget: "string", required: false, hint: "完整的 https:// 链接；留空时不显示外链按钮。" }
