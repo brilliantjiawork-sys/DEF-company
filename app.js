@@ -12,6 +12,7 @@ const defMemorySentConversions = new Set();
 let currentLeadSource = 'contact_sales';
 let storiesData = [];
 let eventsData = [];
+let activeStoryFilter = 'All topics';
 
 // ---------- Utility helpers ----------
 function defHasAnalyticsConsent() {
@@ -234,18 +235,62 @@ function switchView(viewId) {
     window.scrollTo(0, 80);
 }
 
-// ---------- Stories rendering ----------
+// ---------- Stories topic filters and rendering ----------
+function defGetStoryTopics() {
+    const topics = new Set();
+    storiesData.forEach((story) => {
+        (Array.isArray(story.tags) ? story.tags : []).forEach((tag) => {
+            const value = defSafeText(tag, 80);
+            if (value) topics.add(value);
+        });
+    });
+    return Array.from(topics).sort((a, b) => a.localeCompare(b));
+}
+
+function renderStoryFilters() {
+    const filterContainer = document.getElementById('stories-filters');
+    if (!filterContainer) return;
+    filterContainer.replaceChildren();
+
+    const topics = ['All topics', ...defGetStoryTopics()];
+    if (!topics.includes(activeStoryFilter)) activeStoryFilter = 'All topics';
+
+    topics.forEach((topic) => {
+        const button = defElement('button', 'story-filter', topic);
+        button.type = 'button';
+        button.setAttribute('aria-pressed', String(topic === activeStoryFilter));
+        if (topic === activeStoryFilter) button.classList.add('is-active');
+        button.addEventListener('click', () => {
+            activeStoryFilter = topic;
+            renderStoryFilters();
+            renderStories();
+        });
+        filterContainer.appendChild(button);
+    });
+}
+
 function renderStories() {
     const container = document.getElementById('stories-list');
     if (!container) return;
     container.replaceChildren();
 
+    const filteredStories = activeStoryFilter === 'All topics'
+        ? storiesData
+        : storiesData.filter((story) =>
+            Array.isArray(story.tags) && story.tags.includes(activeStoryFilter)
+        );
+
     if (!storiesData.length) {
         defShowMessage(container, 'No stories have been published yet. Please check back soon.');
         return;
     }
+    if (!filteredStories.length) {
+        defShowMessage(container, 'No stories match this topic yet. Choose another topic.');
+        return;
+    }
 
-    storiesData.forEach((story, index) => {
+    filteredStories.forEach((story) => {
+        const originalIndex = storiesData.indexOf(story);
         const article = defElement('article', 'list-card story-card');
         article.tabIndex = 0;
         article.setAttribute('role', 'button');
@@ -274,11 +319,11 @@ function renderStories() {
         }
 
         article.append(imageWrap, info);
-        article.addEventListener('click', () => showStoryDetail(index));
+        article.addEventListener('click', () => showStoryDetail(originalIndex));
         article.addEventListener('keydown', (event) => {
             if (event.key === 'Enter' || event.key === ' ') {
                 event.preventDefault();
-                showStoryDetail(index);
+                showStoryDetail(originalIndex);
             }
         });
         container.appendChild(article);
@@ -289,17 +334,13 @@ function showStoryDetail(index) {
     const story = storiesData[index];
     if (!story) return;
 
-    const image = document.getElementById('sd-img');
+    // The cover image is intentionally not repeated on the detail page.
+    // The cover remains visible on the Stories listing; article-body images remain intact.
     const date = document.getElementById('sd-date');
     const title = document.getElementById('sd-title');
     const summary = document.getElementById('sd-summary');
     const body = document.getElementById('sd-body');
 
-    if (image) {
-        image.src = defGetImageUrl(story.image, '/images/story-cover.jpg');
-        image.alt = defSafeText(story.title, 160);
-        image.onerror = () => { image.onerror = null; image.src = '/images/story-cover.jpg'; };
-    }
     if (date) date.textContent = fmtDate(story.date);
     if (title) title.textContent = story.title || 'Untitled story';
     if (summary) {
@@ -389,7 +430,8 @@ function defMakeEventCard(event, status) {
     const location = defSafeText(event.loc || event.location || '', 200);
     if (location) meta.appendChild(defElement('p', '', 'Location: ' + location));
     const booth = defSafeText(event.booth || '', 120);
-    if (booth) meta.appendChild(defElement('p', '', 'Booth: ' + booth));
+    const boothLabel = booth || (status === 'past' ? 'Not listed' : 'To be confirmed');
+    meta.appendChild(defElement('p', '', 'Booth: ' + boothLabel));
     body.appendChild(meta);
 
     const theme = defSafeText(event.theme || '', 250);
@@ -481,6 +523,7 @@ async function loadCloudData() {
         if (!response.ok) throw new Error('Could not load stories data');
         const data = await response.json();
         storiesData = Array.isArray(data.articles) ? data.articles : [];
+        renderStoryFilters();
         renderStories();
     } catch (error) {
         console.error('Stories data could not be loaded.');
