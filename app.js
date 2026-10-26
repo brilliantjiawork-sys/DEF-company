@@ -32,12 +32,12 @@ function openContact(source) {
 
 function switchView(viewId) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-    document.getElementById('view-' + viewId).classList.add('active');
+    const view = document.getElementById('view-' + viewId);
+    if (view) view.classList.add('active');
     document.querySelectorAll('.nr-sidebar a').forEach(a => a.classList.remove('active'));
-    // 文章详情页时，高亮侧边栏的 Stories（原来拼成了 "storys"，找不到）
-    const navKey = (viewId === 'story-detail') ? 'stories' : viewId;
+    const navKey = (viewId === 'story-detail') ? 'stories' : ((viewId === 'event-detail') ? 'events' : viewId);
     const navEl = document.getElementById('nav-' + navKey);
-    if(navEl) navEl.classList.add('active');
+    if (navEl) navEl.classList.add('active');
     window.scrollTo(0, 80);
 }
 
@@ -75,6 +75,15 @@ function defElement(tag, className, text) {
     if (className) element.className = className;
     if (text !== undefined && text !== null) element.textContent = String(text);
     return element;
+}
+
+// Render CMS Markdown only after sanitizing its HTML output. Marked by itself does not sanitize HTML.
+function defRenderMarkdown(markdown) {
+    const source = String(markdown || '');
+    if (window.marked && typeof window.marked.parse === 'function' && window.DOMPurify && typeof window.DOMPurify.sanitize === 'function') {
+        return window.DOMPurify.sanitize(window.marked.parse(source), { USE_PROFILES: { html: true } });
+    }
+    return null;
 }
 
 function defShowMessage(container, message) {
@@ -251,9 +260,9 @@ function showStoryDetail(index) {
 
     if (body) {
         try {
-            body.innerHTML = window.marked && typeof window.marked.parse === 'function'
-                ? window.marked.parse(story.body || '')
-                : defSafeText(story.body || '', 50000);
+            const safeHtml = defRenderMarkdown(story.body || '');
+            if (safeHtml !== null) body.innerHTML = safeHtml;
+            else body.textContent = story.body || '';
         } catch (error) {
             body.textContent = story.body || '';
         }
@@ -261,7 +270,11 @@ function showStoryDetail(index) {
     switchView('story-detail');
 }
 
-// Events read the same start/end-date, recap, gallery and URL fields configured in the CMS.
+// Events: the CMS offers two content types — a short announcement card or a full event report.
+let activeEventsTab = 'upcoming';
+let activeEventFilter = 'All topics';
+let activePastEventYear = 'all';
+
 function defParseLegacyEventRange(value) {
     const text = defSafeText(value, 150);
     const range = text.match(/^([A-Za-z]{3,9})\s+(\d{1,2})\s*[-–]\s*(\d{1,2}),?\s*(\d{4})$/);
@@ -274,7 +287,6 @@ function defParseLegacyEventRange(value) {
     const oneDate = defParseLocalDate(text);
     return { start: oneDate, end: oneDate };
 }
-
 function defGetEventDates(event) {
     let start = defParseLocalDate(event.start_date || '');
     let end = defParseLocalDate(event.end_date || '');
@@ -286,116 +298,294 @@ function defGetEventDates(event) {
     if (!end && start) end = start;
     return { start, end };
 }
-
+function defGetEventType(event) {
+    const type = String(event.content_type || event.type || '').toLowerCase();
+    if (type === 'report' || type === 'story' || event.body || event.recap) return 'report';
+    return 'announcement';
+}
+function defGetEventYear(event) {
+    if (event.event_year) return String(event.event_year);
+    const dates = defGetEventDates(event);
+    if (dates.start) return String(dates.start.getFullYear());
+    if (event.published_date) {
+        const published = defParseLocalDate(event.published_date);
+        if (published) return String(published.getFullYear());
+    }
+    const legacy = String(event.date || event.year || '').match(/\b(20\d{2})\b/);
+    return legacy ? legacy[1] : '';
+}
 function defFormatEventDate(event, dates) {
     if (dates.start && dates.end) {
         if (dates.start.toDateString() === dates.end.toDateString()) return fmtDate(dates.start);
         return fmtDate(dates.start) + ' – ' + fmtDate(dates.end);
     }
-    return defSafeText(event.date || event.year || '', 150);
+    // Legacy explicit date text is retained if present; year-only reports are shown as a year, not as a date.
+    return defSafeText(event.date || '', 150);
 }
-
-function defMakeEventCard(event, status) {
-    const card = defElement('article', 'event-card');
+function defGetBoothLabel(event, status) {
+    const booth = defSafeText(event.booth || '', 120);
+    if (booth) return booth;
+    return status === 'past' ? 'Not listed' : 'To be confirmed';
+}
+function defGetEventUrl(event) {
+    const url = defSafeText(event.url || event.website || '', 1000);
+    return /^https:\/\//i.test(url) ? url : '';
+}
+function defAppendEventTags(container, tags) {
+    const values = Array.isArray(tags) ? tags : [];
+    if (!values.length) return;
+    const wrap = defElement('div', 'story-tags event-card-tags');
+    values.forEach(tag => wrap.appendChild(defElement('span', 'kone-tag', tag)));
+    container.appendChild(wrap);
+}
+function defGetEventCollections() {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const upcoming = [];
+    const past = [];
+    eventsData.forEach((event, index) => {
+        const dates = defGetEventDates(event);
+        const isReport = defGetEventType(event) === 'report';
+        const isPastDate = !!(dates.end && dates.end < today);
+        const item = { event, index, dates, year: defGetEventYear(event) };
+        if (isReport || isPastDate) past.push(item);
+        else upcoming.push(item);
+    });
+    upcoming.sort((a, b) => {
+        const ad = a.dates.start ? a.dates.start.getTime() : Number.MAX_SAFE_INTEGER;
+        const bd = b.dates.start ? b.dates.start.getTime() : Number.MAX_SAFE_INTEGER;
+        return ad - bd;
+    });
+    past.sort((a, b) => {
+        const ad = a.dates.end ? a.dates.end.getTime() : (Number(a.year) || 0);
+        const bd = b.dates.end ? b.dates.end.getTime() : (Number(b.year) || 0);
+        return bd - ad;
+    });
+    return { upcoming, past };
+}
+function setEventsTab(tab) {
+    activeEventsTab = tab === 'past' ? 'past' : 'upcoming';
+    activeEventFilter = 'All topics';
+    document.querySelectorAll('[data-events-tab]').forEach(button => {
+        const active = button.dataset.eventsTab === activeEventsTab;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-selected', String(active));
+    });
+    renderEvents();
+}
+function defMakeEventCard(item, status) {
+    const event = item.event;
+    const isReport = defGetEventType(event) === 'report';
+    const card = defElement('article', 'event-card' + (isReport ? ' is-readable' : ''));
     const imageWrap = defElement('div', 'event-card-image');
     const image = defElement('img');
-    image.src = defGetImageUrl(event.cover, '/images/event-1.jpg');
-    image.alt = defSafeText(event.title, 160);
+    image.src = defGetImageUrl(event.cover || event.image, '/images/event-1.jpg');
+    image.alt = defSafeText(event.title || 'Trade show', 160);
     image.loading = 'lazy';
     image.onerror = () => { image.onerror = null; image.src = '/images/event-1.jpg'; };
     imageWrap.appendChild(image);
 
     const body = defElement('div', 'event-card-body');
-    const statusLabel = status === 'upcoming' ? 'Upcoming' : status === 'past' ? 'Past event' : 'Date to confirm';
+    const statusLabel = status === 'upcoming' ? 'Upcoming exhibition' : 'Past event';
     body.appendChild(defElement('span', 'event-status', statusLabel));
     body.appendChild(defElement('h3', 'event-title', event.title || 'Untitled event'));
 
-    const dates = defGetEventDates(event);
-    const dateLabel = defFormatEventDate(event, dates);
+    // Booth appears before the date/location metadata because it is an important visit-planning detail.
+    const booth = defGetBoothLabel(event, status);
+    body.appendChild(defElement('p', 'event-booth', 'Booth: ' + booth));
+
+    const dateLabel = defFormatEventDate(event, item.dates);
     const meta = defElement('div', 'event-meta');
     if (dateLabel) meta.appendChild(defElement('p', '', 'Date: ' + dateLabel));
+    else if (item.year) meta.appendChild(defElement('p', '', 'Year: ' + item.year));
     const location = defSafeText(event.loc || event.location || '', 200);
     if (location) meta.appendChild(defElement('p', '', 'Location: ' + location));
-    const booth = defSafeText(event.booth || '', 120) || (status === 'past' ? 'Not listed' : 'To be confirmed');
-    meta.appendChild(defElement('p', '', 'Booth: ' + booth));
     body.appendChild(meta);
 
     const theme = defSafeText(event.theme || '', 250);
     if (theme) body.appendChild(defElement('p', 'event-theme', 'Theme: ' + theme));
+    const summary = defSafeText(event.summary || event.desc || event.description || '', 1500);
+    if (summary) body.appendChild(defElement('p', 'event-card-summary', summary));
+    defAppendEventTags(body, event.tags);
 
-    const recap = defSafeText(event.recap || '', 12000);
-    if (recap && window.marked && typeof window.marked.parse === 'function') {
-        const recapNode = defElement('div', 'event-recap');
-        recapNode.innerHTML = window.marked.parse(recap);
-        body.appendChild(recapNode);
-    } else {
-        const description = defSafeText(event.desc || event.description || '', 2500);
-        if (description) body.appendChild(defElement('p', 'event-description', description));
-    }
-
-    if (Array.isArray(event.gallery) && event.gallery.length) {
-        const gallery = defElement('div', 'event-gallery');
-        event.gallery.slice(0, 8).forEach((value, index) => {
-            const imageUrl = typeof value === 'string' ? value : value && (value.image || value.src);
-            const galleryImage = defElement('img');
-            galleryImage.src = defGetImageUrl(imageUrl, '');
-            galleryImage.alt = defSafeText(event.title, 160) + ' - gallery image ' + (index + 1);
-            galleryImage.loading = 'lazy';
-            if (galleryImage.getAttribute('src')) gallery.appendChild(galleryImage);
+    if (isReport) {
+        const readLink = defElement('a', 'event-card-cta', 'Read event report');
+        readLink.href = '#event-report';
+        readLink.addEventListener('click', (clickEvent) => {
+            clickEvent.preventDefault();
+            showEventDetail(item.index);
         });
-        if (gallery.childElementCount) body.appendChild(gallery);
-    }
-
-    const eventUrl = defSafeText(event.url || event.website || '', 1000);
-    if (/^https:\/\//i.test(eventUrl)) {
-        const link = defElement('a', 'event-link', 'Visit event website');
-        link.href = eventUrl;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        body.appendChild(link);
+        body.appendChild(readLink);
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', 'Read event report: ' + defSafeText(event.title, 160));
+        card.addEventListener('click', (clickEvent) => {
+            if (clickEvent.target.closest('a')) return;
+            showEventDetail(item.index);
+        });
+        card.addEventListener('keydown', (keyEvent) => {
+            if (keyEvent.key === 'Enter' || keyEvent.key === ' ') {
+                keyEvent.preventDefault();
+                showEventDetail(item.index);
+            }
+        });
+    } else {
+        const url = defGetEventUrl(event);
+        if (url) {
+            const link = defElement('a', 'event-card-cta', 'Event details & registration');
+            link.href = url;
+            link.target = '_blank';
+            link.rel = 'noopener noreferrer';
+            body.appendChild(link);
+        }
     }
     card.append(imageWrap, body);
     return card;
 }
-
+function defRenderEventFilters(items) {
+    const container = document.getElementById('events-filters');
+    if (!container) return;
+    container.replaceChildren();
+    const tags = new Set();
+    items.forEach(item => {
+        (Array.isArray(item.event.tags) ? item.event.tags : []).forEach(tag => {
+            const text = defSafeText(tag, 80);
+            if (text) tags.add(text);
+        });
+    });
+    const values = ['All topics', ...Array.from(tags).sort((a, b) => a.localeCompare(b))];
+    if (!values.includes(activeEventFilter)) activeEventFilter = 'All topics';
+    values.forEach(value => {
+        const button = defElement('button', 'event-filter' + (activeEventFilter === value ? ' is-active' : ''), value);
+        button.type = 'button';
+        button.setAttribute('aria-pressed', String(activeEventFilter === value));
+        button.addEventListener('click', () => {
+            activeEventFilter = value;
+            renderEvents();
+        });
+        container.appendChild(button);
+    });
+}
+function defUpdatePastYearSelect(pastItems) {
+    const wrapper = document.getElementById('events-year-filter');
+    const select = document.getElementById('events-year-select');
+    if (!wrapper || !select) return;
+    wrapper.hidden = activeEventsTab !== 'past';
+    if (activeEventsTab !== 'past') return;
+    const years = Array.from(new Set(pastItems.map(item => item.year).filter(Boolean))).sort((a, b) => Number(b) - Number(a));
+    const options = [{ value: 'all', label: 'All years' }, ...years.map(year => ({ value: year, label: year }))];
+    select.replaceChildren();
+    options.forEach(optionData => {
+        const option = document.createElement('option');
+        option.value = optionData.value;
+        option.textContent = optionData.label;
+        select.appendChild(option);
+    });
+    if (!options.some(option => option.value === activePastEventYear)) activePastEventYear = 'all';
+    select.value = activePastEventYear;
+}
 function renderEvents() {
     const container = document.getElementById('events-list');
     if (!container) return;
     container.replaceChildren();
     if (!eventsData.length) {
         defShowMessage(container, 'No events have been published yet. Please check back soon.');
+        const filters = document.getElementById('events-filters');
+        if (filters) filters.replaceChildren();
         return;
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const upcoming = [];
-    const past = [];
-    const unknown = [];
-    eventsData.forEach((event) => {
-        const dates = defGetEventDates(event);
-        if (dates.end) {
-            if (dates.end < today) past.push({ event, dates });
-            else upcoming.push({ event, dates });
-        } else {
-            unknown.push({ event, dates });
-        }
-    });
-    upcoming.sort((a, b) => (a.dates.start || new Date(8640000000000000)) - (b.dates.start || new Date(8640000000000000)));
-    past.sort((a, b) => (b.dates.end || 0) - (a.dates.end || 0));
-
-    function addSection(title, list, status) {
-        if (!list.length) return;
-        container.appendChild(defElement('h3', 'events-section-title', title));
-        const grid = defElement('div', 'events-grid');
-        list.forEach((item) => grid.appendChild(defMakeEventCard(item.event, status)));
-        container.appendChild(grid);
+    const { upcoming, past } = defGetEventCollections();
+    defUpdatePastYearSelect(past);
+    let items = activeEventsTab === 'upcoming' ? upcoming : past;
+    if (activeEventsTab === 'past' && activePastEventYear !== 'all') {
+        items = items.filter(item => item.year === activePastEventYear);
     }
-    addSection('Upcoming Global Expos', upcoming, 'upcoming');
-    addSection('Past Events & Highlights', past, 'past');
-    addSection('Events — Dates to Confirm', unknown, 'unknown');
-}
+    defRenderEventFilters(items);
+    if (activeEventFilter !== 'All topics') {
+        items = items.filter(item => Array.isArray(item.event.tags) && item.event.tags.includes(activeEventFilter));
+    }
+    if (!items.length) {
+        defShowMessage(container, activeEventsTab === 'upcoming'
+            ? 'No upcoming exhibitions match this topic yet.'
+            : 'No past event reports match this filter yet.');
+        return;
+    }
 
+    const heading = activeEventsTab === 'upcoming' ? 'Upcoming Exhibitions' : 'Past Events & Reports';
+    container.appendChild(defElement('h3', 'events-section-title', heading));
+    const grid = defElement('div', 'events-grid');
+    items.forEach(item => grid.appendChild(defMakeEventCard(item, activeEventsTab)));
+    container.appendChild(grid);
+}
+function showEventDetail(index) {
+    const event = eventsData[index];
+    if (!event) return;
+    const published = document.getElementById('ed-published-date');
+    const title = document.getElementById('ed-title');
+    const summary = document.getElementById('ed-summary');
+    const meta = document.getElementById('ed-meta');
+    const body = document.getElementById('ed-body');
+    const gallery = document.getElementById('ed-gallery');
+    const urlLink = document.getElementById('ed-url');
+
+    if (published) {
+        const publishedLabel = event.published_date ? 'Published ' + fmtDate(event.published_date) : '';
+        published.textContent = publishedLabel;
+    }
+    if (title) title.textContent = event.title || 'Event report';
+    if (summary) {
+        summary.textContent = defSafeText(event.summary || event.desc || '', 1500);
+        summary.hidden = !summary.textContent;
+    }
+    const tags = document.getElementById('ed-tags');
+    if (tags) {
+        tags.replaceChildren();
+        (Array.isArray(event.tags) ? event.tags : []).forEach(tag => tags.appendChild(defElement('span', 'kone-tag', tag)));
+        tags.hidden = !tags.childElementCount;
+    }
+    if (meta) {
+        meta.replaceChildren();
+        const dates = defGetEventDates(event);
+        const dateLabel = defFormatEventDate(event, dates);
+        if (dateLabel) meta.appendChild(defElement('span', '', 'Event date: ' + dateLabel));
+        else if (defGetEventYear(event)) meta.appendChild(defElement('span', '', 'Event year: ' + defGetEventYear(event)));
+        const location = defSafeText(event.loc || event.location || '', 200);
+        if (location) meta.appendChild(defElement('span', '', 'Location: ' + location));
+        meta.appendChild(defElement('span', '', 'Booth: ' + defGetBoothLabel(event, 'past')));
+        const theme = defSafeText(event.theme || '', 250);
+        if (theme) meta.appendChild(defElement('span', '', 'Theme: ' + theme));
+    }
+    if (body) {
+        const markdown = event.body || event.recap || '';
+        try {
+            const safeHtml = defRenderMarkdown(markdown);
+            if (safeHtml !== null) body.innerHTML = safeHtml;
+            else body.textContent = markdown;
+        } catch (error) {
+            body.textContent = markdown;
+        }
+    }
+    if (gallery) {
+        gallery.replaceChildren();
+        (Array.isArray(event.gallery) ? event.gallery : []).slice(0, 12).forEach((value, indexInGallery) => {
+            const imageUrl = typeof value === 'string' ? value : value && (value.image || value.src);
+            if (!imageUrl) return;
+            const img = defElement('img');
+            img.src = defGetImageUrl(imageUrl, '');
+            img.alt = defSafeText(event.title, 160) + ' — image ' + (indexInGallery + 1);
+            img.loading = 'lazy';
+            img.onerror = () => img.remove();
+            gallery.appendChild(img);
+        });
+    }
+    if (urlLink) {
+        const url = defGetEventUrl(event);
+        urlLink.href = url || '#';
+        urlLink.hidden = !url;
+    }
+    switchView('event-detail');
+}
 // ==========================================
 // Cookie 同意（Consent Mode v2）
 //   Accept all  -> 分析 + 营销 全部同意
@@ -456,6 +646,17 @@ function initCookieConsent() {
 // ==========================================
 document.addEventListener("DOMContentLoaded", () => {
     loadCloudData();
+    document.querySelectorAll('[data-events-tab]').forEach(button => {
+        button.addEventListener('click', () => setEventsTab(button.dataset.eventsTab));
+    });
+    const eventsYearSelect = document.getElementById('events-year-select');
+    if (eventsYearSelect) {
+        eventsYearSelect.addEventListener('change', () => {
+            activePastEventYear = eventsYearSelect.value || 'all';
+            activeEventFilter = 'All topics';
+            renderEvents();
+        });
+    }
     initCookieConsent();
 
     // Contact Sales / Book a Demo 表单（同一张表）

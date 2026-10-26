@@ -17,6 +17,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.17/dist/purify.min.js"></script>
 </head>
 <body>
   <!-- Google Tag Manager (noscript) -->
@@ -87,14 +88,51 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <div class="ov-card" onclick="switchView('media')"><img id="ov-img-media" src="images/media-cover.jpg"><div class="ov-overlay"><h3>Media</h3></div></div>
                     </div>
                 </div>
-                <div id="view-stories" class="view"><h2 class="nr-title">Explore our stories</h2><p class="stories-intro">Product updates, application insights, customer stories and company news.</p><div id="stories-filters" class="stories-filters" aria-label="Filter stories by topic"></div><div id="stories-list"></div></div>
+                <div id="view-stories" class="view">
+                    <h2 class="nr-title">Explore our stories</h2>
+                    <p class="stories-intro">Product updates, application insights, customer stories and company news.</p>
+                    <div id="stories-filters" class="stories-filters" aria-label="Filter stories by topic"></div>
+                    <div id="stories-list"></div>
+                </div>
                 <div id="view-story-detail" class="view">
                     <div class="back-btn" onclick="switchView('stories')">← Back to Stories</div>
                     <div class="detail-layout">
-                        <div class="detail-content"><span id="sd-date" class="detail-date"></span><div id="sd-tags" class="story-tags" hidden></div><h2 id="sd-title" class="detail-title"></h2><p id="sd-summary" class="detail-summary" hidden></p><div id="sd-body" class="detail-text"></div></div>
+                        <div class="detail-content">
+                            <span id="sd-date" class="detail-date"></span>
+                            <div id="sd-tags" class="story-tags" hidden></div>
+                            <h2 id="sd-title" class="detail-title"></h2>
+                            <p id="sd-summary" class="detail-summary" hidden></p>
+                            <div id="sd-body" class="detail-text"></div>
+                        </div>
                     </div>
                 </div>
-                <div id="view-events" class="view"><h2 class="nr-title">Trade Shows & Events</h2><div id="events-list"></div></div>
+                <div id="view-events" class="view">
+                    <h2 class="nr-title">Trade Shows &amp; Events</h2>
+                    <p class="events-intro">Meet our team at upcoming exhibitions, or explore highlights and technical stories from past events.</p>
+                    <div class="events-view-tabs" role="tablist" aria-label="Event views">
+                        <button type="button" class="event-tab is-active" data-events-tab="upcoming" role="tab" aria-selected="true">Upcoming Events</button>
+                        <button type="button" class="event-tab" data-events-tab="past" role="tab" aria-selected="false">Past Events &amp; Reports</button>
+                    </div>
+                    <div id="events-year-filter" class="events-year-filter" hidden>
+                        <label for="events-year-select">Filter by year</label>
+                        <select id="events-year-select"><option value="all">All years</option></select>
+                    </div>
+                    <div id="events-filters" class="events-filters" aria-label="Filter events by topic"></div>
+                    <div id="events-list"></div>
+                </div>
+                <div id="view-event-detail" class="view">
+                    <div class="back-btn" onclick="switchView('events')">← Back to Events</div>
+                    <article class="event-detail-article">
+                        <span id="ed-published-date" class="detail-date"></span>
+                        <div id="ed-tags" class="story-tags" hidden></div>
+                        <h2 id="ed-title" class="detail-title"></h2>
+                        <p id="ed-summary" class="detail-summary" hidden></p>
+                        <div id="ed-meta" class="event-detail-meta"></div>
+                        <div id="ed-body" class="detail-text"></div>
+                        <div id="ed-gallery" class="event-detail-gallery"></div>
+                        <a id="ed-url" class="event-link" hidden target="_blank" rel="noopener noreferrer">Visit event website</a>
+                    </article>
+                </div>
                                <div id="view-social" class="view">
                     <h2 class="nr-title">Follow us</h2>
                     <div class="social-wrapper">
@@ -107,19 +145,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             <div class="social-card"><div class="social-card-img"><img id="social-fb-img" src="images/social-facebook.jpg"><div class="social-logo"><svg viewBox="0 0 24 24"><path d="M22.675 0h-21.35c-.732 0-1.325.593-1.325 1.325v21.351c0 .731.593 1.324 1.325 1.324h11.495v-9.294h-3.128v-3.622h3.128v-2.671c0-3.1 1.893-4.788 4.659-4.788 1.325 0 2.463.099 2.795.143v3.24l-1.918.001c-1.504 0-1.795.715-1.795 1.763v2.313h3.587l-.467 3.622h-3.12v9.293h6.116c.73 0 1.323-.593 1.323-1.325v-21.35c0-.732-.593-1.325-1.325-1.325z" fill="#1877F2"/></svg></div></div><div class="social-card-text"><h4>Facebook</h4><p>Join our global community for the latest updates.</p><a href="https://facebook.com" target="_blank" class="btn-y" style="padding: 8px 16px; font-size: 14px; align-self: flex-start;">Follow</a></div></div>
                         </div>
                     </div>
+                    <div class="social-disclaimer" role="note">
+                        <strong>Learning &amp; portfolio notice:</strong> DEF Company is a fictional brand created for learning and portfolio demonstration. The images in this Social Media section are sourced from <a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>. This is a demonstration page, not an official DEF Company social media page or an endorsement by the platforms shown.
+                    </div>
                 </div>
 
                 <div id="view-media" class="view">
                     <h2 class="nr-title">Media Contacts</h2>
                     <div class="media-grid">
                         <div class="media-card">
-                            <div class="media-card-img-container"><img id="media-img-1" src="images/media-1.jpg"></div>
+                            <div class="media-card-img-container"><img id="media-img-1" src="images/media-1.jpg" alt="Portfolio demonstration portrait"></div>
                             <h4>Jane Doe</h4><p>Senior PR Manager<br>pr@defcompany.com</p>
                         </div>
                         <div class="media-card">
-                            <div class="media-card-img-container"><img id="media-img-2" src="images/media-2.jpg"></div>
+                            <div class="media-card-img-container"><img id="media-img-2" src="images/media-2.jpg" alt="Portfolio demonstration portrait"></div>
                             <h4>Sarah Smith</h4><p>Communications Lead<br>press@defcompany.com</p>
                         </div>
+                    </div>
+                    <div class="media-disclaimer" role="note">
+                        <strong>Learning &amp; portfolio notice:</strong> This page is fictional and is shown only for learning and portfolio demonstration. The names, portraits, job titles, and email addresses are fictional. The portrait photos are sourced from <a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>. This page does not represent real media contacts and is not affiliated with or endorsed by the people pictured.
                     </div>
                 </div>
             </div>
