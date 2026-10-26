@@ -19,17 +19,28 @@ collections:
             widget: "list"
             fields:
               - { label: "文章标题", name: "title", widget: "string" }
-              - { label: "发布日期", name: "date", widget: "datetime" }
-              - { label: "封面图", name: "image", widget: "image" }
+              - { label: "发布日期", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD" }
+              - label: "文章摘要（可选，显示在列表和正文标题下）"
+                name: "summary"
+                widget: "text"
+                required: false
+                hint: "建议 1–3 句话，介绍文章的主要价值；留空时网站会自动隐藏摘要区域。"
+              - label: "封面图"
+                name: "image"
+                widget: "image"
+                hint: "建议横向 16:9、约 1600×900 px，优先使用高清 JPG/WebP。文件建议不超过 10 MB。重要内容不要贴近图片边缘，前端会保持比例展示。"
               - label: "话题标签"
                 name: "tags"
                 widget: "select"
                 multiple: true
                 options: ["AI Vision", "Automation", "Case Study", "Industry Insights"]
-              - { label: "正文内容 (支持多图/多标题)", name: "body", widget: "markdown" }
+              - label: "正文内容（支持标题、加粗、列表、链接和多张图片）"
+                name: "body"
+                widget: "markdown"
+                hint: "可以在正文中插入多张图片。建议图片宽度约 1200–1800 px；不要上传模糊的小图，也不要为了适配页面而手动拉伸图片。先从 Unsplash 等来源选择并下载合适图片，再通过图片上传控件上传本地文件。"
 
   - name: "events"
-    label: "Events (展会活动)"
+    label: "Events (展会预告与回顾)"
     files:
       - file: "data/events.json"
         label: "展会列表"
@@ -40,10 +51,26 @@ collections:
             widget: "list"
             fields:
               - { label: "展会名称", name: "title", widget: "string" }
-              - { label: "年份 (用于分类)", name: "year", widget: "string" }
-              - { label: "展位号 (Booth)", name: "booth", widget: "string" }
-              - { label: "展会主题 (Theme)", name: "theme", widget: "string" }
-              - { label: "具体日期", name: "date", widget: "string" }
-              - { label: "地点", name: "loc", widget: "string" }
-              - { label: "简介详情", name: "desc", widget: "text" }
-              - { label: "列表封面图", name: "cover", widget: "image" }
+              - { label: "开始日期（用于自动分类）", name: "start_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false, hint: "请填写展会实际开始日期；用于Upcoming/Past分类和排序。" }
+              - { label: "结束日期（用于自动分类）", name: "end_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false, hint: "请填写展会实际结束日期。结束日期已过后，网站会自动将展会归入 Past Events。" }
+              - { label: "年份（旧数据兼容，不再单独决定分类）", name: "year", widget: "string", required: false }
+              - { label: "展位号（Booth，可选）", name: "booth", widget: "string", required: false, hint: "例如 Hall 4, Booth 4A12；未知时可留空或填写 To be confirmed。" }
+              - { label: "展会主题（Theme）", name: "theme", widget: "string", required: false }
+              - { label: "旧日期字段（兼容已有记录）", name: "date", widget: "string", required: false, hint: "新记录优先填写开始日期和结束日期。保留此字段用于兼容旧数据，例如 Nov 12-15, 2026。" }
+              - { label: "地点（城市、国家/地区）", name: "loc", widget: "string", required: false }
+              - { label: "展会简介（用于预告或基本说明）", name: "desc", widget: "text", required: false, hint: "预告中写品牌会展示什么、客户为什么值得到访；展后可写简短概述。不要填写未经证实的业绩。" }
+              - { label: "展后回顾正文（可选）", name: "recap", widget: "markdown", required: false, hint: "用于已结束展会的实际亮点、产品演示和现场交流。仅填写已发生且有依据的内容。" }
+              - label: "展会封面图"
+                name: "cover"
+                widget: "image"
+                hint: "建议横向 16:9、约 1600×900 px。优先使用清晰的展台、产品演示或现场照片，避免低分辨率截图。"
+              - label: "展会图片（可选）"
+                name: "gallery"
+                widget: "list"
+                required: false
+                field:
+                  label: "现场图片"
+                  name: "image"
+                  widget: "image"
+              - { label: "官方活动网址（可选）", name: "url", widget: "string", required: false, hint: "请填写完整的 https:// 链接；留空时网站不会显示外部链接。" }
+
