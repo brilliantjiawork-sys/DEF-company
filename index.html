@@ -16,6 +16,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <title>DEF Company | Newsroom</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="cms-content.css">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.17/dist/purify.min.js"></script>
 </head>
@@ -107,21 +108,21 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </div>
                 </div>
                 <div id="view-events" class="view">
-                    <h2 class="nr-title">Trade Shows &amp; Events</h2>
+                    <h2 class="nr-title">Trade Shows</h2>
                     <p class="events-intro">Meet our team at upcoming exhibitions, or explore highlights and technical stories from past events.</p>
                     <div class="events-view-tabs" role="tablist" aria-label="Event views">
-                        <button type="button" class="event-tab is-active" data-events-tab="upcoming" role="tab" aria-selected="true">Upcoming Events</button>
-                        <button type="button" class="event-tab" data-events-tab="past" role="tab" aria-selected="false">Past Events &amp; Reports</button>
+                        <button type="button" class="event-tab is-active" data-events-tab="upcoming" role="tab" aria-selected="true">Upcoming Trade Shows</button>
+                        <button type="button" class="event-tab" data-events-tab="past" role="tab" aria-selected="false">Past Trade Shows</button>
                     </div>
                     <div id="events-year-filter" class="events-year-filter" hidden>
-                        <label for="events-year-select">Filter by year</label>
+                        <label for="events-year-select">Filter past trade shows by year</label>
                         <select id="events-year-select"><option value="all">All years</option></select>
                     </div>
                     <div id="events-filters" class="events-filters" aria-label="Filter events by topic"></div>
                     <div id="events-list"></div>
                 </div>
                 <div id="view-event-detail" class="view">
-                    <div class="back-btn" onclick="switchView('events')">← Back to Events</div>
+                    <div class="back-btn" onclick="switchView('events')">← Back to Trade Shows</div>
                     <article class="event-detail-article">
                         <span id="ed-published-date" class="detail-date"></span>
                         <div id="ed-tags" class="story-tags" hidden></div>
@@ -133,7 +134,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <a id="ed-url" class="event-link" hidden target="_blank" rel="noopener noreferrer">Visit event website</a>
                     </article>
                 </div>
-                               <div id="view-social" class="view">
+                <div id="view-social" class="view">
                     <h2 class="nr-title">Follow us</h2>
                     <div class="social-wrapper">
                         <div class="social-main">
@@ -146,7 +147,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         </div>
                     </div>
                     <div class="social-disclaimer" role="note">
-                        <strong>Learning &amp; portfolio notice:</strong> DEF Company is a fictional brand created for learning and portfolio demonstration. The images in this Social Media section are sourced from <a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>. This is a demonstration page, not an official DEF Company social media page or an endorsement by the platforms shown.
+                        <strong>Learning &amp; portfolio notice:</strong> DEF Company is a fictional project created only for learning and portfolio presentation. The social media cards on this page are examples, not official DEF Company accounts. The photos are from <a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>.
                     </div>
                 </div>
 
@@ -163,7 +164,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         </div>
                     </div>
                     <div class="media-disclaimer" role="note">
-                        <strong>Learning &amp; portfolio notice:</strong> This page is fictional and is shown only for learning and portfolio demonstration. The names, portraits, job titles, and email addresses are fictional. The portrait photos are sourced from <a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>. This page does not represent real media contacts and is not affiliated with or endorsed by the people pictured.
+                        <strong>Learning &amp; portfolio notice:</strong> This Media Contacts page is a fictional example for learning and portfolio presentation. All names, job titles, and email addresses shown here are made up and do not refer to real media contacts. The portrait photos are from <a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>.
                     </div>
                 </div>
             </div>
@@ -180,10 +181,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div class="form-group"><label>Work Email *</label><input type="email" name="email" placeholder="name@company.com" required></div>
                 <div class="row"><div class="form-group"><label>First Name *</label><input type="text" name="first_name" required></div><div class="form-group"><label>Last Name *</label><input type="text" name="last_name" required></div></div>
                 <div class="row"><div class="form-group"><label>Company *</label><input type="text" name="company" required></div><div class="form-group"><label>Phone *</label><input type="tel" name="phone" required></div></div>
-                <div class="row">
-                    <div class="form-group"><label>Country/Region *</label><select name="country" required><option value="">Select Country</option><option value="US">United States</option><option value="CN">China</option><option value="DE">Germany</option><option value="UK">United Kingdom</option><option value="JP">Japan</option><option value="IN">India</option><option value="Other">Other</option></select></div>
-                    <div class="form-group"><label>Postal / Zip Code *</label><input type="text" name="zip_code" required></div>
-                </div>
+                <div class="form-group"><label>Country/Region *</label><select name="country" required><option value="">Select Country</option><option value="US">United States</option><option value="CN">China</option><option value="DE">Germany</option><option value="UK">United Kingdom</option><option value="JP">Japan</option><option value="IN">India</option><option value="Other">Other</option></select></div>
                 <div class="form-group"><label>Industry</label><select name="industry"><option value="">Select Industry</option><option value="Automotive">Automotive</option><option value="Electronics">Electronics</option><option value="Semiconductor">Semiconductor</option><option value="Pharmaceuticals">Pharmaceuticals</option><option value="Machinery">Machinery & Equipment</option></select></div>
                 <div class="form-group"><label>Additional Comments</label><textarea name="message" rows="4" placeholder="Please tell us about your specific application..."></textarea></div>
                 <button type="submit" class="btn-submit">Submit Inquiry</button>
@@ -226,6 +224,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
     </div>
     <button type="button" id="cookie-reopen">Cookie settings</button>
+    <script src="events-adapter.js"></script>
     <script src="app.js"></script>
+    <script src="marketing-content.js"></script>
 </body>
 </html> 
