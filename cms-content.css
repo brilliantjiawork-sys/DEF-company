@@ -1,0 +1,42 @@
+/* Supplemental styles for CMS-driven content and the two-view Events page. */
+.social-logo-label {
+  display: grid;
+  place-items: center;
+  min-width: 32px;
+  min-height: 32px;
+  color: #0a66c2;
+  font-size: 19px;
+  font-weight: 700;
+  line-height: 1;
+}
+.social-main { min-height: 340px; height: auto; }
+.social-main-img { min-height: 340px; }
+.social-sub { align-items: stretch; }
+.social-card { min-width: 0; }
+.social-card-img { flex-shrink: 0; }
+.media-card a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+.events-intro { margin: -8px 0 22px; color: var(--gray); font-size: 16px; line-height: 1.7; }
+.events-view-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 18px; border-bottom: 1px solid var(--line); }
+.event-tab { padding: 12px 16px; border: 0; border-bottom: 3px solid transparent; background: transparent; color: var(--gray); font: inherit; font-weight: 500; cursor: pointer; }
+.event-tab:hover { color: var(--dark); }
+.event-tab.is-active { color: var(--dark); border-bottom-color: var(--yellow); }
+.event-tab:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.events-year-filter { display: flex; gap: 12px; align-items: center; margin: 0 0 16px; color: var(--gray); font-size: 14px; }
+.events-year-filter select { padding: 8px 12px; border: 1px solid var(--line); background: #fff; font: inherit; }
+.events-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; }
+.events-filters button { border: 1px solid var(--line); background: #fff; color: var(--dark); padding: 7px 12px; border-radius: 999px; cursor: pointer; font: inherit; font-size: 13px; }
+.events-filters button.is-active, .events-filters button:hover { background: var(--dark); color: #fff; border-color: var(--dark); }
+.event-detail-article { max-width: 920px; margin: 0 auto; }
+.event-detail-meta { display: flex; flex-wrap: wrap; gap: 8px 18px; margin: 0 0 26px; padding: 14px 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--gray); font-size: 14px; }
+.event-detail-meta span { display: inline-block; }
+.event-detail-gallery { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin: 24px 0; }
+.event-detail-gallery img { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 3px; }
+.content-status-message { padding: 18px; background: var(--bg); border: 1px solid var(--line); color: var(--gray); }
+@media (max-width: 800px) {
+  .social-main { flex-direction: column; }
+  .social-main-img, .social-main-text { width: 100%; box-sizing: border-box; }
+  .social-main-img { height: 240px; min-height: 240px; }
+  .social-sub { grid-template-columns: 1fr; }
+  .events-year-filter { align-items: flex-start; flex-direction: column; }
+  .event-detail-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
