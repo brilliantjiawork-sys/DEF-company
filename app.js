@@ -1,13 +1,13 @@
 // DEF Company website behavior, UTM attribution, forms, Stories and Events.
 // Business form submissions work even when analytics consent is denied.
 
-const DEF_ATTRIBUTION_STORAGE_KEY = 'def_marketing_attribution_v3';
-const DEF_ATTRIBUTION_TTL_MS = 30 * 60 * 1000;
+const DEF_ATTRIBUTION_STORAGE_KEY = 'def_marketing_attribution_v4';
+const DEF_LANDING_PAGE_STORAGE_KEY = 'def_first_landing_page_v1';
 const DEF_UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'];
 
+// This is the action used internally by the shared sales form, not a Google Sheet column.
 let currentLeadSource = 'contact_sales';
-let currentLeadContent = '';
-let currentLeadContext = { sourceSection: 'homepage', contentType: '', contentTitle: '', contentId: '', ctaLabel: '', sourcePage: '/' };
+let currentLeadContext = { formEntry: 'Home', contentType: '', contentTitle: '', ctaLabel: 'Contact Sales' };
 let firstLandingPage = '';
 let pendingContactSubmissionId = '';
 let pendingNewsletterSubmissionId = '';
@@ -80,14 +80,23 @@ function defShowMessage(container, message) {
 }
 
 function defCurrentLandingPage() {
-    return window.location.origin + window.location.pathname;
+    return window.location.origin + (window.location.pathname || '/');
 }
 
-function defCurrentPagePath() {
-    return window.location.pathname || '/';
+function defGetFirstLandingPage() {
+    try {
+        const existing = sessionStorage.getItem(DEF_LANDING_PAGE_STORAGE_KEY);
+        if (existing) return existing;
+        const current = defCurrentLandingPage();
+        sessionStorage.setItem(DEF_LANDING_PAGE_STORAGE_KEY, current);
+        return current;
+    } catch (_) {
+        return defCurrentLandingPage();
+    }
 }
 
 function defClearStoredAttribution() {
+    // Remove legacy keys and the one current UTM record. The landing-page value remains in session only.
     try { localStorage.removeItem('def_utm_attribution_v1'); } catch (_) {}
     try { localStorage.removeItem('def_campaign_attribution_v1'); } catch (_) {}
     try { sessionStorage.removeItem('def_utm_attribution_v1'); } catch (_) {}
@@ -100,10 +109,7 @@ function defReadUtmFromCurrentUrl() {
         const params = new URL(window.location.href).searchParams;
         const values = {};
         for (const key of DEF_UTM_KEYS) values[key] = defSafeText(params.get(key), 200);
-        if (!values.utm_source) return null;
-        values.landing_page = defCurrentLandingPage();
-        values.capturedAt = Date.now();
-        values.expiresAt = values.capturedAt + DEF_ATTRIBUTION_TTL_MS;
+        if (!DEF_UTM_KEYS.some(key => values[key])) return null;
         return values;
     } catch (_) { return null; }
 }
@@ -112,43 +118,50 @@ function defReadStoredAttribution() {
     if (!defHasAnalyticsConsent()) return null;
     try {
         const value = JSON.parse(sessionStorage.getItem(DEF_ATTRIBUTION_STORAGE_KEY) || 'null');
-        if (!value || !value.capturedAt || !value.expiresAt) return null;
-        if (Date.now() > Number(value.expiresAt)) {
-            sessionStorage.removeItem(DEF_ATTRIBUTION_STORAGE_KEY);
-            return null;
-        }
+        if (!value || typeof value !== 'object') return null;
         return value;
     } catch (_) { return null; }
 }
 
 function defCaptureUtmTouchIfAllowed() {
-    try { localStorage.removeItem('def_utm_attribution_v1'); } catch (_) {}
-    try { localStorage.removeItem('def_campaign_attribution_v1'); } catch (_) {}
     if (!defHasAnalyticsConsent()) {
         try { sessionStorage.removeItem(DEF_ATTRIBUTION_STORAGE_KEY); } catch (_) {}
         return;
     }
+
+    // Keep the first UTM set encountered in this tab session; later internal navigation or campaign URLs do not overwrite it.
+    const stored = defReadStoredAttribution();
+    if (stored && DEF_UTM_KEYS.some(key => stored[key])) return;
     const current = defReadUtmFromCurrentUrl();
-    if (current) { try { sessionStorage.setItem(DEF_ATTRIBUTION_STORAGE_KEY, JSON.stringify(current)); } catch (_) {} }
+    if (current) {
+        try { sessionStorage.setItem(DEF_ATTRIBUTION_STORAGE_KEY, JSON.stringify(current)); } catch (_) {}
+    }
 }
 
 function defGetAttributionForSubmission() {
-    const blank = {
-        first_utm_source: '', first_utm_medium: '', first_utm_campaign: '', first_utm_content: '',
-        latest_utm_source: '', latest_utm_medium: '', latest_utm_campaign: '', latest_utm_content: ''
+    const result = {
+        landing_page: firstLandingPage || defGetFirstLandingPage(),
+        utm_source: '',
+        utm_medium: '',
+        utm_campaign: '',
+        utm_content: ''
     };
-    if (!defHasAnalyticsConsent()) return blank;
-    const current = defReadUtmFromCurrentUrl();
-    let record = current || defReadStoredAttribution();
-    if (!record) return blank;
-    if (current) { try { sessionStorage.setItem(DEF_ATTRIBUTION_STORAGE_KEY, JSON.stringify(current)); } catch (_) {} }
-    const source = defSafeText(record.utm_source, 200), medium = defSafeText(record.utm_medium, 200);
-    const campaign = defSafeText(record.utm_campaign, 200), content = defSafeText(record.utm_content, 200);
-    // The existing implementation captures one consented campaign touch, so first/latest are identical.
-    return {
-        first_utm_source: source, first_utm_medium: medium, first_utm_campaign: campaign, first_utm_content: content,
-        latest_utm_source: source, latest_utm_medium: medium, latest_utm_campaign: campaign, latest_utm_content: content
-    };
+    if (!defHasAnalyticsConsent()) return result;
+
+    let utm = defReadStoredAttribution();
+    if (!utm) {
+        utm = defReadUtmFromCurrentUrl();
+        if (utm) {
+            try { sessionStorage.setItem(DEF_ATTRIBUTION_STORAGE_KEY, JSON.stringify(utm)); } catch (_) {}
+        }
+    }
+    if (utm) {
+        result.utm_source = defSafeText(utm.utm_source, 200);
+        result.utm_medium = defSafeText(utm.utm_medium, 200);
+        result.utm_campaign = defSafeText(utm.utm_campaign, 200);
+        result.utm_content = defSafeText(utm.utm_content, 200);
+    }
+    return result;
 }
 
 function track(eventName, params) {
@@ -167,23 +180,6 @@ function defContentSlug(content, index = 0) {
 function defCreateSubmissionId() {
     try { if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID(); } catch (_) {}
     return 'def-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 14);
-}
-
-function defBuildContentId(content, contentType, index = 0) {
-    const existing = defSafeText(content && (content.content_id || content.slug || content.id), 200);
-    if (existing) return existing;
-    const slug = defContentSlug(content, index);
-    let discriminator = '';
-    if (contentType === 'event') {
-        discriminator = defSafeText(content && (content.event_year || content.year), 20);
-        if (!discriminator && typeof defGetEventDates === 'function') {
-            const dates = defGetEventDates(content || {});
-            if (dates.start) discriminator = String(dates.start.getFullYear());
-        }
-    } else {
-        discriminator = defSafeText(content && content.date, 20).slice(0, 10);
-    }
-    return [contentType || 'content', slug, discriminator].filter(Boolean).join('-').replace(/[^a-zA-Z0-9_-]+/g, '-').toLowerCase();
 }
 
 function defTrackVirtualPageView(path, pageTitle) {
@@ -207,68 +203,78 @@ function showPage(id) {
     window.scrollTo(0, 0);
 }
 
+function defNormalizeFormEntry(value) {
+    const text = defSafeText(value, 80).toLowerCase();
+    return ['newsroom', 'stories', 'events', 'trade shows'].includes(text) ? 'Newsroom' : 'Home';
+}
+
+function defNormalizeContentType(value) {
+    const text = defSafeText(value, 80).toLowerCase();
+    if (text === 'story' || text === 'stories') return 'Story';
+    if (['trade shows', 'trade show', 'event', 'events'].includes(text)) return 'Trade Shows';
+    return '';
+}
+
 function defInferLeadContextFromCurrentView() {
-    const result = { sourceSection: 'homepage', contentType: '', contentTitle: '', contentId: '', sourcePage: '/' };
+    const activePage = document.querySelector('.page.active');
+    if (activePage && activePage.id === 'contact' && currentLeadContext) {
+        return Object.assign({}, currentLeadContext);
+    }
+
+    const inNewsroom = Boolean(activePage && activePage.id === 'newsroom');
+    const result = { formEntry: inNewsroom ? 'Newsroom' : 'Home', contentType: '', contentTitle: '' };
     const storyDetail = document.getElementById('view-story-detail');
-    const eventDetail = document.getElementById('view-event-detail');
-    if (storyDetail && storyDetail.classList.contains('active')) {
+    const tradeShowDetail = document.getElementById('view-event-detail');
+
+    if (inNewsroom && storyDetail && storyDetail.classList.contains('active')) {
         const story = storiesData[currentStoryDetailIndex];
-        result.sourceSection = 'stories';
         if (story) {
-            result.contentType = 'story';
-            result.contentTitle = defSafeText(story.title || 'Untitled story', 300);
-            result.contentId = defBuildContentId(story, 'story', currentStoryDetailIndex || 0);
-            result.sourcePage = '/newsroom/stories/' + encodeURIComponent(defContentSlug(story, currentStoryDetailIndex || 0));
+            result.contentType = 'Story';
+            result.contentTitle = defSafeText(story.title || '', 300);
         }
         return result;
     }
-    if (eventDetail && eventDetail.classList.contains('active')) {
-        const event = eventsData[currentEventDetailIndex];
-        result.sourceSection = 'events';
-        if (event) {
-            result.contentType = 'event';
-            result.contentTitle = defSafeText(event.title || 'Untitled event', 300);
-            result.contentId = defBuildContentId(event, 'event', currentEventDetailIndex || 0);
-            result.sourcePage = '/newsroom/events/' + encodeURIComponent(defContentSlug(event, currentEventDetailIndex || 0));
+
+    if (inNewsroom && tradeShowDetail && tradeShowDetail.classList.contains('active')) {
+        const item = eventsData[currentEventDetailIndex];
+        if (item) {
+            result.contentType = 'Trade Shows';
+            result.contentTitle = defSafeText(item.title || '', 300);
         }
         return result;
     }
-    const storiesNav = document.getElementById('nav-stories');
-    const eventsNav = document.getElementById('nav-events');
-    if (storiesNav && storiesNav.classList.contains('active')) result.sourceSection = 'stories';
-    else if (eventsNav && eventsNav.classList.contains('active')) result.sourceSection = 'events';
+
     return result;
 }
 
-function openContact(source, contentTitle, ctaLabel, contentType, contentId, sourceSection) {
+function openContact(source, contentTitle, ctaLabel, contentType, sourceSection) {
+    // `source` identifies the requested action internally; the sheet records its visible CTA label instead.
     currentLeadSource = source === 'book_demo' ? 'book_demo' : 'contact_sales';
     const inferred = defInferLeadContextFromCurrentView();
-    const normalizedType = contentType === 'event' || contentType === 'story' ? contentType : (contentType || inferred.contentType);
-    currentLeadContent = defSafeText(contentTitle || inferred.contentTitle || '', 300);
-    const visibleCtaLabel = defSafeText(
+    const suppliedEntry = sourceSection ? defNormalizeFormEntry(sourceSection) : inferred.formEntry;
+    const entry = suppliedEntry || 'Home';
+    const requestedType = defNormalizeContentType(contentType || inferred.contentType);
+    const requestedTitle = defSafeText(contentTitle || inferred.contentTitle || '', 300);
+    const hasContentContext = entry === 'Newsroom' && Boolean(requestedType && requestedTitle);
+    const normalizedType = hasContentContext ? requestedType : '';
+    const title = hasContentContext ? requestedTitle : '';
+    const label = defSafeText(
         ctaLabel || (currentLeadSource === 'book_demo' ? 'Book a Demo' : 'Contact Sales'),
         200
     );
-    const section = sourceSection || (normalizedType === 'event' ? 'events' : normalizedType === 'story' ? 'stories' : inferred.sourceSection || 'homepage');
-    const id = defSafeText(contentId || inferred.contentId || '', 240);
-    const sourcePage = normalizedType && id
-        ? (inferred.sourcePage && !contentId ? inferred.sourcePage : (normalizedType === 'event' ? '/newsroom/events/' : '/newsroom/stories/') + encodeURIComponent(id))
-        : inferred.sourcePage || '/';
+
     currentLeadContext = {
-        sourceSection: section,
+        formEntry: entry,
         contentType: normalizedType,
-        contentTitle: currentLeadContent,
-        contentId: id,
-        ctaLabel: visibleCtaLabel,
-        sourcePage
+        contentTitle: title,
+        ctaLabel: label
     };
 
     track('cta_click', {
-        cta_label: visibleCtaLabel,
-        inquiry_source: section,
+        form_entry: entry,
         content_type: normalizedType,
-        content_id: id,
-        content_title: currentLeadContent
+        content_title: title,
+        cta_label: label
     });
 
     const box = document.getElementById('form-container-box');
@@ -286,6 +292,7 @@ function openContact(source, contentTitle, ctaLabel, contentType, contentId, sou
     }
     showPage('contact');
 }
+
 function switchView(viewId, options = {}) {
     document.querySelectorAll('.view').forEach((view) => view.classList.remove('active'));
     const target = document.getElementById('view-' + viewId);
@@ -395,9 +402,21 @@ function showStoryDetail(index) {
         (Array.isArray(story.tags) ? story.tags : []).forEach((tag) => tagsWrap.appendChild(defElement('span', 'kone-tag', tag)));
         tagsWrap.hidden = !tagsWrap.childElementCount;
     }
+
+    const storyCtaContainer = document.getElementById('sd-cta');
+    if (storyCtaContainer) {
+        storyCtaContainer.replaceChildren();
+        if (story.cta_enabled === true) {
+            const ctaLabel = defSafeText(story.cta_label || 'Talk to our team', 200);
+            const storyCta = defElement('button', 'btn-y event-detail-cta', ctaLabel);
+            storyCta.type = 'button';
+            storyCta.addEventListener('click', () => openContact('contact_sales', story.title || '', ctaLabel, 'Story', 'Newsroom'));
+            storyCtaContainer.appendChild(storyCta);
+        }
+    }
+
     switchView('story-detail');
-    const contentId = defBuildContentId(story, 'story', index);
-    track('content_view', { content_type: 'story', content_id: contentId, content_title: defSafeText(story.title || 'Untitled story', 300) });
+    track('content_view', { content_type: 'Story', content_title: defSafeText(story.title || 'Untitled story', 300) });
     defTrackVirtualPageView('/newsroom/stories/' + encodeURIComponent(defContentSlug(story, index)), defSafeText(story.title || 'Untitled story', 300));
 }
 
@@ -684,7 +703,6 @@ function showEventDetail(index) {
     const dates = defGetEventDates(event);
     const titleText = defSafeText(event.title || 'Untitled trade show', 300);
     const slug = defContentSlug(event, index);
-    const contentId = defBuildContentId(event, 'event', index);
 
     const coverWrap = document.getElementById('ed-cover-wrap');
     const cover = document.getElementById('ed-cover');
@@ -752,7 +770,7 @@ function showEventDetail(index) {
     const longBody = defSafeText(event.body || event.article_body || '', 50000);
     if (body) defRenderMarkdownInto(body, longBody);
     if (bodySection) bodySection.hidden = !longBody;
-    if (bodyHeading) bodyHeading.textContent = status === 'past' ? 'Event Report' : 'About This Show';
+    if (bodyHeading) bodyHeading.textContent = status === 'past' ? 'Trade Show Report' : 'About This Show';
 
     const recapSection = document.getElementById('ed-recap-section');
     const recap = document.getElementById('ed-recap');
@@ -803,24 +821,24 @@ function showEventDetail(index) {
     const ctaContainer = document.getElementById('ed-cta');
     if (ctaContainer) {
         ctaContainer.replaceChildren();
-        const cta = defElement(
-            'button',
-            'btn-y event-detail-cta',
-            status === 'upcoming' ? 'Book a meeting at this show' : 'Talk to our team'
+        // Existing CMS records without the new field keep their current CTA until the user edits them in CMS.
+        const ctaEnabled = event.cta_enabled !== false;
+        const ctaLabel = defSafeText(
+            event.cta_label || (status === 'upcoming' ? 'Book a meeting at this show' : 'Talk to our team'),
+            200
         );
-        cta.type = 'button';
-        cta.addEventListener('click', () => {
-            if (status === 'upcoming') openContact('book_demo', titleText, 'Book a meeting at this show', 'event', contentId, 'events');
-            else openContact('contact_sales', titleText, 'Talk to our team', 'event', contentId, 'events');
-        });
-        ctaContainer.appendChild(cta);
+        if (ctaEnabled) {
+            const cta = defElement('button', 'btn-y event-detail-cta', ctaLabel);
+            cta.type = 'button';
+            cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, 'Trade Shows', 'Newsroom'));
+            ctaContainer.appendChild(cta);
+        }
     }
 
-    // Suppress generic detail routing; send the event-specific content and virtual-page events once.
+    // Send only business-relevant context, not an internal Content ID.
     switchView('event-detail', { suppressVirtualPageView: true });
     track('content_view', {
-        content_type: 'event',
-        content_id: contentId,
+        content_type: 'Trade Shows',
         content_title: titleText
     });
     defTrackVirtualPageView('/newsroom/events/' + encodeURIComponent(slug), titleText);
@@ -1035,32 +1053,26 @@ function initContactForm() {
         const submissionId = pendingContactSubmissionId;
         const attribution = defGetAttributionForSubmission();
         Object.assign(values, attribution, {
-            form_type: currentLeadSource,
-            lead_source: currentLeadSource,
-            form_id: 'contact_sales_form',
-            submission_id: submissionId,
-            first_landing_page: firstLandingPage || defCurrentLandingPage(),
-            inquiry_source: currentLeadContext.sourceSection || 'homepage',
+            submission_id: submissionId, // Internal retry key only; never written into a Sheet column.
+            form_entry: currentLeadContext.formEntry || 'Home',
             content_type: currentLeadContext.contentType || '',
             content_title: currentLeadContext.contentTitle || '',
-            content_id: currentLeadContext.contentId || '',
-            cta_label: currentLeadContext.ctaLabel || (currentLeadSource === 'book_demo' ? 'Book a Demo' : 'Contact Sales'),
-            form_page: '/contact'
+            cta_label: currentLeadContext.ctaLabel || (currentLeadSource === 'book_demo' ? 'Book a Demo' : 'Contact Sales')
         });
 
         try {
-            const result = await defPostForm(SITE_CONFIG.contactEndpoint || '/api/contact', values);
+            await defPostForm(SITE_CONFIG.contactEndpoint || '/api/contact', values);
             if (!trackedSubmissionIds.has(submissionId)) {
                 track('generate_lead', {
-                    form_id: 'contact_sales_form',
-                    lead_source: currentLeadSource,
-                    inquiry_source: currentLeadContext.sourceSection || 'homepage',
+                    form_entry: currentLeadContext.formEntry || 'Home',
                     content_type: currentLeadContext.contentType || '',
                     content_title: currentLeadContext.contentTitle || '',
-                    content_id: currentLeadContext.contentId || '',
                     cta_label: currentLeadContext.ctaLabel || (currentLeadSource === 'book_demo' ? 'Book a Demo' : 'Contact Sales'),
-                    first_landing_page: firstLandingPage || defCurrentLandingPage(),
-                    form_page: '/contact'
+                    landing_page: attribution.landing_page,
+                    utm_source: attribution.utm_source,
+                    utm_medium: attribution.utm_medium,
+                    utm_campaign: attribution.utm_campaign,
+                    utm_content: attribution.utm_content
                 });
                 trackedSubmissionIds.add(submissionId);
             }
@@ -1100,7 +1112,7 @@ function initNewsletterForm() {
         const values = Object.assign(
             { email },
             defGetAttributionForSubmission(),
-            { form_id: 'newsletter_form', submission_id: submissionId, first_landing_page: firstLandingPage || defCurrentLandingPage() }
+            { submission_id: submissionId } // Internal retry key only; never written into a Sheet column.
         );
 
         try {
@@ -1134,7 +1146,7 @@ document.addEventListener('def:consent-updated', (event) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    firstLandingPage = defCurrentLandingPage();
+    firstLandingPage = defGetFirstLandingPage();
     // Remove legacy persistent attribution so old values cannot be re-used.
     if (!defHasAnalyticsConsent()) defClearStoredAttribution();
     else defCaptureUtmTouchIfAllowed();

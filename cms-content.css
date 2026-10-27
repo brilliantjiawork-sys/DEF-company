@@ -61,35 +61,22 @@
 }
 
 
-/* Trade Show cards are compact, keyboard-accessible links to full detail views. */
-.event-list-card {
-  cursor: pointer;
-  transition: transform .18s ease, box-shadow .18s ease;
-}
-.event-list-card:hover,
-.event-list-card:focus-visible {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 24px rgba(15, 23, 42, .12);
-  outline: none;
-}
-.event-list-card:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
-.event-card-date,
-.event-card-location { margin: 8px 0 0; color: var(--gray); line-height: 1.55; }
-.event-card-body .event-title { margin: 12px 0 8px; }
-.event-detail-cover-wrap { position: relative; margin: 0 0 24px; }
-.event-detail-cover { display: block; width: 100%; max-height: 520px; object-fit: contain; object-position: center; background: #f4f6f8; }
+/* Trade show cards are compact, accessible links to a dedicated detail page. */
+.event-card-clickable { cursor: pointer; transition: box-shadow .15s ease, transform .15s ease; }
+.event-card-clickable:hover { box-shadow: 0 8px 24px rgba(0,0,0,.09); transform: translateY(-2px); }
+.event-card-clickable:focus-visible { outline: 3px solid var(--blue); outline-offset: 3px; }
+.event-card-body { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 22px; }
+.event-card-body .event-title { margin: 0; }
+.event-card-date, .event-card-location { margin: 0; color: var(--gray); line-height: 1.5; }
+.events-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-bottom: 32px; }
+.event-detail-cover-wrap { position: relative; margin: 0 0 24px; background: #f4f6f8; }
+.event-detail-cover { display: block; width: 100%; max-height: 520px; object-fit: contain; }
 .event-detail-cover-wrap .event-status { position: absolute; left: 16px; top: 16px; }
-.event-status.is-past { background: #f1f5f9; color: #475569; }
-.event-detail-article > .detail-date { display: block; margin-bottom: 12px; color: var(--gray); }
-.event-detail-section-heading { margin: 28px 0 12px; font-size: 21px; }
-.event-highlights-list { margin: 0 0 20px; padding-left: 24px; line-height: 1.75; }
-.event-detail-gallery img { object-fit: contain; background: #f4f6f8; }
-.event-detail-cta-wrap { margin: 36px 0 12px; }
-.event-detail-cta-wrap .btn-y { cursor: pointer; }
-.event-detail-meta[hidden],
-.event-detail-gallery[hidden],
-.event-detail-article [hidden] { display: none !important; }
-@media (max-width: 800px) {
-  .event-detail-cover { max-height: 320px; }
-  .event-detail-meta { flex-direction: column; gap: 10px; }
-}
+.event-detail-section { margin: 28px 0; }
+.event-detail-section h3 { margin: 0 0 12px; }
+.event-detail-gallery-item { margin: 0; min-width: 0; }
+.event-detail-gallery-item img { display: block; width: 100%; max-height: 420px; object-fit: contain; background: #f4f6f8; }
+.event-detail-gallery-item figcaption { margin-top: 6px; color: var(--gray); font-size: 13px; }
+.event-detail-cta-wrap { margin: 34px 0 12px; }
+.event-detail-cta { min-height: 46px; }
+@media (max-width: 800px) { .events-grid { grid-template-columns: minmax(0, 1fr); gap: 18px; } .event-card-body { padding: 18px; } .event-detail-cover { max-height: 340px; } }

@@ -32,9 +32,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         </div>
         <div class="menu">
             <a onclick="showPage('home')">Home</a>
-            <a>Products</a><a>Solutions</a><a>Support</a>
+            <!-- Products, Solutions and Support are hidden until their real pages are ready. -->
             <a onclick="showPage('newsroom')">Newsroom</a>
-            <a class="btn-y" onclick="openContact('contact_sales')" style="padding:10px 24px; font-size:15px;">Contact Sales</a>
+            <a class="btn-y" onclick="openContact('contact_sales', '', 'Contact Sales')" style="padding:10px 24px; font-size:15px;">Contact Sales</a>
         </div>
     </div>
 
@@ -43,7 +43,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="hero-text">
                 <h2>Precision Industrial Vision.</h2>
                 <p>DEF Company designs high-performance machine vision systems to help global manufacturers optimize quality control and increase throughput.</p>
-                <button class="btn-y" onclick="openContact('book_demo')">Book a Demo</button>
+                <button class="btn-y" onclick="openContact('book_demo', '', 'Book a Demo')">Book a Demo</button>
             </div>
             <img src="images/hero-bg.jpg" alt="Vision">
         </div>
@@ -75,7 +75,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="nr-sidebar">
                 <a onclick="switchView('ov')" id="nav-ov" class="active">Overview</a>
                 <a onclick="switchView('stories')" id="nav-stories">Stories</a>
-                <a onclick="switchView('events')" id="nav-events">Events</a>
+                <a onclick="switchView('events')" id="nav-events">Trade Shows</a>
                 <a onclick="switchView('social')" id="nav-social">Social Media</a>
                 <a onclick="switchView('media')" id="nav-media">Media</a>
             </div>
@@ -85,7 +85,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     <div class="ov-grid">
                         <div class="ov-card" onclick="switchView('social')"><img id="ov-img-social" src="images/11.jpg"><div class="ov-overlay"><h3>Social Media</h3></div></div>
                         <div class="ov-card" onclick="switchView('stories')"><img id="ov-img-stories" src="images/story-cover.jpg"><div class="ov-overlay"><h3>Stories</h3></div></div>
-                        <div class="ov-card" onclick="switchView('events')"><img id="ov-img-events" src="images/event-1.jpg"><div class="ov-overlay"><h3>Events</h3></div></div>
+                        <div class="ov-card" onclick="switchView('events')"><img id="ov-img-events" src="images/event-1.jpg"><div class="ov-overlay"><h3>Trade Shows</h3></div></div>
                         <div class="ov-card" onclick="switchView('media')"><img id="ov-img-media" src="images/media-cover.jpg"><div class="ov-overlay"><h3>Media</h3></div></div>
                     </div>
                 </div>
@@ -104,6 +104,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             <h2 id="sd-title" class="detail-title"></h2>
                             <p id="sd-summary" class="detail-summary" hidden></p>
                             <div id="sd-body" class="detail-text"></div>
+                            <div id="sd-cta" class="event-detail-cta-wrap"></div>
                         </div>
                     </div>
                 </div>
@@ -124,23 +125,30 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div id="view-event-detail" class="view">
                     <div class="back-btn" onclick="switchView('events')">← Back to Trade Shows</div>
                     <article class="event-detail-article">
-                        <div class="event-detail-cover-wrap">
-                            <img id="ed-cover" class="event-detail-cover" src="images/event-1.jpg" alt="" hidden>
+                        <div id="ed-cover-wrap" class="event-detail-cover-wrap" hidden>
+                            <img id="ed-cover" class="event-detail-cover" alt="" hidden>
                             <span id="ed-status" class="event-status" hidden></span>
                         </div>
-                        <span id="ed-published-date" class="detail-date" hidden></span>
+                        <span id="ed-published-date" class="detail-date"></span>
                         <div id="ed-tags" class="story-tags" hidden></div>
                         <h2 id="ed-title" class="detail-title"></h2>
                         <p id="ed-summary" class="detail-summary" hidden></p>
                         <div id="ed-meta" class="event-detail-meta" hidden></div>
-                        <section id="ed-highlights" class="event-detail-highlights" hidden></section>
-                        <h3 id="ed-recap-heading" class="event-detail-section-heading" hidden>Event recap</h3>
-                        <div id="ed-body" class="detail-text" hidden></div>
+                        <section id="ed-highlights-section" class="event-detail-section" hidden>
+                            <h3>Highlights</h3>
+                            <div id="ed-highlights" class="detail-text"></div>
+                        </section>
+                        <section id="ed-body-section" class="event-detail-section" hidden>
+                            <h3 id="ed-body-heading">Event Report</h3>
+                            <div id="ed-body" class="detail-text"></div>
+                        </section>
+                        <section id="ed-recap-section" class="event-detail-section" hidden>
+                            <h3>Event Recap</h3>
+                            <div id="ed-recap" class="detail-text"></div>
+                        </section>
                         <div id="ed-gallery" class="event-detail-gallery" hidden></div>
                         <a id="ed-url" class="event-link" hidden target="_blank" rel="noopener noreferrer">Visit event website</a>
-                        <div class="event-detail-cta-wrap">
-                            <button id="ed-cta" type="button" class="btn-y">Talk to our team</button>
-                        </div>
+                        <div id="ed-cta" class="event-detail-cta-wrap"></div>
                     </article>
                 </div>
                 <div id="view-social" class="view">
@@ -190,7 +198,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div class="form-group"><label>Work Email *</label><input type="email" name="email" placeholder="name@company.com" required></div>
                 <div class="row"><div class="form-group"><label>First Name *</label><input type="text" name="first_name" required></div><div class="form-group"><label>Last Name *</label><input type="text" name="last_name" required></div></div>
                 <div class="row"><div class="form-group"><label>Company *</label><input type="text" name="company" required></div><div class="form-group"><label>Phone *</label><input type="tel" name="phone" required></div></div>
-                <div class="form-group"><label>Country/Region *</label><select name="country" required><option value="">Select Country</option><option value="US">United States</option><option value="CN">China</option><option value="DE">Germany</option><option value="UK">United Kingdom</option><option value="JP">Japan</option><option value="IN">India</option><option value="Other">Other</option></select></div>
+                <div class="row">
+                    <div class="form-group"><label>Country/Region *</label><select name="country" required><option value="">Select Country</option><option value="US">United States</option><option value="CN">China</option><option value="DE">Germany</option><option value="UK">United Kingdom</option><option value="JP">Japan</option><option value="IN">India</option><option value="Other">Other</option></select></div>
+                    <div class="form-group"><label>Zip Code</label><input type="text" name="zip_code" autocomplete="postal-code"></div>
+                </div>
                 <div class="form-group"><label>Industry</label><select name="industry"><option value="">Select Industry</option><option value="Automotive">Automotive</option><option value="Electronics">Electronics</option><option value="Semiconductor">Semiconductor</option><option value="Pharmaceuticals">Pharmaceuticals</option><option value="Machinery">Machinery & Equipment</option></select></div>
                 <div class="form-group"><label>Additional Comments</label><textarea name="message" rows="4" placeholder="Please tell us about your specific application..."></textarea></div>
                 <button type="submit" class="btn-submit">Submit Inquiry</button>
