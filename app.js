@@ -7,8 +7,18 @@ const DEF_UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content']
 
 let currentLeadSource = 'contact_sales';
 let currentLeadContent = '';
+let currentLeadContext = { sourceSection: 'homepage', contentType: '', contentTitle: '', contentId: '', ctaLabel: '', sourcePage: '/' };
+let firstLandingPage = '';
+let pendingContactSubmissionId = '';
+let pendingNewsletterSubmissionId = '';
+const trackedSubmissionIds = new Set();
 let storiesData = [];
 let eventsData = [];
+let currentEventsTab = 'upcoming';
+let currentEventsYear = 'all';
+let currentEventsTopic = 'all';
+let currentEventDetailIndex = null;
+let currentStoryDetailIndex = null;
 
 // ---------- Utility helpers ----------
 function defHasAnalyticsConsent() {
@@ -64,17 +74,6 @@ function defElement(tag, className, text) {
     return node;
 }
 
-function defContentSlug(value, fallbackIndex = 0) {
-    const slug = defSafeText(value, 300)
-        .normalize('NFKD')
-        .toLowerCase()
-        .replace(/[\u0300-\u036f]/g, '')
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/^-+|-+$/g, '')
-        .slice(0, 100);
-    return slug || 'content-' + (Number(fallbackIndex) + 1);
-}
-
 function defShowMessage(container, message) {
     if (!container) return;
     container.replaceChildren(defElement('p', 'content-status-message', message));
@@ -84,8 +83,11 @@ function defCurrentLandingPage() {
     return window.location.origin + window.location.pathname;
 }
 
+function defCurrentPagePath() {
+    return window.location.pathname || '/';
+}
+
 function defClearStoredAttribution() {
-    // Clear the old long-lived keys that could carry a stale source such as ChatGPT.
     try { localStorage.removeItem('def_utm_attribution_v1'); } catch (_) {}
     try { localStorage.removeItem('def_campaign_attribution_v1'); } catch (_) {}
     try { sessionStorage.removeItem('def_utm_attribution_v1'); } catch (_) {}
@@ -97,18 +99,13 @@ function defReadUtmFromCurrentUrl() {
     try {
         const params = new URL(window.location.href).searchParams;
         const values = {};
-        for (const key of DEF_UTM_KEYS) {
-            values[key] = defSafeText(params.get(key), 200);
-        }
-        // Only treat a URL as a marked campaign link if the link explicitly supplies utm_source.
+        for (const key of DEF_UTM_KEYS) values[key] = defSafeText(params.get(key), 200);
         if (!values.utm_source) return null;
         values.landing_page = defCurrentLandingPage();
         values.capturedAt = Date.now();
         values.expiresAt = values.capturedAt + DEF_ATTRIBUTION_TTL_MS;
         return values;
-    } catch (_) {
-        return null;
-    }
+    } catch (_) { return null; }
 }
 
 function defReadStoredAttribution() {
@@ -121,103 +118,84 @@ function defReadStoredAttribution() {
             return null;
         }
         return value;
-    } catch (_) {
-        return null;
-    }
+    } catch (_) { return null; }
 }
 
 function defCaptureUtmTouchIfAllowed() {
-    // Clear old persistent attribution once this new version is running.
     try { localStorage.removeItem('def_utm_attribution_v1'); } catch (_) {}
     try { localStorage.removeItem('def_campaign_attribution_v1'); } catch (_) {}
-
     if (!defHasAnalyticsConsent()) {
         try { sessionStorage.removeItem(DEF_ATTRIBUTION_STORAGE_KEY); } catch (_) {}
         return;
     }
-
     const current = defReadUtmFromCurrentUrl();
-    if (current) {
-        try {
-            sessionStorage.setItem(DEF_ATTRIBUTION_STORAGE_KEY, JSON.stringify(current));
-        } catch (_) {}
-    }
+    if (current) { try { sessionStorage.setItem(DEF_ATTRIBUTION_STORAGE_KEY, JSON.stringify(current)); } catch (_) {} }
 }
 
 function defGetAttributionForSubmission() {
     const blank = {
-        utm_source: '',
-        utm_medium: '',
-        utm_campaign: '',
-        utm_content: '',
-        landing_page: defCurrentLandingPage()
+        first_utm_source: '', first_utm_medium: '', first_utm_campaign: '', first_utm_content: '',
+        latest_utm_source: '', latest_utm_medium: '', latest_utm_campaign: '', latest_utm_content: ''
     };
-
     if (!defHasAnalyticsConsent()) return blank;
-
-    // Capture a current marked URL first, otherwise reuse only this tab's recent UTM touch.
     const current = defReadUtmFromCurrentUrl();
-    let record = current;
-    if (!record) record = defReadStoredAttribution();
+    let record = current || defReadStoredAttribution();
     if (!record) return blank;
-
-    if (current) {
-        try { sessionStorage.setItem(DEF_ATTRIBUTION_STORAGE_KEY, JSON.stringify(current)); } catch (_) {}
-    }
-
+    if (current) { try { sessionStorage.setItem(DEF_ATTRIBUTION_STORAGE_KEY, JSON.stringify(current)); } catch (_) {} }
+    const source = defSafeText(record.utm_source, 200), medium = defSafeText(record.utm_medium, 200);
+    const campaign = defSafeText(record.utm_campaign, 200), content = defSafeText(record.utm_content, 200);
+    // The existing implementation captures one consented campaign touch, so first/latest are identical.
     return {
-        utm_source: defSafeText(record.utm_source, 200),
-        utm_medium: defSafeText(record.utm_medium, 200),
-        utm_campaign: defSafeText(record.utm_campaign, 200),
-        utm_content: defSafeText(record.utm_content, 200),
-        landing_page: defSafeText(record.landing_page || defCurrentLandingPage(), 1500)
+        first_utm_source: source, first_utm_medium: medium, first_utm_campaign: campaign, first_utm_content: content,
+        latest_utm_source: source, latest_utm_medium: medium, latest_utm_campaign: campaign, latest_utm_content: content
     };
 }
 
-// ---------- GA4 custom events ----------
 function track(eventName, params) {
-    // Strict opt-in: do not queue custom analytics events unless Analytics consent is granted.
     if (!defHasAnalyticsConsent()) return;
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push(Object.assign({ event: eventName }, params || {}));
 }
 
+function defContentSlug(content, index = 0) {
+    const source = defSafeText(content && (content.slug || content.id || content.title), 200);
+    const slug = source.normalize('NFKD').toLowerCase().replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 100);
+    return slug || 'content-' + (Number(index) + 1);
+}
+
+function defCreateSubmissionId() {
+    try { if (window.crypto && typeof window.crypto.randomUUID === 'function') return window.crypto.randomUUID(); } catch (_) {}
+    return 'def-' + Date.now().toString(36) + '-' + Math.random().toString(36).slice(2, 14);
+}
+
+function defBuildContentId(content, contentType, index = 0) {
+    const existing = defSafeText(content && (content.content_id || content.slug || content.id), 200);
+    if (existing) return existing;
+    const slug = defContentSlug(content, index);
+    let discriminator = '';
+    if (contentType === 'event') {
+        discriminator = defSafeText(content && (content.event_year || content.year), 20);
+        if (!discriminator && typeof defGetEventDates === 'function') {
+            const dates = defGetEventDates(content || {});
+            if (dates.start) discriminator = String(dates.start.getFullYear());
+        }
+    } else {
+        discriminator = defSafeText(content && content.date, 20).slice(0, 10);
+    }
+    return [contentType || 'content', slug, discriminator].filter(Boolean).join('-').replace(/[^a-zA-Z0-9_-]+/g, '-').toLowerCase();
+}
+
 function defTrackVirtualPageView(path, pageTitle) {
-    const normalizedPath = path && path.startsWith('/')
+    const virtualPath = path && path.startsWith('/')
         ? path
         : '/' + String(path || '').replace(/^\/+/, '');
+
     track('virtual_page_view', {
-        page_location: window.location.origin + normalizedPath,
-        page_path: normalizedPath,
+        page_location: window.location.origin + virtualPath,
+        page_path: virtualPath,
         page_title: pageTitle || document.title
     });
-}
-
-function defGetPageRoute(pageId) {
-    const routes = {
-        home: { path: '/', title: 'Home' },
-        contact: { path: '/contact', title: 'Contact' },
-        newsroom: { path: '/newsroom/overview', title: 'Newsroom Overview' }
-    };
-    return routes[pageId] || {
-        path: '/' + String(pageId || '').replace(/^\/+/, ''),
-        title: String(pageId || document.title)
-    };
-}
-
-function defGetViewRoute(viewId) {
-    const routes = {
-        ov: { path: '/newsroom/overview', title: 'Newsroom Overview' },
-        stories: { path: '/newsroom/stories', title: 'Stories' },
-        events: { path: '/newsroom/events', title: 'Trade Shows' },
-        social: { path: '/newsroom/social-media', title: 'Social Media' },
-        media: { path: '/newsroom/media', title: 'Media Contacts' },
-        'story-detail': { path: '/newsroom/stories', title: 'Story Detail' }
-    };
-    return routes[viewId] || {
-        path: '/newsroom/' + String(viewId || '').replace(/^\/+/, ''),
-        title: String(viewId || document.title)
-    };
 }
 
 // ---------- Page navigation ----------
@@ -225,24 +203,71 @@ function showPage(id) {
     document.querySelectorAll('.page').forEach((page) => page.classList.remove('active'));
     const page = document.getElementById(id);
     if (page) page.classList.add('active');
-
-    // Showing Newsroom also activates Overview internally; suppress that inner event
-    // so the user navigation is measured once.
-    if (id === 'newsroom') switchView('ov', { suppressVirtualPageView: true });
-
+    if (id === 'newsroom') switchView('ov');
     window.scrollTo(0, 0);
-    if (page) {
-        const route = defGetPageRoute(id);
-        defTrackVirtualPageView(route.path, route.title);
-    }
 }
 
-function openContact(source, contentTitle) {
+function defInferLeadContextFromCurrentView() {
+    const result = { sourceSection: 'homepage', contentType: '', contentTitle: '', contentId: '', sourcePage: '/' };
+    const storyDetail = document.getElementById('view-story-detail');
+    const eventDetail = document.getElementById('view-event-detail');
+    if (storyDetail && storyDetail.classList.contains('active')) {
+        const story = storiesData[currentStoryDetailIndex];
+        result.sourceSection = 'stories';
+        if (story) {
+            result.contentType = 'story';
+            result.contentTitle = defSafeText(story.title || 'Untitled story', 300);
+            result.contentId = defBuildContentId(story, 'story', currentStoryDetailIndex || 0);
+            result.sourcePage = '/newsroom/stories/' + encodeURIComponent(defContentSlug(story, currentStoryDetailIndex || 0));
+        }
+        return result;
+    }
+    if (eventDetail && eventDetail.classList.contains('active')) {
+        const event = eventsData[currentEventDetailIndex];
+        result.sourceSection = 'events';
+        if (event) {
+            result.contentType = 'event';
+            result.contentTitle = defSafeText(event.title || 'Untitled event', 300);
+            result.contentId = defBuildContentId(event, 'event', currentEventDetailIndex || 0);
+            result.sourcePage = '/newsroom/events/' + encodeURIComponent(defContentSlug(event, currentEventDetailIndex || 0));
+        }
+        return result;
+    }
+    const storiesNav = document.getElementById('nav-stories');
+    const eventsNav = document.getElementById('nav-events');
+    if (storiesNav && storiesNav.classList.contains('active')) result.sourceSection = 'stories';
+    else if (eventsNav && eventsNav.classList.contains('active')) result.sourceSection = 'events';
+    return result;
+}
+
+function openContact(source, contentTitle, ctaLabel, contentType, contentId, sourceSection) {
     currentLeadSource = source === 'book_demo' ? 'book_demo' : 'contact_sales';
-    currentLeadContent = defSafeText(contentTitle || '', 300);
+    const inferred = defInferLeadContextFromCurrentView();
+    const normalizedType = contentType === 'event' || contentType === 'story' ? contentType : (contentType || inferred.contentType);
+    currentLeadContent = defSafeText(contentTitle || inferred.contentTitle || '', 300);
+    const visibleCtaLabel = defSafeText(
+        ctaLabel || (currentLeadSource === 'book_demo' ? 'Book a Demo' : 'Contact Sales'),
+        200
+    );
+    const section = sourceSection || (normalizedType === 'event' ? 'events' : normalizedType === 'story' ? 'stories' : inferred.sourceSection || 'homepage');
+    const id = defSafeText(contentId || inferred.contentId || '', 240);
+    const sourcePage = normalizedType && id
+        ? (inferred.sourcePage && !contentId ? inferred.sourcePage : (normalizedType === 'event' ? '/newsroom/events/' : '/newsroom/stories/') + encodeURIComponent(id))
+        : inferred.sourcePage || '/';
+    currentLeadContext = {
+        sourceSection: section,
+        contentType: normalizedType,
+        contentTitle: currentLeadContent,
+        contentId: id,
+        ctaLabel: visibleCtaLabel,
+        sourcePage
+    };
 
     track('cta_click', {
-        cta_label: currentLeadSource,
+        cta_label: visibleCtaLabel,
+        inquiry_source: section,
+        content_type: normalizedType,
+        content_id: id,
         content_title: currentLeadContent
     });
 
@@ -257,24 +282,28 @@ function openContact(source, contentTitle) {
             const button = form.querySelector('button[type="submit"]');
             if (button) { button.disabled = false; button.textContent = 'Submit Inquiry'; }
         }
+        pendingContactSubmissionId = '';
     }
     showPage('contact');
 }
-
 function switchView(viewId, options = {}) {
     document.querySelectorAll('.view').forEach((view) => view.classList.remove('active'));
     const target = document.getElementById('view-' + viewId);
     if (target) target.classList.add('active');
+
     document.querySelectorAll('.nr-sidebar a').forEach((item) => item.classList.remove('active'));
-    const navKey = viewId === 'story-detail' ? 'stories' : (viewId === 'event-detail' ? 'events' : viewId);
+    const navKey = viewId === 'story-detail'
+        ? 'stories'
+        : viewId === 'event-detail'
+            ? 'events'
+            : viewId;
     const navEl = document.getElementById('nav-' + navKey);
     if (navEl) navEl.classList.add('active');
-    window.scrollTo(0, 80);
 
-    if (target && !options.suppressVirtualPageView) {
-        const route = defGetViewRoute(viewId);
-        defTrackVirtualPageView(route.path, route.title);
-    }
+    // Return to the Events list with the previously selected Upcoming/Past tab intact.
+    if (viewId === 'events') renderEvents();
+
+    window.scrollTo(0, 80);
 }
 
 // ---------- Stories rendering ----------
@@ -331,6 +360,7 @@ function renderStories() {
 function showStoryDetail(index) {
     const story = storiesData[index];
     if (!story) return;
+    currentStoryDetailIndex = index;
 
     const image = document.getElementById('sd-img');
     const date = document.getElementById('sd-date');
@@ -366,17 +396,14 @@ function showStoryDetail(index) {
         tagsWrap.hidden = !tagsWrap.childElementCount;
     }
     switchView('story-detail');
+    const contentId = defBuildContentId(story, 'story', index);
+    track('content_view', { content_type: 'story', content_id: contentId, content_title: defSafeText(story.title || 'Untitled story', 300) });
+    defTrackVirtualPageView('/newsroom/stories/' + encodeURIComponent(defContentSlug(story, index)), defSafeText(story.title || 'Untitled story', 300));
 }
 
-// ---------- Trade Show listing and detail ----------
-let activeEventsTab = 'upcoming';
-let activeEventsYear = 'all';
-let activeEventTopic = 'all';
-let eventControlsBound = false;
-
+// ---------- Events rendering ----------
 function defParseLegacyEventRange(value) {
-    const text = defSafeText(value, 150);
-    // Example: "Nov 12-15, 2026" or "Dec 05–08, 2026".
+    const text = defSafeText(value, 200);
     const range = text.match(/^([A-Za-z]{3,9})\s+(\d{1,2})\s*[-–]\s*(\d{1,2}),?\s*(\d{4})$/);
     if (range) {
         const start = defParseLocalDate(`${range[1]} ${range[2]}, ${range[4]}`);
@@ -390,107 +417,203 @@ function defParseLegacyEventRange(value) {
 }
 
 function defGetEventDates(event) {
-    let start = defParseLocalDate(event.start_date || '');
-    let end = defParseLocalDate(event.end_date || '');
+    let start = defParseLocalDate(event.start_date || event.startDate || '');
+    let end = defParseLocalDate(event.end_date || event.endDate || '');
+
     if (!start || !end) {
         const legacy = defParseLegacyEventRange(event.date || '');
         start = start || legacy.start;
         end = end || legacy.end;
     }
+
+    // Older reports may only have a year; use it for classification, not to invent a full date label.
+    const eventYear = Number(event.event_year || event.year || 0);
+    if ((!start || !end) && eventYear >= 1900 && eventYear <= 2200) {
+        const yearDate = new Date(eventYear, 11, 31);
+        start = start || yearDate;
+        end = end || yearDate;
+    }
+
     if (!end && start) end = start;
     return { start, end };
 }
 
-function defGetEventStatus(event) {
-    const dates = defGetEventDates(event);
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    if (String(event.content_type || '').toLowerCase() === 'report') return 'past';
-    if (dates.end && dates.end < today) return 'past';
-
-    const year = Number(event.event_year || event.year || (dates.end && dates.end.getFullYear()) || 0);
-    if (year && year < today.getFullYear()) return 'past';
-
-    return 'upcoming';
-}
-
-function defFormatEventDate(event, dates = defGetEventDates(event)) {
-    if (dates.start && dates.end) {
+function defFormatEventDate(event, dates) {
+    const hasExplicitDates = Boolean(event.start_date || event.end_date || event.date);
+    if (dates.start && dates.end && hasExplicitDates) {
         if (dates.start.toDateString() === dates.end.toDateString()) return fmtDate(dates.start);
         return fmtDate(dates.start) + ' – ' + fmtDate(dates.end);
     }
-    const legacy = defSafeText(event.date || '', 150);
-    if (legacy) return legacy;
+
     const year = event.event_year || event.year;
-    return year ? 'Event year: ' + year : 'Date to be confirmed';
+    if (year && !hasExplicitDates) return String(year);
+    return defSafeText(event.date || year || 'Date to be confirmed', 150);
+}
+
+function defGetEventStatus(event) {
+    if (event && (event._contentType === 'report' || event.content_type === 'report' || event.type === 'report')) {
+        return 'past';
+    }
+
+    const dates = defGetEventDates(event || {});
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    if (dates.end && dates.end < today) return 'past';
+    return 'upcoming';
+}
+
+function defNormalizeEventsPayload(data) {
+    if (!data || typeof data !== 'object') return [];
+
+    // New CMS structure: separate short announcements and long-form reports.
+    if (Array.isArray(data.announcements) || Array.isArray(data.reports)) {
+        const announcements = (Array.isArray(data.announcements) ? data.announcements : [])
+            .map((event) => Object.assign({}, event, { _contentType: 'announcement' }));
+        const reports = (Array.isArray(data.reports) ? data.reports : [])
+            .map((event) => Object.assign({}, event, { _contentType: 'report' }));
+        return announcements.concat(reports);
+    }
+
+    // Legacy CMS structure: one exhibitions array. Detect recap/body-only historical items.
+    if (Array.isArray(data.exhibitions)) {
+        return data.exhibitions.map((event) => {
+            const dates = defGetEventDates(event || {});
+            const isReport = Boolean(
+                event && (
+                    event.event_year ||
+                    event.published_date ||
+                    event.recap ||
+                    event.body
+                ) && (!dates.end || dates.end < new Date())
+            );
+            return Object.assign({}, event, {
+                _contentType: isReport ? 'report' : 'announcement'
+            });
+        });
+    }
+
+    if (Array.isArray(data.events)) {
+        return data.events.map(event => Object.assign({}, event, {
+            _contentType: event.content_type || event.type || 'announcement'
+        }));
+    }
+
+    return [];
+}
+
+function defGetEventLocation(event) {
+    return defSafeText(event.loc || event.location || event.venue || '', 250);
+}
+
+function defGetEventSummary(event) {
+    return defSafeText(event.summary || event.excerpt || event.desc || event.description || '', 1500);
 }
 
 function defGetEventYear(event) {
+    if (event.event_year || event.year) return String(event.event_year || event.year);
     const dates = defGetEventDates(event);
-    const rawYear = event.event_year || event.year || (dates.end && dates.end.getFullYear()) || (dates.start && dates.start.getFullYear());
-    return rawYear ? String(rawYear) : '';
+    const date = dates.end || dates.start;
+    return date ? String(date.getFullYear()) : '';
 }
 
-function defRenderEventFilters(items) {
+function defGetEventsForTab() {
+    let items = eventsData.map((event, index) => ({ event, index, status: defGetEventStatus(event) }))
+        .filter(item => item.status === currentEventsTab);
+
+    if (currentEventsTab === 'past' && currentEventsYear !== 'all') {
+        items = items.filter(item => defGetEventYear(item.event) === currentEventsYear);
+    }
+
+    if (currentEventsTopic !== 'all') {
+        items = items.filter(item => Array.isArray(item.event.tags) && item.event.tags.includes(currentEventsTopic));
+    }
+
+    if (currentEventsTab === 'upcoming') {
+        items.sort((a, b) => {
+            const dateA = defGetEventDates(a.event).start;
+            const dateB = defGetEventDates(b.event).start;
+            return (dateA ? dateA.getTime() : Number.MAX_SAFE_INTEGER) -
+                (dateB ? dateB.getTime() : Number.MAX_SAFE_INTEGER);
+        });
+    } else {
+        items.sort((a, b) => {
+            const dateA = defGetEventDates(a.event).end;
+            const dateB = defGetEventDates(b.event).end;
+            return (dateB ? dateB.getTime() : 0) - (dateA ? dateA.getTime() : 0);
+        });
+    }
+
+    return items;
+}
+
+function defRenderEventTopicFilters(availableItems) {
     const container = document.getElementById('events-filters');
     if (!container) return;
+    container.replaceChildren();
 
-    const tags = new Set();
-    items.forEach(({ event }) => {
+    const topics = new Set();
+    availableItems.forEach(({ event }) => {
         (Array.isArray(event.tags) ? event.tags : []).forEach(tag => {
-            const value = defSafeText(tag, 100);
-            if (value) tags.add(value);
+            const clean = defSafeText(tag, 80);
+            if (clean) topics.add(clean);
         });
     });
 
-    const values = ['all', ...Array.from(tags).sort((a, b) => a.localeCompare(b))];
-    if (!values.includes(activeEventTopic)) activeEventTopic = 'all';
-    container.replaceChildren();
+    const topicList = ['all', ...Array.from(topics).sort((a, b) => a.localeCompare(b))];
+    if (!topicList.includes(currentEventsTopic)) currentEventsTopic = 'all';
 
-    values.forEach(topic => {
+    topicList.forEach(topic => {
         const label = topic === 'all' ? 'All topics' : topic;
-        const button = defElement('button', 'event-topic-filter' + (topic === activeEventTopic ? ' is-active' : ''), label);
+        const button = defElement('button', topic === currentEventsTopic ? 'is-active' : '', label);
         button.type = 'button';
-        button.setAttribute('aria-pressed', String(topic === activeEventTopic));
+        button.setAttribute('aria-pressed', String(topic === currentEventsTopic));
         button.addEventListener('click', () => {
-            activeEventTopic = topic;
+            currentEventsTopic = topic;
             renderEvents();
         });
         container.appendChild(button);
     });
-    container.hidden = values.length <= 1;
 }
 
-function defRenderEventYearFilter(pastItems) {
-    const wrapper = document.getElementById('events-year-filter');
-    const select = document.getElementById('events-year-select');
-    if (!wrapper || !select) return;
-
-    wrapper.hidden = activeEventsTab !== 'past';
-    if (activeEventsTab !== 'past') return;
-
-    const years = Array.from(new Set(pastItems.map(({ event }) => defGetEventYear(event)).filter(Boolean)))
-        .sort((a, b) => Number(b) - Number(a));
-
-    if (activeEventsYear !== 'all' && !years.includes(activeEventsYear)) activeEventsYear = 'all';
-    select.replaceChildren();
-    const allOption = defElement('option', '', 'All years');
-    allOption.value = 'all';
-    select.appendChild(allOption);
-    years.forEach(year => {
-        const option = defElement('option', '', year);
-        option.value = year;
-        select.appendChild(option);
+function defUpdateEventsTabs() {
+    document.querySelectorAll('[data-events-tab]').forEach(button => {
+        const isActive = button.dataset.eventsTab === currentEventsTab;
+        button.classList.toggle('is-active', isActive);
+        button.setAttribute('aria-selected', String(isActive));
+        button.tabIndex = isActive ? 0 : -1;
     });
-    select.value = activeEventsYear;
 }
 
-function defMakeEventCard(event, status, originalIndex) {
-    const card = defElement('article', 'event-card event-list-card');
+function initEventsControls() {
+    // This missing binding was the reason Past Trade Shows did not respond to clicks.
+    document.querySelectorAll('[data-events-tab]').forEach(button => {
+        button.addEventListener('click', () => {
+            const nextTab = button.dataset.eventsTab;
+            if (!['upcoming', 'past'].includes(nextTab)) return;
+            currentEventsTab = nextTab;
+            currentEventsYear = 'all';
+            currentEventsTopic = 'all';
+            defUpdateEventsTabs();
+            renderEvents();
+        });
+    });
+
+    const yearSelect = document.getElementById('events-year-select');
+    if (yearSelect) {
+        yearSelect.addEventListener('change', () => {
+            currentEventsYear = yearSelect.value || 'all';
+            renderEvents();
+        });
+    }
+
+    defUpdateEventsTabs();
+}
+
+function defMakeEventCard(event, index, status) {
+    const card = defElement('article', 'event-card event-card-clickable');
     card.tabIndex = 0;
     card.setAttribute('role', 'button');
-    card.setAttribute('aria-label', 'Open trade show: ' + defSafeText(event.title, 160));
+    card.setAttribute('aria-label', 'View trade show: ' + defSafeText(event.title || 'Untitled event', 160));
 
     const imageWrap = defElement('div', 'event-card-image');
     const image = defElement('img');
@@ -502,151 +625,174 @@ function defMakeEventCard(event, status, originalIndex) {
     imageWrap.appendChild(image);
 
     const body = defElement('div', 'event-card-body');
-    body.appendChild(defElement('span', 'event-status', status === 'past' ? 'Past' : 'Upcoming'));
-    body.appendChild(defElement('h3', 'event-title', event.title || 'Untitled trade show'));
+    const badgeLabel = status === 'upcoming' ? 'Upcoming' : 'Past';
+    body.appendChild(defElement('span', 'event-status', badgeLabel));
+    body.appendChild(defElement('h3', 'event-title', event.title || 'Untitled event'));
 
     const dates = defGetEventDates(event);
-    body.appendChild(defElement('p', 'event-card-date', 'Date: ' + defFormatEventDate(event, dates)));
-    const location = defSafeText(event.loc || event.location || '', 200);
+    const dateLabel = defFormatEventDate(event, dates);
+    if (dateLabel) body.appendChild(defElement('p', 'event-card-date', 'Date: ' + dateLabel));
+
+    const location = defGetEventLocation(event);
     if (location) body.appendChild(defElement('p', 'event-card-location', 'Location: ' + location));
 
     card.append(imageWrap, body);
-    card.addEventListener('click', () => showEventDetail(originalIndex));
-    card.addEventListener('keydown', eventObject => {
+    card.addEventListener('click', () => showEventDetail(index));
+    card.addEventListener('keydown', (eventObject) => {
         if (eventObject.key === 'Enter' || eventObject.key === ' ') {
             eventObject.preventDefault();
-            showEventDetail(originalIndex);
+            showEventDetail(index);
         }
     });
+
     return card;
+}
+
+function defSetOptionalText(id, value) {
+    const element = document.getElementById(id);
+    if (!element) return;
+    const text = defSafeText(value, 5000);
+    element.textContent = text;
+    element.hidden = !text;
+}
+
+function defRenderMarkdownInto(element, markdown) {
+    if (!element) return;
+    element.replaceChildren();
+    const text = String(markdown || '').trim();
+    if (!text) return;
+
+    if (window.marked && typeof window.marked.parse === 'function') {
+        const html = window.marked.parse(text);
+        if (window.DOMPurify && typeof window.DOMPurify.sanitize === 'function') {
+            element.innerHTML = window.DOMPurify.sanitize(html);
+        } else {
+            // Avoid inserting un-sanitized CMS HTML if the sanitizer is unavailable.
+            element.textContent = text;
+        }
+    } else {
+        element.textContent = text;
+    }
 }
 
 function showEventDetail(index) {
     const event = eventsData[index];
     if (!event) return;
 
+    currentEventDetailIndex = index;
     const status = defGetEventStatus(event);
-    const isPast = status === 'past';
     const dates = defGetEventDates(event);
     const titleText = defSafeText(event.title || 'Untitled trade show', 300);
-    const slug = defContentSlug(event.slug || event.id || event.title, index);
+    const slug = defContentSlug(event, index);
+    const contentId = defBuildContentId(event, 'event', index);
 
+    const coverWrap = document.getElementById('ed-cover-wrap');
     const cover = document.getElementById('ed-cover');
-    const statusEl = document.getElementById('ed-status');
-    const publishedDate = document.getElementById('ed-published-date');
-    const title = document.getElementById('ed-title');
-    const summary = document.getElementById('ed-summary');
-    const meta = document.getElementById('ed-meta');
-    const tags = document.getElementById('ed-tags');
-    const highlights = document.getElementById('ed-highlights');
-    const body = document.getElementById('ed-body');
-    const recapHeading = document.getElementById('ed-recap-heading');
-    const gallery = document.getElementById('ed-gallery');
-    const url = document.getElementById('ed-url');
-    const cta = document.getElementById('ed-cta');
-
     if (cover) {
-        cover.src = defGetImageUrl(event.cover || event.image, '/images/event-1.jpg');
+        const imageUrl = defGetImageUrl(event.cover || event.image, '');
+        cover.src = imageUrl || '/images/event-1.jpg';
         cover.alt = titleText;
-        cover.hidden = false;
-        cover.onerror = () => { cover.onerror = null; cover.src = '/images/event-1.jpg'; };
+        cover.hidden = !imageUrl;
+        cover.onerror = () => { cover.onerror = null; cover.hidden = true; };
     }
-    if (statusEl) {
-        statusEl.textContent = isPast ? 'Past' : 'Upcoming';
-        statusEl.className = 'event-status ' + (isPast ? 'is-past' : 'is-upcoming');
-    }
-    if (publishedDate) {
-        const published = defSafeText(event.published_date || '', 80);
-        publishedDate.textContent = isPast && published ? 'Published ' + fmtDate(published) : '';
-        publishedDate.hidden = !publishedDate.textContent;
-    }
-    if (title) title.textContent = titleText;
+    if (coverWrap) coverWrap.hidden = !(cover && cover.src && !cover.hidden);
 
-    const summaryText = defSafeText(event.summary || event.desc || event.description || '', 2000);
-    if (summary) {
-        summary.textContent = summaryText;
-        summary.hidden = !summaryText;
+    const statusElement = document.getElementById('ed-status');
+    if (statusElement) {
+        statusElement.textContent = status === 'upcoming' ? 'Upcoming' : 'Past';
+        statusElement.className = 'event-status ' + (status === 'upcoming' ? 'is-upcoming' : 'is-past');
+        statusElement.hidden = false;
     }
 
+    defSetOptionalText('ed-published-date', defFormatEventDate(event, dates));
+    defSetOptionalText('ed-title', titleText);
+    defSetOptionalText('ed-summary', defGetEventSummary(event));
+
+    const tags = document.getElementById('ed-tags');
     if (tags) {
         tags.replaceChildren();
-        (Array.isArray(event.tags) ? event.tags : []).forEach(tag => tags.appendChild(defElement('span', 'kone-tag', tag)));
+        (Array.isArray(event.tags) ? event.tags : []).forEach(tag => {
+            tags.appendChild(defElement('span', 'kone-tag', tag));
+        });
         tags.hidden = !tags.childElementCount;
     }
 
+    const meta = document.getElementById('ed-meta');
     if (meta) {
         meta.replaceChildren();
         const dateLabel = defFormatEventDate(event, dates);
-        if (dateLabel) meta.appendChild(defElement('span', 'event-detail-date', 'Date: ' + dateLabel));
-        const location = defSafeText(event.loc || event.location || '', 200);
-        if (location) meta.appendChild(defElement('span', 'event-detail-location', 'Location: ' + location));
-        const booth = defSafeText(event.booth || '', 120);
-        if (booth) meta.appendChild(defElement('span', 'event-detail-booth', 'Booth: ' + booth));
+        const location = defGetEventLocation(event);
+        const booth = defSafeText(event.booth || '', 160);
         const theme = defSafeText(event.theme || '', 300);
-        if (theme) meta.appendChild(defElement('span', 'event-detail-theme', 'Theme: ' + theme));
+        const addMeta = (label, value) => {
+            if (!value) return;
+            const item = defElement('span', 'event-detail-meta-item');
+            item.appendChild(defElement('strong', '', label + ': '));
+            item.appendChild(document.createTextNode(value));
+            meta.appendChild(item);
+        };
+        addMeta('Date', dateLabel);
+        addMeta('Location', location);
+        addMeta('Booth', booth);
+        addMeta('Theme', theme);
         meta.hidden = !meta.childElementCount;
     }
 
-    if (highlights) {
-        highlights.replaceChildren();
-        const items = Array.isArray(event.highlights) ? event.highlights :
-            (Array.isArray(event.key_highlights) ? event.key_highlights : []);
-        if (items.length) {
-            highlights.appendChild(defElement('h3', 'event-detail-section-heading', 'Key highlights'));
-            const list = defElement('ul', 'event-highlights-list');
-            items.forEach(item => list.appendChild(defElement('li', '', item)));
-            highlights.appendChild(list);
-            highlights.hidden = false;
-        } else {
-            highlights.hidden = true;
-        }
+    const highlightsSection = document.getElementById('ed-highlights-section');
+    const highlights = document.getElementById('ed-highlights');
+    if (highlightsSection && highlights) {
+        const highlightValue = event.highlights || event.key_highlights || event.highlights_markdown || '';
+        defRenderMarkdownInto(highlights, Array.isArray(highlightValue) ? highlightValue.map(x => '- ' + String(x)).join('\n') : highlightValue);
+        highlightsSection.hidden = !String(Array.isArray(highlightValue) ? highlightValue.join('') : highlightValue).trim();
     }
 
-    // Full recap/article body is shown only for past shows/reports.
-    const recapText = isPast ? defSafeText(event.recap || event.body || '', 40000) : '';
-    if (body) {
-        body.replaceChildren();
-        if (recapText) {
-            try {
-                if (window.marked && typeof window.marked.parse === 'function') {
-                    const rendered = window.marked.parse(recapText);
-                    body.innerHTML = window.DOMPurify && typeof window.DOMPurify.sanitize === 'function'
-                        ? window.DOMPurify.sanitize(rendered)
-                        : rendered;
-                } else {
-                    body.textContent = recapText;
-                }
-            } catch (_) {
-                body.textContent = recapText;
-            }
-            body.hidden = false;
-        } else {
-            body.hidden = true;
-        }
-    }
-    if (recapHeading) recapHeading.hidden = !recapText;
+    const bodySection = document.getElementById('ed-body-section');
+    const bodyHeading = document.getElementById('ed-body-heading');
+    const body = document.getElementById('ed-body');
+    const longBody = defSafeText(event.body || event.article_body || '', 50000);
+    if (body) defRenderMarkdownInto(body, longBody);
+    if (bodySection) bodySection.hidden = !longBody;
+    if (bodyHeading) bodyHeading.textContent = status === 'past' ? 'Event Report' : 'About This Show';
 
+    const recapSection = document.getElementById('ed-recap-section');
+    const recap = document.getElementById('ed-recap');
+    const recapText = status === 'past' ? defSafeText(event.recap || '', 30000) : '';
+    if (recap) defRenderMarkdownInto(recap, recapText);
+    if (recapSection) recapSection.hidden = !recapText;
+
+    const gallery = document.getElementById('ed-gallery');
     if (gallery) {
         gallery.replaceChildren();
         const images = Array.isArray(event.gallery) ? event.gallery : [];
-        images.forEach((item, imageIndex) => {
-            const imagePath = typeof item === 'string' ? item : (item && (item.image || item.src || item.url)) || '';
-            const src = defGetImageUrl(imagePath, '');
-            if (!src) return;
+        images.forEach((galleryItem, galleryIndex) => {
+            const imageValue = typeof galleryItem === 'string'
+                ? galleryItem
+                : (galleryItem && (galleryItem.image || galleryItem.src || galleryItem.url));
+            const imageUrl = defGetImageUrl(imageValue, '');
+            if (!imageUrl) return;
+
+            const figure = defElement('figure', 'event-detail-gallery-item');
             const img = defElement('img');
-            img.src = src;
-            img.alt = titleText + ' - gallery image ' + (imageIndex + 1);
+            img.src = imageUrl;
+            img.alt = defSafeText(
+                (galleryItem && galleryItem.alt) || titleText + ' gallery image ' + (galleryIndex + 1),
+                250
+            );
             img.loading = 'lazy';
             img.decoding = 'async';
-            gallery.appendChild(img);
+            figure.appendChild(img);
+            const caption = defSafeText(galleryItem && galleryItem.caption || '', 300);
+            if (caption) figure.appendChild(defElement('figcaption', '', caption));
+            gallery.appendChild(figure);
         });
         gallery.hidden = !gallery.childElementCount;
     }
 
+    const url = document.getElementById('ed-url');
+    const eventUrl = defSafeText(event.url || event.website || '', 1000);
     if (url) {
-        const link = defSafeText(event.url || event.website || '', 1000);
-        if (/^https:\/\//i.test(link)) {
-            url.href = link;
+        if (/^https:\/\//i.test(eventUrl)) {
+            url.href = eventUrl;
             url.hidden = false;
         } else {
             url.removeAttribute('href');
@@ -654,89 +800,92 @@ function showEventDetail(index) {
         }
     }
 
-    if (cta) {
-        cta.textContent = isPast ? 'Talk to our team' : 'Book a meeting at this show';
-        cta.onclick = () => openContact(isPast ? 'contact_sales' : 'book_demo', titleText);
+    const ctaContainer = document.getElementById('ed-cta');
+    if (ctaContainer) {
+        ctaContainer.replaceChildren();
+        const cta = defElement(
+            'button',
+            'btn-y event-detail-cta',
+            status === 'upcoming' ? 'Book a meeting at this show' : 'Talk to our team'
+        );
+        cta.type = 'button';
+        cta.addEventListener('click', () => {
+            if (status === 'upcoming') openContact('book_demo', titleText, 'Book a meeting at this show', 'event', contentId, 'events');
+            else openContact('contact_sales', titleText, 'Talk to our team', 'event', contentId, 'events');
+        });
+        ctaContainer.appendChild(cta);
     }
 
+    // Suppress generic detail routing; send the event-specific content and virtual-page events once.
     switchView('event-detail', { suppressVirtualPageView: true });
     track('content_view', {
         content_type: 'event',
-        content_id: slug,
+        content_id: contentId,
         content_title: titleText
     });
-    track('virtual_page_view', {
-        page_location: window.location.origin + '/newsroom/events/' + slug,
-        page_path: '/newsroom/events/' + slug,
-        page_title: titleText
-    });
-}
-
-function initEventControls() {
-    if (eventControlsBound) return;
-    eventControlsBound = true;
-
-    document.querySelectorAll('[data-events-tab]').forEach(button => {
-        button.addEventListener('click', () => {
-            activeEventsTab = button.dataset.eventsTab === 'past' ? 'past' : 'upcoming';
-            activeEventTopic = 'all';
-            renderEvents();
-        });
-    });
-
-    const yearSelect = document.getElementById('events-year-select');
-    if (yearSelect) {
-        yearSelect.addEventListener('change', () => {
-            activeEventsYear = yearSelect.value || 'all';
-            renderEvents();
-        });
-    }
+    defTrackVirtualPageView('/newsroom/events/' + encodeURIComponent(slug), titleText);
 }
 
 function renderEvents() {
     const container = document.getElementById('events-list');
     if (!container) return;
-
-    initEventControls();
     container.replaceChildren();
 
-    const allItems = eventsData.map((event, index) => ({ event, index, status: defGetEventStatus(event) }));
-    const upcomingItems = allItems.filter(item => item.status === 'upcoming')
-        .sort((a, b) => (defGetEventDates(a.event).start || new Date(8640000000000000)) - (defGetEventDates(b.event).start || new Date(8640000000000000)));
-    const pastItems = allItems.filter(item => item.status === 'past')
-        .sort((a, b) => (defGetEventDates(b.event).end || defParseLocalDate(b.event.published_date) || new Date(0)) - (defGetEventDates(a.event).end || defParseLocalDate(a.event.published_date) || new Date(0)));
+    const allItems = eventsData.map((event, index) => ({
+        event,
+        index,
+        status: defGetEventStatus(event)
+    }));
+    const upcomingAll = allItems.filter(item => item.status === 'upcoming');
+    const pastAll = allItems.filter(item => item.status === 'past');
 
-    document.querySelectorAll('[data-events-tab]').forEach(button => {
-        const isActive = button.dataset.eventsTab === activeEventsTab;
-        button.classList.toggle('is-active', isActive);
-        button.setAttribute('aria-selected', String(isActive));
-        button.tabIndex = isActive ? 0 : -1;
-    });
+    const yearFilter = document.getElementById('events-year-filter');
+    const yearSelect = document.getElementById('events-year-select');
+    if (yearSelect) {
+        const years = Array.from(new Set(pastAll.map(item => defGetEventYear(item.event)).filter(Boolean)))
+            .sort((a, b) => Number(b) - Number(a));
+        if (currentEventsYear !== 'all' && !years.includes(currentEventsYear)) currentEventsYear = 'all';
+        yearSelect.replaceChildren();
+        const allOption = document.createElement('option');
+        allOption.value = 'all';
+        allOption.textContent = 'All years';
+        yearSelect.appendChild(allOption);
+        years.forEach(year => {
+            const option = document.createElement('option');
+            option.value = year;
+            option.textContent = year;
+            yearSelect.appendChild(option);
+        });
+        yearSelect.value = currentEventsYear;
+    }
+    if (yearFilter) yearFilter.hidden = currentEventsTab !== 'past' || !pastAll.some(item => defGetEventYear(item.event));
 
-    defRenderEventYearFilter(pastItems);
-    let items = activeEventsTab === 'past' ? pastItems : upcomingItems;
-
-    if (activeEventsTab === 'past' && activeEventsYear !== 'all') {
-        items = items.filter(item => defGetEventYear(item.event) === activeEventsYear);
+    let tabItems = currentEventsTab === 'past' ? pastAll : upcomingAll;
+    if (currentEventsTab === 'past' && currentEventsYear !== 'all') {
+        tabItems = tabItems.filter(item => defGetEventYear(item.event) === currentEventsYear);
     }
 
-    defRenderEventFilters(items);
-    if (activeEventTopic !== 'all') {
-        items = items.filter(item => Array.isArray(item.event.tags) && item.event.tags.includes(activeEventTopic));
-    }
+    defRenderEventTopicFilters(tabItems);
+    const visibleItems = currentEventsTopic === 'all'
+        ? tabItems
+        : tabItems.filter(item => Array.isArray(item.event.tags) && item.event.tags.includes(currentEventsTopic));
 
-    const heading = activeEventsTab === 'past' ? 'Past Trade Shows' : 'Upcoming Trade Shows';
-    container.appendChild(defElement('h3', 'events-section-title', heading));
-
-    if (!items.length) {
-        defShowMessage(container, activeEventsTab === 'past'
-            ? 'No past trade shows match this filter yet.'
-            : 'No upcoming trade shows are currently listed. Please check back soon.');
+    if (!visibleItems.length) {
+        defShowMessage(
+            container,
+            currentEventsTab === 'past'
+                ? 'No past trade shows match these filters yet.'
+                : 'No upcoming trade shows match these filters yet.'
+        );
         return;
     }
 
+    const sectionTitle = currentEventsTab === 'past' ? 'Past Trade Shows' : 'Upcoming Trade Shows';
+    container.appendChild(defElement('h3', 'events-section-title', sectionTitle));
     const grid = defElement('div', 'events-grid');
-    items.forEach(item => grid.appendChild(defMakeEventCard(item.event, item.status, item.index)));
+    visibleItems.forEach(item => {
+        grid.appendChild(defMakeEventCard(item.event, item.index, item.status));
+    });
     container.appendChild(grid);
 }
 
@@ -759,7 +908,7 @@ async function loadCloudData() {
         const response = await fetch('/data/events.json', { cache: 'no-store' });
         if (!response.ok) throw new Error('Could not load events data');
         const data = await response.json();
-        eventsData = Array.isArray(data.exhibitions) ? data.exhibitions : [];
+        eventsData = defNormalizeEventsPayload(data);
         renderEvents();
     } catch (error) {
         console.error('Events data could not be loaded.');
@@ -882,17 +1031,40 @@ function initContactForm() {
         defSetButton(button, 'Submitting…', true);
 
         const values = Object.fromEntries(new FormData(form).entries());
-        Object.assign(values, defGetAttributionForSubmission(), {
+        if (!pendingContactSubmissionId) pendingContactSubmissionId = defCreateSubmissionId();
+        const submissionId = pendingContactSubmissionId;
+        const attribution = defGetAttributionForSubmission();
+        Object.assign(values, attribution, {
             form_type: currentLeadSource,
-            form_id: 'contact_sales_form'
+            lead_source: currentLeadSource,
+            form_id: 'contact_sales_form',
+            submission_id: submissionId,
+            first_landing_page: firstLandingPage || defCurrentLandingPage(),
+            inquiry_source: currentLeadContext.sourceSection || 'homepage',
+            content_type: currentLeadContext.contentType || '',
+            content_title: currentLeadContext.contentTitle || '',
+            content_id: currentLeadContext.contentId || '',
+            cta_label: currentLeadContext.ctaLabel || (currentLeadSource === 'book_demo' ? 'Book a Demo' : 'Contact Sales'),
+            form_page: '/contact'
         });
 
         try {
-            await defPostForm(SITE_CONFIG.contactEndpoint || '/api/contact', values);
-            track('generate_lead', {
-                form_id: 'contact_sales_form',
-                lead_source: currentLeadSource
-            });
+            const result = await defPostForm(SITE_CONFIG.contactEndpoint || '/api/contact', values);
+            if (!trackedSubmissionIds.has(submissionId)) {
+                track('generate_lead', {
+                    form_id: 'contact_sales_form',
+                    lead_source: currentLeadSource,
+                    inquiry_source: currentLeadContext.sourceSection || 'homepage',
+                    content_type: currentLeadContext.contentType || '',
+                    content_title: currentLeadContext.contentTitle || '',
+                    content_id: currentLeadContext.contentId || '',
+                    cta_label: currentLeadContext.ctaLabel || (currentLeadSource === 'book_demo' ? 'Book a Demo' : 'Contact Sales'),
+                    first_landing_page: firstLandingPage || defCurrentLandingPage(),
+                    form_page: '/contact'
+                });
+                trackedSubmissionIds.add(submissionId);
+            }
+            pendingContactSubmissionId = '';
 
             const box = document.getElementById('form-container-box');
             const done = document.getElementById('success-screen');
@@ -923,15 +1095,21 @@ function initNewsletterForm() {
         if (button && button.disabled) return;
         defSetButton(button, 'Subscribing…', true);
 
+        if (!pendingNewsletterSubmissionId) pendingNewsletterSubmissionId = defCreateSubmissionId();
+        const submissionId = pendingNewsletterSubmissionId;
         const values = Object.assign(
             { email },
             defGetAttributionForSubmission(),
-            { form_id: 'newsletter_form' }
+            { form_id: 'newsletter_form', submission_id: submissionId, first_landing_page: firstLandingPage || defCurrentLandingPage() }
         );
 
         try {
             await defPostForm(SITE_CONFIG.newsletterEndpoint || '/api/newsletter', values);
-            track('newsletter_signup', { form_id: 'newsletter_form' });
+            if (!trackedSubmissionIds.has(submissionId)) {
+                track('newsletter_signup', { form_id: 'newsletter_form' });
+                trackedSubmissionIds.add(submissionId);
+            }
+            pendingNewsletterSubmissionId = '';
 
             const formContainer = document.getElementById('nl-form-container');
             const success = document.getElementById('nl-success-box');
@@ -956,10 +1134,11 @@ document.addEventListener('def:consent-updated', (event) => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    firstLandingPage = defCurrentLandingPage();
     // Remove legacy persistent attribution so old values cannot be re-used.
     if (!defHasAnalyticsConsent()) defClearStoredAttribution();
     else defCaptureUtmTouchIfAllowed();
-    initEventControls();
+    initEventsControls();
     loadCloudData();
     initCookieConsent();
     initContactForm();
