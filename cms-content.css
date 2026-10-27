@@ -59,3 +59,37 @@
   object-fit: contain !important;
   object-position: center center;
 }
+
+
+/* Trade Show cards are compact, keyboard-accessible links to full detail views. */
+.event-list-card {
+  cursor: pointer;
+  transition: transform .18s ease, box-shadow .18s ease;
+}
+.event-list-card:hover,
+.event-list-card:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(15, 23, 42, .12);
+  outline: none;
+}
+.event-list-card:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+.event-card-date,
+.event-card-location { margin: 8px 0 0; color: var(--gray); line-height: 1.55; }
+.event-card-body .event-title { margin: 12px 0 8px; }
+.event-detail-cover-wrap { position: relative; margin: 0 0 24px; }
+.event-detail-cover { display: block; width: 100%; max-height: 520px; object-fit: contain; object-position: center; background: #f4f6f8; }
+.event-detail-cover-wrap .event-status { position: absolute; left: 16px; top: 16px; }
+.event-status.is-past { background: #f1f5f9; color: #475569; }
+.event-detail-article > .detail-date { display: block; margin-bottom: 12px; color: var(--gray); }
+.event-detail-section-heading { margin: 28px 0 12px; font-size: 21px; }
+.event-highlights-list { margin: 0 0 20px; padding-left: 24px; line-height: 1.75; }
+.event-detail-gallery img { object-fit: contain; background: #f4f6f8; }
+.event-detail-cta-wrap { margin: 36px 0 12px; }
+.event-detail-cta-wrap .btn-y { cursor: pointer; }
+.event-detail-meta[hidden],
+.event-detail-gallery[hidden],
+.event-detail-article [hidden] { display: none !important; }
+@media (max-width: 800px) {
+  .event-detail-cover { max-height: 320px; }
+  .event-detail-meta { flex-direction: column; gap: 10px; }
+}

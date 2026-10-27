@@ -124,14 +124,23 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div id="view-event-detail" class="view">
                     <div class="back-btn" onclick="switchView('events')">← Back to Trade Shows</div>
                     <article class="event-detail-article">
-                        <span id="ed-published-date" class="detail-date"></span>
+                        <div class="event-detail-cover-wrap">
+                            <img id="ed-cover" class="event-detail-cover" src="images/event-1.jpg" alt="" hidden>
+                            <span id="ed-status" class="event-status" hidden></span>
+                        </div>
+                        <span id="ed-published-date" class="detail-date" hidden></span>
                         <div id="ed-tags" class="story-tags" hidden></div>
                         <h2 id="ed-title" class="detail-title"></h2>
                         <p id="ed-summary" class="detail-summary" hidden></p>
-                        <div id="ed-meta" class="event-detail-meta"></div>
-                        <div id="ed-body" class="detail-text"></div>
-                        <div id="ed-gallery" class="event-detail-gallery"></div>
+                        <div id="ed-meta" class="event-detail-meta" hidden></div>
+                        <section id="ed-highlights" class="event-detail-highlights" hidden></section>
+                        <h3 id="ed-recap-heading" class="event-detail-section-heading" hidden>Event recap</h3>
+                        <div id="ed-body" class="detail-text" hidden></div>
+                        <div id="ed-gallery" class="event-detail-gallery" hidden></div>
                         <a id="ed-url" class="event-link" hidden target="_blank" rel="noopener noreferrer">Visit event website</a>
+                        <div class="event-detail-cta-wrap">
+                            <button id="ed-cta" type="button" class="btn-y">Talk to our team</button>
+                        </div>
                     </article>
                 </div>
                 <div id="view-social" class="view">

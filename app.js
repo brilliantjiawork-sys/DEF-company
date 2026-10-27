@@ -6,6 +6,7 @@ const DEF_ATTRIBUTION_TTL_MS = 30 * 60 * 1000;
 const DEF_UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'];
 
 let currentLeadSource = 'contact_sales';
+let currentLeadContent = '';
 let storiesData = [];
 let eventsData = [];
 
@@ -61,6 +62,17 @@ function defElement(tag, className, text) {
     if (className) node.className = className;
     if (text !== undefined && text !== null) node.textContent = String(text);
     return node;
+}
+
+function defContentSlug(value, fallbackIndex = 0) {
+    const slug = defSafeText(value, 300)
+        .normalize('NFKD')
+        .toLowerCase()
+        .replace(/[\u0300-\u036f]/g, '')
+        .replace(/[^a-z0-9]+/g, '-')
+        .replace(/^-+|-+$/g, '')
+        .slice(0, 100);
+    return slug || 'content-' + (Number(fallbackIndex) + 1);
 }
 
 function defShowMessage(container, message) {
@@ -170,17 +182,70 @@ function track(eventName, params) {
     window.dataLayer.push(Object.assign({ event: eventName }, params || {}));
 }
 
+function defTrackVirtualPageView(path, pageTitle) {
+    const normalizedPath = path && path.startsWith('/')
+        ? path
+        : '/' + String(path || '').replace(/^\/+/, '');
+    track('virtual_page_view', {
+        page_location: window.location.origin + normalizedPath,
+        page_path: normalizedPath,
+        page_title: pageTitle || document.title
+    });
+}
+
+function defGetPageRoute(pageId) {
+    const routes = {
+        home: { path: '/', title: 'Home' },
+        contact: { path: '/contact', title: 'Contact' },
+        newsroom: { path: '/newsroom/overview', title: 'Newsroom Overview' }
+    };
+    return routes[pageId] || {
+        path: '/' + String(pageId || '').replace(/^\/+/, ''),
+        title: String(pageId || document.title)
+    };
+}
+
+function defGetViewRoute(viewId) {
+    const routes = {
+        ov: { path: '/newsroom/overview', title: 'Newsroom Overview' },
+        stories: { path: '/newsroom/stories', title: 'Stories' },
+        events: { path: '/newsroom/events', title: 'Trade Shows' },
+        social: { path: '/newsroom/social-media', title: 'Social Media' },
+        media: { path: '/newsroom/media', title: 'Media Contacts' },
+        'story-detail': { path: '/newsroom/stories', title: 'Story Detail' }
+    };
+    return routes[viewId] || {
+        path: '/newsroom/' + String(viewId || '').replace(/^\/+/, ''),
+        title: String(viewId || document.title)
+    };
+}
+
 // ---------- Page navigation ----------
 function showPage(id) {
     document.querySelectorAll('.page').forEach((page) => page.classList.remove('active'));
     const page = document.getElementById(id);
     if (page) page.classList.add('active');
-    if (id === 'newsroom') switchView('ov');
+
+    // Showing Newsroom also activates Overview internally; suppress that inner event
+    // so the user navigation is measured once.
+    if (id === 'newsroom') switchView('ov', { suppressVirtualPageView: true });
+
     window.scrollTo(0, 0);
+    if (page) {
+        const route = defGetPageRoute(id);
+        defTrackVirtualPageView(route.path, route.title);
+    }
 }
 
-function openContact(source) {
+function openContact(source, contentTitle) {
     currentLeadSource = source === 'book_demo' ? 'book_demo' : 'contact_sales';
+    currentLeadContent = defSafeText(contentTitle || '', 300);
+
+    track('cta_click', {
+        cta_label: currentLeadSource,
+        content_title: currentLeadContent
+    });
+
     const box = document.getElementById('form-container-box');
     const done = document.getElementById('success-screen');
     const form = document.getElementById('detailed-contact-form');
@@ -196,15 +261,20 @@ function openContact(source) {
     showPage('contact');
 }
 
-function switchView(viewId) {
+function switchView(viewId, options = {}) {
     document.querySelectorAll('.view').forEach((view) => view.classList.remove('active'));
     const target = document.getElementById('view-' + viewId);
     if (target) target.classList.add('active');
     document.querySelectorAll('.nr-sidebar a').forEach((item) => item.classList.remove('active'));
-    const navKey = viewId === 'story-detail' ? 'stories' : viewId;
+    const navKey = viewId === 'story-detail' ? 'stories' : (viewId === 'event-detail' ? 'events' : viewId);
     const navEl = document.getElementById('nav-' + navKey);
     if (navEl) navEl.classList.add('active');
     window.scrollTo(0, 80);
+
+    if (target && !options.suppressVirtualPageView) {
+        const route = defGetViewRoute(viewId);
+        defTrackVirtualPageView(route.path, route.title);
+    }
 }
 
 // ---------- Stories rendering ----------
@@ -298,7 +368,12 @@ function showStoryDetail(index) {
     switchView('story-detail');
 }
 
-// ---------- Events rendering ----------
+// ---------- Trade Show listing and detail ----------
+let activeEventsTab = 'upcoming';
+let activeEventsYear = 'all';
+let activeEventTopic = 'all';
+let eventControlsBound = false;
+
 function defParseLegacyEventRange(value) {
     const text = defSafeText(value, 150);
     // Example: "Nov 12-15, 2026" or "Dec 05–08, 2026".
@@ -309,9 +384,7 @@ function defParseLegacyEventRange(value) {
         return { start, end };
     }
     const twoDates = text.match(/^(.+?)\s*[-–]\s*(.+)$/);
-    if (twoDates) {
-        return { start: defParseLocalDate(twoDates[1]), end: defParseLocalDate(twoDates[2]) };
-    }
+    if (twoDates) return { start: defParseLocalDate(twoDates[1]), end: defParseLocalDate(twoDates[2]) };
     const oneDate = defParseLocalDate(text);
     return { start: oneDate, end: oneDate };
 }
@@ -328,19 +401,100 @@ function defGetEventDates(event) {
     return { start, end };
 }
 
-function defFormatEventDate(event, dates) {
+function defGetEventStatus(event) {
+    const dates = defGetEventDates(event);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    if (String(event.content_type || '').toLowerCase() === 'report') return 'past';
+    if (dates.end && dates.end < today) return 'past';
+
+    const year = Number(event.event_year || event.year || (dates.end && dates.end.getFullYear()) || 0);
+    if (year && year < today.getFullYear()) return 'past';
+
+    return 'upcoming';
+}
+
+function defFormatEventDate(event, dates = defGetEventDates(event)) {
     if (dates.start && dates.end) {
         if (dates.start.toDateString() === dates.end.toDateString()) return fmtDate(dates.start);
         return fmtDate(dates.start) + ' – ' + fmtDate(dates.end);
     }
-    return defSafeText(event.date || event.year || '', 150);
+    const legacy = defSafeText(event.date || '', 150);
+    if (legacy) return legacy;
+    const year = event.event_year || event.year;
+    return year ? 'Event year: ' + year : 'Date to be confirmed';
 }
 
-function defMakeEventCard(event, status) {
-    const card = defElement('article', 'event-card');
+function defGetEventYear(event) {
+    const dates = defGetEventDates(event);
+    const rawYear = event.event_year || event.year || (dates.end && dates.end.getFullYear()) || (dates.start && dates.start.getFullYear());
+    return rawYear ? String(rawYear) : '';
+}
+
+function defRenderEventFilters(items) {
+    const container = document.getElementById('events-filters');
+    if (!container) return;
+
+    const tags = new Set();
+    items.forEach(({ event }) => {
+        (Array.isArray(event.tags) ? event.tags : []).forEach(tag => {
+            const value = defSafeText(tag, 100);
+            if (value) tags.add(value);
+        });
+    });
+
+    const values = ['all', ...Array.from(tags).sort((a, b) => a.localeCompare(b))];
+    if (!values.includes(activeEventTopic)) activeEventTopic = 'all';
+    container.replaceChildren();
+
+    values.forEach(topic => {
+        const label = topic === 'all' ? 'All topics' : topic;
+        const button = defElement('button', 'event-topic-filter' + (topic === activeEventTopic ? ' is-active' : ''), label);
+        button.type = 'button';
+        button.setAttribute('aria-pressed', String(topic === activeEventTopic));
+        button.addEventListener('click', () => {
+            activeEventTopic = topic;
+            renderEvents();
+        });
+        container.appendChild(button);
+    });
+    container.hidden = values.length <= 1;
+}
+
+function defRenderEventYearFilter(pastItems) {
+    const wrapper = document.getElementById('events-year-filter');
+    const select = document.getElementById('events-year-select');
+    if (!wrapper || !select) return;
+
+    wrapper.hidden = activeEventsTab !== 'past';
+    if (activeEventsTab !== 'past') return;
+
+    const years = Array.from(new Set(pastItems.map(({ event }) => defGetEventYear(event)).filter(Boolean)))
+        .sort((a, b) => Number(b) - Number(a));
+
+    if (activeEventsYear !== 'all' && !years.includes(activeEventsYear)) activeEventsYear = 'all';
+    select.replaceChildren();
+    const allOption = defElement('option', '', 'All years');
+    allOption.value = 'all';
+    select.appendChild(allOption);
+    years.forEach(year => {
+        const option = defElement('option', '', year);
+        option.value = year;
+        select.appendChild(option);
+    });
+    select.value = activeEventsYear;
+}
+
+function defMakeEventCard(event, status, originalIndex) {
+    const card = defElement('article', 'event-card event-list-card');
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', 'Open trade show: ' + defSafeText(event.title, 160));
+
     const imageWrap = defElement('div', 'event-card-image');
     const image = defElement('img');
-    image.src = defGetImageUrl(event.cover, '/images/event-1.jpg');
+    image.src = defGetImageUrl(event.cover || event.image, '/images/event-1.jpg');
     image.alt = defSafeText(event.title, 160);
     image.loading = 'lazy';
     image.decoding = 'async';
@@ -348,101 +502,242 @@ function defMakeEventCard(event, status) {
     imageWrap.appendChild(image);
 
     const body = defElement('div', 'event-card-body');
-    const badgeLabel = status === 'upcoming' ? 'Upcoming' : status === 'past' ? 'Past event' : 'Date to confirm';
-    body.appendChild(defElement('span', 'event-status', badgeLabel));
-    body.appendChild(defElement('h3', 'event-title', event.title || 'Untitled event'));
+    body.appendChild(defElement('span', 'event-status', status === 'past' ? 'Past' : 'Upcoming'));
+    body.appendChild(defElement('h3', 'event-title', event.title || 'Untitled trade show'));
 
     const dates = defGetEventDates(event);
-    const dateLabel = defFormatEventDate(event, dates);
-    const meta = defElement('div', 'event-meta');
-    if (dateLabel) {
-        const dateLine = defElement('p', '', 'Date: ' + dateLabel);
-        meta.appendChild(dateLine);
-    }
+    body.appendChild(defElement('p', 'event-card-date', 'Date: ' + defFormatEventDate(event, dates)));
     const location = defSafeText(event.loc || event.location || '', 200);
-    if (location) meta.appendChild(defElement('p', '', 'Location: ' + location));
-    const booth = defSafeText(event.booth || '', 120);
-    if (booth) meta.appendChild(defElement('p', '', 'Booth: ' + booth));
-    body.appendChild(meta);
-
-    const theme = defSafeText(event.theme || '', 250);
-    if (theme) body.appendChild(defElement('p', 'event-theme', 'Theme: ' + theme));
-    const recap = defSafeText(event.recap || '', 12000);
-    if (recap && window.marked && typeof window.marked.parse === 'function') {
-        const recapNode = defElement('div', 'event-recap');
-        recapNode.innerHTML = window.marked.parse(recap);
-        body.appendChild(recapNode);
-    } else {
-        const description = defSafeText(event.desc || event.description || recap, 2500);
-        if (description) body.appendChild(defElement('p', 'event-description', description));
-    }
-
-    if (Array.isArray(event.gallery) && event.gallery.length) {
-        const gallery = defElement('div', 'event-gallery');
-        event.gallery.slice(0, 8).forEach((imageValue, index) => {
-            const galleryImage = defElement('img');
-            galleryImage.src = defGetImageUrl(typeof imageValue === 'string' ? imageValue : (imageValue && (imageValue.image || imageValue.src)), '');
-            galleryImage.alt = defSafeText(event.title, 160) + ' - gallery image ' + (index + 1);
-            galleryImage.loading = 'lazy';
-            galleryImage.decoding = 'async';
-            if (galleryImage.src) gallery.appendChild(galleryImage);
-        });
-        if (gallery.childElementCount) body.appendChild(gallery);
-    }
-
-    const eventUrl = defSafeText(event.url || event.website || '', 1000);
-    if (/^https:\/\//i.test(eventUrl)) {
-        const link = defElement('a', 'event-link', 'Visit event website');
-        link.href = eventUrl;
-        link.target = '_blank';
-        link.rel = 'noopener noreferrer';
-        body.appendChild(link);
-    }
+    if (location) body.appendChild(defElement('p', 'event-card-location', 'Location: ' + location));
 
     card.append(imageWrap, body);
+    card.addEventListener('click', () => showEventDetail(originalIndex));
+    card.addEventListener('keydown', eventObject => {
+        if (eventObject.key === 'Enter' || eventObject.key === ' ') {
+            eventObject.preventDefault();
+            showEventDetail(originalIndex);
+        }
+    });
     return card;
+}
+
+function showEventDetail(index) {
+    const event = eventsData[index];
+    if (!event) return;
+
+    const status = defGetEventStatus(event);
+    const isPast = status === 'past';
+    const dates = defGetEventDates(event);
+    const titleText = defSafeText(event.title || 'Untitled trade show', 300);
+    const slug = defContentSlug(event.slug || event.id || event.title, index);
+
+    const cover = document.getElementById('ed-cover');
+    const statusEl = document.getElementById('ed-status');
+    const publishedDate = document.getElementById('ed-published-date');
+    const title = document.getElementById('ed-title');
+    const summary = document.getElementById('ed-summary');
+    const meta = document.getElementById('ed-meta');
+    const tags = document.getElementById('ed-tags');
+    const highlights = document.getElementById('ed-highlights');
+    const body = document.getElementById('ed-body');
+    const recapHeading = document.getElementById('ed-recap-heading');
+    const gallery = document.getElementById('ed-gallery');
+    const url = document.getElementById('ed-url');
+    const cta = document.getElementById('ed-cta');
+
+    if (cover) {
+        cover.src = defGetImageUrl(event.cover || event.image, '/images/event-1.jpg');
+        cover.alt = titleText;
+        cover.hidden = false;
+        cover.onerror = () => { cover.onerror = null; cover.src = '/images/event-1.jpg'; };
+    }
+    if (statusEl) {
+        statusEl.textContent = isPast ? 'Past' : 'Upcoming';
+        statusEl.className = 'event-status ' + (isPast ? 'is-past' : 'is-upcoming');
+    }
+    if (publishedDate) {
+        const published = defSafeText(event.published_date || '', 80);
+        publishedDate.textContent = isPast && published ? 'Published ' + fmtDate(published) : '';
+        publishedDate.hidden = !publishedDate.textContent;
+    }
+    if (title) title.textContent = titleText;
+
+    const summaryText = defSafeText(event.summary || event.desc || event.description || '', 2000);
+    if (summary) {
+        summary.textContent = summaryText;
+        summary.hidden = !summaryText;
+    }
+
+    if (tags) {
+        tags.replaceChildren();
+        (Array.isArray(event.tags) ? event.tags : []).forEach(tag => tags.appendChild(defElement('span', 'kone-tag', tag)));
+        tags.hidden = !tags.childElementCount;
+    }
+
+    if (meta) {
+        meta.replaceChildren();
+        const dateLabel = defFormatEventDate(event, dates);
+        if (dateLabel) meta.appendChild(defElement('span', 'event-detail-date', 'Date: ' + dateLabel));
+        const location = defSafeText(event.loc || event.location || '', 200);
+        if (location) meta.appendChild(defElement('span', 'event-detail-location', 'Location: ' + location));
+        const booth = defSafeText(event.booth || '', 120);
+        if (booth) meta.appendChild(defElement('span', 'event-detail-booth', 'Booth: ' + booth));
+        const theme = defSafeText(event.theme || '', 300);
+        if (theme) meta.appendChild(defElement('span', 'event-detail-theme', 'Theme: ' + theme));
+        meta.hidden = !meta.childElementCount;
+    }
+
+    if (highlights) {
+        highlights.replaceChildren();
+        const items = Array.isArray(event.highlights) ? event.highlights :
+            (Array.isArray(event.key_highlights) ? event.key_highlights : []);
+        if (items.length) {
+            highlights.appendChild(defElement('h3', 'event-detail-section-heading', 'Key highlights'));
+            const list = defElement('ul', 'event-highlights-list');
+            items.forEach(item => list.appendChild(defElement('li', '', item)));
+            highlights.appendChild(list);
+            highlights.hidden = false;
+        } else {
+            highlights.hidden = true;
+        }
+    }
+
+    // Full recap/article body is shown only for past shows/reports.
+    const recapText = isPast ? defSafeText(event.recap || event.body || '', 40000) : '';
+    if (body) {
+        body.replaceChildren();
+        if (recapText) {
+            try {
+                if (window.marked && typeof window.marked.parse === 'function') {
+                    const rendered = window.marked.parse(recapText);
+                    body.innerHTML = window.DOMPurify && typeof window.DOMPurify.sanitize === 'function'
+                        ? window.DOMPurify.sanitize(rendered)
+                        : rendered;
+                } else {
+                    body.textContent = recapText;
+                }
+            } catch (_) {
+                body.textContent = recapText;
+            }
+            body.hidden = false;
+        } else {
+            body.hidden = true;
+        }
+    }
+    if (recapHeading) recapHeading.hidden = !recapText;
+
+    if (gallery) {
+        gallery.replaceChildren();
+        const images = Array.isArray(event.gallery) ? event.gallery : [];
+        images.forEach((item, imageIndex) => {
+            const imagePath = typeof item === 'string' ? item : (item && (item.image || item.src || item.url)) || '';
+            const src = defGetImageUrl(imagePath, '');
+            if (!src) return;
+            const img = defElement('img');
+            img.src = src;
+            img.alt = titleText + ' - gallery image ' + (imageIndex + 1);
+            img.loading = 'lazy';
+            img.decoding = 'async';
+            gallery.appendChild(img);
+        });
+        gallery.hidden = !gallery.childElementCount;
+    }
+
+    if (url) {
+        const link = defSafeText(event.url || event.website || '', 1000);
+        if (/^https:\/\//i.test(link)) {
+            url.href = link;
+            url.hidden = false;
+        } else {
+            url.removeAttribute('href');
+            url.hidden = true;
+        }
+    }
+
+    if (cta) {
+        cta.textContent = isPast ? 'Talk to our team' : 'Book a meeting at this show';
+        cta.onclick = () => openContact(isPast ? 'contact_sales' : 'book_demo', titleText);
+    }
+
+    switchView('event-detail', { suppressVirtualPageView: true });
+    track('content_view', {
+        content_type: 'event',
+        content_id: slug,
+        content_title: titleText
+    });
+    track('virtual_page_view', {
+        page_location: window.location.origin + '/newsroom/events/' + slug,
+        page_path: '/newsroom/events/' + slug,
+        page_title: titleText
+    });
+}
+
+function initEventControls() {
+    if (eventControlsBound) return;
+    eventControlsBound = true;
+
+    document.querySelectorAll('[data-events-tab]').forEach(button => {
+        button.addEventListener('click', () => {
+            activeEventsTab = button.dataset.eventsTab === 'past' ? 'past' : 'upcoming';
+            activeEventTopic = 'all';
+            renderEvents();
+        });
+    });
+
+    const yearSelect = document.getElementById('events-year-select');
+    if (yearSelect) {
+        yearSelect.addEventListener('change', () => {
+            activeEventsYear = yearSelect.value || 'all';
+            renderEvents();
+        });
+    }
 }
 
 function renderEvents() {
     const container = document.getElementById('events-list');
     if (!container) return;
+
+    initEventControls();
     container.replaceChildren();
 
-    if (!eventsData.length) {
-        defShowMessage(container, 'No events have been published yet. Please check back soon.');
+    const allItems = eventsData.map((event, index) => ({ event, index, status: defGetEventStatus(event) }));
+    const upcomingItems = allItems.filter(item => item.status === 'upcoming')
+        .sort((a, b) => (defGetEventDates(a.event).start || new Date(8640000000000000)) - (defGetEventDates(b.event).start || new Date(8640000000000000)));
+    const pastItems = allItems.filter(item => item.status === 'past')
+        .sort((a, b) => (defGetEventDates(b.event).end || defParseLocalDate(b.event.published_date) || new Date(0)) - (defGetEventDates(a.event).end || defParseLocalDate(a.event.published_date) || new Date(0)));
+
+    document.querySelectorAll('[data-events-tab]').forEach(button => {
+        const isActive = button.dataset.eventsTab === activeEventsTab;
+        button.classList.toggle('is-active', isActive);
+        button.setAttribute('aria-selected', String(isActive));
+        button.tabIndex = isActive ? 0 : -1;
+    });
+
+    defRenderEventYearFilter(pastItems);
+    let items = activeEventsTab === 'past' ? pastItems : upcomingItems;
+
+    if (activeEventsTab === 'past' && activeEventsYear !== 'all') {
+        items = items.filter(item => defGetEventYear(item.event) === activeEventsYear);
+    }
+
+    defRenderEventFilters(items);
+    if (activeEventTopic !== 'all') {
+        items = items.filter(item => Array.isArray(item.event.tags) && item.event.tags.includes(activeEventTopic));
+    }
+
+    const heading = activeEventsTab === 'past' ? 'Past Trade Shows' : 'Upcoming Trade Shows';
+    container.appendChild(defElement('h3', 'events-section-title', heading));
+
+    if (!items.length) {
+        defShowMessage(container, activeEventsTab === 'past'
+            ? 'No past trade shows match this filter yet.'
+            : 'No upcoming trade shows are currently listed. Please check back soon.');
         return;
     }
 
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const upcoming = [];
-    const past = [];
-    const unknown = [];
-
-    eventsData.forEach((event) => {
-        const dates = defGetEventDates(event);
-        if (dates.end) {
-            if (dates.end < today) past.push({ event, dates });
-            else upcoming.push({ event, dates });
-        } else {
-            unknown.push({ event, dates });
-        }
-    });
-
-    upcoming.sort((a, b) => (a.dates.start || new Date(8640000000000000)) - (b.dates.start || new Date(8640000000000000)));
-    past.sort((a, b) => (b.dates.end || 0) - (a.dates.end || 0));
-
-    const addSection = (title, list, status) => {
-        if (!list.length) return;
-        container.appendChild(defElement('h3', 'events-section-title', title));
-        const grid = defElement('div', 'events-grid');
-        list.forEach((item) => grid.appendChild(defMakeEventCard(item.event, status)));
-        container.appendChild(grid);
-    };
-
-    addSection('Upcoming Global Expos', upcoming, 'upcoming');
-    addSection('Past Events & Highlights', past, 'past');
-    addSection('Events — Dates to Confirm', unknown, 'unknown');
+    const grid = defElement('div', 'events-grid');
+    items.forEach(item => grid.appendChild(defMakeEventCard(item.event, item.status, item.index)));
+    container.appendChild(grid);
 }
 
 async function loadCloudData() {
@@ -664,6 +959,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Remove legacy persistent attribution so old values cannot be re-used.
     if (!defHasAnalyticsConsent()) defClearStoredAttribution();
     else defCaptureUtmTouchIfAllowed();
+    initEventControls();
     loadCloudData();
     initCookieConsent();
     initContactForm();
