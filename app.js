@@ -673,16 +673,32 @@ function renderStories() {
         const dateText = fmtDate(story.date || story.published_date);
         if (dateText) info.appendChild(defElement('span', 'date', dateText));
         const storyKicker = story.is_event_coverage ? defSafeText(story.event_content_stage || 'Trade Show Coverage', 100) : defGetStoryCategory(story);
-        info.appendChild(defElement('span', 'story-category-label', storyKicker));
-        info.appendChild(defElement('h3', '', story.title || 'Untitled story'));
+        const categoryRow = defElement('div', 'story-card-taxonomy-row');
+        categoryRow.appendChild(defElement('span', 'story-taxonomy-label', 'Content category'));
+        categoryRow.appendChild(defElement('span', 'story-category-label', storyKicker));
+        info.appendChild(categoryRow);
+        info.appendChild(defElement('h3', 'story-card-title', story.title || 'Untitled story'));
         const summary = defSafeText(story.summary || story.excerpt || '', 600);
         if (summary) info.appendChild(defElement('p', 'story-summary', summary));
 
+        const industriesList = defGetContentIndustries(story);
+        if (industriesList.length) {
+            const industryRow = defElement('div', 'story-card-taxonomy-row');
+            industryRow.appendChild(defElement('span', 'story-taxonomy-label', 'Industry'));
+            const industryValues = defElement('div', 'story-card-taxonomy-values');
+            industriesList.forEach(industry => industryValues.appendChild(defElement('span', 'story-industry-chip', industry)));
+            industryRow.appendChild(industryValues);
+            info.appendChild(industryRow);
+        }
+
         const tagsList = defGetTopicTags(story).slice(0, 4);
         if (tagsList.length) {
+            const topicBlock = defElement('div', 'story-card-topics');
+            topicBlock.appendChild(defElement('span', 'story-taxonomy-label', 'Topic tags'));
             const tags = defElement('div', 'story-tags');
             tagsList.forEach(tag => tags.appendChild(defElement('span', 'kone-tag', tag)));
-            info.appendChild(tags);
+            topicBlock.appendChild(tags);
+            info.appendChild(topicBlock);
         }
 
         article.append(imageWrap, info);
@@ -725,16 +741,21 @@ function showStoryDetail(index, origin = 'stories') {
     if (body) defRenderMarkdownInto(body, story.body || '');
 
     const category = document.getElementById('sd-category');
+    const categoryMeta = document.getElementById('sd-category-meta');
     if (category) {
         const stageLabel = story.is_event_coverage ? defSafeText(story.event_content_stage || 'Trade Show Article', 100) : '';
-        category.textContent = stageLabel || defGetStoryCategory(story);
-        category.hidden = false;
+        const categoryValue = stageLabel || defGetStoryCategory(story);
+        category.textContent = categoryValue;
+        category.hidden = !categoryValue;
+        if (categoryMeta) categoryMeta.hidden = !categoryValue;
     }
     const industry = document.getElementById('sd-industry');
+    const industryMeta = document.getElementById('sd-industry-meta');
     if (industry) {
         const values = defGetContentIndustries(story);
         industry.textContent = values.join(' · ');
         industry.hidden = !values.length;
+        if (industryMeta) industryMeta.hidden = !values.length;
     }
     const fictionalBadge = document.getElementById('sd-fictional-badge');
     if (fictionalBadge) {
@@ -742,10 +763,11 @@ function showStoryDetail(index, origin = 'stories') {
         fictionalBadge.hidden = !isIllustrative;
     }
     const tagsWrap = document.getElementById('sd-tags');
+    const topicsMeta = document.getElementById('sd-topics-meta');
     if (tagsWrap) {
         tagsWrap.replaceChildren();
         defGetTopicTags(story).forEach(tag => tagsWrap.appendChild(defElement('span', 'kone-tag', tag)));
-        tagsWrap.hidden = !tagsWrap.childElementCount;
+        if (topicsMeta) topicsMeta.hidden = !tagsWrap.childElementCount;
     }
 
     const storyCtaContainer = document.getElementById('sd-cta');

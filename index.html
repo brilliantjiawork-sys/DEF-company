@@ -15,8 +15,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DEF Company | Newsroom</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261029-ui-v7">
-    <link rel="stylesheet" href="cms-content.css?v=20261029-ui-v7">
+    <link rel="stylesheet" href="style.css?v=20261029-ui-v11">
+    <link rel="stylesheet" href="cms-content.css?v=20261029-ui-v11">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.17/dist/purify.min.js"></script>
 </head>
@@ -87,14 +87,25 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 <div id="view-story-detail" class="view">
                     <div id="story-detail-back" class="back-btn">← Back to Stories</div>
                     <article class="detail-article story-detail-article">
-                        <div class="detail-hero-image"><img id="sd-img" alt="" loading="lazy" decoding="async"></div>
-                        <span id="sd-date" class="detail-date"></span>
-                        <span id="sd-category" class="story-category-label" hidden></span>
-                        <span id="sd-industry" class="story-industry-label" hidden></span>
-                        <span id="sd-fictional-badge" class="illustrative-example-badge" hidden>Illustrative Use Case · Fictional Example</span>
-                        <div id="sd-tags" class="story-tags" hidden></div>
                         <h2 id="sd-title" class="detail-title"></h2>
+                        <span id="sd-date" class="detail-date"></span>
+                        <div class="story-taxonomy" aria-label="Article classification">
+                            <div id="sd-category-meta" class="story-taxonomy-item" hidden>
+                                <span class="story-taxonomy-label">Content category</span>
+                                <span id="sd-category" class="story-category-label"></span>
+                            </div>
+                            <div id="sd-industry-meta" class="story-taxonomy-item" hidden>
+                                <span class="story-taxonomy-label">Industry</span>
+                                <span id="sd-industry" class="story-industry-label"></span>
+                            </div>
+                            <div id="sd-topics-meta" class="story-taxonomy-item" hidden>
+                                <span class="story-taxonomy-label">Topic tags</span>
+                                <div id="sd-tags" class="story-tags"></div>
+                            </div>
+                        </div>
+                        <span id="sd-fictional-badge" class="illustrative-example-badge" hidden>Illustrative Use Case · Fictional Example</span>
                         <p id="sd-summary" class="detail-summary" hidden></p>
+                        <div class="detail-hero-image"><img id="sd-img" alt="" loading="lazy" decoding="async"></div>
                         <div id="sd-body" class="detail-text"></div>
                         <div id="sd-cta" class="event-detail-cta-wrap"></div>
                         <section id="sd-related-stories-section" class="recommendation-section" hidden>
@@ -248,7 +259,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <button type="button" id="cookie-reopen">Cookie settings</button>
     <script src="events-adapter.js"></script>
-    <script src="app.js?v=20261029-ui-v7"></script>
-    <script src="marketing-content.js?v=20261029-ui-v7"></script>
+    <script src="app.js?v=20261029-cms-v11"></script>
+    <script src="marketing-content.js?v=20261029-cms-v11"></script>
 </body>
 </html> 

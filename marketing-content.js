@@ -14,7 +14,7 @@
     const raw = safeText(value, 1200);
     if (!raw || raw.startsWith('//') || /^javascript:/i.test(raw)) return '';
     let url = raw.startsWith('https://') || raw.startsWith('/') ? raw : '/' + raw.replace(/^\.\//, '');
-    if (url.includes('/social-youtube-wide.jpg') && !url.includes('v=20261029-final-v6')) url += (url.includes('?') ? '&' : '?') + 'v=20261029-final-v6';
+    if (url.includes('/social-youtube-wide.jpg') && !url.includes('v=20261029-cms-v11')) url += (url.includes('?') ? '&' : '?') + 'v=20261029-cms-v11';
     return url;
   }
   const setImage = (element, value, alt = '') => {
@@ -77,14 +77,8 @@
     setText('#nl-success-box h3', home.newsletter_success_title);
     setText('#nl-success-box p', home.newsletter_success_description);
 
-    // Newsroom page copy.
-    setText('#view-stories > .nr-title', newsroom.stories_title || 'Stories');
-    setText('#view-stories .stories-intro', newsroom.stories_intro);
-    setText('#view-story-detail .back-btn', newsroom.stories_back_button || '← Back to Stories');
-    setText('#view-events > .nr-title', newsroom.events_title || 'Trade Shows');
-    setText('#view-events .events-intro', newsroom.events_intro);
-    setText('#events-upcoming-title', newsroom.events_upcoming_heading || 'Upcoming Shows');
-    setText('#event-articles-title', newsroom.events_articles_heading || 'Trade Show Articles');
+    // Stories and Trade Shows page-level copy is managed by their dedicated settings files
+    // and loaded by app.js. Do not overwrite those values from legacy site-content.json.
     const eventVisit = document.getElementById('ed-url');
     if (eventVisit && newsroom.events_visit_link) eventVisit.textContent = safeText(newsroom.events_visit_link, 100);
     setText('#view-social > .nr-title', newsroom.social_title || 'Social Media');
@@ -168,7 +162,7 @@
     let imagePath = channel.image;
     // The old YouTube image was portrait with white/blank side areas. Replace only that legacy default.
     if (/youtube/i.test(safeText(channel.platform, 50)) && /social-youtube(?:-wide)?\.(jpg|jpeg|png|webp)$/i.test(safeText(channel.image, 500))) {
-      imagePath = '/images/social-youtube-wide.jpg?v=20261029-final-v6';
+      imagePath = '/images/social-youtube-wide.jpg?v=20261029-cms-v11';
     }
     setImage(image, imagePath, channel.image_alt || channel.platform);
     image.onerror = () => {
