@@ -1,5 +1,6 @@
 const UTM_FIELDS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'];
 export const COMMON_ATTRIBUTION_FIELDS = [...UTM_FIELDS, 'landing_page', 'submission_id'];
+const ATTRIBUTION_ONLY_FIELDS = ['landing_page', 'form_entry', 'content_type', 'content_title', 'cta_label', ...UTM_FIELDS];
 
 function jsonResponse(payload, status = 200) {
   return new Response(JSON.stringify(payload), {
@@ -12,7 +13,7 @@ function safeField(value, maxLength = 1000) {
   return String(value == null ? '' : value).trim().slice(0, maxLength);
 }
 
-export async function proxyToAppsScript({ request, env, envKey, allowedFields, requiredFields }) {
+export async function proxyToAppsScript({ request, env, envKey, allowedFields, requiredFields, analyticsRequiredFields = [] }) {
   if (request.method !== 'POST') return jsonResponse({ ok: false, code: 'method_not_allowed' }, 405);
 
   let incoming;
@@ -23,19 +24,36 @@ export async function proxyToAppsScript({ request, env, envKey, allowedFields, r
     email: 254, first_name: 120, last_name: 120, company: 250, phone: 100,
     country: 120, zip_code: 40, industry: 150, message: 5000,
     form_entry: 40, content_type: 80, content_title: 300, cta_label: 200,
-    landing_page: 1500, submission_id: 120,
+    landing_page: 1500, submission_id: 120, analytics_consent: 10,
     utm_source: 200, utm_medium: 200, utm_campaign: 200, utm_content: 200
   };
 
   const outgoing = new URLSearchParams();
+  const analyticsConsent = incoming.get('analytics_consent') === 'true';
   for (const field of allowedFields) {
     const raw = incoming.get(field);
     if (raw === null || typeof raw !== 'string') continue;
     outgoing.set(field, safeField(raw, limits[field] || 1000));
   }
 
+  // Enforce the user's explicit Analytics choice at the server boundary too.
+  // Marketing consent controls advertising tags; it does not decide whether a form is saved.
+  if (!analyticsConsent) {
+    for (const field of ATTRIBUTION_ONLY_FIELDS) {
+      if (allowedFields.includes(field)) outgoing.set(field, '');
+    }
+  }
+  outgoing.set('analytics_consent', analyticsConsent ? 'true' : 'false');
+
   const missing = requiredFields.filter(field => !outgoing.get(field));
   if (missing.length) return jsonResponse({ ok: false, code: 'missing_required_fields', fields: missing }, 400);
+
+  if (analyticsConsent) {
+    const missingAnalytics = analyticsRequiredFields.filter(field => !outgoing.get(field));
+    if (missingAnalytics.length) {
+      return jsonResponse({ ok: false, code: 'missing_attribution_fields', fields: missingAnalytics }, 400);
+    }
+  }
 
   const endpoint = String(env[envKey] || '').trim();
   let endpointUrl;
