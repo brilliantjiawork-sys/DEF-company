@@ -20,7 +20,7 @@ media_libraries:
 
 collections:
   - name: "site-content"
-    label: "Website Content — 网站文案与图片"
+    label: "Website Content — 首页、Newsroom 与表单文案"
     description: "维护首页、Newsroom、表单说明和 Cookie 文案，以及首页与栏目卡片图片。一般运营更新内容无需修改 HTML。"
     files:
       - file: "data/site-content.json"
@@ -71,13 +71,13 @@ collections:
             name: "newsroom"
             widget: "object"
             fields:
-              - { label: "侧边栏：Overview", name: "sidebar_overview", widget: "string" }
+              - { label: "旧字段（前台隐藏）：Overview", name: "sidebar_overview", widget: "string" }
               - { label: "侧边栏：Stories", name: "sidebar_stories", widget: "string" }
               - { label: "侧边栏：Trade Shows", name: "sidebar_events", widget: "string" }
               - { label: "侧边栏：Social Media", name: "sidebar_social", widget: "string" }
-              - { label: "侧边栏：Media", name: "sidebar_media", widget: "string" }
-              - { label: "Newsroom 总标题", name: "overview_title", widget: "string" }
-              - label: "Overview 卡片 — Social Media"
+              - { label: "旧字段（前台隐藏）：Media", name: "sidebar_media", widget: "string" }
+              - { label: "旧字段（前台隐藏）：Newsroom Overview 标题", name: "overview_title", widget: "string" }
+              - label: "旧字段（前台隐藏）：Overview 卡片 — Social Media"
                 name: "overview_cards"
                 widget: "object"
                 fields:
@@ -120,7 +120,7 @@ collections:
               - { label: "Social Media 页面标题", name: "social_title", widget: "string" }
               - { label: "Social Media 免责声明开头", name: "social_disclaimer_lead", widget: "string" }
               - { label: "Social Media 免责声明正文", name: "social_disclaimer_text", widget: "text" }
-              - { label: "Media Contacts 页面标题", name: "media_title", widget: "string" }
+              - { label: "旧字段（前台隐藏）：Media Contacts 页面标题", name: "media_title", widget: "string" }
               - { label: "Media Contacts 免责声明开头", name: "media_disclaimer_lead", widget: "string" }
               - { label: "Media Contacts 免责声明正文", name: "media_disclaimer_text", widget: "text" }
               - { label: "图片来源名称", name: "image_source_label", widget: "string" }
@@ -194,37 +194,9 @@ collections:
               - { label: "图片替代文本", name: "image_alt", widget: "string", required: false }
               - { label: "在网站显示", name: "active", widget: "boolean", default: true }
 
-  - name: "media-contacts"
-    label: "Media Contacts — 媒体联系人"
-    description: "联系人姓名、职位、邮箱、头像都在这里维护。修改已发布内容后保存即可更新网站，不需要修改 HTML。"
-    files:
-      - file: "data/media-contacts.json"
-        name: "media_contacts"
-        label: "媒体联系人列表"
-        format: "json"
-        editor:
-          preview: false
-        fields:
-          - label: "媒体联系人（已填项目默认折叠，点击标题编辑）"
-            name: "contacts"
-            widget: "list"
-            label_singular: "添加媒体联系人"
-            collapsed: auto
-            minimize_collapsed: auto
-            add_to_top: true
-            summary: "{{name}} · {{title}}"
-            thumbnail: "portrait"
-            fields:
-              - { label: "姓名（虚构示例）", name: "name", widget: "string", required: true }
-              - { label: "职位（虚构示例）", name: "title", widget: "string", required: true }
-              - { label: "邮箱（虚构示例）", name: "email", widget: "string", required: true }
-              - { label: "头像（Browse 上传本地图片）", name: "portrait", widget: "image", choose_url: false, required: true }
-              - { label: "头像替代文本", name: "portrait_alt", widget: "string", required: false }
-              - { label: "在网站显示", name: "active", widget: "boolean", default: true }
-
   - name: "stories"
     label: "Stories — 深度文章"
-    description: "管理 Stories 内容。CTA 可以选择启用或关闭；按钮文案从固定列表中选择，不需要手动输入。"
+    description: "每篇文章有一个内容分类，并可选择多个话题标签和行业。展会预热文章只在明确关联的未来展会详情页中推荐，不作为普通相关文章推荐。"
     files:
       - file: "data/database.json"
         label: "文章列表"
@@ -233,10 +205,10 @@ collections:
         editor:
           preview: false
         fields:
-          - label: "文章（已填文章默认折叠；点击标题展开编辑）"
+          - label: "Stories"
             name: "articles"
             widget: "list"
-            label_singular: "添加一篇深度文章"
+            label_singular: "添加一篇 Story"
             collapsed: auto
             minimize_collapsed: auto
             add_to_top: true
@@ -245,117 +217,108 @@ collections:
             fields:
               - { label: "文章标题（必填）", name: "title", widget: "string", required: true }
               - { label: "发布日期（必填）", name: "date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true }
-              - { label: "文章摘要（可选）", name: "summary", widget: "text", required: false, hint: "1–3 句话概括文章价值。它会显示在文章卡片和正文标题下，留空则不显示。" }
-              - { label: "封面图（可选，Browse 上传本地图片）", name: "image", widget: "image", choose_url: false, required: false }
-              - label: "文章话题（可多选；不包含展会话题）"
+              - { label: "内容分类（必选）", name: "category", widget: "select", options: ["Product & Technology", "Industry Applications", "Industry Insights", "Company & Culture", "Brand News & Updates"], default: "Product & Technology", required: true }
+              - { label: "卡片摘要", name: "summary", widget: "text", required: false, hint: "用于列表卡片和相关推荐卡片，建议 1–3 句话。" }
+              - { label: "封面图", name: "image", widget: "image", choose_url: false, required: false }
+              - { label: "图片替代文本", name: "image_alt", widget: "string", required: false }
+              - label: "话题标签（与 Trade Shows 共用；只选真正相关的主题）"
                 name: "tags"
                 widget: "select"
                 multiple: true
                 required: false
                 options:
-                  - "Product & Technology"
-                  - "Application & Use Cases"
-                  - "Customer Stories"
-                  - "Case Study"
-                  - "Company News"
-                  - "Industry Insights"
-                  - "AI Vision"
-                  - "Automation"
+                  - { label: "Machine Vision", value: "Machine Vision" }
+                  - { label: "AI & Deep Learning", value: "AI & Deep Learning" }
+                  - { label: "Defect Detection", value: "Defect Detection" }
+                  - { label: "Quality Control", value: "Quality Control" }
+                  - { label: "AOI", value: "AOI" }
+                  - { label: "3D Vision", value: "3D Vision" }
+                  - { label: "Robotics & Automation", value: "Robotics & Automation" }
+                  - { label: "Positioning & Measurement", value: "Positioning & Measurement" }
+                  - { label: "Electronics & Semiconductors", value: "Electronics & Semiconductors" }
+                  - { label: "Food & Beverage Inspection", value: "Food & Beverage Inspection" }
+                  - { label: "Packaging Inspection", value: "Packaging Inspection" }
+                  - { label: "Warehouse & Logistics", value: "Warehouse & Logistics" }
+                  - { label: "Innovation", value: "Innovation" }
+                  - { label: "Sustainability", value: "Sustainability" }
+                  - { label: "旧数据兼容（请优先使用上方内容分类）· Product & Technology", value: "Product & Technology" }
+                  - { label: "旧数据兼容（请优先使用上方内容分类）· Application & Use Cases", value: "Application & Use Cases" }
+                  - { label: "旧数据兼容（请优先使用上方内容分类）· Customer Stories", value: "Customer Stories" }
+                  - { label: "旧数据兼容（请优先使用上方内容分类）· Case Study", value: "Case Study" }
+                  - { label: "旧数据兼容（请优先使用上方内容分类）· Industry Insights", value: "Industry Insights" }
+                  - { label: "旧数据兼容（请优先使用上方内容分类）· Company News", value: "Company News" }
+                  - { label: "旧数据兼容（请优先使用上方内容分类）· AI Vision", value: "AI Vision" }
+                  - { label: "旧数据兼容（请优先使用上方内容分类）· Automation", value: "Automation" }
+              - label: "行业（可多选）"
+                name: "industries"
+                widget: "select"
+                multiple: true
+                required: false
+                options: ["Automotive", "Electronics", "Food & Beverage", "Packaging", "Semiconductors", "Logistics", "Pharmaceuticals"]
+              - { label: "虚构应用示例标记", name: "illustrative_example", widget: "boolean", default: false, required: false, hint: "如果文章中的应用场景为模拟内容，请开启；前台详情会显示 Illustrative Use Case · Fictional Example。" }
+              - { label: "内容阶段", name: "event_content_stage", widget: "select", options: [{ label: "普通文章", value: "General Story" }, { label: "展前预告", value: "Pre-show Preview" }, { label: "展中动态", value: "During-show Update" }, { label: "展后回顾", value: "Post-show Recap" }], default: "General Story", required: false }
+              - label: "关联展会名称（可选；请输入下方 Trade Shows 中一致的展会标题）"
+                name: "related_event_titles"
+                widget: "list"
+                required: false
+                label_singular: "添加关联展会"
+                collapsed: true
+                field: { label: "展会标题", name: "title", widget: "string" }
               - label: "正文（支持标题、段落、列表、链接和多张图片）"
                 name: "body"
                 widget: "markdown"
                 required: true
                 linked_images: false
-                hint: "用正文编辑器工具栏插入图片；图片的替代文本用于无障碍阅读，不需要另设跳转链接。"
-              - { label: "启用销售 CTA 按钮", name: "cta_enabled", widget: "boolean", default: false, required: false, hint: "关闭后，Story 详情页不显示销售按钮。" }
-              - { label: "CTA 按钮文案（固定选项）", name: "cta_label", widget: "select", options: ["Talk to our team", "Contact Sales", "Book a Demo"], default: "Talk to our team", required: false }
+              - { label: "启用销售 CTA 按钮", name: "cta_enabled", widget: "boolean", default: false, required: false }
+              - { label: "CTA 按钮文案", name: "cta_label", widget: "select", options: ["Talk to Our Team", "Contact Sales", "Book a Demo"], default: "Talk to Our Team", required: false }
 
   - name: "events"
-    label: "Trade Shows — 贸易展预告与报道"
-    description: "内容保存在 data/events.json 的 announcements 与 reports 两个列表中，和实际 JSON 结构保持一致。每条内容都可独立启用/关闭销售 CTA。"
+    label: "Trade Shows — 展会管理"
+    description: "每场展会仅维护一条记录。前台依据结束日期自动归入 Upcoming 或 Past；展会结束后仍保留展会与相关 Stories 的关联。"
     files:
       - file: "data/events.json"
-        label: "Trade Shows 内容列表"
+        label: "全部展会（一条记录对应一场展会）"
         name: "events_list"
         format: "json"
         editor:
           preview: false
         fields:
-          - label: "Upcoming Trade Shows — 展会预告"
-            name: "announcements"
+          - label: "全部展会"
+            name: "exhibitions"
             widget: "list"
-            label_singular: "添加一个 Trade Show 预告"
+            label_singular: "添加一场展会"
             collapsed: auto
             minimize_collapsed: auto
             add_to_top: true
-            summary: "{{title}}"
+            summary: "{{title}} · {{start_date}}"
             thumbnail: "cover"
             fields:
               - { label: "展会名称（必填）", name: "title", widget: "string", required: true }
-              - { label: "开始日期（必填）", name: "start_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true }
-              - { label: "结束日期（必填）", name: "end_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true }
-              - { label: "地点（城市、国家/地区）", name: "loc", widget: "string", required: true }
-              - { label: "展位号（未确定可留空）", name: "booth", widget: "string", required: false }
-              - { label: "展示主题（可选）", name: "theme", widget: "string", required: false }
-              - { label: "预告简介（必填，1–3 句话）", name: "desc", widget: "text", required: true }
-              - label: "展会话题（可多选）"
+              - { label: "开始日期（未来/正在举行的展会建议填写）", name: "start_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
+              - { label: "结束日期（用于自动归档；建议填写）", name: "end_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
+              - { label: "历史展会年份（无具体日期时使用）", name: "event_year", widget: "string", required: false, hint: "例如 2025。若没有具体日期，前台会按年份将旧展会归入 Past。" }
+              - { label: "内容发布日期（可选）", name: "published_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
+              - { label: "地点 / 城市 / 国家", name: "loc", widget: "string", required: false }
+              - { label: "场馆（可选）", name: "venue", widget: "string", required: false }
+              - { label: "展位号（未确定可填写 TBC）", name: "booth", widget: "string", required: false }
+              - { label: "展会主题 / 展示重点", name: "theme", widget: "string", required: false }
+              - { label: "卡片摘要", name: "summary", widget: "text", required: false, hint: "会显示在展会卡片和相关推荐中。" }
+              - label: "话题标签（与 Stories 共用）"
                 name: "tags"
                 widget: "select"
                 multiple: true
                 required: false
-                options:
-                  - "Trade Shows & Exhibitions"
-                  - "Product Demonstrations"
-                  - "New Product Launch"
-                  - "Industry Conference"
-                  - "AI Vision"
-                  - "Machine Vision"
-                  - "Automation"
-                  - "Quality Inspection"
-              - { label: "展会封面图（可选，Browse 上传本地图片）", name: "cover", widget: "image", choose_url: false, required: false }
-              - { label: "展会官网 / 注册链接（可选）", name: "url", widget: "string", required: false, hint: "完整的 https:// 链接；留空时不显示外链按钮。" }
-              - { label: "启用销售 CTA 按钮", name: "cta_enabled", widget: "boolean", default: true, required: false, hint: "关闭后，展会详情页不显示销售按钮。" }
-              - { label: "CTA 按钮文案（固定选项）", name: "cta_label", widget: "select", options: ["Book a meeting at this show", "Talk to our team", "Contact Sales", "Book a Demo"], default: "Book a meeting at this show", required: false }
-          - label: "Past Trade Shows — 展会报道"
-            name: "reports"
-            widget: "list"
-            label_singular: "添加一篇 Trade Show 报道"
-            collapsed: auto
-            minimize_collapsed: auto
-            add_to_top: true
-            summary: "{{title}}"
-            thumbnail: "cover"
-            fields:
-              - { label: "报道标题（必填）", name: "title", widget: "string", required: true }
-              - { label: "展会年份（必填）", name: "event_year", widget: "string", required: true, hint: "例如 2025，用于历史展会按年份筛选。" }
-              - { label: "文章发布日期（必填）", name: "published_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: true }
-              - { label: "展会开始日期（可选）", name: "start_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
-              - { label: "展会结束日期（可选）", name: "end_date", widget: "datetime", date_format: "YYYY-MM-DD", time_format: false, format: "YYYY-MM-DD", required: false }
-              - { label: "地点（城市、国家/地区）", name: "loc", widget: "string", required: false }
-              - { label: "展位号（可选）", name: "booth", widget: "string", required: false }
-              - { label: "展会主题（可选）", name: "theme", widget: "string", required: false }
-              - { label: "文章摘要（可选）", name: "summary", widget: "text", required: false }
-              - label: "展会话题（可多选）"
-                name: "tags"
+                options: ["Machine Vision", "AI & Deep Learning", "Defect Detection", "Quality Control", "AOI", "3D Vision", "Robotics & Automation", "Positioning & Measurement", "Electronics & Semiconductors", "Food & Beverage Inspection", "Packaging Inspection", "Warehouse & Logistics", "Innovation", "Sustainability", "Automation", "AI Vision", "Quality Inspection", "Product Demonstrations", "New Product Launch", "Industry Conference", "Trade Shows & Exhibitions"]
+              - label: "行业（可多选）"
+                name: "industries"
                 widget: "select"
                 multiple: true
                 required: false
-                options:
-                  - "Trade Shows & Exhibitions"
-                  - "Product Demonstrations"
-                  - "New Product Launch"
-                  - "Industry Conference"
-                  - "AI Vision"
-                  - "Machine Vision"
-                  - "Automation"
-                  - "Quality Inspection"
-              - { label: "报道封面图（可选，Browse 上传本地图片）", name: "cover", widget: "image", choose_url: false, required: false }
-              - label: "完整报道正文（必填，可插入多张图片）"
-                name: "body"
-                widget: "markdown"
-                required: true
-                linked_images: false
-                hint: "像 Stories 一样撰写完整文章；可用小标题、段落、列表、链接和多张图片。只写有依据的实际内容。"
+                options: ["Automotive", "Electronics", "Food & Beverage", "Packaging", "Semiconductors", "Logistics", "Pharmaceuticals"]
+              - { label: "封面图", name: "cover", widget: "image", choose_url: false, required: false }
+              - { label: "完整内容 / 产品演示（可选，支持 Markdown 与图片）", name: "body", widget: "markdown", required: false, linked_images: false }
+              - { label: "重点展示（可选，支持 Markdown）", name: "highlights", widget: "markdown", required: false }
+              - { label: "展后回顾（展会结束后可填写）", name: "recap", widget: "markdown", required: false }
               - label: "额外现场图片（可选）"
                 name: "gallery"
                 widget: "list"
@@ -363,11 +326,17 @@ collections:
                 label_singular: "添加一张现场图片"
                 collapsed: true
                 minimize_collapsed: true
-                field:
-                  label: "本地图片（Browse 上传）"
-                  name: "image"
-                  widget: "image"
-                  choose_url: false
-              - { label: "展会官网 / 相关链接（可选）", name: "url", widget: "string", required: false }
-              - { label: "启用销售 CTA 按钮", name: "cta_enabled", widget: "boolean", default: true, required: false, hint: "关闭后，展会报道详情页不显示销售按钮。" }
-              - { label: "CTA 按钮文案（固定选项）", name: "cta_label", widget: "select", options: ["Talk to our team", "Contact Sales", "Book a Demo"], default: "Talk to our team", required: false }
+                fields:
+                  - { label: "图片", name: "image", widget: "image", choose_url: false }
+                  - { label: "图片替代文本", name: "alt", widget: "string", required: false }
+                  - { label: "图片说明", name: "caption", widget: "string", required: false }
+              - label: "关联 Story 标题（可选；请输入下方 Stories 中一致的文章标题）"
+                name: "related_story_titles"
+                widget: "list"
+                required: false
+                label_singular: "添加关联 Story"
+                collapsed: true
+                field: { label: "文章标题", name: "title", widget: "string" }
+              - { label: "外部展会官网 / 注册链接（可选）", name: "url", widget: "string", required: false, hint: "请输入完整的 https:// 链接；这是外链，不用于站内内容关联。" }
+              - { label: "启用 CTA 按钮", name: "cta_enabled", widget: "boolean", default: true, required: false }
+              - { label: "CTA 按钮文案", name: "cta_label", widget: "select", options: ["Book a Meeting at This Show", "Talk to Our Team", "Contact Sales", "Book a Demo"], default: "Book a Meeting at This Show", required: false }
