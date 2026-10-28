@@ -1,0 +1,11 @@
+{
+  "newsletter_image": "images/team.jpg",
+  "newsletter_image_alt": "Illustrative engineering team collaborating on industrial vision concepts",
+  "newsletter_image_caption": "Illustrative engineering-team imagery for a fictional portfolio project.",
+  "newsletter_title": "Subscribe to our Technical Newsletter",
+  "newsletter_description": "Receive illustrative product and technology explainers, industry application ideas and machine-vision insights for B2B manufacturers.",
+  "newsletter_email_placeholder": "Enter your Work Email",
+  "newsletter_button": "Subscribe",
+  "newsletter_success_title": "Welcome to DEF Insights!",
+  "newsletter_success_description": "Thank you for subscribing to this portfolio demonstration newsletter."
+}

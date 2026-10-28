@@ -1,0 +1,26 @@
+{
+  "articles": [
+    {
+      "title": "Industrial Vision Application Showcase 2025: Product Demonstrations and Quality-Control Applications",
+      "date": "2025-11-20",
+      "category": "Industry Applications",
+      "summary": "A fictional recap concept showing how product demonstration themes and quality-control applications might be presented after an event.",
+      "image": "/images/event-3.jpg",
+      "image_alt": "Illustrative post-show product and solution recap for a fictional portfolio project",
+      "tags": [
+        "Machine Vision",
+        "AI & Deep Learning",
+        "Quality Control",
+        "Robotics & Automation"
+      ],
+      "industries": [
+        "Electronics",
+        "Semiconductors"
+      ],
+      "body": "## Illustrative post-show recap\n\nThis is a fictional portfolio example, not a report of a real DEF Company event. It demonstrates a way to summarize the technology themes that could be presented at an industrial vision exhibition.\n\n## Product and solution themes\n\n- Industrial camera and machine-vision concepts\n- Defect-detection and quality-control workflows\n- Potential integration points with factory automation\n\nNo real customer relationships, visitor counts, verified product-performance metrics, certifications or commercial results are claimed.\n\n## Product & Solution Highlights\n\n- Machine-vision product showcase concept\n- Quality-control application discussion\n- Automation integration topics\n\n## Post-show Recap\n\nThe content above is an illustrative post-show recap template for a fictional portfolio project.",
+      "illustrative_example": true,
+      "cta_enabled": false,
+      "content_stage": "Post-show Recap"
+    }
+  ]
+}
