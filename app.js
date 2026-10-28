@@ -20,6 +20,41 @@ let currentEventsTopic = 'all';
 let currentEventDetailIndex = null;
 let currentStoryDetailIndex = null;
 
+let currentStoryCategory = 'all';
+let currentStoryTopic = 'all';
+let currentStoryIndustry = 'all';
+
+const DEF_STORY_CATEGORIES = [
+    'Product & Technology',
+    'Industry Applications',
+    'Industry Insights',
+    'Company & Culture',
+    'Brand News & Updates'
+];
+const DEF_TOPIC_TAGS = [
+    'Machine Vision', 'AI & Deep Learning', 'Defect Detection', 'Quality Control',
+    'AOI', '3D Vision', 'Robotics & Automation', 'Positioning & Measurement',
+    'Electronics & Semiconductors', 'Food & Beverage Inspection', 'Packaging Inspection',
+    'Warehouse & Logistics', 'Innovation', 'Sustainability'
+];
+const DEF_INDUSTRIES = [
+    'Automotive', 'Electronics', 'Food & Beverage', 'Packaging', 'Semiconductors',
+    'Logistics', 'Pharmaceuticals'
+];
+const DEF_LEGACY_CATEGORY_MAP = {
+    'Product & Technology': 'Product & Technology',
+    'Application & Use Cases': 'Industry Applications',
+    'Customer Stories': 'Industry Applications',
+    'Case Study': 'Industry Applications',
+    'Industry Insights': 'Industry Insights',
+    'Company & Culture': 'Company & Culture',
+    'Company News': 'Brand News & Updates',
+    'Brand News & Updates': 'Brand News & Updates'
+};
+const DEF_NON_TOPIC_EVENT_LABELS = new Set([
+    'Trade Shows & Exhibitions', 'Product Demonstrations', 'New Product Launch', 'Industry Conference'
+]);
+
 // ---------- Utility helpers ----------
 function defHasAnalyticsConsent() {
     try {
@@ -208,7 +243,7 @@ function showPage(id) {
     document.querySelectorAll('.page').forEach((page) => page.classList.remove('active'));
     const page = document.getElementById(id);
     if (page) page.classList.add('active');
-    if (id === 'newsroom') switchView('ov');
+    if (id === 'newsroom') switchView('stories');
     window.scrollTo(0, 0);
 }
 
@@ -316,10 +351,259 @@ function switchView(viewId, options = {}) {
     const navEl = document.getElementById('nav-' + navKey);
     if (navEl) navEl.classList.add('active');
 
-    // Return to the Events list with the previously selected Upcoming/Past tab intact.
     if (viewId === 'events') renderEvents();
+    if (viewId === 'stories') renderStories();
 
     window.scrollTo(0, 80);
+}
+
+
+function defNormalizeTopicTag(value) {
+    const text = defSafeText(value, 100);
+    const normalized = text.toLowerCase();
+    if (normalized === 'ai vision' || normalized === 'ai inspection') return 'AI & Deep Learning';
+    if (normalized === 'quality inspection') return 'Quality Control';
+    if (normalized === 'warehouse automation') return 'Warehouse & Logistics';
+    return text;
+}
+
+function defGetStoryCategory(story) {
+    const direct = defSafeText(story && story.category, 100);
+    if (DEF_STORY_CATEGORIES.includes(direct)) return direct;
+    const rawTags = story && Array.isArray(story.tags) ? story.tags : [];
+    for (const tag of rawTags) {
+        if (DEF_LEGACY_CATEGORY_MAP[tag]) return DEF_LEGACY_CATEGORY_MAP[tag];
+    }
+    return 'Product & Technology';
+}
+
+function defGetTopicTags(content) {
+    const rawTags = content && Array.isArray(content.tags) ? content.tags : [];
+    const topics = [];
+    for (const rawTag of rawTags) {
+        const original = defSafeText(rawTag, 100);
+        if (!original || DEF_LEGACY_CATEGORY_MAP[original] || DEF_NON_TOPIC_EVENT_LABELS.has(original)) continue;
+        const tag = defNormalizeTopicTag(original);
+        if (tag && !topics.includes(tag)) topics.push(tag);
+    }
+    return topics;
+}
+
+function defGetContentIndustries(content) {
+    if (!content) return [];
+    const raw = Array.isArray(content.industries)
+        ? content.industries
+        : (Array.isArray(content.industry) ? content.industry : (content.industry ? [content.industry] : []));
+    return [...new Set(raw.map(value => defSafeText(value, 100)).filter(Boolean))];
+}
+
+function defGetStringList(value) {
+    if (Array.isArray(value)) return value.map(item => {
+        if (item && typeof item === 'object') return defSafeText(item.title || item.name || item.value || '', 250);
+        return defSafeText(item, 250);
+    }).filter(Boolean);
+    return value ? [defSafeText(value, 250)] : [];
+}
+
+function defContentNameMatches(values, content) {
+    const names = defGetStringList(values).map(value => value.toLowerCase());
+    if (!content) return false;
+    const title = defSafeText(content.title, 300).toLowerCase();
+    const slug = defContentSlug(content).toLowerCase();
+    return names.some(name => name === title || name === slug || name === defSafeText(content.slug, 250).toLowerCase());
+}
+
+function defContentMatchScore(left, right) {
+    const leftTags = defGetTopicTags(left);
+    const rightTags = defGetTopicTags(right);
+    const sharedTags = leftTags.filter(tag => rightTags.includes(tag));
+    const leftIndustries = defGetContentIndustries(left);
+    const rightIndustries = defGetContentIndustries(right);
+    const sharedIndustries = leftIndustries.filter(industry => rightIndustries.includes(industry));
+    return { score: sharedTags.length * 5 + sharedIndustries.length * 2, sharedTags, sharedIndustries };
+}
+
+function defIsPreShowStory(story) {
+    const stage = defSafeText(story && (story.event_content_stage || story.content_stage || story.content_format), 100).toLowerCase();
+    return stage.includes('pre-show') || stage.includes('preview') || stage.includes('展前预告');
+}
+
+function defPlainTextLength(markdown) {
+    return String(markdown || '')
+        .replace(/!\[[^\]]*\]\([^)]*\)/g, ' ')
+        .replace(/\[[^\]]*\]\([^)]*\)/g, ' ')
+        .replace(/[`*_>#~|-]/g, ' ')
+        .replace(/\s+/g, ' ').trim().length;
+}
+
+function defIsLongForm(content) {
+    return defPlainTextLength(content && (content.body || content.recap || content.article_body || '')) >= 220;
+}
+
+function defHasPastShowContent(event) {
+    return Boolean(
+        defPlainTextLength(event && (event.body || event.recap || event.highlights || event.key_highlights || '')) >= 80 ||
+        (Array.isArray(event && event.gallery) && event.gallery.length > 0) ||
+        defGetStringList(event && event.related_story_titles).length > 0
+    );
+}
+
+function defRenderFilterGroup(container, title, values, selected, onSelect, allLabel) {
+    const group = defElement('div', 'stories-filter-group');
+    group.appendChild(defElement('span', 'stories-filter-label', title));
+    const options = defElement('div', 'stories-filter-options');
+    const complete = ['all', ...values];
+    complete.forEach(value => {
+        const label = value === 'all' ? allLabel : value;
+        const button = defElement('button', selected === value ? 'is-active' : '', label);
+        button.type = 'button';
+        button.setAttribute('aria-pressed', String(selected === value));
+        button.addEventListener('click', () => onSelect(value));
+        options.appendChild(button);
+    });
+    group.appendChild(options);
+    container.appendChild(group);
+}
+
+function defRenderStoriesFilters() {
+    const container = document.getElementById('stories-filters');
+    if (!container) return;
+    container.replaceChildren();
+
+    const availableCategories = DEF_STORY_CATEGORIES.slice();
+    const availableTopics = [...new Set(storiesData.flatMap(defGetTopicTags))].sort((a, b) => a.localeCompare(b));
+    const availableIndustries = [...new Set(storiesData.flatMap(defGetContentIndustries))].sort((a, b) => a.localeCompare(b));
+    if (!availableCategories.includes(currentStoryCategory)) currentStoryCategory = 'all';
+    if (!availableTopics.includes(currentStoryTopic)) currentStoryTopic = 'all';
+    if (!availableIndustries.includes(currentStoryIndustry)) currentStoryIndustry = 'all';
+
+    defRenderFilterGroup(container, 'Category', availableCategories, currentStoryCategory, value => {
+        currentStoryCategory = value; renderStories();
+    }, 'All categories');
+    if (availableTopics.length) {
+        defRenderFilterGroup(container, 'Topic', availableTopics, currentStoryTopic, value => {
+            currentStoryTopic = value; renderStories();
+        }, 'All topics');
+    }
+    if (availableIndustries.length) {
+        defRenderFilterGroup(container, 'Industry', availableIndustries, currentStoryIndustry, value => {
+            currentStoryIndustry = value; renderStories();
+        }, 'All industries');
+    }
+}
+
+function defMakeRecommendationCard(content, index, type, badgeText) {
+    const isStory = type === 'story';
+    const card = defElement('article', 'recommendation-card');
+    card.tabIndex = 0;
+    card.setAttribute('role', 'button');
+    card.setAttribute('aria-label', (isStory ? 'Read story: ' : 'View trade show: ') + defSafeText(content.title, 180));
+
+    const imageWrap = defElement('div', 'recommendation-card-image');
+    const image = defElement('img');
+    image.src = isStory
+        ? defGetImageUrl(content.image, '/images/story-cover.jpg')
+        : defGetImageUrl(content.cover || content.image, '/images/event-1.jpg');
+    image.alt = defSafeText(content.title, 180);
+    image.loading = 'lazy';
+    image.decoding = 'async';
+    image.onerror = () => { image.onerror = null; image.src = isStory ? '/images/story-cover.jpg' : '/images/event-1.jpg'; };
+    imageWrap.appendChild(image);
+
+    const body = defElement('div', 'recommendation-card-body');
+    const badge = badgeText || (isStory ? defGetStoryCategory(content) : (defGetEventStatus(content) === 'past' ? 'Past Trade Show' : 'Upcoming Trade Show'));
+    if (badge) body.appendChild(defElement('span', 'recommendation-card-kicker', badge));
+    body.appendChild(defElement('h4', 'recommendation-card-title', defSafeText(content.title, 300) || (isStory ? 'Untitled story' : 'Untitled trade show')));
+
+    const summary = isStory
+        ? defSafeText(content.summary || content.excerpt || '', 360)
+        : defGetEventSummary(content);
+    if (summary) body.appendChild(defElement('p', 'recommendation-card-summary', summary));
+
+    const dateLabel = isStory ? fmtDate(content.date || content.published_date) : defFormatEventDate(content, defGetEventDates(content));
+    if (dateLabel) body.appendChild(defElement('span', 'recommendation-card-date', dateLabel));
+    const tags = defElement('div', 'recommendation-card-tags');
+    const contentTags = defGetTopicTags(content).slice(0, 3);
+    contentTags.forEach(tag => tags.appendChild(defElement('span', 'kone-tag', tag)));
+    if (tags.childElementCount) body.appendChild(tags);
+
+    card.append(imageWrap, body);
+    const activate = () => isStory ? showStoryDetail(index) : showEventDetail(index);
+    card.addEventListener('click', activate);
+    card.addEventListener('keydown', event => {
+        if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); activate(); }
+    });
+    return card;
+}
+
+function defRenderRecommendationSection(sectionId, gridId, items, type, heading, emptyHide = true) {
+    const section = document.getElementById(sectionId);
+    const grid = document.getElementById(gridId);
+    if (!section || !grid) return;
+    grid.replaceChildren();
+    (items || []).forEach(item => {
+        grid.appendChild(defMakeRecommendationCard(item.content, item.index, type, item.badge || ''));
+    });
+    section.hidden = emptyHide && !grid.childElementCount;
+    const headingElement = section.querySelector('h3');
+    if (headingElement && heading) headingElement.textContent = heading;
+}
+
+function defFindRelatedStoriesForStory(story, currentIndex, limit = 3) {
+    return storiesData.map((content, index) => {
+        if (index === currentIndex || defIsPreShowStory(content)) return null;
+        const match = defContentMatchScore(story, content);
+        const explicit = defContentNameMatches(story && story.related_story_titles, content);
+        return (match.score > 0 || explicit) ? { content, index, score: match.score + (explicit ? 20 : 0) } : null;
+    }).filter(Boolean).sort((a, b) => b.score - a.score || (defParseLocalDate(b.content.date) || new Date(0)) - (defParseLocalDate(a.content.date) || new Date(0))).slice(0, limit);
+}
+
+function defFindRelatedEventsForStory(story, limit = 3) {
+    const matches = eventsData.map((content, index) => {
+        const match = defContentMatchScore(story, content);
+        const explicit = defContentNameMatches(story && story.related_event_titles, content);
+        const score = match.score + (explicit ? 20 : 0);
+        if (score <= 0) return null;
+        const status = defGetEventStatus(content);
+        if (status === 'past' && !defHasPastShowContent(content)) return null;
+        return { content, index, status, score, badge: status === 'past' ? 'Past Trade Show · Recap' : 'Upcoming Trade Show' };
+    }).filter(Boolean);
+
+    const upcoming = matches.filter(item => item.status === 'upcoming').sort((a, b) => b.score - a.score || ((defGetEventDates(a.content).start || new Date(8640000000000000)) - (defGetEventDates(b.content).start || new Date(8640000000000000))));
+    const past = matches.filter(item => item.status === 'past').sort((a, b) => b.score - a.score);
+    // Future shows receive priority. One relevant past recap may supplement a short upcoming list.
+    return upcoming.slice(0, 2).concat(past.slice(0, Math.max(0, Math.min(1, limit - Math.min(upcoming.length, 2))))).slice(0, limit);
+}
+
+function defFindRelatedStoriesForEvent(event, eventStatus, limit = 3) {
+    return storiesData.map((content, index) => {
+        const match = defContentMatchScore(event, content);
+        const explicit = defContentNameMatches(event && event.related_story_titles, content) ||
+            defContentNameMatches(content && content.related_event_titles, event);
+        const score = match.score + (explicit ? 20 : 0);
+        if (score <= 0) return null;
+        // Pre-show previews are not generic related-story suggestions. They are only surfaced
+        // on the exact upcoming event they are linked to in the CMS.
+        if (defIsPreShowStory(content)) {
+            if (eventStatus === 'past' || !explicit) return null;
+        }
+        return { content, index, score };
+    }).filter(Boolean).sort((a, b) => b.score - a.score || (defParseLocalDate(b.content.date) || new Date(0)) - (defParseLocalDate(a.content.date) || new Date(0))).slice(0, limit);
+}
+
+function defFindRelatedEventsForEvent(event, currentIndex, limit = 3) {
+    const matches = eventsData.map((content, index) => {
+        if (index === currentIndex) return null;
+        const match = defContentMatchScore(event, content);
+        const score = match.score + (defContentNameMatches(event && event.related_event_titles, content) ? 20 : 0);
+        if (score <= 0) return null;
+        const status = defGetEventStatus(content);
+        if (status === 'past' && !defHasPastShowContent(content)) return null;
+        return { content, index, status, score, badge: status === 'past' ? 'Past Trade Show · Recap' : 'Upcoming Trade Show' };
+    }).filter(Boolean);
+    const upcoming = matches.filter(item => item.status === 'upcoming').sort((a, b) => b.score - a.score);
+    const past = matches.filter(item => item.status === 'past').sort((a, b) => b.score - a.score);
+    return upcoming.concat(past).slice(0, limit);
 }
 
 // ---------- Stories rendering ----------
@@ -327,13 +611,27 @@ function renderStories() {
     const container = document.getElementById('stories-list');
     if (!container) return;
     container.replaceChildren();
+    defRenderStoriesFilters();
 
     if (!storiesData.length) {
         defShowMessage(container, 'No stories have been published yet. Please check back soon.');
         return;
     }
 
-    storiesData.forEach((story, index) => {
+    const visibleStories = storiesData.map((story, index) => ({ story, index })).filter(({ story }) => {
+        if (currentStoryCategory !== 'all' && defGetStoryCategory(story) !== currentStoryCategory) return false;
+        if (currentStoryTopic !== 'all' && !defGetTopicTags(story).includes(currentStoryTopic)) return false;
+        if (currentStoryIndustry !== 'all' && !defGetContentIndustries(story).includes(currentStoryIndustry)) return false;
+        return true;
+    });
+
+    if (!visibleStories.length) {
+        defShowMessage(container, 'No stories match these filters. Try another category, topic or industry.');
+        return;
+    }
+
+    const grid = defElement('div', 'stories-grid');
+    visibleStories.forEach(({ story, index }) => {
         const article = defElement('article', 'list-card story-card');
         article.tabIndex = 0;
         article.setAttribute('role', 'button');
@@ -342,37 +640,36 @@ function renderStories() {
         const imageWrap = defElement('div', 'image-container');
         const image = defElement('img');
         image.src = defGetImageUrl(story.image, '/images/story-cover.jpg');
-        image.alt = defSafeText(story.title, 160);
+        image.alt = defSafeText(story.image_alt || story.title, 160);
         image.loading = 'lazy';
         image.decoding = 'async';
         image.onerror = () => { image.onerror = null; image.src = '/images/story-cover.jpg'; };
         imageWrap.appendChild(image);
 
         const info = defElement('div', 'list-info');
-        const dateText = fmtDate(story.date);
+        const dateText = fmtDate(story.date || story.published_date);
         if (dateText) info.appendChild(defElement('span', 'date', dateText));
-        info.appendChild(defElement('h4', '', story.title || 'Untitled story'));
+        info.appendChild(defElement('span', 'story-category-label', defGetStoryCategory(story)));
+        info.appendChild(defElement('h3', '', story.title || 'Untitled story'));
         const summary = defSafeText(story.summary || story.excerpt || '', 600);
         if (summary) info.appendChild(defElement('p', 'story-summary', summary));
 
-        if (Array.isArray(story.tags) && story.tags.length) {
+        const tagsList = defGetTopicTags(story).slice(0, 4);
+        if (tagsList.length) {
             const tags = defElement('div', 'story-tags');
-            story.tags.forEach((tag) => tags.appendChild(defElement('span', 'kone-tag', tag)));
+            tagsList.forEach(tag => tags.appendChild(defElement('span', 'kone-tag', tag)));
             info.appendChild(tags);
         }
 
         article.append(imageWrap, info);
         article.addEventListener('click', () => showStoryDetail(index));
-        article.addEventListener('keydown', (event) => {
-            if (event.key === 'Enter' || event.key === ' ') {
-                event.preventDefault();
-                showStoryDetail(index);
-            }
+        article.addEventListener('keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); showStoryDetail(index); }
         });
-        container.appendChild(article);
+        grid.appendChild(article);
     });
+    container.appendChild(grid);
 }
-
 function showStoryDetail(index) {
     const story = storiesData[index];
     if (!story) return;
@@ -395,20 +692,25 @@ function showStoryDetail(index) {
         summary.textContent = defSafeText(story.summary || story.excerpt || '', 1000);
         summary.hidden = !summary.textContent;
     }
-    if (body) {
-        try {
-            body.innerHTML = window.marked && typeof window.marked.parse === 'function'
-                ? window.marked.parse(story.body || '')
-                : defSafeText(story.body || '', 50000);
-        } catch (_) {
-            body.textContent = story.body || '';
-        }
-    }
+    if (body) defRenderMarkdownInto(body, story.body || '');
 
+    const category = document.getElementById('sd-category');
+    if (category) { category.textContent = defGetStoryCategory(story); category.hidden = false; }
+    const industry = document.getElementById('sd-industry');
+    if (industry) {
+        const values = defGetContentIndustries(story);
+        industry.textContent = values.join(' · ');
+        industry.hidden = !values.length;
+    }
+    const fictionalBadge = document.getElementById('sd-fictional-badge');
+    if (fictionalBadge) {
+        const isIllustrative = story.illustrative_example === true || story.content_format === 'Illustrative Use Case';
+        fictionalBadge.hidden = !isIllustrative;
+    }
     const tagsWrap = document.getElementById('sd-tags');
     if (tagsWrap) {
         tagsWrap.replaceChildren();
-        (Array.isArray(story.tags) ? story.tags : []).forEach((tag) => tagsWrap.appendChild(defElement('span', 'kone-tag', tag)));
+        defGetTopicTags(story).forEach(tag => tagsWrap.appendChild(defElement('span', 'kone-tag', tag)));
         tagsWrap.hidden = !tagsWrap.childElementCount;
     }
 
@@ -423,6 +725,11 @@ function showStoryDetail(index) {
             storyCtaContainer.appendChild(storyCta);
         }
     }
+
+    const relatedStories = defIsLongForm(story) ? defFindRelatedStoriesForStory(story, index, 3) : [];
+    const relatedEvents = defIsLongForm(story) ? defFindRelatedEventsForStory(story, 3) : [];
+    defRenderRecommendationSection('sd-related-stories-section', 'sd-related-stories', relatedStories, 'story', 'Explore the Solution');
+    defRenderRecommendationSection('sd-related-events-section', 'sd-related-events', relatedEvents, 'event', 'Explore Related Trade Shows');
 
     switchView('story-detail');
     track('content_view', { content_type: 'Story', content_title: defSafeText(story.title || 'Untitled story', 300) });
@@ -479,14 +786,12 @@ function defFormatEventDate(event, dates) {
 }
 
 function defGetEventStatus(event) {
-    if (event && (event._contentType === 'report' || event.content_type === 'report' || event.type === 'report')) {
-        return 'past';
-    }
-
     const dates = defGetEventDates(event || {});
     const today = new Date();
     today.setHours(0, 0, 0, 0);
-    if (dates.end && dates.end < today) return 'past';
+    if (dates.end) return dates.end < today ? 'past' : 'upcoming';
+    if (dates.start) return dates.start < today ? 'past' : 'upcoming';
+    if (event && (event._contentType === 'report' || event.content_type === 'report' || event.type === 'report' || event.event_year || event.year)) return 'past';
     return 'upcoming';
 }
 
@@ -553,7 +858,7 @@ function defGetEventsForTab() {
     }
 
     if (currentEventsTopic !== 'all') {
-        items = items.filter(item => Array.isArray(item.event.tags) && item.event.tags.includes(currentEventsTopic));
+        items = items.filter(item => defGetTopicTags(item.event).includes(currentEventsTopic));
     }
 
     if (currentEventsTab === 'upcoming') {
@@ -581,10 +886,7 @@ function defRenderEventTopicFilters(availableItems) {
 
     const topics = new Set();
     availableItems.forEach(({ event }) => {
-        (Array.isArray(event.tags) ? event.tags : []).forEach(tag => {
-            const clean = defSafeText(tag, 80);
-            if (clean) topics.add(clean);
-        });
+        defGetTopicTags(event).forEach(tag => { if (tag) topics.add(tag); });
     });
 
     const topicList = ['all', ...Array.from(topics).sort((a, b) => a.localeCompare(b))];
@@ -654,8 +956,11 @@ function defMakeEventCard(event, index, status) {
 
     const body = defElement('div', 'event-card-body');
     const badgeLabel = status === 'upcoming' ? 'Upcoming' : 'Past';
-    body.appendChild(defElement('span', 'event-status', badgeLabel));
+    body.appendChild(defElement('span', 'event-status ' + (status === 'upcoming' ? 'is-upcoming' : 'is-past'), badgeLabel));
     body.appendChild(defElement('h3', 'event-title', event.title || 'Untitled event'));
+
+    const booth = defSafeText(event.booth || '', 120);
+    if (booth) body.appendChild(defElement('p', 'event-card-booth', 'Booth: ' + booth));
 
     const dates = defGetEventDates(event);
     const dateLabel = defFormatEventDate(event, dates);
@@ -663,6 +968,14 @@ function defMakeEventCard(event, index, status) {
 
     const location = defGetEventLocation(event);
     if (location) body.appendChild(defElement('p', 'event-card-location', 'Location: ' + location));
+
+    const theme = defSafeText(event.theme || '', 250);
+    if (theme) body.appendChild(defElement('p', 'event-card-theme', theme));
+    const summary = defGetEventSummary(event);
+    if (summary) body.appendChild(defElement('p', 'event-card-summary', summary));
+    const tagWrap = defElement('div', 'recommendation-card-tags');
+    defGetTopicTags(event).slice(0, 3).forEach(tag => tagWrap.appendChild(defElement('span', 'kone-tag', tag)));
+    if (tagWrap.childElementCount) body.appendChild(tagWrap);
 
     card.append(imageWrap, body);
     card.addEventListener('click', () => showEventDetail(index));
@@ -738,9 +1051,7 @@ function showEventDetail(index) {
     const tags = document.getElementById('ed-tags');
     if (tags) {
         tags.replaceChildren();
-        (Array.isArray(event.tags) ? event.tags : []).forEach(tag => {
-            tags.appendChild(defElement('span', 'kone-tag', tag));
-        });
+        defGetTopicTags(event).forEach(tag => { tags.appendChild(defElement('span', 'kone-tag', tag)); });
         tags.hidden = !tags.childElementCount;
     }
 
@@ -758,9 +1069,9 @@ function showEventDetail(index) {
             item.appendChild(document.createTextNode(value));
             meta.appendChild(item);
         };
+        addMeta('Booth', booth);
         addMeta('Date', dateLabel);
         addMeta('Location', location);
-        addMeta('Booth', booth);
         addMeta('Theme', theme);
         meta.hidden = !meta.childElementCount;
     }
@@ -779,7 +1090,7 @@ function showEventDetail(index) {
     const longBody = defSafeText(event.body || event.article_body || '', 50000);
     if (body) defRenderMarkdownInto(body, longBody);
     if (bodySection) bodySection.hidden = !longBody;
-    if (bodyHeading) bodyHeading.textContent = status === 'past' ? 'Trade Show Report' : 'About This Show';
+    if (bodyHeading) bodyHeading.textContent = status === 'past' ? 'Products & Solutions Showcased' : 'What We Will Showcase';
 
     const recapSection = document.getElementById('ed-recap-section');
     const recap = document.getElementById('ed-recap');
@@ -830,13 +1141,25 @@ function showEventDetail(index) {
     const ctaContainer = document.getElementById('ed-cta');
     if (ctaContainer) {
         ctaContainer.replaceChildren();
-        // Existing CMS records without the new field keep their current CTA until the user edits them in CMS.
         const ctaEnabled = event.cta_enabled !== false;
-        const ctaLabel = defSafeText(
-            event.cta_label || (status === 'upcoming' ? 'Book a meeting at this show' : 'Talk to our team'),
-            200
-        );
-        if (ctaEnabled) {
+        const hasRecap = Boolean(defPlainTextLength(event.body || event.recap || event.highlights || event.key_highlights || '') >= 80 || (Array.isArray(event.gallery) && event.gallery.length));
+        if (status === 'upcoming' && ctaEnabled) {
+            const ctaLabel = defSafeText(event.cta_label || 'Book a Meeting at This Show', 200);
+            const cta = defElement('button', 'btn-y event-detail-cta', ctaLabel);
+            cta.type = 'button';
+            cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, 'Trade Shows', 'Newsroom'));
+            ctaContainer.appendChild(cta);
+        } else if (status === 'past' && hasRecap) {
+            const cta = defElement('button', 'btn-y event-detail-cta', 'Read Recap');
+            cta.type = 'button';
+            cta.addEventListener('click', () => {
+                const target = document.getElementById(event.recap ? 'ed-recap-section' : (event.highlights || event.key_highlights ? 'ed-highlights-section' : 'ed-body-section'));
+                if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            });
+            ctaContainer.appendChild(cta);
+        } else if (status === 'past' && ctaEnabled) {
+            const requestedLabel = defSafeText(event.cta_label || 'Talk to Our Team', 200);
+            const ctaLabel = /book a meeting|book a demo/i.test(requestedLabel) ? 'Talk to Our Team' : requestedLabel;
             const cta = defElement('button', 'btn-y event-detail-cta', ctaLabel);
             cta.type = 'button';
             cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, 'Trade Shows', 'Newsroom'));
@@ -844,7 +1167,12 @@ function showEventDetail(index) {
         }
     }
 
-    // Send only business-relevant context, not an internal Content ID.
+    const relatedStories = defFindRelatedStoriesForEvent(event, status, 3);
+    const relatedEvents = defFindRelatedEventsForEvent(event, index, 3);
+    defRenderRecommendationSection('ed-related-stories-section', 'ed-related-stories', relatedStories, 'story', 'Explore the Solutions');
+    defRenderRecommendationSection('ed-related-events-section', 'ed-related-events', relatedEvents, 'event', 'Related Trade Shows');
+
+    // Send only the existing content_view and virtual_page_view contracts; recommendation clicks do not add a new event.
     switchView('event-detail', { suppressVirtualPageView: true });
     track('content_view', {
         content_type: 'Trade Shows',
@@ -895,7 +1223,7 @@ function renderEvents() {
     defRenderEventTopicFilters(tabItems);
     const visibleItems = currentEventsTopic === 'all'
         ? tabItems
-        : tabItems.filter(item => Array.isArray(item.event.tags) && item.event.tags.includes(currentEventsTopic));
+        : tabItems.filter(item => defGetTopicTags(item.event).includes(currentEventsTopic));
 
     if (!visibleItems.length) {
         defShowMessage(

@@ -72,15 +72,15 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 
     <div id="newsroom" class="page">
         <div class="nr-layout">
-            <div class="nr-sidebar">
-                <a onclick="switchView('ov')" id="nav-ov" class="active">Overview</a>
-                <a onclick="switchView('stories')" id="nav-stories">Stories</a>
+            <div class="nr-sidebar" aria-label="Newsroom sections">
+                <a id="nav-ov" hidden aria-hidden="true">Overview</a>
+                <a onclick="switchView('stories')" id="nav-stories" class="active">Stories</a>
                 <a onclick="switchView('events')" id="nav-events">Trade Shows</a>
                 <a onclick="switchView('social')" id="nav-social">Social Media</a>
-                <a onclick="switchView('media')" id="nav-media">Media</a>
+                <a id="nav-media" hidden aria-hidden="true">Media</a>
             </div>
             <div class="nr-main">
-                <div id="view-ov" class="view active">
+                <div id="view-ov" class="view">
                     <h2 class="nr-title">Corporate Newsroom</h2>
                     <div class="ov-grid">
                         <div class="ov-card" onclick="switchView('social')"><img id="ov-img-social" src="images/11.jpg"><div class="ov-overlay"><h3>Social Media</h3></div></div>
@@ -89,28 +89,38 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <div class="ov-card" onclick="switchView('media')"><img id="ov-img-media" src="images/media-cover.jpg"><div class="ov-overlay"><h3>Media</h3></div></div>
                     </div>
                 </div>
-                <div id="view-stories" class="view">
+                <div id="view-stories" class="view active">
                     <h2 class="nr-title">Explore our stories</h2>
-                    <p class="stories-intro">Product updates, application insights, customer stories and company news.</p>
+                    <p class="stories-intro">Explore industrial vision technology, applications and industry insights.</p>
                     <div id="stories-filters" class="stories-filters" aria-label="Filter stories by topic"></div>
                     <div id="stories-list"></div>
                 </div>
                 <div id="view-story-detail" class="view">
                     <div class="back-btn" onclick="switchView('stories')">← Back to Stories</div>
-                    <div class="detail-layout">
-                        <div class="detail-content">
-                            <span id="sd-date" class="detail-date"></span>
-                            <div id="sd-tags" class="story-tags" hidden></div>
-                            <h2 id="sd-title" class="detail-title"></h2>
-                            <p id="sd-summary" class="detail-summary" hidden></p>
-                            <div id="sd-body" class="detail-text"></div>
-                            <div id="sd-cta" class="event-detail-cta-wrap"></div>
-                        </div>
-                    </div>
+                    <article class="detail-article story-detail-article">
+                        <div class="detail-hero-image"><img id="sd-img" alt="" loading="lazy" decoding="async"></div>
+                        <span id="sd-date" class="detail-date"></span>
+                        <span id="sd-category" class="story-category-label" hidden></span>
+                        <span id="sd-industry" class="story-industry-label" hidden></span>
+                        <span id="sd-fictional-badge" class="illustrative-example-badge" hidden>Illustrative Use Case · Fictional Example</span>
+                        <div id="sd-tags" class="story-tags" hidden></div>
+                        <h2 id="sd-title" class="detail-title"></h2>
+                        <p id="sd-summary" class="detail-summary" hidden></p>
+                        <div id="sd-body" class="detail-text"></div>
+                        <div id="sd-cta" class="event-detail-cta-wrap"></div>
+                        <section id="sd-related-stories-section" class="recommendation-section" hidden>
+                            <h3>Explore the Solution</h3>
+                            <div id="sd-related-stories" class="recommendation-grid"></div>
+                        </section>
+                        <section id="sd-related-events-section" class="recommendation-section" hidden>
+                            <h3>Explore Related Trade Shows</h3>
+                            <div id="sd-related-events" class="recommendation-grid"></div>
+                        </section>
+                    </article>
                 </div>
                 <div id="view-events" class="view">
                     <h2 class="nr-title">Trade Shows</h2>
-                    <p class="events-intro">Meet our team at upcoming exhibitions, or explore highlights and technical stories from past events.</p>
+                    <p class="events-intro">Explore upcoming demonstrations and useful technical highlights from previous shows.</p>
                     <div class="events-view-tabs" role="tablist" aria-label="Event views">
                         <button type="button" class="event-tab is-active" data-events-tab="upcoming" role="tab" aria-selected="true">Upcoming Trade Shows</button>
                         <button type="button" class="event-tab" data-events-tab="past" role="tab" aria-selected="false">Past Trade Shows</button>
@@ -149,6 +159,14 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <div id="ed-gallery" class="event-detail-gallery" hidden></div>
                         <a id="ed-url" class="event-link" hidden target="_blank" rel="noopener noreferrer">Visit event website</a>
                         <div id="ed-cta" class="event-detail-cta-wrap"></div>
+                        <section id="ed-related-stories-section" class="recommendation-section" hidden>
+                            <h3>Explore the Solutions</h3>
+                            <div id="ed-related-stories" class="recommendation-grid"></div>
+                        </section>
+                        <section id="ed-related-events-section" class="recommendation-section" hidden>
+                            <h3>Related Trade Shows</h3>
+                            <div id="ed-related-events" class="recommendation-grid"></div>
+                        </section>
                     </article>
                 </div>
                 <div id="view-social" class="view">
@@ -214,6 +232,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <button class="btn-y" onclick="showPage('home')">Return to Home</button>
         </div>
     </div>
+
+    <footer class="site-disclaimer" role="note">
+        DEF Company is a fictional B2B industrial vision brand created for a personal portfolio project. Content and example scenarios are illustrative and may be AI-assisted. No real customer relationships, verified product performance, certifications, or commercial results are claimed.
+    </footer>
 
     <div id="cookie-banner" role="dialog" aria-label="Cookie preferences">
         <div class="cookie-content">
