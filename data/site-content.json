@@ -8,9 +8,6 @@
   },
   "navigation": {
     "home": "Home",
-    "products": "Products",
-    "solutions": "Solutions",
-    "support": "Support",
     "newsroom": "Newsroom",
     "contact_sales": "Contact Sales"
   },
@@ -31,50 +28,27 @@
     "newsletter_success_description": "Thank you for subscribing to this portfolio demonstration newsletter."
   },
   "newsroom": {
-    "sidebar_overview": "Overview",
     "sidebar_stories": "Stories",
     "sidebar_events": "Trade Shows",
     "sidebar_social": "Social Media",
-    "sidebar_media": "Media",
-    "overview_title": "Corporate Newsroom",
-    "overview_cards": {
-      "social": {
-        "title": "Social Media",
-        "image": "images/11.jpg",
-        "image_alt": "Illustrative DEF Company social media channels"
-      },
-      "stories": {
-        "title": "Stories",
-        "image": "images/story-cover.jpg",
-        "image_alt": "Industrial vision stories"
-      },
-      "events": {
-        "title": "Trade Shows",
-        "image": "images/event-1.jpg",
-        "image_alt": "Illustrative industrial automation trade show"
-      },
-      "media": {
-        "title": "Media",
-        "image": "images/media-cover.jpg",
-        "image_alt": "Illustrative media resources"
-      }
-    },
-    "stories_title": "Explore our Stories",
-    "stories_intro": "Explore industrial vision technology, industry applications and insights. Categories describe the content type; shared topic tags connect related stories and trade shows.",
+    "stories_title": "Stories",
+    "stories_intro": "Explore industrial vision technology, industry applications and insights.",
     "events_title": "Trade Shows",
-    "events_intro": "Explore upcoming demonstrations and useful technical highlights from previous shows.",
+    "events_intro": "Discover upcoming trade shows and explore useful product demonstrations and technical highlights from past shows.",
     "events_upcoming_tab": "Upcoming Trade Shows",
     "events_past_tab": "Past Trade Shows",
     "events_year_label": "Filter past trade shows by year",
-    "events_visit_link": "Visit event website",
+    "events_visit_link": "Visit trade show website",
     "social_title": "Social Media",
     "social_disclaimer_lead": "Learning & portfolio notice:",
     "social_disclaimer_text": "DEF Company is a fictional project created only for learning and portfolio presentation. The social media cards on this page are examples, not official DEF Company accounts. The photos are from ",
-    "media_title": "Media Contacts",
-    "media_disclaimer_lead": "Learning & portfolio notice:",
-    "media_disclaimer_text": "This Media Contacts page is a fictional example for learning and portfolio presentation. All names, job titles, and email addresses shown here are made up and do not refer to real media contacts. The portrait photos are from ",
     "image_source_label": "Unsplash",
-    "image_source_url": "https://unsplash.com/"
+    "image_source_url": "https://unsplash.com/",
+    "events_upcoming_heading": "Upcoming Trade Shows",
+    "events_past_heading": "Past Trade Shows",
+    "events_unknown_heading": "Trade Shows — Dates to Be Confirmed",
+    "stories_back_button": "← Back to Stories",
+    "events_back_button": "← Back to Trade Shows"
   },
   "contact": {
     "title": "Contact Sales",
