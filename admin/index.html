@@ -4,12 +4,32 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>DEF Company Content Editor</title>
+  <style>
+    .def-cms-dashboard { max-width: 980px; margin: 0 auto; padding: 28px 26px 48px; color: #1b2733; font-family: Inter, system-ui, sans-serif; }
+    .def-cms-dashboard h1 { margin: 0 0 8px; font-size: 28px; font-weight: 650; }
+    .def-cms-dashboard .intro { margin: 0 0 24px; color: #586675; line-height: 1.65; }
+    .def-cms-group { border: 1px solid #dce3e9; border-radius: 10px; background: #fff; margin: 0 0 12px; overflow: hidden; }
+    .def-cms-group > summary { cursor: pointer; list-style: none; padding: 17px 18px; font-size: 16px; font-weight: 650; display: flex; align-items: center; gap: 10px; background: #f7f9fb; }
+    .def-cms-group > summary::-webkit-details-marker { display: none; }
+    .def-cms-group > summary::before { content: '▸'; display: inline-block; color: #526779; transition: transform .15s ease; }
+    .def-cms-group[open] > summary::before { transform: rotate(90deg); }
+    .def-cms-items { padding: 8px 14px 14px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
+    .def-cms-item { display: block; padding: 13px 14px; border: 1px solid #e0e7ed; border-radius: 8px; text-decoration: none; color: #1f2d3a; background: #fff; }
+    .def-cms-item:hover, .def-cms-item:focus-visible { border-color: #93b7d4; background: #f7fbff; outline: none; }
+    .def-cms-item strong { display: block; font-size: 14px; margin-bottom: 4px; }
+    .def-cms-item span { display: block; color: #657381; font-size: 12px; line-height: 1.55; }
+    .def-cms-subgroup { margin: 8px 0 0; border: 1px dashed #d2dce4; border-radius: 8px; }
+    .def-cms-subgroup > summary { padding: 12px 14px; cursor: pointer; font-weight: 650; list-style: none; }
+    .def-cms-subgroup > summary::-webkit-details-marker { display: none; }
+    .def-cms-subgroup .def-cms-items { padding-top: 0; }
+    .def-cms-note { margin-top: 18px; padding: 12px 14px; background: #fff9d8; border-radius: 8px; color: #5a4c13; font-size: 13px; line-height: 1.6; }
+    @media (max-width: 720px) { .def-cms-items { grid-template-columns: 1fr; } .def-cms-dashboard { padding: 18px; } }
+  </style>
 </head>
 <body>
   <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
   <script>
     // Hide only a standalone Paste/Paste image button inside an image/file picker.
-    // Sveltia CMS has no documented config option for removing this specific button.
     (() => {
       const isPasteButton = (button) => {
         const text = (button.getAttribute('aria-label') || button.getAttribute('title') || button.textContent || '')
@@ -31,8 +51,51 @@
         });
       };
       hidePasteButtons();
-      const observer = new MutationObserver(hidePasteButtons);
-      observer.observe(document.documentElement, { childList: true, subtree: true });
+      new MutationObserver(hidePasteButtons).observe(document.documentElement, { childList: true, subtree: true });
+    })();
+
+    // Official Sveltia CMS Custom Pages API: a clean, collapsible content-workflow landing page.
+    (() => {
+      if (!window.CMS || typeof CMS.registerCustomPage !== 'function' || !CMS.React) return;
+      const h = CMS.React.createElement;
+      const link = (title, route, hint) => h('a', { className: 'def-cms-item', href: route },
+        h('strong', null, title), h('span', null, hint));
+      const group = (title, open, children) => h('details', { className: 'def-cms-group', open: Boolean(open) },
+        h('summary', null, title), h('div', { className: 'def-cms-items' }, ...children));
+      const CustomNavigator = () => h('div', { className: 'def-cms-dashboard' },
+        h('h1', null, '内容工作台'),
+        h('p', { className: 'intro' }, '按网站结构进入对应编辑区。打开一个项目后，只修改该区块；文章和展会记录会以折叠列表显示，不需要在一张长表单中滚动。'),
+        group('Website Basics（Home）', false, [
+          link('Brand Introduction｜品牌介绍', '#/collections/content-management/entries/home_intro', '编辑主标题、品牌介绍、首页图片和 Book a Demo 按钮。'),
+          link('Newsletter｜邮件订阅', '#/collections/content-management/entries/home_newsletter', '编辑订阅区图片、标题、介绍和按钮。')
+        ]),
+        group('Newsroom', false, [
+          link('Stories｜常规文章', '#/collections/content-management/entries/stories_content', '技术文章、行业应用、行业洞察、公司文化和品牌动态。'),
+          h('details', { className: 'def-cms-subgroup' },
+            h('summary', null, 'Trade Shows｜展会'),
+            h('div', { className: 'def-cms-items' },
+              link('Upcoming Shows｜展会资料', '#/collections/content-management/entries/upcoming_shows', '维护展位、日期、地点、Topic Tags 和预约按钮。已有往期记录保留在同一份数据中，前台按日期自动判断状态。'),
+              link('Trade Show Articles｜展会文章', '#/collections/content-management/entries/trade_show_articles', '一张文章表单选择展前、展中或展后阶段；Topic Tags 自动推荐。')
+            )
+          )
+        ]),
+        group('Social Media', false, [
+          link('Social Media 页面文案', '#/collections/content-management/entries/social_page', '编辑页面标题和说明。'),
+          link('社交媒体渠道卡片', '#/collections/content-management/entries/social_media', '编辑 LinkedIn、YouTube、Facebook 等平台卡片和图片。')
+        ]),
+        group('Media', false, [
+          link('Media 页面文案', '#/collections/content-management/entries/media_page', '编辑媒体联系页面说明。'),
+          link('媒体联系人', '#/collections/content-management/entries/media_contacts', '新增、修改或隐藏联系人。')
+        ]),
+        group('Forms & Privacy', false, [
+          link('Contact Sales 表单文案', '#/collections/content-management/entries/contact_content', '只编辑表单文字，不修改字段名称和提交接口。'),
+          link('Cookie & Privacy 文案', '#/collections/content-management/entries/cookie_content', '编辑 Cookie 同意界面的文字。')
+        ]),
+        h('div', { className: 'def-cms-note' }, '自动推荐说明：Explore the Solution 只推荐 Stories；Explore Related Trade Shows 只推荐展会卡片。两个区块独立展示，均根据 Topic Tags 自动匹配。无需填写“关联展会名称”。')
+      );
+      CMS.registerCustomPage({ id: 'content-navigator', label: '内容工作台', icon: 'account_tree', component: CustomNavigator });
+      // First visit opens the navigator; existing OAuth callback or deep-link hashes are preserved.
+      if (!window.location.hash) window.location.hash = '#/pages/content-navigator';
     })();
   </script>
 </body>
