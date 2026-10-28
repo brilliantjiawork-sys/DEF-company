@@ -397,3 +397,13 @@
   .story-detail-article .detail-text { font-size: 16px; }
   .story-taxonomy { gap: 14px; }
 }
+
+
+/* V13: Story index and recommendation cards omit topic/industry chips. Taxonomy remains on detail pages. */
+.story-card-taxonomy-row,
+.story-card-topics,
+.story-card .story-category-label,
+.recommendation-card-tags {
+  display: none !important;
+}
+.story-card .story-card-title { margin-top: 0 !important; }

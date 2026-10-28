@@ -548,10 +548,7 @@ function defMakeRecommendationCard(content, index, type, badgeText) {
 
     const dateLabel = isStory ? fmtDate(content.date || content.published_date) : defFormatEventDate(content, defGetEventDates(content));
     if (dateLabel) body.appendChild(defElement('span', 'recommendation-card-date', dateLabel));
-    const tags = defElement('div', 'recommendation-card-tags');
-    const contentTags = defGetTopicTags(content).slice(0, 3);
-    contentTags.forEach(tag => tags.appendChild(defElement('span', 'kone-tag', tag)));
-    if (tags.childElementCount) body.appendChild(tags);
+    // Topic tags stay on detail pages; keep recommendation cards visually clean.
 
     card.append(imageWrap, body);
     const activate = () => isStory ? showStoryDetail(index, content.is_event_coverage ? 'events' : 'stories') : showEventDetail(index);
@@ -598,7 +595,7 @@ function defFindRelatedEventsForStory(story, limit = 3) {
     const upcoming = matches.filter(item => item.status === 'upcoming')
         .sort((a, b) => b.score - a.score || ((defGetEventDates(a.content).start || new Date(8640000000000000)) - (defGetEventDates(b.content).start || new Date(8640000000000000))));
     const past = matches.filter(item => item.status === 'past').sort((a, b) => b.score - a.score);
-    return upcoming.length ? upcoming.slice(0, limit) : past.slice(0, limit);
+    return [...upcoming, ...past].slice(0, limit);
 }
 
 function defFindRelatedStoriesForEvent(event, eventStatus, limit = 3) {
@@ -672,34 +669,11 @@ function renderStories() {
         const info = defElement('div', 'list-info');
         const dateText = fmtDate(story.date || story.published_date);
         if (dateText) info.appendChild(defElement('span', 'date', dateText));
-        const storyKicker = story.is_event_coverage ? defSafeText(story.event_content_stage || 'Trade Show Coverage', 100) : defGetStoryCategory(story);
-        const categoryRow = defElement('div', 'story-card-taxonomy-row');
-        categoryRow.appendChild(defElement('span', 'story-taxonomy-label', 'Content category'));
-        categoryRow.appendChild(defElement('span', 'story-category-label', storyKicker));
-        info.appendChild(categoryRow);
+        // Editorial cards show date, title and summary only. Category, industry and topic tags
+        // remain available in the article detail page and as filters; don't stack taxonomies on cards.
         info.appendChild(defElement('h3', 'story-card-title', story.title || 'Untitled story'));
         const summary = defSafeText(story.summary || story.excerpt || '', 600);
         if (summary) info.appendChild(defElement('p', 'story-summary', summary));
-
-        const industriesList = defGetContentIndustries(story);
-        if (industriesList.length) {
-            const industryRow = defElement('div', 'story-card-taxonomy-row');
-            industryRow.appendChild(defElement('span', 'story-taxonomy-label', 'Industry'));
-            const industryValues = defElement('div', 'story-card-taxonomy-values');
-            industriesList.forEach(industry => industryValues.appendChild(defElement('span', 'story-industry-chip', industry)));
-            industryRow.appendChild(industryValues);
-            info.appendChild(industryRow);
-        }
-
-        const tagsList = defGetTopicTags(story).slice(0, 4);
-        if (tagsList.length) {
-            const topicBlock = defElement('div', 'story-card-topics');
-            topicBlock.appendChild(defElement('span', 'story-taxonomy-label', 'Topic tags'));
-            const tags = defElement('div', 'story-tags');
-            tagsList.forEach(tag => tags.appendChild(defElement('span', 'kone-tag', tag)));
-            topicBlock.appendChild(tags);
-            info.appendChild(topicBlock);
-        }
 
         article.append(imageWrap, info);
         article.addEventListener('click', () => showStoryDetail(index));
@@ -1298,9 +1272,7 @@ function renderEventCoverageArticles() {
         body.appendChild(defElement('h3', '', defSafeText(story.title || 'Untitled trade show article', 300)));
         const summary = defSafeText(story.summary || story.excerpt || '', 500);
         if (summary) body.appendChild(defElement('p', 'story-summary', summary));
-        const tags = defElement('div', 'story-tags');
-        defGetTopicTags(story).slice(0, 4).forEach(tag => tags.appendChild(defElement('span', 'kone-tag', tag)));
-        if (tags.childElementCount) body.appendChild(tags);
+        // Keep topic tags on the article detail page, not on the list card.
         card.append(imageWrap, body);
         card.addEventListener('click', () => showStoryDetail(index, 'events'));
         card.addEventListener('keydown', event => {
