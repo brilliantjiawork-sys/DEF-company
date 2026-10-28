@@ -149,12 +149,12 @@ collections:
     editor:
       preview: false
     fields:
-    - label: Stories 文章（已发布的文章在这里折叠显示；点击标题即可继续编辑）
+    - label: Stories 文章（已发布文章在下面按标题显示；点击标题行即可继续编辑）
       name: articles
       widget: list
       label_singular: 新增一篇 Story
       collapsed: true
-      minimize_collapsed: true
+      minimize_collapsed: false
       add_to_top: true
       summary: '{{title}} · {{date}} · {{category}}'
       thumbnail: image
@@ -305,7 +305,7 @@ collections:
       widget: list
       label_singular: 新增一场展会
       collapsed: true
-      minimize_collapsed: true
+      minimize_collapsed: false
       add_to_top: true
       summary: '{{title}} · {{start_date}}'
       thumbnail: cover
@@ -400,7 +400,7 @@ collections:
       widget: list
       label_singular: 新增一篇展会文章
       collapsed: true
-      minimize_collapsed: true
+      minimize_collapsed: false
       add_to_top: true
       summary: '{{title}} · {{content_stage}} · {{date}}'
       thumbnail: image

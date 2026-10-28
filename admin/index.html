@@ -33,29 +33,29 @@
       const h = CMS.React.createElement;
       const link = (title, route, hint) => h('a', { className: 'def-cms-item', href: route },
         h('strong', null, title), h('span', null, hint));
-      const group = (title, children) => h('details', { className: 'def-cms-group' },
+      const group = (title, children, open = false) => h('details', { className: 'def-cms-group', open },
         h('summary', null, title), h('div', { className: 'def-cms-items' }, ...children));
-      const subgroup = (title, children) => h('details', { className: 'def-cms-subgroup' },
+      const subgroup = (title, children, open = false) => h('details', { className: 'def-cms-subgroup', open },
         h('summary', null, title), h('div', { className: 'def-cms-items' }, ...children));
 
       const ContentManagement = () => h('div', { className: 'def-cms-dashboard' },
         h('h1', null, '内容管理'),
-        h('p', { className: 'intro' }, '按网站结构进入对应编辑区。已发布的文章会按标题、日期和分类折叠显示；点击现有文章即可继续修改。新增内容请使用对应列表中的“添加”按钮。'),
+        h('p', { className: 'intro' }, '日常编辑从这里直接进入。Website Basics 管首页，Newsroom 管 Stories 和展会内容。已发布文章会在文章列表中直接显示标题；点击原有标题即可继续编辑，不必重新创建。'),
         group('Website Basics（Home）', [
           link('Brand Introduction｜品牌介绍', '#/collections/content-management/entries/home_intro', '编辑首页品牌定位、主标题、介绍文案、图片和 Book a Demo 按钮。'),
           link('Newsletter｜邮件订阅', '#/collections/content-management/entries/home_newsletter', '编辑订阅区图片、标题、介绍和按钮文案。')
-        ]),
+        ], true),
         group('Newsroom', [
           subgroup('Stories｜常规文章', [
-            link('Stories 页面设置', '#/collections/content-management/entries/stories_page_settings', '只编辑 Stories 页面标题、简介和详情页返回按钮。'),
-            link('Stories 文章｜查看和编辑已发布文章', '#/collections/content-management/entries/stories_content', '现有文章按标题、日期、内容分类折叠显示；点开条目修改，不要重复创建。')
-          ]),
+            link('已发布 Stories｜查看与编辑', '#/collections/content-management/entries/stories_content', '先显示已保存文章的标题、日期和分类；点击已有文章行继续编辑。'),
+            link('新增 Stories｜页面设置', '#/collections/content-management/entries/stories_page_settings', '只修改 Stories 页面标题、简介和详情页返回按钮。')
+          ], true),
           subgroup('Trade Shows｜展会', [
-            link('Trade Shows 页面设置', '#/collections/content-management/entries/events_page_settings', '只编辑展会页面标题、简介和顶部切换按钮文字。'),
+            link('已发布展会文章｜查看与编辑', '#/collections/content-management/entries/trade_show_articles', '先显示已有文章标题与阶段；点击原有文章行继续编辑。'),
             link('Upcoming Shows｜即将举行的展会', '#/collections/content-management/entries/upcoming_shows', '编辑展会名称、展位、日期、地点、主题、话题标签和预约 CTA。'),
-            link('Trade Show Articles｜展前、展中、展后文章', '#/collections/content-management/entries/trade_show_articles', '一套文章编辑表单；用内容阶段区分预热、现场动态和展后回顾。')
-          ])
-        ]),
+            link('Trade Shows 页面设置', '#/collections/content-management/entries/events_page_settings', '只修改展会页面标题、简介和顶部切换按钮文字。')
+          ], true)
+        ], true),
         group('Social Media', [
           link('Social Media 页面文案', '#/collections/content-management/entries/social_page', '编辑社交媒体页面标题、说明和图片来源信息。'),
           link('社交媒体渠道卡片', '#/collections/content-management/entries/social_media', '编辑 LinkedIn、YouTube、Facebook 等渠道的简介、图片、网址和按钮。')
