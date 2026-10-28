@@ -122,25 +122,32 @@ collections:
       name: newsletter_success_description
       widget: text
       required: true
+  - name: stories_page_settings
+    label: Stories 页面设置
+    file: data/stories-page-settings.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: Stories 页面标题
+      name: page_title
+      widget: string
+      required: true
+    - label: Stories 页面简介
+      name: page_intro
+      widget: text
+      required: true
+    - label: 文章详情页返回 Stories 的按钮文字
+      name: back_button
+      widget: string
+      required: true
   - name: stories_content
-    label: Stories 内容列表
+    label: Stories 文章
     file: data/database.json
     format: json
     editor:
       preview: false
     fields:
-    - label: 前台页面标题
-      name: page_title
-      widget: string
-      required: true
-    - label: 页面简介
-      name: page_intro
-      widget: text
-      required: true
-    - label: 详情页返回按钮文字
-      name: back_button
-      widget: string
-      required: true
     - label: Stories 文章
       name: articles
       widget: list
@@ -239,37 +246,44 @@ collections:
         - Talk to Our Team
         - Contact Sales
         - Book a Demo
+  - name: events_page_settings
+    label: Trade Shows 页面设置
+    file: data/trade-shows-page-settings.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: Trade Shows 页面标题
+      name: page_title
+      widget: string
+      required: true
+    - label: Trade Shows 页面简介
+      name: page_intro
+      widget: text
+      required: true
+    - label: Upcoming Shows 切换按钮文字
+      name: upcoming_tab_label
+      widget: string
+      required: true
+    - label: Trade Show Articles 切换按钮文字
+      name: articles_tab_label
+      widget: string
+      required: true
+    - label: 展会文章区域说明
+      name: articles_intro
+      widget: text
+      required: true
+    - label: 展会详情页返回按钮文字
+      name: back_button
+      widget: string
+      required: true
   - name: upcoming_shows
-    label: Trade Show Records（展会活动记录）
+    label: Upcoming Shows｜展会资料
     file: data/events.json
     format: json
     editor:
       preview: false
     fields:
-    - label: 前台页面标题
-      name: page_title
-      widget: string
-      required: true
-    - label: 页面简介
-      name: page_intro
-      widget: text
-      required: true
-    - label: 详情页返回按钮文字
-      name: back_button
-      widget: string
-      required: true
-    - label: Upcoming Shows 区块标题
-      name: upcoming_heading
-      widget: string
-      required: true
-    - label: Trade Show Articles 区块标题
-      name: articles_heading
-      widget: string
-      required: true
-    - label: 外部展会链接按钮文字
-      name: visit_link
-      widget: string
-      required: true
     - label: 展会活动
       name: exhibitions
       widget: list
