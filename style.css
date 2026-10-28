@@ -140,10 +140,11 @@ a { text-decoration: none; color: inherit; cursor: pointer; }
 
 /* Stories: topic filters and optional article summaries */
 .stories-intro { margin: -8px 0 22px; color: var(--gray); font-size: 16px; line-height: 1.7; }
-.stories-filters { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 24px; }
-.story-filter { border: 1px solid var(--line); background: #fff; color: var(--dark); padding: 8px 14px; border-radius: 999px; cursor: pointer; font: inherit; font-size: 13px; transition: background .2s ease, color .2s ease, border-color .2s ease; }
-.story-filter:hover, .story-filter.is-active { background: var(--dark); border-color: var(--dark); color: #fff; }
-.story-filter:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+.stories-filters { display: grid; grid-template-columns: repeat(3, minmax(180px, 1fr)); gap: 14px; margin: 0 0 26px; padding: 16px; border: 1px solid var(--line); border-radius: 6px; background: #fafbfc; }
+.stories-filter-group { display: flex; flex-direction: column; gap: 7px; min-width: 0; }
+.stories-filter-label { color: var(--dark); font-size: 13px; font-weight: 600; }
+.stories-filter-select { width: 100%; min-height: 42px; padding: 9px 36px 9px 12px; border: 1px solid #cfd5dc; border-radius: 4px; background: #fff; color: var(--dark); font: inherit; font-size: 14px; }
+.stories-filter-select:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-color: var(--blue); }
 .story-card { align-items: flex-start; }
 .story-card .image-container { aspect-ratio: 16 / 10; }
 .story-summary { margin: 0 0 12px; color: var(--gray); font-size: 15px; line-height: 1.7; }
@@ -277,3 +278,15 @@ a { text-decoration: none; color: inherit; cursor: pointer; }
 .event-card-cta { margin-top: 0; background: var(--yellow); border-color: var(--yellow); color: var(--dark); cursor: pointer; }
 .event-card-cta:hover { background: #eadb00; border-color: #eadb00; }
 .event-card-actions button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+
+/* UI V7: Stories taxonomy dropdowns and top-level Trade Show tabs. */
+#events-upcoming-panel[hidden], #event-articles-panel[hidden] { display: none !important; }
+#events-upcoming-panel, #event-articles-panel { margin-top: 0; }
+#event-articles-panel.event-articles-section { border-top: 0; padding-top: 0; margin-top: 0; }
+#events-upcoming-panel .events-section-title { margin-top: 6px; }
+.events-view-tabs { display: flex; flex-wrap: wrap; gap: 8px; border-bottom: 1px solid var(--line); margin: 0 0 22px; }
+.event-tab { appearance: none; border: 0; border-bottom: 3px solid transparent; padding: 12px 16px; background: transparent; color: var(--gray); font: inherit; font-size: 15px; cursor: pointer; margin-bottom: -1px; }
+.event-tab:hover { color: var(--dark); }
+.event-tab.is-active { color: var(--dark); border-bottom-color: var(--yellow); font-weight: 700; }
+.event-tab:focus-visible { outline: 2px solid var(--blue); outline-offset: 3px; }
+@media (max-width: 800px) { .stories-filters { grid-template-columns: 1fr; padding: 13px; gap: 12px; } .events-view-tabs { gap: 2px; } .event-tab { padding: 11px 9px; font-size: 13px; } }

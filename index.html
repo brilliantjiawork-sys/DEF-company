@@ -15,8 +15,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DEF Company | Newsroom</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261029-final-v6">
-    <link rel="stylesheet" href="cms-content.css?v=20261029-final-v6">
+    <link rel="stylesheet" href="style.css?v=20261029-ui-v7">
+    <link rel="stylesheet" href="cms-content.css?v=20261029-ui-v7">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.17/dist/purify.min.js"></script>
 </head>
@@ -109,15 +109,17 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                 </div>
                 <div id="view-events" class="view">
                     <h2 class="nr-title">Trade Shows</h2>
-                    <p class="events-intro">Explore upcoming demonstrations and useful technical highlights from previous shows.</p>
-                    <section class="event-content-section" aria-labelledby="events-upcoming-title">
-                        <h3 id="events-upcoming-title" class="events-section-title">Upcoming Shows</h3>
+                    <p class="events-intro">Explore upcoming exhibitions or browse trade show articles and technical highlights.</p>
+                    <div class="events-view-tabs" role="tablist" aria-label="Trade show sections">
+                        <button type="button" class="event-tab is-active" id="tab-upcoming-shows" role="tab" aria-selected="true" aria-controls="events-upcoming-panel" onclick="switchTradeShowTab('upcoming')">Upcoming Trade Shows</button>
+                        <button type="button" class="event-tab" id="tab-trade-show-articles" role="tab" aria-selected="false" aria-controls="event-articles-panel" onclick="switchTradeShowTab('articles')">Trade Show Articles</button>
+                    </div>
+                    <section id="events-upcoming-panel" class="event-content-section" role="tabpanel" aria-labelledby="tab-upcoming-shows">
                         <div id="events-filters" class="events-filters" aria-label="Filter upcoming shows by topic"></div>
                         <div id="events-list"></div>
                     </section>
-                    <section class="event-content-section event-articles-section" aria-labelledby="event-articles-title">
-                        <h3 id="event-articles-title" class="events-section-title">Trade Show Articles</h3>
-                        <p class="event-articles-intro">Pre-show previews, live updates and post-show recaps.</p>
+                    <section id="event-articles-panel" class="event-content-section event-articles-section" role="tabpanel" aria-labelledby="tab-trade-show-articles" hidden>
+                        <p class="event-articles-intro">Pre-show previews, during-show updates and post-show recaps.</p>
                         <div id="event-coverage-list"></div>
                     </section>
                 </div>
@@ -246,7 +248,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <button type="button" id="cookie-reopen">Cookie settings</button>
     <script src="events-adapter.js"></script>
-    <script src="app.js?v=20261029-final-v6"></script>
-    <script src="marketing-content.js?v=20261029-final-v6"></script>
+    <script src="app.js?v=20261029-ui-v7"></script>
+    <script src="marketing-content.js?v=20261029-ui-v7"></script>
 </body>
 </html> 

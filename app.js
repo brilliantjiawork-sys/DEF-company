@@ -459,20 +459,23 @@ function defHasPastShowContent(event) {
     return defFindLinkedEventCoverage(event, ['post-show', 'during-show']).length > 0;
 }
 
-function defRenderFilterGroup(container, title, values, selected, onSelect, allLabel) {
+function defRenderFilterGroup(container, title, values, selected, onSelect, allLabel, id) {
     const group = defElement('div', 'stories-filter-group');
-    group.appendChild(defElement('span', 'stories-filter-label', title));
-    const options = defElement('div', 'stories-filter-options');
-    const complete = ['all', ...values];
-    complete.forEach(value => {
-        const label = value === 'all' ? allLabel : value;
-        const button = defElement('button', selected === value ? 'is-active' : '', label);
-        button.type = 'button';
-        button.setAttribute('aria-pressed', String(selected === value));
-        button.addEventListener('click', () => onSelect(value));
-        options.appendChild(button);
+    const label = defElement('label', 'stories-filter-label', title);
+    const select = defElement('select', 'stories-filter-select');
+    select.id = id;
+    select.setAttribute('aria-label', title);
+    label.htmlFor = id;
+    const options = [['all', allLabel], ...values.map(value => [value, value])];
+    options.forEach(([value, optionLabel]) => {
+        const option = document.createElement('option');
+        option.value = value;
+        option.textContent = optionLabel;
+        option.selected = selected === value;
+        select.appendChild(option);
     });
-    group.appendChild(options);
+    select.addEventListener('change', () => onSelect(select.value));
+    group.append(label, select);
     container.appendChild(group);
 }
 
@@ -481,27 +484,23 @@ function defRenderStoriesFilters() {
     if (!container) return;
     container.replaceChildren();
 
+    // Keep the full taxonomy selectable even before the first Story is published.
     const availableCategories = DEF_STORY_CATEGORIES.slice();
-    const regularStories = storiesData.filter(story => !story.is_event_coverage);
-    const availableTopics = [...new Set(regularStories.flatMap(defGetTopicTags))].sort((a, b) => a.localeCompare(b));
-    const availableIndustries = [...new Set(regularStories.flatMap(defGetContentIndustries))].sort((a, b) => a.localeCompare(b));
+    const availableTopics = DEF_TOPIC_TAGS.slice().sort((a, b) => a.localeCompare(b));
+    const availableIndustries = DEF_INDUSTRIES.slice().sort((a, b) => a.localeCompare(b));
     if (!availableCategories.includes(currentStoryCategory)) currentStoryCategory = 'all';
     if (!availableTopics.includes(currentStoryTopic)) currentStoryTopic = 'all';
     if (!availableIndustries.includes(currentStoryIndustry)) currentStoryIndustry = 'all';
 
     defRenderFilterGroup(container, 'Content Category', availableCategories, currentStoryCategory, value => {
         currentStoryCategory = value; renderStories();
-    }, 'All categories');
-    if (availableTopics.length) {
-        defRenderFilterGroup(container, 'Topic', availableTopics, currentStoryTopic, value => {
-            currentStoryTopic = value; renderStories();
-        }, 'All topics');
-    }
-    if (availableIndustries.length) {
-        defRenderFilterGroup(container, 'Industry', availableIndustries, currentStoryIndustry, value => {
-            currentStoryIndustry = value; renderStories();
-        }, 'All industries');
-    }
+    }, 'All categories', 'stories-category-filter');
+    defRenderFilterGroup(container, 'Topic', availableTopics, currentStoryTopic, value => {
+        currentStoryTopic = value; renderStories();
+    }, 'All topics', 'stories-topic-filter');
+    defRenderFilterGroup(container, 'Industry', availableIndustries, currentStoryIndustry, value => {
+        currentStoryIndustry = value; renderStories();
+    }, 'All industries', 'stories-industry-filter');
 }
 
 function defMakeRecommendationCard(content, index, type, badgeText) {
@@ -1187,6 +1186,22 @@ function showEventDetail(index) {
         content_title: titleText
     });
     defTrackVirtualPageView('/newsroom/events/' + encodeURIComponent(slug), titleText);
+}
+
+function switchTradeShowTab(tab) {
+    const upcomingSelected = tab !== 'articles';
+    const upcomingPanel = document.getElementById('events-upcoming-panel');
+    const articlesPanel = document.getElementById('event-articles-panel');
+    const upcomingTab = document.getElementById('tab-upcoming-shows');
+    const articlesTab = document.getElementById('tab-trade-show-articles');
+    if (!upcomingPanel || !articlesPanel || !upcomingTab || !articlesTab) return;
+
+    upcomingPanel.hidden = !upcomingSelected;
+    articlesPanel.hidden = upcomingSelected;
+    upcomingTab.classList.toggle('is-active', upcomingSelected);
+    articlesTab.classList.toggle('is-active', !upcomingSelected);
+    upcomingTab.setAttribute('aria-selected', String(upcomingSelected));
+    articlesTab.setAttribute('aria-selected', String(!upcomingSelected));
 }
 
 function renderEvents() {
