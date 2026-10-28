@@ -18,9 +18,9 @@ media_libraries:
     providers: []
 collections:
 - name: content-management
-  label: Content Files（备用入口）
+  label: 全部资源
   icon: folder_managed
-  description: 主要通过“内容工作台”按网站结构编辑。此集合仅作为原生文件入口；所有长列表均按条目折叠，便于查找和修改。
+  description: 全部可编辑资源的统一入口。日常建议先使用“内容工作台”，也可以在这里按集合查找和编辑资源。
   files:
   - name: home_intro
     label: Brand Introduction（品牌介绍）
