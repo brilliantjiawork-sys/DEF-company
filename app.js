@@ -84,6 +84,8 @@ function defCurrentLandingPage() {
 }
 
 function defGetFirstLandingPage() {
+    // Landing-page attribution is saved only after Analytics consent is granted.
+    if (!defHasAnalyticsConsent()) return '';
     try {
         const existing = sessionStorage.getItem(DEF_LANDING_PAGE_STORAGE_KEY);
         if (existing) return existing;
@@ -96,12 +98,14 @@ function defGetFirstLandingPage() {
 }
 
 function defClearStoredAttribution() {
-    // Remove legacy keys and the one current UTM record. The landing-page value remains in session only.
+    // Clear all attribution storage and in-memory values when Analytics consent is absent/revoked.
     try { localStorage.removeItem('def_utm_attribution_v1'); } catch (_) {}
     try { localStorage.removeItem('def_campaign_attribution_v1'); } catch (_) {}
     try { sessionStorage.removeItem('def_utm_attribution_v1'); } catch (_) {}
     try { sessionStorage.removeItem('def_campaign_attribution_v1'); } catch (_) {}
     try { sessionStorage.removeItem(DEF_ATTRIBUTION_STORAGE_KEY); } catch (_) {}
+    try { sessionStorage.removeItem(DEF_LANDING_PAGE_STORAGE_KEY); } catch (_) {}
+    firstLandingPage = '';
 }
 
 function defReadUtmFromCurrentUrl() {
@@ -125,7 +129,7 @@ function defReadStoredAttribution() {
 
 function defCaptureUtmTouchIfAllowed() {
     if (!defHasAnalyticsConsent()) {
-        try { sessionStorage.removeItem(DEF_ATTRIBUTION_STORAGE_KEY); } catch (_) {}
+        defClearStoredAttribution();
         return;
     }
 
@@ -139,14 +143,19 @@ function defCaptureUtmTouchIfAllowed() {
 }
 
 function defGetAttributionForSubmission() {
-    const result = {
-        landing_page: firstLandingPage || defGetFirstLandingPage(),
+    const blank = {
+        landing_page: '',
         utm_source: '',
         utm_medium: '',
         utm_campaign: '',
         utm_content: ''
     };
-    if (!defHasAnalyticsConsent()) return result;
+
+    // If Analytics consent is denied, do not send landing page or UTM attribution to either Sheet.
+    if (!defHasAnalyticsConsent()) return blank;
+
+    firstLandingPage = firstLandingPage || defGetFirstLandingPage();
+    const result = Object.assign({}, blank, { landing_page: firstLandingPage });
 
     let utm = defReadStoredAttribution();
     if (!utm) {
@@ -990,6 +999,8 @@ function initCookieConsent() {
 
 function defApplyConsentToAttribution(choice) {
     if (choice && choice.analytics === true) {
+        // Start attribution collection only from the time Analytics consent is granted.
+        firstLandingPage = defGetFirstLandingPage();
         defCaptureUtmTouchIfAllowed();
     } else {
         defClearStoredAttribution();
@@ -1051,13 +1062,16 @@ function initContactForm() {
         const values = Object.fromEntries(new FormData(form).entries());
         if (!pendingContactSubmissionId) pendingContactSubmissionId = defCreateSubmissionId();
         const submissionId = pendingContactSubmissionId;
+        const analyticsConsent = defHasAnalyticsConsent();
         const attribution = defGetAttributionForSubmission();
         Object.assign(values, attribution, {
+            analytics_consent: analyticsConsent ? 'true' : 'false',
             submission_id: submissionId, // Internal retry key only; never written into a Sheet column.
-            form_entry: currentLeadContext.formEntry || 'Home',
-            content_type: currentLeadContext.contentType || '',
-            content_title: currentLeadContext.contentTitle || '',
-            cta_label: currentLeadContext.ctaLabel || (currentLeadSource === 'book_demo' ? 'Book a Demo' : 'Contact Sales')
+            // The following fields are attribution-only and remain blank when Analytics consent is denied.
+            form_entry: analyticsConsent ? (currentLeadContext.formEntry || 'Home') : '',
+            content_type: analyticsConsent ? (currentLeadContext.contentType || '') : '',
+            content_title: analyticsConsent ? (currentLeadContext.contentTitle || '') : '',
+            cta_label: analyticsConsent ? (currentLeadContext.ctaLabel || (currentLeadSource === 'book_demo' ? 'Book a Demo' : 'Contact Sales')) : ''
         });
 
         try {
@@ -1109,16 +1123,20 @@ function initNewsletterForm() {
 
         if (!pendingNewsletterSubmissionId) pendingNewsletterSubmissionId = defCreateSubmissionId();
         const submissionId = pendingNewsletterSubmissionId;
+        const analyticsConsent = defHasAnalyticsConsent();
         const values = Object.assign(
             { email },
             defGetAttributionForSubmission(),
-            { submission_id: submissionId } // Internal retry key only; never written into a Sheet column.
+            {
+                analytics_consent: analyticsConsent ? 'true' : 'false',
+                submission_id: submissionId // Internal retry key only; never written into a Sheet column.
+            }
         );
 
         try {
             await defPostForm(SITE_CONFIG.newsletterEndpoint || '/api/newsletter', values);
             if (!trackedSubmissionIds.has(submissionId)) {
-                track('newsletter_signup', { form_id: 'newsletter_form' });
+                track('newsletter_signup');
                 trackedSubmissionIds.add(submissionId);
             }
             pendingNewsletterSubmissionId = '';
@@ -1137,19 +1155,17 @@ function initNewsletterForm() {
 
 // ---------- Initialization ----------
 document.addEventListener('def:consent-updated', (event) => {
-    const choice = event.detail || {};
-    if (choice.analytics === true) {
+    defApplyConsentToAttribution(event.detail || {});
+});
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Never persist a landing page or UTM before Analytics consent has been granted.
+    if (defHasAnalyticsConsent()) {
+        firstLandingPage = defGetFirstLandingPage();
         defCaptureUtmTouchIfAllowed();
     } else {
         defClearStoredAttribution();
     }
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    firstLandingPage = defGetFirstLandingPage();
-    // Remove legacy persistent attribution so old values cannot be re-used.
-    if (!defHasAnalyticsConsent()) defClearStoredAttribution();
-    else defCaptureUtmTouchIfAllowed();
     initEventsControls();
     loadCloudData();
     initCookieConsent();
