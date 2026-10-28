@@ -72,46 +72,98 @@
 
       CMS.registerCustomPage({ id: 'content-navigator', label: '内容管理', icon: 'account_tree', component: ContentManagement });
 
-      // Keep the underlying file collection accessible so dashboard links can open/edit records.
-      // Hide only the duplicate native Contents/All Resources navigation controls. Do NOT set hide:true
-      // in config.yml: Sveltia's hide:true makes those entries inaccessible through direct links.
+      // Keep the underlying collection available to dashboard links, but hide the duplicate
+      // native “All Resources / Contents” navigation from the everyday editor UI.
+      // Sveltia renders parts of its interface in Shadow DOM, so document.querySelectorAll()
+      // alone does not reach the navigation elements. Walk open shadow roots as well.
       const normalized = (value) => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
-      const hiddenLabels = new Set([
-        'collections', 'collection', 'contents', 'content', 'entries', 'entry', 'all resources',
-        '全部资源', '全部资源 13', '内容资源（从内容管理进入）', '内部内容资源（从内容管理进入）',
-        '内容资料（内部）', '内容集合', '内容列表', '集合', '内容', '条目', 'validation', 'validate', '验证'
+      const resourceRowPattern = /^(?:全部资源|all resources)(?:\s*\d+)?$/i;
+      const nativeContentsLabels = new Set([
+        'contents', 'content', 'collections', 'collection', 'entries', 'entry',
+        'all resources', '全部资源', '内容集合', '内容列表', '集合', '内容'
       ]);
-      const isDuplicateLabel = (value) => {
-        const label = normalized(value);
-        return hiddenLabels.has(label)
-          || /^全部资源\s*\d*$/.test(label)
-          || /^内容资源（.*内容管理.*）(?:\s+\d+)?$/.test(label)
-          || /^内部内容资源（.*内容管理.*）(?:\s+\d+)?$/.test(label);
+      const validationLabels = new Set(['validation', 'validate', '验证']);
+      const hiddenOnce = new WeakSet();
+      const observedRoots = new WeakSet();
+
+      const hideElement = (element) => {
+        if (!element || hiddenOnce.has(element)) return;
+        hiddenOnce.add(element);
+        element.style.setProperty('display', 'none', 'important');
+        element.setAttribute('aria-hidden', 'true');
+        element.setAttribute('data-def-hidden-native-nav', 'true');
       };
-      const hideDuplicateCollectionNavigation = () => {
-        // Hide the native top-level Contents/Collections toolbar control by its accessible label/tooltip.
-        document.querySelectorAll('button, a, [role="button"], [role="tab"]').forEach((node) => {
-          const attrs = [
-            node.getAttribute('aria-label'), node.getAttribute('title'),
-            node.getAttribute('data-tooltip'), node.getAttribute('data-testid')
-          ];
-          if (attrs.some(isDuplicateLabel)) {
-            node.style.display = 'none';
-            node.setAttribute('aria-hidden', 'true');
-            node.dataset.defDuplicateCollectionHidden = 'true';
+
+      const hideResourceRow = (element) => {
+        let target = element;
+        // Prefer hiding the row/link/button, not only the text label.
+        if (typeof element.closest === 'function') {
+          target = element.closest('a, button, [role="button"], [role="treeitem"], [role="link"], [role="listitem"], li') || element;
+        }
+        if (!resourceRowPattern.test(normalized(target.innerText || target.textContent))) {
+          let parent = target.parentElement;
+          for (let step = 0; parent && step < 4; step += 1, parent = parent.parentElement) {
+            if (resourceRowPattern.test(normalized(parent.innerText || parent.textContent))) target = parent;
+            else break;
           }
-          // Hide the collection-list row itself, but never hide links in this custom dashboard.
-          const text = normalized(node.innerText || node.textContent);
-          const href = node.getAttribute('href') || '';
-          if (isDuplicateLabel(text) && !href.includes('/entries/')) {
-            node.style.display = 'none';
-            node.setAttribute('aria-hidden', 'true');
-            node.dataset.defDuplicateCollectionHidden = 'true';
-          }
+        }
+        hideElement(target);
+      };
+
+      const inspectElement = (element) => {
+        if (!element || element.nodeType !== 1) return;
+        const attrs = [
+          element.getAttribute('aria-label'), element.getAttribute('title'),
+          element.getAttribute('data-tooltip'), element.getAttribute('data-testid'),
+          element.getAttribute('aria-description')
+        ].map(normalized);
+        const tooltipMatch = attrs.some((label) => nativeContentsLabels.has(label) || validationLabels.has(label));
+        if (tooltipMatch) hideElement(element);
+
+        // Hide only the exact native resource-list row. Do not hide the custom Content Workbench.
+        const text = normalized(element.innerText || element.textContent);
+        if (resourceRowPattern.test(text)) hideResourceRow(element);
+
+        // Some versions label the validation page/control separately.
+        if (attrs.some((label) => validationLabels.has(label))) hideElement(element);
+      };
+
+      const scanTree = (root) => {
+        if (!root) return;
+        if (root.nodeType === 1) inspectElement(root);
+        const descendants = root.querySelectorAll ? root.querySelectorAll('*') : [];
+        descendants.forEach((element) => {
+          inspectElement(element);
+          if (element.shadowRoot) observeAndScanRoot(element.shadowRoot);
         });
       };
-      hideDuplicateCollectionNavigation();
-      new MutationObserver(hideDuplicateCollectionNavigation).observe(document.documentElement, { childList: true, subtree: true });
+
+      const observeAndScanRoot = (root) => {
+        if (!root || observedRoots.has(root)) return;
+        observedRoots.add(root);
+        scanTree(root);
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+              if (node.nodeType === 1) {
+                inspectElement(node);
+                scanTree(node);
+                if (node.shadowRoot) observeAndScanRoot(node.shadowRoot);
+              }
+            });
+            if (mutation.type === 'attributes' && mutation.target) inspectElement(mutation.target);
+          });
+        });
+        observer.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-label', 'title', 'data-tooltip', 'data-testid'] });
+      };
+
+      observeAndScanRoot(document);
+      // Sveltia may attach a shadow root after a host has been inserted.
+      const rootObserver = new MutationObserver(() => {
+        if (document.documentElement) observeAndScanRoot(document.documentElement);
+        scanTree(document);
+      });
+      rootObserver.observe(document.documentElement, { childList: true, subtree: true });
 
       if (!window.location.hash) window.location.hash = '#/pages/content-navigator';
     })();
