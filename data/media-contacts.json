@@ -1,0 +1,20 @@
+{
+  "contacts": [
+    {
+      "name": "Jane Doe",
+      "title": "Senior PR Manager",
+      "email": "pr@defcompany.com",
+      "portrait": "images/media-1.jpg",
+      "portrait_alt": "Fictional portfolio demonstration portrait of Jane Doe",
+      "active": true
+    },
+    {
+      "name": "Sarah Smith",
+      "title": "Communications Lead",
+      "email": "press@defcompany.com",
+      "portrait": "images/media-2.jpg",
+      "portrait_alt": "Fictional portfolio demonstration portrait of Sarah Smith",
+      "active": true
+    }
+  ]
+}

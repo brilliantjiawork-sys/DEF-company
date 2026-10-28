@@ -1,0 +1,20 @@
+{
+  "title": "Contact Sales",
+  "description": "Please share your business requirements below. This fictional portfolio site demonstrates the B2B lead-submission flow.",
+  "email_label": "Work Email *",
+  "first_name_label": "First Name *",
+  "last_name_label": "Last Name *",
+  "company_label": "Company *",
+  "phone_label": "Phone *",
+  "country_label": "Country/Region *",
+  "zip_code_label": "Zip Code",
+  "industry_label": "Industry",
+  "message_label": "Additional Comments",
+  "country_placeholder": "Select Country",
+  "industry_placeholder": "Select Industry",
+  "message_placeholder": "Please tell us about your application or requirements...",
+  "submit_button": "Submit Inquiry",
+  "success_title": "Inquiry Received",
+  "success_description": "Thank you for submitting this portfolio demonstration form.",
+  "return_button": "Return to Home"
+}
