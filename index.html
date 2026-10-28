@@ -79,8 +79,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             </div>
             <div class="nr-main">
                                 <div id="view-stories" class="view active">
-                    <h2 class="nr-title">Explore our stories</h2>
-                    <p class="stories-intro">Explore industrial vision technology, applications and industry insights.</p>
+                    <h2 class="nr-title" id="stories-page-title">Explore our stories</h2>
+                    <p class="stories-intro" id="stories-page-intro">Explore industrial vision technology, applications and industry insights.</p>
                     <div id="stories-filters" class="stories-filters" aria-label="Filter stories by topic"></div>
                     <div id="stories-list"></div>
                 </div>
@@ -108,8 +108,8 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </article>
                 </div>
                 <div id="view-events" class="view">
-                    <h2 class="nr-title">Trade Shows</h2>
-                    <p class="events-intro">Explore upcoming exhibitions or browse trade show articles and technical highlights.</p>
+                    <h2 class="nr-title" id="events-page-title">Trade Shows</h2>
+                    <p class="events-intro" id="events-page-intro">Explore upcoming exhibitions or browse trade show articles and technical highlights.</p>
                     <div class="events-view-tabs" role="tablist" aria-label="Trade show sections">
                         <button type="button" class="event-tab is-active" id="tab-upcoming-shows" role="tab" aria-selected="true" aria-controls="events-upcoming-panel" onclick="switchTradeShowTab('upcoming')">Upcoming Trade Shows</button>
                         <button type="button" class="event-tab" id="tab-trade-show-articles" role="tab" aria-selected="false" aria-controls="event-articles-panel" onclick="switchTradeShowTab('articles')">Trade Show Articles</button>
@@ -119,12 +119,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         <div id="events-list"></div>
                     </section>
                     <section id="event-articles-panel" class="event-content-section event-articles-section" role="tabpanel" aria-labelledby="tab-trade-show-articles" hidden>
-                        <p class="event-articles-intro">Pre-show previews, during-show updates and post-show recaps.</p>
+                        <p class="event-articles-intro" id="event-articles-intro">Pre-show previews, during-show updates and post-show recaps.</p>
                         <div id="event-coverage-list"></div>
                     </section>
                 </div>
                 <div id="view-event-detail" class="view">
-                    <div class="back-btn" onclick="switchView('events')">← Back to Trade Shows</div>
+                    <div id="event-detail-back" class="back-btn" onclick="switchView('events')">← Back to Trade Shows</div>
                     <article class="event-detail-article">
                         <div id="ed-cover-wrap" class="event-detail-cover-wrap" hidden>
                             <img id="ed-cover" class="event-detail-cover" alt="" hidden>

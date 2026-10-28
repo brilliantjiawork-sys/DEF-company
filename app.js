@@ -19,6 +19,21 @@ let currentEventDetailIndex = null;
 let currentStoryDetailIndex = null;
 let currentStoryOrigin = 'stories';
 
+// Page-level copy is managed separately from article/event records in the CMS.
+let storiesPageSettings = {
+    page_title: 'Explore our stories',
+    page_intro: 'Explore industrial vision technology, applications and industry insights.',
+    back_button: '← Back to Stories'
+};
+let tradeShowsPageSettings = {
+    page_title: 'Trade Shows',
+    page_intro: 'Explore upcoming exhibitions or browse trade show articles and technical highlights.',
+    upcoming_tab_label: 'Upcoming Trade Shows',
+    articles_tab_label: 'Trade Show Articles',
+    articles_intro: 'Pre-show previews, during-show updates and post-show recaps.',
+    back_button: '← Back to Trade Shows'
+};
+
 let currentStoryCategory = 'all';
 let currentStoryTopic = 'all';
 let currentStoryIndustry = 'all';
@@ -686,7 +701,7 @@ function showStoryDetail(index, origin = 'stories') {
     currentStoryOrigin = story.is_event_coverage ? 'events' : origin;
     const backLink = document.getElementById('story-detail-back');
     if (backLink) {
-        backLink.textContent = currentStoryOrigin === 'events' ? '← Back to Trade Shows' : '← Back to Stories';
+        backLink.textContent = currentStoryOrigin === 'events' ? tradeShowsPageSettings.back_button : storiesPageSettings.back_button;
         backLink.onclick = () => switchView(currentStoryOrigin === 'events' ? 'events' : 'stories');
     }
 
@@ -1297,6 +1312,44 @@ async function defLoadEventCoverage() {
 
 
 
+async function defLoadPageSettings() {
+    const loadJson = async (path) => {
+        try {
+            const response = await fetch(path, { cache: 'no-store' });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            return await response.json();
+        } catch (error) {
+            console.warn('CMS page settings could not be loaded:', path, error);
+            return null;
+        }
+    };
+
+    const [storiesSettings, eventsSettings] = await Promise.all([
+        loadJson('/data/stories-page-settings.json'),
+        loadJson('/data/trade-shows-page-settings.json')
+    ]);
+    if (storiesSettings && typeof storiesSettings === 'object') {
+        storiesPageSettings = { ...storiesPageSettings, ...storiesSettings };
+    }
+    if (eventsSettings && typeof eventsSettings === 'object') {
+        tradeShowsPageSettings = { ...tradeShowsPageSettings, ...eventsSettings };
+    }
+
+    const setText = (id, value) => {
+        const element = document.getElementById(id);
+        const text = defSafeText(value, 500);
+        if (element && text) element.textContent = text;
+    };
+    setText('stories-page-title', storiesPageSettings.page_title);
+    setText('stories-page-intro', storiesPageSettings.page_intro);
+    setText('events-page-title', tradeShowsPageSettings.page_title);
+    setText('events-page-intro', tradeShowsPageSettings.page_intro);
+    setText('tab-upcoming-shows', tradeShowsPageSettings.upcoming_tab_label);
+    setText('tab-trade-show-articles', tradeShowsPageSettings.articles_tab_label);
+    setText('event-articles-intro', tradeShowsPageSettings.articles_intro);
+    setText('event-detail-back', tradeShowsPageSettings.back_button);
+}
+
 async function loadCloudData() {
     const storiesContainer = document.getElementById('stories-list');
     const eventsContainer = document.getElementById('events-list');
@@ -1550,6 +1603,7 @@ document.addEventListener('DOMContentLoaded', () => {
         defClearStoredAttribution();
     }
     initEventsControls();
+    defLoadPageSettings();
     loadCloudData();
     initCookieConsent();
     initContactForm();
