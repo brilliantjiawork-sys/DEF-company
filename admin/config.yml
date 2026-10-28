@@ -18,9 +18,10 @@ media_libraries:
     providers: []
 collections:
 - name: content-management
-  label: 全部资源
+  label: 内部内容资源（从内容管理进入）
   icon: folder_managed
-  description: 全部可编辑资源的统一入口。日常建议先使用“内容工作台”，也可以在这里按集合查找和编辑资源。
+  hide: false
+  description: 内部内容集合。日常请从“内容管理”进入；此集合仅用于承载对应页面和内容文件。
   files:
   - name: home_intro
     label: Brand Introduction（品牌介绍）
@@ -148,14 +149,14 @@ collections:
     editor:
       preview: false
     fields:
-    - label: Stories 文章
+    - label: Stories 文章（已发布的文章在这里折叠显示；点击标题即可继续编辑）
       name: articles
       widget: list
       label_singular: 新增一篇 Story
       collapsed: true
       minimize_collapsed: true
       add_to_top: true
-      summary: '{{title}} · {{date}}'
+      summary: '{{title}} · {{date}} · {{category}}'
       thumbnail: image
       fields:
       - label: 文章标题
@@ -169,7 +170,7 @@ collections:
         date_format: YYYY-MM-DD
         time_format: false
         format: YYYY-MM-DD
-      - label: 内容分类
+      - label: ① 内容分类｜文章类型（单选；不是话题标签）
         name: category
         widget: select
         required: true
@@ -194,7 +195,7 @@ collections:
         name: image_alt
         widget: string
         required: false
-      - label: Topic Tags（话题标签，可多选）
+      - label: ② Topic Tags｜话题标签（文章具体讲什么；多选；不选行业）
         name: tags
         widget: select
         multiple: true
@@ -213,7 +214,8 @@ collections:
         - Warehouse & Logistics
         - Innovation
         - Sustainability
-      - label: Industry（行业，可多选）
+        hint: 选择文章讨论的技术或主题，例如 Machine Vision、Quality Control。不要在这里选择行业名称。
+      - label: ③ Industry｜行业（内容面向哪个行业；多选；不选技术话题）
         name: industries
         widget: select
         multiple: true
@@ -225,15 +227,29 @@ collections:
         - Semiconductors
         - Logistics
         - Pharmaceuticals
-      - label: 虚构应用示例（开启后展示 Fictional Example 标记）
+        hint: 选择内容面向的行业领域，例如 Automotive、Packaging。它与上面的内容分类和话题标签不同。
+      - label: 虚构应用示例（仅模拟场景时开启 Fictional Example 标记）
         name: illustrative_example
         widget: boolean
         default: false
-      - label: 正文（只写在这里）
+      - label: 正文（全文只写在这里）
         name: body
-        widget: markdown
+        widget: richtext
+        format: markdown
+        modes:
+        - rich_text
+        - raw
+        buttons:
+        - heading-two
+        - heading-three
+        - bold
+        - italic
+        - bulleted-list
+        - numbered-list
+        - link
+        - quote
         required: true
-        linked_images: false
+        hint: 工具栏可设置二级/三级标题、加粗、斜体、列表、链接和引用。网站统一控制正文与标题的实际字号，保持版式一致。
       - label: 显示销售 CTA
         name: cta_enabled
         widget: boolean
@@ -332,7 +348,7 @@ collections:
         name: summary
         widget: text
         required: true
-      - label: Topic Tags（话题标签，可多选；自动用于展会推荐）
+      - label: Topic Tags｜话题标签（多选；代码自动用于展会推荐）
         name: tags
         widget: select
         multiple: true
@@ -428,7 +444,7 @@ collections:
         name: image_alt
         widget: string
         required: false
-      - label: Topic Tags（话题标签，可多选；自动匹配相关展会和 Stories）
+      - label: Topic Tags｜话题标签（多选；只用于自动匹配相关内容）
         name: tags
         widget: select
         multiple: true
@@ -442,11 +458,24 @@ collections:
         name: illustrative_example
         widget: boolean
         default: true
-      - label: 正文（只写在这里）
+      - label: 正文（全文只写在这里）
         name: body
-        widget: markdown
+        widget: richtext
+        format: markdown
+        modes:
+        - rich_text
+        - raw
+        buttons:
+        - heading-two
+        - heading-three
+        - bold
+        - italic
+        - bulleted-list
+        - numbered-list
+        - link
+        - quote
         required: true
-        linked_images: false
+        hint: 工具栏可设置二级/三级标题、加粗、斜体、列表、链接和引用。网站统一控制正文与标题的实际字号，保持版式一致。
       - label: 显示销售 CTA
         name: cta_enabled
         widget: boolean

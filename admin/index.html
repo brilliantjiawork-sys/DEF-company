@@ -3,14 +3,15 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>DEF Company Content Editor</title>
+  <title>DEF Company 内容管理</title>
   <style>
-    .def-cms-dashboard { max-width: 980px; margin: 0 auto; padding: 28px 26px 48px; color: #1b2733; font-family: Inter, system-ui, sans-serif; }
+    :root { color-scheme: light; }
+    .def-cms-dashboard { max-width: 980px; margin: 0 auto; padding: 28px 26px 44px; color: #1b2733; font-family: Inter, system-ui, sans-serif; }
     .def-cms-dashboard h1 { margin: 0 0 8px; font-size: 28px; font-weight: 650; }
     .def-cms-dashboard .intro { margin: 0 0 24px; color: #586675; line-height: 1.65; }
     .def-cms-group { border: 1px solid #dce3e9; border-radius: 10px; background: #fff; margin: 0 0 12px; overflow: hidden; }
     .def-cms-group > summary { cursor: pointer; list-style: none; padding: 17px 18px; font-size: 16px; font-weight: 650; display: flex; align-items: center; gap: 10px; background: #f7f9fb; }
-    .def-cms-group > summary::-webkit-details-marker { display: none; }
+    .def-cms-group > summary::-webkit-details-marker, .def-cms-subgroup > summary::-webkit-details-marker { display: none; }
     .def-cms-group > summary::before { content: '▸'; display: inline-block; color: #526779; transition: transform .15s ease; }
     .def-cms-group[open] > summary::before { transform: rotate(90deg); }
     .def-cms-items { padding: 8px 14px 14px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
@@ -20,88 +21,98 @@
     .def-cms-item span { display: block; color: #657381; font-size: 12px; line-height: 1.55; }
     .def-cms-subgroup { margin: 8px 0 0; border: 1px dashed #d2dce4; border-radius: 8px; }
     .def-cms-subgroup > summary { padding: 12px 14px; cursor: pointer; font-weight: 650; list-style: none; }
-    .def-cms-subgroup > summary::-webkit-details-marker { display: none; }
     .def-cms-subgroup .def-cms-items { padding-top: 0; }
-    .def-cms-note { margin-top: 18px; padding: 12px 14px; background: #fff9d8; border-radius: 8px; color: #5a4c13; font-size: 13px; line-height: 1.6; }
     @media (max-width: 720px) { .def-cms-items { grid-template-columns: 1fr; } .def-cms-dashboard { padding: 18px; } }
   </style>
 </head>
 <body>
   <script src="https://unpkg.com/@sveltia/cms/dist/sveltia-cms.js"></script>
   <script>
-    // Hide only a standalone Paste/Paste image button inside an image/file picker.
-    (() => {
-      const isPasteButton = (button) => {
-        const text = (button.getAttribute('aria-label') || button.getAttribute('title') || button.textContent || '')
-          .replace(/\s+/g, ' ').trim().toLowerCase();
-        return ['paste', 'paste image', '粘贴', '粘贴图片'].includes(text);
-      };
-      const inMediaPicker = (button) => {
-        const context = button.closest('[role="dialog"], [role="menu"], [data-radix-popper-content-wrapper]') || button.parentElement?.parentElement;
-        const text = (context?.textContent || '').toLowerCase();
-        return /browse|upload|image|images|media|asset|choose image|select image|浏览|上传|图片|媒体|素材/.test(text);
-      };
-      const hidePasteButtons = () => {
-        document.querySelectorAll('button').forEach(button => {
-          if (isPasteButton(button) && inMediaPicker(button) && button.dataset.portfolioPasteHidden !== 'true') {
-            button.style.display = 'none';
-            button.setAttribute('aria-hidden', 'true');
-            button.dataset.portfolioPasteHidden = 'true';
-          }
-        });
-      };
-      hidePasteButtons();
-      new MutationObserver(hidePasteButtons).observe(document.documentElement, { childList: true, subtree: true });
-    })();
-
-    // Official Sveltia CMS Custom Pages API: a clean, collapsible content-workflow landing page.
     (() => {
       if (!window.CMS || typeof CMS.registerCustomPage !== 'function' || !CMS.React) return;
       const h = CMS.React.createElement;
       const link = (title, route, hint) => h('a', { className: 'def-cms-item', href: route },
         h('strong', null, title), h('span', null, hint));
-      const group = (title, open, children) => h('details', { className: 'def-cms-group', open: Boolean(open) },
+      const group = (title, children) => h('details', { className: 'def-cms-group' },
         h('summary', null, title), h('div', { className: 'def-cms-items' }, ...children));
-      const CustomNavigator = () => h('div', { className: 'def-cms-dashboard' },
-        h('h1', null, '内容工作台'),
-        h('p', { className: 'intro' }, '日常先使用内容工作台，按网站结构进入对应编辑区。需要直接按文件和集合查找时，可使用旁边的“全部资源”入口。文章和展会记录会以折叠列表显示，不需要在一张长表单中滚动。'),
-        group('Website Basics（Home）', false, [
-          link('Brand Introduction｜品牌介绍', '#/collections/content-management/entries/home_intro', '编辑主标题、品牌介绍、首页图片和 Book a Demo 按钮。'),
-          link('Newsletter｜邮件订阅', '#/collections/content-management/entries/home_newsletter', '编辑订阅区图片、标题、介绍和按钮。')
+      const subgroup = (title, children) => h('details', { className: 'def-cms-subgroup' },
+        h('summary', null, title), h('div', { className: 'def-cms-items' }, ...children));
+
+      const ContentManagement = () => h('div', { className: 'def-cms-dashboard' },
+        h('h1', null, '内容管理'),
+        h('p', { className: 'intro' }, '按网站结构进入对应编辑区。已发布的文章会按标题、日期和分类折叠显示；点击现有文章即可继续修改。新增内容请使用对应列表中的“添加”按钮。'),
+        group('Website Basics（Home）', [
+          link('Brand Introduction｜品牌介绍', '#/collections/content-management/entries/home_intro', '编辑首页品牌定位、主标题、介绍文案、图片和 Book a Demo 按钮。'),
+          link('Newsletter｜邮件订阅', '#/collections/content-management/entries/home_newsletter', '编辑订阅区图片、标题、介绍和按钮文案。')
         ]),
-        group('Newsroom', false, [
-          h('details', { className: 'def-cms-subgroup' },
-            h('summary', null, 'Stories｜常规文章'),
-            h('div', { className: 'def-cms-items' },
-              link('Stories Page Settings｜页面设置', '#/collections/content-management/entries/stories_page_settings', '只编辑 Stories 页面的标题、简介和详情页返回按钮，不编辑文章内容。'),
-              link('Story Articles｜文章列表', '#/collections/content-management/entries/stories_content', '每篇文章在同一折叠列表中新增、编辑或发布；文章表单不再包含页面标题等设置。')
-            )
-          ),
-          h('details', { className: 'def-cms-subgroup' },
-            h('summary', null, 'Trade Shows｜展会'),
-            h('div', { className: 'def-cms-items' },
-              link('Trade Shows Page Settings｜页面设置', '#/collections/content-management/entries/events_page_settings', '只编辑展会页标题、简介、顶部切换按钮和返回按钮。'),
-              link('Upcoming Shows｜展会资料', '#/collections/content-management/entries/upcoming_shows', '只管理展会记录：展位、日期、地点、话题、行业和预约 CTA。'),
-              link('Trade Show Articles｜展会文章', '#/collections/content-management/entries/trade_show_articles', '统一编辑展前、展中、展后文章；通过内容阶段选择框区分。')
-            )
-          )
+        group('Newsroom', [
+          subgroup('Stories｜常规文章', [
+            link('Stories 页面设置', '#/collections/content-management/entries/stories_page_settings', '只编辑 Stories 页面标题、简介和详情页返回按钮。'),
+            link('Stories 文章｜查看和编辑已发布文章', '#/collections/content-management/entries/stories_content', '现有文章按标题、日期、内容分类折叠显示；点开条目修改，不要重复创建。')
+          ]),
+          subgroup('Trade Shows｜展会', [
+            link('Trade Shows 页面设置', '#/collections/content-management/entries/events_page_settings', '只编辑展会页面标题、简介和顶部切换按钮文字。'),
+            link('Upcoming Shows｜即将举行的展会', '#/collections/content-management/entries/upcoming_shows', '编辑展会名称、展位、日期、地点、主题、话题标签和预约 CTA。'),
+            link('Trade Show Articles｜展前、展中、展后文章', '#/collections/content-management/entries/trade_show_articles', '一套文章编辑表单；用内容阶段区分预热、现场动态和展后回顾。')
+          ])
         ]),
-        group('Social Media', false, [
-          link('Social Media 页面文案', '#/collections/content-management/entries/social_page', '编辑页面标题和说明。'),
-          link('社交媒体渠道卡片', '#/collections/content-management/entries/social_media', '编辑 LinkedIn、YouTube、Facebook 等平台卡片和图片。')
+        group('Social Media', [
+          link('Social Media 页面文案', '#/collections/content-management/entries/social_page', '编辑社交媒体页面标题、说明和图片来源信息。'),
+          link('社交媒体渠道卡片', '#/collections/content-management/entries/social_media', '编辑 LinkedIn、YouTube、Facebook 等渠道的简介、图片、网址和按钮。')
         ]),
-        group('Media', false, [
-          link('Media 页面文案', '#/collections/content-management/entries/media_page', '编辑媒体联系页面说明。'),
-          link('媒体联系人', '#/collections/content-management/entries/media_contacts', '新增、修改或隐藏联系人。')
+        group('Media', [
+          link('Media 页面文案', '#/collections/content-management/entries/media_page', '编辑媒体联系人页面说明。'),
+          link('媒体联系人', '#/collections/content-management/entries/media_contacts', '新增、修改或隐藏媒体联系人。')
         ]),
-        group('Forms & Privacy', false, [
-          link('Contact Sales 表单文案', '#/collections/content-management/entries/contact_content', '只编辑表单文字，不修改字段名称和提交接口。'),
+        group('Forms & Privacy', [
+          link('Contact Sales 表单文案', '#/collections/content-management/entries/contact_content', '编辑表单标题、说明、字段标签和提交成功文案。'),
           link('Cookie & Privacy 文案', '#/collections/content-management/entries/cookie_content', '编辑 Cookie 同意界面的文字。')
-        ]),
-        h('div', { className: 'def-cms-note' }, '自动推荐说明：Explore the Solution 只推荐 Stories；Explore Related Trade Shows 只推荐展会卡片。两个区块独立展示，均根据 Topic Tags 自动匹配。无需填写“关联展会名称”。')
+        ])
       );
-      CMS.registerCustomPage({ id: 'content-navigator', label: '内容工作台', icon: 'account_tree', component: CustomNavigator });
-      // First visit opens the navigator; existing OAuth callback or deep-link hashes are preserved.
+
+      CMS.registerCustomPage({ id: 'content-navigator', label: '内容管理', icon: 'account_tree', component: ContentManagement });
+
+      // Keep the underlying file collection accessible so dashboard links can open/edit records.
+      // Hide only the duplicate native Contents/All Resources navigation controls. Do NOT set hide:true
+      // in config.yml: Sveltia's hide:true makes those entries inaccessible through direct links.
+      const normalized = (value) => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+      const hiddenLabels = new Set([
+        'collections', 'collection', 'contents', 'content', 'entries', 'entry', 'all resources',
+        '全部资源', '全部资源 13', '内容资源（从内容管理进入）', '内部内容资源（从内容管理进入）',
+        '内容资料（内部）', '内容集合', '内容列表', '集合', '内容', '条目', 'validation', 'validate', '验证'
+      ]);
+      const isDuplicateLabel = (value) => {
+        const label = normalized(value);
+        return hiddenLabels.has(label)
+          || /^全部资源\s*\d*$/.test(label)
+          || /^内容资源（.*内容管理.*）(?:\s+\d+)?$/.test(label)
+          || /^内部内容资源（.*内容管理.*）(?:\s+\d+)?$/.test(label);
+      };
+      const hideDuplicateCollectionNavigation = () => {
+        // Hide the native top-level Contents/Collections toolbar control by its accessible label/tooltip.
+        document.querySelectorAll('button, a, [role="button"], [role="tab"]').forEach((node) => {
+          const attrs = [
+            node.getAttribute('aria-label'), node.getAttribute('title'),
+            node.getAttribute('data-tooltip'), node.getAttribute('data-testid')
+          ];
+          if (attrs.some(isDuplicateLabel)) {
+            node.style.display = 'none';
+            node.setAttribute('aria-hidden', 'true');
+            node.dataset.defDuplicateCollectionHidden = 'true';
+          }
+          // Hide the collection-list row itself, but never hide links in this custom dashboard.
+          const text = normalized(node.innerText || node.textContent);
+          const href = node.getAttribute('href') || '';
+          if (isDuplicateLabel(text) && !href.includes('/entries/')) {
+            node.style.display = 'none';
+            node.setAttribute('aria-hidden', 'true');
+            node.dataset.defDuplicateCollectionHidden = 'true';
+          }
+        });
+      };
+      hideDuplicateCollectionNavigation();
+      new MutationObserver(hideDuplicateCollectionNavigation).observe(document.documentElement, { childList: true, subtree: true });
+
       if (!window.location.hash) window.location.hash = '#/pages/content-navigator';
     })();
   </script>
