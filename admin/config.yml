@@ -21,7 +21,7 @@ media_libraries:
 collections:
   - name: "site-content"
     label: "Website Content — 首页、Newsroom 与表单文案"
-    description: "维护首页、Newsroom、表单说明和 Cookie 文案，以及首页与栏目卡片图片。一般运营更新内容无需修改 HTML。"
+    description: "维护首页、Newsroom 栏目文字、表单说明和 Cookie 文案。Stories 与 Trade Shows 的卡片内容分别在各自栏目中维护。一般运营更新内容无需修改 HTML。"
     files:
       - file: "data/site-content.json"
         name: "site_content"
@@ -44,9 +44,6 @@ collections:
             widget: "object"
             fields:
               - { label: "首页", name: "home", widget: "string" }
-              - { label: "产品（页面未完成，当前不在前台显示）", name: "products", widget: "string" }
-              - { label: "解决方案（页面未完成，当前不在前台显示）", name: "solutions", widget: "string" }
-              - { label: "支持（页面未完成，当前不在前台显示）", name: "support", widget: "string" }
               - { label: "Newsroom", name: "newsroom", widget: "string" }
               - { label: "联系销售按钮", name: "contact_sales", widget: "string" }
           - label: "首页 — 主视觉与订阅区"
@@ -67,62 +64,29 @@ collections:
               - { label: "订阅按钮文字", name: "newsletter_button", widget: "string", required: true }
               - { label: "订阅成功后标题", name: "newsletter_success_title", widget: "string", required: true }
               - { label: "订阅成功后说明", name: "newsletter_success_description", widget: "text", required: true }
-          - label: "Newsroom — 栏目与栏目卡片"
+          - label: "Newsroom — 栏目与内容设置"
             name: "newsroom"
             widget: "object"
             fields:
-              - { label: "旧字段（前台隐藏）：Overview", name: "sidebar_overview", widget: "string" }
               - { label: "侧边栏：Stories", name: "sidebar_stories", widget: "string" }
               - { label: "侧边栏：Trade Shows", name: "sidebar_events", widget: "string" }
               - { label: "侧边栏：Social Media", name: "sidebar_social", widget: "string" }
-              - { label: "旧字段（前台隐藏）：Media", name: "sidebar_media", widget: "string" }
-              - { label: "旧字段（前台隐藏）：Newsroom Overview 标题", name: "overview_title", widget: "string" }
-              - label: "旧字段（前台隐藏）：Overview 卡片 — Social Media"
-                name: "overview_cards"
-                widget: "object"
-                fields:
-                  - label: "Social Media 卡片"
-                    name: "social"
-                    widget: "object"
-                    fields:
-                      - { label: "卡片标题", name: "title", widget: "string" }
-                      - { label: "卡片图片（Browse 上传本地图片）", name: "image", widget: "image", choose_url: false }
-                      - { label: "图片替代文本", name: "image_alt", widget: "string", required: false }
-                  - label: "Stories 卡片"
-                    name: "stories"
-                    widget: "object"
-                    fields:
-                      - { label: "卡片标题", name: "title", widget: "string" }
-                      - { label: "卡片图片（Browse 上传本地图片）", name: "image", widget: "image", choose_url: false }
-                      - { label: "图片替代文本", name: "image_alt", widget: "string", required: false }
-                  - label: "Trade Shows 卡片"
-                    name: "events"
-                    widget: "object"
-                    fields:
-                      - { label: "卡片标题", name: "title", widget: "string" }
-                      - { label: "卡片图片（Browse 上传本地图片）", name: "image", widget: "image", choose_url: false }
-                      - { label: "图片替代文本", name: "image_alt", widget: "string", required: false }
-                  - label: "Media 卡片"
-                    name: "media"
-                    widget: "object"
-                    fields:
-                      - { label: "卡片标题", name: "title", widget: "string" }
-                      - { label: "卡片图片（Browse 上传本地图片）", name: "image", widget: "image", choose_url: false }
-                      - { label: "图片替代文本", name: "image_alt", widget: "string", required: false }
               - { label: "Stories 页面标题", name: "stories_title", widget: "string" }
               - { label: "Stories 页面介绍", name: "stories_intro", widget: "text" }
+              - { label: "Story 详情页返回按钮", name: "stories_back_button", widget: "string" }
               - { label: "Trade Shows 页面标题", name: "events_title", widget: "string" }
               - { label: "Trade Shows 页面介绍", name: "events_intro", widget: "text" }
+              - { label: "展会详情页返回按钮", name: "events_back_button", widget: "string" }
               - { label: "Trade Shows：未来展会切换标签", name: "events_upcoming_tab", widget: "string" }
               - { label: "Trade Shows：历史展会与报道切换标签", name: "events_past_tab", widget: "string" }
+              - { label: "展会列表：即将举行标题", name: "events_upcoming_heading", widget: "string" }
+              - { label: "展会列表：往期展会标题", name: "events_past_heading", widget: "string" }
+              - { label: "展会列表：日期待确认标题", name: "events_unknown_heading", widget: "string" }
               - { label: "历史展会年份筛选提示", name: "events_year_label", widget: "string" }
               - { label: "展会详情的外链按钮文字", name: "events_visit_link", widget: "string" }
               - { label: "Social Media 页面标题", name: "social_title", widget: "string" }
               - { label: "Social Media 免责声明开头", name: "social_disclaimer_lead", widget: "string" }
               - { label: "Social Media 免责声明正文", name: "social_disclaimer_text", widget: "text" }
-              - { label: "旧字段（前台隐藏）：Media Contacts 页面标题", name: "media_title", widget: "string" }
-              - { label: "Media Contacts 免责声明开头", name: "media_disclaimer_lead", widget: "string" }
-              - { label: "Media Contacts 免责声明正文", name: "media_disclaimer_text", widget: "text" }
               - { label: "图片来源名称", name: "image_source_label", widget: "string" }
               - { label: "图片来源网址", name: "image_source_url", widget: "string", hint: "例如 https://unsplash.com/" }
           - label: "Contact Sales — 表单与成功提示文字"
@@ -226,29 +190,7 @@ collections:
                 widget: "select"
                 multiple: true
                 required: false
-                options:
-                  - { label: "Machine Vision", value: "Machine Vision" }
-                  - { label: "AI & Deep Learning", value: "AI & Deep Learning" }
-                  - { label: "Defect Detection", value: "Defect Detection" }
-                  - { label: "Quality Control", value: "Quality Control" }
-                  - { label: "AOI", value: "AOI" }
-                  - { label: "3D Vision", value: "3D Vision" }
-                  - { label: "Robotics & Automation", value: "Robotics & Automation" }
-                  - { label: "Positioning & Measurement", value: "Positioning & Measurement" }
-                  - { label: "Electronics & Semiconductors", value: "Electronics & Semiconductors" }
-                  - { label: "Food & Beverage Inspection", value: "Food & Beverage Inspection" }
-                  - { label: "Packaging Inspection", value: "Packaging Inspection" }
-                  - { label: "Warehouse & Logistics", value: "Warehouse & Logistics" }
-                  - { label: "Innovation", value: "Innovation" }
-                  - { label: "Sustainability", value: "Sustainability" }
-                  - { label: "旧数据兼容（请优先使用上方内容分类）· Product & Technology", value: "Product & Technology" }
-                  - { label: "旧数据兼容（请优先使用上方内容分类）· Application & Use Cases", value: "Application & Use Cases" }
-                  - { label: "旧数据兼容（请优先使用上方内容分类）· Customer Stories", value: "Customer Stories" }
-                  - { label: "旧数据兼容（请优先使用上方内容分类）· Case Study", value: "Case Study" }
-                  - { label: "旧数据兼容（请优先使用上方内容分类）· Industry Insights", value: "Industry Insights" }
-                  - { label: "旧数据兼容（请优先使用上方内容分类）· Company News", value: "Company News" }
-                  - { label: "旧数据兼容（请优先使用上方内容分类）· AI Vision", value: "AI Vision" }
-                  - { label: "旧数据兼容（请优先使用上方内容分类）· Automation", value: "Automation" }
+                options: ["Machine Vision", "AI & Deep Learning", "Defect Detection", "Quality Control", "AOI", "3D Vision", "Robotics & Automation", "Positioning & Measurement", "Electronics & Semiconductors", "Food & Beverage Inspection", "Packaging Inspection", "Warehouse & Logistics", "Innovation", "Sustainability"]
               - label: "行业（可多选）"
                 name: "industries"
                 widget: "select"
@@ -308,7 +250,7 @@ collections:
                 widget: "select"
                 multiple: true
                 required: false
-                options: ["Machine Vision", "AI & Deep Learning", "Defect Detection", "Quality Control", "AOI", "3D Vision", "Robotics & Automation", "Positioning & Measurement", "Electronics & Semiconductors", "Food & Beverage Inspection", "Packaging Inspection", "Warehouse & Logistics", "Innovation", "Sustainability", "Automation", "AI Vision", "Quality Inspection", "Product Demonstrations", "New Product Launch", "Industry Conference", "Trade Shows & Exhibitions"]
+                options: ["Machine Vision", "AI & Deep Learning", "Defect Detection", "Quality Control", "AOI", "3D Vision", "Robotics & Automation", "Positioning & Measurement", "Electronics & Semiconductors", "Food & Beverage Inspection", "Packaging Inspection", "Warehouse & Logistics", "Innovation", "Sustainability"]
               - label: "行业（可多选）"
                 name: "industries"
                 widget: "select"
