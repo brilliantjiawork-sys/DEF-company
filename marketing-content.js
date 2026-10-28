@@ -1,50 +1,26 @@
-/*
- * DEF Company CMS-driven marketing content.
- * Marketing-owned text, images and social links are read from data/*.json,
- * so routine content updates can be completed in Sveltia CMS without editing HTML.
- */
+/* DEF Company CMS-driven page content. Text and editable media live in small, clearly separated JSON files. */
 (() => {
   'use strict';
 
   const safeText = (value, max = 5000) => String(value ?? '').trim().slice(0, max);
-  let activeNewsroomCopy = {};
-
-  function applyEventSectionHeadings() {
-    document.querySelectorAll('#events-list .events-section-title').forEach((heading) => {
-      const original = safeText(heading.textContent, 300).toLowerCase();
-      let desired = '';
-      if (/upcoming|future|exhibition/.test(original)) {
-        desired = safeText(activeNewsroomCopy.events_upcoming_heading || 'Upcoming Trade Shows');
-      } else if (/past|report|highlight|historical/.test(original)) {
-        desired = safeText(activeNewsroomCopy.events_past_heading || 'Past Trade Shows');
-      } else if (/confirm|unknown|date/.test(original)) {
-        desired = safeText(activeNewsroomCopy.events_unknown_heading || 'Trade Shows — Dates to Be Confirmed');
-      }
-      if (desired && heading.textContent.trim() !== desired) heading.textContent = desired;
-    });
-    const visitLabel = safeText(activeNewsroomCopy.events_visit_link || 'Visit trade show website');
-    document.querySelectorAll('#events-list a.event-link').forEach((link) => {
-      if (link.textContent.trim() !== visitLabel) link.textContent = visitLabel;
-    });
-  }
-
-  function watchEventSectionHeadings() {
-    const container = document.getElementById('events-list');
-    if (!container || container.dataset.headingObserverReady === 'true') return;
-    container.dataset.headingObserverReady = 'true';
-    const observer = new MutationObserver(applyEventSectionHeadings);
-    observer.observe(container, { childList: true, subtree: true, characterData: true });
-    applyEventSectionHeadings();
-  }
   const setText = (selector, value) => {
     const element = document.querySelector(selector);
     if (element && value !== undefined && value !== null) element.textContent = safeText(value);
   };
-  const setImage = (element, value, alt = '') => {
-    if (!element || !value) return;
+  const setTextFrom = (element, value) => {
+    if (element && value !== undefined && value !== null) element.textContent = safeText(value);
+  };
+  function imageUrl(value) {
     const raw = safeText(value, 1200);
-    if (!raw || raw.startsWith('//') || /^javascript:/i.test(raw)) return;
-    element.setAttribute('src', raw.startsWith('/') || /^https:\/\//i.test(raw) ? raw : '/' + raw.replace(/^\.\//, '').replace(/^\//, ''));
+    if (!raw || raw.startsWith('//') || /^javascript:/i.test(raw)) return '';
+    let url = raw.startsWith('https://') || raw.startsWith('/') ? raw : '/' + raw.replace(/^\.\//, '');
+    if (url.includes('/social-youtube-wide.jpg') && !url.includes('v=20261029-final-v6')) url += (url.includes('?') ? '&' : '?') + 'v=20261029-final-v6';
+    return url;
+  }
+  const setImage = (element, value, alt = '') => {
+    if (!element) return;
+    const url = imageUrl(value);
+    if (url) element.setAttribute('src', url);
     element.setAttribute('alt', safeText(alt, 300));
     element.loading = 'lazy';
   };
@@ -65,34 +41,28 @@
   }
 
   function applySiteContent(data) {
-    if (!data || typeof data !== 'object') return;
     const brand = data.brand || {};
     const nav = data.navigation || {};
     const home = data.home || {};
     const newsroom = data.newsroom || {};
-    activeNewsroomCopy = newsroom;
     const contact = data.contact || {};
     const cookie = data.cookie || {};
 
     if (brand.page_title) document.title = safeText(brand.page_title);
-    const logo = document.querySelector('.logo img');
-    setImage(logo, brand.logo, brand.logo_alt || brand.name);
-    setText('.logo h1', brand.name);
+    setImage(document.querySelector('.logo img'), brand.logo, brand.logo_alt || brand.name);
+    setText('.logo h1', brand.name || 'DEF Company');
     setText('.logo span', brand.tagline);
 
-    // Update navigation by stable IDs. Never rely on child positions: content config and HTML must stay in sync.
+    // Stable IDs prevent the old menu-position bug that changed Newsroom/Contact Sales back to old labels.
     setText('#nav-home', nav.home || 'Home');
     setText('#nav-newsroom', nav.newsroom || 'Newsroom');
     setText('#nav-contact-sales', nav.contact_sales || 'Contact Sales');
+    setText('#nav-stories', newsroom.sidebar_stories || 'Stories');
+    setText('#nav-events', newsroom.sidebar_events || 'Trade Shows');
+    setText('#nav-social', newsroom.sidebar_social || 'Social Media');
+    setText('#nav-media', newsroom.sidebar_media || 'Media');
 
-    const sidebarLabels = {
-      '#nav-stories': newsroom.sidebar_stories || 'Stories',
-      '#nav-events': newsroom.sidebar_events || 'Trade Shows',
-      '#nav-social': newsroom.sidebar_social || 'Social Media',
-      '#nav-media': newsroom.sidebar_media || 'Media'
-    };
-    Object.entries(sidebarLabels).forEach(([selector, value]) => setText(selector, value));
-
+    // Home: only two editable sections, Brand Introduction and Newsletter.
     setText('#home .hero-text h2', home.hero_title);
     setText('#home .hero-text p', home.hero_description);
     setText('#home .hero-text button', home.hero_button);
@@ -107,22 +77,21 @@
     setText('#nl-success-box h3', home.newsletter_success_title);
     setText('#nl-success-box p', home.newsletter_success_description);
 
-    setText('#view-stories > .nr-title', newsroom.stories_title);
+    // Newsroom page copy.
+    setText('#view-stories > .nr-title', newsroom.stories_title || 'Stories');
     setText('#view-stories .stories-intro', newsroom.stories_intro);
-    setText('#view-story-detail .back-btn', newsroom.stories_back_button);
-    setText('#view-events > .nr-title', newsroom.events_title);
+    setText('#view-story-detail .back-btn', newsroom.stories_back_button || '← Back to Stories');
+    setText('#view-events > .nr-title', newsroom.events_title || 'Trade Shows');
     setText('#view-events .events-intro', newsroom.events_intro);
-    setText('#view-event-detail .back-btn', newsroom.events_back_button);
-    setText('[data-events-tab="upcoming"]', newsroom.events_upcoming_tab);
-    setText('[data-events-tab="past"]', newsroom.events_past_tab);
-    applyEventSectionHeadings();
-    setText('#events-year-filter label', newsroom.events_year_label);
+    setText('#events-upcoming-title', newsroom.events_upcoming_heading || 'Upcoming Shows');
+    setText('#event-articles-title', newsroom.events_articles_heading || 'Trade Show Articles');
     const eventVisit = document.getElementById('ed-url');
     if (eventVisit && newsroom.events_visit_link) eventVisit.textContent = safeText(newsroom.events_visit_link, 100);
-    setText('#view-social > .nr-title', newsroom.social_title);
-    setText('#view-media > .nr-title', newsroom.media_title || 'Media Contacts');
+    setText('#view-social > .nr-title', newsroom.social_title || 'Social Media');
+    setText('#view-media > .nr-title', newsroom.media_title || 'Media');
     setText('#view-media .media-intro', newsroom.media_intro);
 
+    // Contact form labels. The form handlers and field names are deliberately unchanged.
     setText('#contact .form-header h2', contact.title);
     setText('#contact .form-header p', contact.description);
     const formFields = [
@@ -146,6 +115,7 @@
     setText('#success-screen > p', contact.success_description);
     setText('#success-screen > button', contact.return_button);
 
+    // Cookie copy only; consent mechanics remain in config.js/app.js.
     setText('#cookie-banner .cookie-content h3', cookie.title);
     setText('#cookie-banner .cookie-content p', cookie.description);
     setText('#cookie-reject', cookie.reject_button);
@@ -168,10 +138,6 @@
 
     renderNotice(document.querySelector('.social-disclaimer'), newsroom.social_disclaimer_lead, newsroom.social_disclaimer_text, newsroom.image_source_label, newsroom.image_source_url);
     renderNotice(document.querySelector('.media-disclaimer'), newsroom.media_disclaimer_lead, newsroom.media_disclaimer_text, newsroom.image_source_label, newsroom.image_source_url);
-  }
-
-  function setTextFrom(element, value) {
-    if (element && value !== undefined && value !== null) element.textContent = safeText(value);
   }
 
   function renderNotice(container, lead, body, sourceLabel, sourceUrl) {
@@ -199,8 +165,18 @@
     const card = el('div', featured ? 'social-main' : 'social-card');
     const imageWrap = el('div', featured ? 'social-main-img' : 'social-card-img');
     const image = el('img');
-    setImage(image, channel.image, channel.image_alt || channel.platform);
-    image.onerror = () => { image.onerror = null; image.removeAttribute('src'); image.alt = safeText(channel.image_alt || channel.platform); };
+    let imagePath = channel.image;
+    // The old YouTube image was portrait with white/blank side areas. Replace only that legacy default.
+    if (/youtube/i.test(safeText(channel.platform, 50)) && /social-youtube(?:-wide)?\.(jpg|jpeg|png|webp)$/i.test(safeText(channel.image, 500))) {
+      imagePath = '/images/social-youtube-wide.jpg?v=20261029-final-v6';
+    }
+    setImage(image, imagePath, channel.image_alt || channel.platform);
+    image.onerror = () => {
+      image.onerror = null;
+      image.removeAttribute('src');
+      image.alt = safeText(channel.image_alt || channel.platform);
+      imageWrap.classList.add('social-image-unavailable');
+    };
     const logo = el('div', 'social-logo');
     const platformClass = 'platform-' + safeText(channel.platform, 50).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
     logo.appendChild(el('span', 'social-logo-label ' + platformClass, platformMark(channel.platform)));
@@ -216,10 +192,7 @@
       link.target = '_blank';
       link.rel = 'noopener noreferrer';
       link.style.alignSelf = 'flex-start';
-      if (!featured) {
-        link.style.padding = '8px 16px';
-        link.style.fontSize = '14px';
-      }
+      if (!featured) { link.style.padding = '8px 16px'; link.style.fontSize = '14px'; }
       textWrap.appendChild(link);
     }
     card.append(imageWrap, textWrap);
@@ -238,19 +211,18 @@
     fragment.appendChild(makeSocialCard(channels[0], true));
     if (channels.length > 1) {
       const sub = el('div', 'social-sub');
-      channels.slice(1).forEach((channel) => sub.appendChild(makeSocialCard(channel, false)));
+      channels.slice(1).forEach(channel => sub.appendChild(makeSocialCard(channel, false)));
       fragment.appendChild(sub);
     }
     wrapper.replaceChildren(fragment);
   }
-
 
   function renderMediaContacts(data) {
     const grid = document.querySelector('#view-media .media-grid');
     if (!grid) return;
     const contacts = Array.isArray(data?.contacts) ? data.contacts.filter(item => item && item.active !== false) : [];
     const fragment = document.createDocumentFragment();
-    contacts.forEach((contact) => {
+    contacts.forEach(contact => {
       const card = el('article', 'media-card');
       const imageWrap = el('div', 'media-card-img-container');
       const image = el('img');
@@ -275,52 +247,49 @@
     grid.replaceChildren(fragment);
   }
 
-  function mergeSplitSiteContent(results) {
-    const legacy = results[0].status === 'fulfilled' ? results[0].value : {};
-    const valueAt = (index) => results[index].status === 'fulfilled' && results[index].value && typeof results[index].value === 'object' ? results[index].value : null;
-    const merged = {
-      brand: Object.assign({}, legacy.brand || {}),
-      navigation: Object.assign({}, legacy.navigation || {}),
-      home: Object.assign({}, legacy.home || {}),
-      newsroom: Object.assign({}, legacy.newsroom || {}),
-      contact: Object.assign({}, legacy.contact || {}),
-      cookie: Object.assign({}, legacy.cookie || {})
-    };
-    const brand = valueAt(1);
-    if (brand) {
-      Object.assign(merged.brand, { page_title: brand.page_title, name: brand.name, tagline: brand.tagline, logo: brand.logo, logo_alt: brand.logo_alt });
-      Object.assign(merged.navigation, { home: brand.nav_home, newsroom: brand.nav_newsroom, contact_sales: brand.nav_contact_sales });
-    }
-    const home = valueAt(2); if (home) merged.home = home;
-    const newsroomKeys = [valueAt(3), valueAt(4), valueAt(5), valueAt(6)].filter(Boolean);
-    newsroomKeys.forEach(section => Object.assign(merged.newsroom, section));
-    const contact = valueAt(7); if (contact) merged.contact = contact;
-    const cookie = valueAt(8); if (cookie) merged.cookie = cookie;
-    return merged;
-  }
-
   document.addEventListener('DOMContentLoaded', async () => {
-    watchEventSectionHeadings();
-    // The CMS now edits short, separate files. The old combined file remains a fallback during rollout.
-    const results = await Promise.allSettled([
-      readJson('/data/site-content.json'),
-      readJson('/data/site-brand.json'),
-      readJson('/data/home-content.json'),
-      readJson('/data/newsroom-stories.json'),
-      readJson('/data/newsroom-trade-shows.json'),
-      readJson('/data/newsroom-social-media.json'),
-      readJson('/data/newsroom-media.json'),
-      readJson('/data/contact-content.json'),
-      readJson('/data/cookie-content.json'),
-      readJson('/data/social-media.json'),
-      readJson('/data/media-contacts.json')
-    ]);
-    const splitContent = mergeSplitSiteContent(results);
-    if (results.slice(1, 9).some(result => result.status === 'fulfilled') || results[0].status === 'fulfilled') applySiteContent(splitContent);
-    else console.error('Neither split site content nor the legacy site-content.json could be loaded.');
-    if (results[9].status === 'fulfilled') renderSocialMedia(results[9].value);
-    else console.error('Social media content could not be loaded:', results[9].reason);
-    if (results[10].status === 'fulfilled') renderMediaContacts(results[10].value);
-    else console.error('Media contacts could not be loaded:', results[10].reason);
+    const paths = [
+      '/data/home-intro.json',
+      '/data/home-newsletter.json',
+      '/data/database.json',
+      '/data/events.json',
+      '/data/newsroom-social-media.json',
+      '/data/newsroom-media.json',
+      '/data/contact-content.json',
+      '/data/cookie-content.json',
+      '/data/social-media.json',
+      '/data/media-contacts.json'
+    ];
+    const results = await Promise.allSettled(paths.map(readJson));
+    const get = (index) => results[index].status === 'fulfilled' && results[index].value && typeof results[index].value === 'object' ? results[index].value : {};
+    const intro = get(0);
+    const newsletter = get(1);
+    const stories = get(2);
+    const events = get(3);
+    const socialPage = get(4);
+    const mediaPage = get(5);
+    const contact = get(6);
+    const cookie = get(7);
+    const merged = {
+      brand: intro,
+      navigation: { home: intro.nav_home || 'Home', newsroom: intro.nav_newsroom || 'Newsroom', contact_sales: intro.nav_contact_sales || 'Contact Sales' },
+      home: Object.assign({}, intro, newsletter),
+      newsroom: {
+        sidebar_stories: 'Stories', sidebar_events: 'Trade Shows', sidebar_social: 'Social Media', sidebar_media: 'Media',
+        stories_title: stories.page_title || 'Stories', stories_intro: stories.page_intro || 'Explore industrial vision technology, industry applications and insights.', stories_back_button: stories.back_button || '← Back to Stories',
+        events_title: events.page_title || 'Trade Shows', events_intro: events.page_intro || 'Discover upcoming shows and relevant technical content.', events_back_button: events.back_button || '← Back to Trade Shows',
+        events_upcoming_heading: events.upcoming_heading || 'Upcoming Shows', events_articles_heading: events.articles_heading || 'Trade Show Articles', events_visit_link: events.visit_link || 'Visit trade show website',
+        social_title: socialPage.social_title || 'Social Media', social_disclaimer_lead: socialPage.social_disclaimer_lead, social_disclaimer_text: socialPage.social_disclaimer_text,
+        media_title: mediaPage.media_title || 'Media', media_intro: mediaPage.media_intro, media_disclaimer_lead: mediaPage.media_disclaimer_lead, media_disclaimer_text: mediaPage.media_disclaimer_text,
+        image_source_label: socialPage.image_source_label || mediaPage.image_source_label, image_source_url: socialPage.image_source_url || mediaPage.image_source_url
+      },
+      contact,
+      cookie
+    };
+    applySiteContent(merged);
+    if (results[8].status === 'fulfilled') renderSocialMedia(results[8].value);
+    else console.error('Social media content could not be loaded:', results[8].reason);
+    if (results[9].status === 'fulfilled') renderMediaContacts(results[9].value);
+    else console.error('Media contacts could not be loaded:', results[9].reason);
   });
 })();

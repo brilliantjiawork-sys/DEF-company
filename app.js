@@ -14,11 +14,10 @@ let pendingNewsletterSubmissionId = '';
 const trackedSubmissionIds = new Set();
 let storiesData = [];
 let eventsData = [];
-let currentEventsTab = 'upcoming';
-let currentEventsYear = 'all';
 let currentEventsTopic = 'all';
 let currentEventDetailIndex = null;
 let currentStoryDetailIndex = null;
+let currentStoryOrigin = 'stories';
 
 let currentStoryCategory = 'all';
 let currentStoryTopic = 'all';
@@ -344,7 +343,7 @@ function switchView(viewId, options = {}) {
 
     document.querySelectorAll('.nr-sidebar a').forEach((item) => item.classList.remove('active'));
     const navKey = viewId === 'story-detail'
-        ? 'stories'
+        ? (currentStoryOrigin === 'events' ? 'events' : 'stories')
         : viewId === 'event-detail'
             ? 'events'
             : viewId;
@@ -448,7 +447,7 @@ function defFindLinkedEventCoverage(event, stages) {
     const allowed = Array.isArray(stages) ? stages.map(value => String(value).toLowerCase()) : [];
     return storiesData.map((story, index) => ({ story, index })).filter(({ story }) => {
         if (!story || !story.is_event_coverage) return false;
-        if (!defContentNameMatches(story.related_event_titles, event)) return false;
+        if (defContentMatchScore(event, story).sharedTags.length === 0) return false;
         const stage = defGetCoverageStage(story);
         if (allowed.length && !allowed.some(value => stage.includes(value))) return false;
         return defPlainTextLength(story.body || story.highlights || '') >= 80 || (Array.isArray(story.gallery) && story.gallery.length > 0);
@@ -456,9 +455,8 @@ function defFindLinkedEventCoverage(event, stages) {
 }
 
 function defHasPastShowContent(event) {
-    const embeddedContent = defPlainTextLength(event && (event.body || event.recap || event.highlights || event.key_highlights || '')) >= 80 ||
-        (Array.isArray(event && event.gallery) && event.gallery.length > 0);
-    return Boolean(embeddedContent || defFindLinkedEventCoverage(event, ['post-show', 'during-show']).length);
+    // Past show cards are useful only when the same topics appear in a published recap or live report.
+    return defFindLinkedEventCoverage(event, ['post-show', 'during-show']).length > 0;
 }
 
 function defRenderFilterGroup(container, title, values, selected, onSelect, allLabel) {
@@ -484,8 +482,9 @@ function defRenderStoriesFilters() {
     container.replaceChildren();
 
     const availableCategories = DEF_STORY_CATEGORIES.slice();
-    const availableTopics = [...new Set(storiesData.flatMap(defGetTopicTags))].sort((a, b) => a.localeCompare(b));
-    const availableIndustries = [...new Set(storiesData.flatMap(defGetContentIndustries))].sort((a, b) => a.localeCompare(b));
+    const regularStories = storiesData.filter(story => !story.is_event_coverage);
+    const availableTopics = [...new Set(regularStories.flatMap(defGetTopicTags))].sort((a, b) => a.localeCompare(b));
+    const availableIndustries = [...new Set(regularStories.flatMap(defGetContentIndustries))].sort((a, b) => a.localeCompare(b));
     if (!availableCategories.includes(currentStoryCategory)) currentStoryCategory = 'all';
     if (!availableTopics.includes(currentStoryTopic)) currentStoryTopic = 'all';
     if (!availableIndustries.includes(currentStoryIndustry)) currentStoryIndustry = 'all';
@@ -541,7 +540,7 @@ function defMakeRecommendationCard(content, index, type, badgeText) {
     if (tags.childElementCount) body.appendChild(tags);
 
     card.append(imageWrap, body);
-    const activate = () => isStory ? showStoryDetail(index) : showEventDetail(index);
+    const activate = () => isStory ? showStoryDetail(index, content.is_event_coverage ? 'events' : 'stories') : showEventDetail(index);
     card.addEventListener('click', activate);
     card.addEventListener('keydown', event => {
         if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); activate(); }
@@ -563,63 +562,57 @@ function defRenderRecommendationSection(sectionId, gridId, items, type, heading,
 }
 
 function defFindRelatedStoriesForStory(story, currentIndex, limit = 3) {
+    // Explore the Solution contains regular Stories only, never event announcements or coverage articles.
     return storiesData.map((content, index) => {
-        if (index === currentIndex || defIsPreShowStory(content)) return null;
+        if (index === currentIndex || content.is_event_coverage || defIsPreShowStory(content)) return null;
         const match = defContentMatchScore(story, content);
-        const explicit = defContentNameMatches(story && story.related_story_titles, content);
-        return (match.score > 0 || explicit) ? { content, index, score: match.score + (explicit ? 20 : 0) } : null;
-    }).filter(Boolean).sort((a, b) => b.score - a.score || (defParseLocalDate(b.content.date) || new Date(0)) - (defParseLocalDate(a.content.date) || new Date(0))).slice(0, limit);
+        return match.sharedTags.length > 0 ? { content, index, score: match.score } : null;
+    }).filter(Boolean)
+      .sort((a, b) => b.score - a.score || (defParseLocalDate(b.content.date) || new Date(0)) - (defParseLocalDate(a.content.date) || new Date(0)))
+      .slice(0, limit);
 }
 
 function defFindRelatedEventsForStory(story, limit = 3) {
+    // Explore Related Trade Shows contains event cards only. It is independent from Story recommendations.
     const matches = eventsData.map((content, index) => {
         const match = defContentMatchScore(story, content);
-        const explicit = defContentNameMatches(story && story.related_event_titles, content);
-        const score = match.score + (explicit ? 20 : 0);
-        if (score <= 0) return null;
+        if (match.sharedTags.length === 0) return null;
         const status = defGetEventStatus(content);
         if (status === 'past' && !defHasPastShowContent(content)) return null;
-        return { content, index, status, score, badge: status === 'past' ? 'Past Trade Show · Recap' : 'Upcoming Trade Show' };
+        return { content, index, status, score: match.score, badge: status === 'past' ? 'Past Show · Relevant Recap' : 'Upcoming Trade Show' };
     }).filter(Boolean);
-
-    const upcoming = matches.filter(item => item.status === 'upcoming').sort((a, b) => b.score - a.score || ((defGetEventDates(a.content).start || new Date(8640000000000000)) - (defGetEventDates(b.content).start || new Date(8640000000000000))));
+    const upcoming = matches.filter(item => item.status === 'upcoming')
+        .sort((a, b) => b.score - a.score || ((defGetEventDates(a.content).start || new Date(8640000000000000)) - (defGetEventDates(b.content).start || new Date(8640000000000000))));
     const past = matches.filter(item => item.status === 'past').sort((a, b) => b.score - a.score);
-    // Keep recommendations focused: when a matching future/in-progress show exists, use it to drive attendance.
-    // Only fall back to a relevant past show when no matching upcoming show exists.
     return upcoming.length ? upcoming.slice(0, limit) : past.slice(0, limit);
 }
 
 function defFindRelatedStoriesForEvent(event, eventStatus, limit = 3) {
+    // A show detail can recommend relevant regular Stories, never other show articles.
     return storiesData.map((content, index) => {
+        if (content.is_event_coverage || defIsPreShowStory(content)) return null;
         const match = defContentMatchScore(event, content);
-        const explicit = defContentNameMatches(event && event.related_story_titles, content) ||
-            defContentNameMatches(content && content.related_event_titles, event);
-        const score = match.score + (explicit ? 20 : 0);
-        if (score <= 0) return null;
-        // Pre-show previews are not generic related-story suggestions. They are only surfaced
-        // on the exact upcoming event they are linked to in the CMS.
-        if (defIsPreShowStory(content)) {
-            if (eventStatus === 'past' || !explicit) return null;
-        }
-        return { content, index, score };
-    }).filter(Boolean).sort((a, b) => b.score - a.score || (defParseLocalDate(b.content.date) || new Date(0)) - (defParseLocalDate(a.content.date) || new Date(0))).slice(0, limit);
+        return match.sharedTags.length > 0 ? { content, index, score: match.score } : null;
+    }).filter(Boolean)
+      .sort((a, b) => b.score - a.score || (defParseLocalDate(b.content.date) || new Date(0)) - (defParseLocalDate(a.content.date) || new Date(0)))
+      .slice(0, limit);
 }
 
 function defFindRelatedEventsForEvent(event, currentIndex, limit = 3) {
     const matches = eventsData.map((content, index) => {
         if (index === currentIndex) return null;
         const match = defContentMatchScore(event, content);
-        const score = match.score + (defContentNameMatches(event && event.related_event_titles, content) ? 20 : 0);
-        if (score <= 0) return null;
+        if (match.sharedTags.length === 0) return null;
         const status = defGetEventStatus(content);
         if (status === 'past' && !defHasPastShowContent(content)) return null;
-        return { content, index, status, score, badge: status === 'past' ? 'Past Trade Show · Recap' : 'Upcoming Trade Show' };
+        return { content, index, status, score: match.score, badge: status === 'past' ? 'Past Show · Relevant Recap' : 'Upcoming Trade Show' };
     }).filter(Boolean);
     const upcoming = matches.filter(item => item.status === 'upcoming').sort((a, b) => b.score - a.score);
     const past = matches.filter(item => item.status === 'past').sort((a, b) => b.score - a.score);
-    // Promote future event attendance; historical shows appear only as a fallback.
     return upcoming.length ? upcoming.slice(0, limit) : past.slice(0, limit);
 }
+
+
 
 // ---------- Stories rendering ----------
 function renderStories() {
@@ -628,12 +621,13 @@ function renderStories() {
     container.replaceChildren();
     defRenderStoriesFilters();
 
-    if (!storiesData.length) {
+    if (!storiesData.some(story => !story.is_event_coverage)) {
         defShowMessage(container, 'No Stories have been published yet. Add a Story in CMS; its content category, topic tags and industry selections will appear here automatically.');
         return;
     }
 
     const visibleStories = storiesData.map((story, index) => ({ story, index })).filter(({ story }) => {
+        if (story.is_event_coverage) return false;
         if (currentStoryCategory !== 'all' && defGetStoryCategory(story) !== currentStoryCategory) return false;
         if (currentStoryTopic !== 'all' && !defGetTopicTags(story).includes(currentStoryTopic)) return false;
         if (currentStoryIndustry !== 'all' && !defGetContentIndustries(story).includes(currentStoryIndustry)) return false;
@@ -686,10 +680,16 @@ function renderStories() {
     });
     container.appendChild(grid);
 }
-function showStoryDetail(index) {
+function showStoryDetail(index, origin = 'stories') {
     const story = storiesData[index];
     if (!story) return;
     currentStoryDetailIndex = index;
+    currentStoryOrigin = story.is_event_coverage ? 'events' : origin;
+    const backLink = document.getElementById('story-detail-back');
+    if (backLink) {
+        backLink.textContent = currentStoryOrigin === 'events' ? '← Back to Trade Shows' : '← Back to Stories';
+        backLink.onclick = () => switchView(currentStoryOrigin === 'events' ? 'events' : 'stories');
+    }
 
     const image = document.getElementById('sd-img');
     const date = document.getElementById('sd-date');
@@ -712,8 +712,8 @@ function showStoryDetail(index) {
 
     const category = document.getElementById('sd-category');
     if (category) {
-        const stageLabel = story.is_event_coverage ? defSafeText(story.event_content_stage || 'Trade Show Coverage', 100) : '';
-        category.textContent = stageLabel ? defGetStoryCategory(story) + ' · ' + stageLabel : defGetStoryCategory(story);
+        const stageLabel = story.is_event_coverage ? defSafeText(story.event_content_stage || 'Trade Show Article', 100) : '';
+        category.textContent = stageLabel || defGetStoryCategory(story);
         category.hidden = false;
     }
     const industry = document.getElementById('sd-industry');
@@ -862,43 +862,6 @@ function defGetEventSummary(event) {
     return defSafeText(event.summary || event.excerpt || event.desc || event.description || '', 1500);
 }
 
-function defGetEventYear(event) {
-    if (event.event_year || event.year) return String(event.event_year || event.year);
-    const dates = defGetEventDates(event);
-    const date = dates.end || dates.start;
-    return date ? String(date.getFullYear()) : '';
-}
-
-function defGetEventsForTab() {
-    let items = eventsData.map((event, index) => ({ event, index, status: defGetEventStatus(event) }))
-        .filter(item => item.status === currentEventsTab);
-
-    if (currentEventsTab === 'past' && currentEventsYear !== 'all') {
-        items = items.filter(item => defGetEventYear(item.event) === currentEventsYear);
-    }
-
-    if (currentEventsTopic !== 'all') {
-        items = items.filter(item => defGetTopicTags(item.event).includes(currentEventsTopic));
-    }
-
-    if (currentEventsTab === 'upcoming') {
-        items.sort((a, b) => {
-            const dateA = defGetEventDates(a.event).start;
-            const dateB = defGetEventDates(b.event).start;
-            return (dateA ? dateA.getTime() : Number.MAX_SAFE_INTEGER) -
-                (dateB ? dateB.getTime() : Number.MAX_SAFE_INTEGER);
-        });
-    } else {
-        items.sort((a, b) => {
-            const dateA = defGetEventDates(a.event).end;
-            const dateB = defGetEventDates(b.event).end;
-            return (dateB ? dateB.getTime() : 0) - (dateA ? dateA.getTime() : 0);
-        });
-    }
-
-    return items;
-}
-
 function defRenderEventTopicFilters(availableItems) {
     const container = document.getElementById('events-filters');
     if (!container) return;
@@ -925,39 +888,12 @@ function defRenderEventTopicFilters(availableItems) {
     });
 }
 
-function defUpdateEventsTabs() {
-    document.querySelectorAll('[data-events-tab]').forEach(button => {
-        const isActive = button.dataset.eventsTab === currentEventsTab;
-        button.classList.toggle('is-active', isActive);
-        button.setAttribute('aria-selected', String(isActive));
-        button.tabIndex = isActive ? 0 : -1;
-    });
-}
-
 function initEventsControls() {
-    // This missing binding was the reason Past Trade Shows did not respond to clicks.
-    document.querySelectorAll('[data-events-tab]').forEach(button => {
-        button.addEventListener('click', () => {
-            const nextTab = button.dataset.eventsTab;
-            if (!['upcoming', 'past'].includes(nextTab)) return;
-            currentEventsTab = nextTab;
-            currentEventsYear = 'all';
-            currentEventsTopic = 'all';
-            defUpdateEventsTabs();
-            renderEvents();
-        });
-    });
-
-    const yearSelect = document.getElementById('events-year-select');
-    if (yearSelect) {
-        yearSelect.addEventListener('change', () => {
-            currentEventsYear = yearSelect.value || 'all';
-            renderEvents();
-        });
-    }
-
-    defUpdateEventsTabs();
+    // Topic controls are bound by defRenderEventTopicFilters. The old Upcoming/Past tabs were removed.
+    return;
 }
+
+
 
 function defCreateMetaIcon(kind) {
     const svgNs = 'http://www.w3.org/2000/svg';
@@ -982,10 +918,7 @@ function defCreateMetaIcon(kind) {
 }
 
 function defMakeEventCard(event, index, status) {
-    const card = defElement('article', 'event-card event-card-clickable');
-    card.tabIndex = 0;
-    card.setAttribute('role', 'button');
-    card.setAttribute('aria-label', 'View trade show: ' + defSafeText(event.title || 'Untitled event', 160));
+    const card = defElement('article', 'event-card');
 
     const imageWrap = defElement('div', 'event-card-image');
     const image = defElement('img');
@@ -1038,15 +971,22 @@ function defMakeEventCard(event, index, status) {
     defGetTopicTags(event).slice(0, 3).forEach(tag => tagWrap.appendChild(defElement('span', 'kone-tag', tag)));
     if (tagWrap.childElementCount) body.appendChild(tagWrap);
 
-    card.append(imageWrap, body);
-    card.addEventListener('click', () => showEventDetail(index));
-    card.addEventListener('keydown', (eventObject) => {
-        if (eventObject.key === 'Enter' || eventObject.key === ' ') {
-            eventObject.preventDefault();
-            showEventDetail(index);
-        }
-    });
+    const actions = defElement('div', 'event-card-actions');
+    const detailsButton = defElement('button', 'event-card-detail-link', 'View Show Details');
+    detailsButton.type = 'button';
+    detailsButton.addEventListener('click', () => showEventDetail(index));
+    actions.appendChild(detailsButton);
 
+    if (status === 'upcoming' && event.cta_enabled !== false) {
+        const ctaLabel = defSafeText(event.cta_label || 'Book a Meeting at This Show', 200);
+        const ctaButton = defElement('button', 'btn-y event-card-cta', ctaLabel);
+        ctaButton.type = 'button';
+        ctaButton.addEventListener('click', () => openContact('contact_sales', defSafeText(event.title || '', 300), ctaLabel, 'Trade Shows', 'Newsroom'));
+        actions.appendChild(ctaButton);
+    }
+    body.appendChild(actions);
+
+    card.append(imageWrap, body);
     return card;
 }
 
@@ -1213,12 +1153,12 @@ function showEventDetail(index) {
             cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, 'Trade Shows', 'Newsroom'));
             ctaContainer.appendChild(cta);
         } else if (status === 'past' && hasRecap) {
-            const cta = defElement('button', 'btn-y event-detail-cta', 'Read Recap');
+            const cta = defElement('button', 'btn-y event-detail-cta', 'Read Related Recap');
             cta.type = 'button';
             cta.addEventListener('click', () => {
                 const linkedContent = linkedRecaps[0] || linkedDuringUpdates[0];
                 if (linkedContent) {
-                    showStoryDetail(linkedContent.index);
+                    showStoryDetail(linkedContent.index, 'events');
                     return;
                 }
                 const target = document.getElementById(event.recap ? 'ed-recap-section' : (event.highlights || event.key_highlights ? 'ed-highlights-section' : 'ed-body-section'));
@@ -1237,8 +1177,8 @@ function showEventDetail(index) {
 
     const relatedStories = defFindRelatedStoriesForEvent(event, status, 3);
     const relatedEvents = defFindRelatedEventsForEvent(event, index, 3);
-    defRenderRecommendationSection('ed-related-stories-section', 'ed-related-stories', relatedStories, 'story', 'Explore the Solutions');
-    defRenderRecommendationSection('ed-related-events-section', 'ed-related-events', relatedEvents, 'event', 'Related Trade Shows');
+    defRenderRecommendationSection('ed-related-stories-section', 'ed-related-stories', relatedStories, 'story', 'Explore the Solution');
+    defRenderRecommendationSection('ed-related-events-section', 'ed-related-events', relatedEvents, 'event', 'Explore Related Trade Shows');
 
     // Send only the existing content_view and virtual_page_view contracts; recommendation clicks do not add a new event.
     switchView('event-detail', { suppressVirtualPageView: true });
@@ -1254,81 +1194,93 @@ function renderEvents() {
     if (!container) return;
     container.replaceChildren();
 
-    const allItems = eventsData.map((event, index) => ({
-        event,
-        index,
-        status: defGetEventStatus(event)
-    }));
-    const upcomingAll = allItems.filter(item => item.status === 'upcoming');
-    const pastAll = allItems.filter(item => item.status === 'past');
-
-    const yearFilter = document.getElementById('events-year-filter');
-    const yearSelect = document.getElementById('events-year-select');
-    if (yearSelect) {
-        const years = Array.from(new Set(pastAll.map(item => defGetEventYear(item.event)).filter(Boolean)))
-            .sort((a, b) => Number(b) - Number(a));
-        if (currentEventsYear !== 'all' && !years.includes(currentEventsYear)) currentEventsYear = 'all';
-        yearSelect.replaceChildren();
-        const allOption = document.createElement('option');
-        allOption.value = 'all';
-        allOption.textContent = 'All years';
-        yearSelect.appendChild(allOption);
-        years.forEach(year => {
-            const option = document.createElement('option');
-            option.value = year;
-            option.textContent = year;
-            yearSelect.appendChild(option);
+    const upcoming = eventsData.map((event, index) => ({ event, index, status: defGetEventStatus(event) }))
+        .filter(item => item.status === 'upcoming')
+        .sort((a, b) => {
+            const aDate = defGetEventDates(a.event).start;
+            const bDate = defGetEventDates(b.event).start;
+            return (aDate ? aDate.getTime() : Number.MAX_SAFE_INTEGER) - (bDate ? bDate.getTime() : Number.MAX_SAFE_INTEGER);
         });
-        yearSelect.value = currentEventsYear;
+    defRenderEventTopicFilters(upcoming);
+    const visible = currentEventsTopic === 'all' ? upcoming : upcoming.filter(item => defGetTopicTags(item.event).includes(currentEventsTopic));
+    if (!visible.length) {
+        defShowMessage(container, 'No upcoming trade shows match these topics yet.');
+    } else {
+        const grid = defElement('div', 'events-grid');
+        visible.forEach(item => grid.appendChild(defMakeEventCard(item.event, item.index, 'upcoming')));
+        container.appendChild(grid);
     }
-    if (yearFilter) yearFilter.hidden = currentEventsTab !== 'past' || !pastAll.some(item => defGetEventYear(item.event));
+    renderEventCoverageArticles();
+}
 
-    let tabItems = currentEventsTab === 'past' ? pastAll : upcomingAll;
-    if (currentEventsTab === 'past' && currentEventsYear !== 'all') {
-        tabItems = tabItems.filter(item => defGetEventYear(item.event) === currentEventsYear);
-    }
-
-    defRenderEventTopicFilters(tabItems);
-    const visibleItems = currentEventsTopic === 'all'
-        ? tabItems
-        : tabItems.filter(item => defGetTopicTags(item.event).includes(currentEventsTopic));
-
-    if (!visibleItems.length) {
-        defShowMessage(
-            container,
-            currentEventsTab === 'past'
-                ? 'No past trade shows match these filters yet.'
-                : 'No upcoming trade shows match these filters yet.'
-        );
+function renderEventCoverageArticles() {
+    const container = document.getElementById('event-coverage-list');
+    if (!container) return;
+    container.replaceChildren();
+    const articles = storiesData.map((story, index) => ({ story, index }))
+        .filter(item => item.story && item.story.is_event_coverage)
+        .sort((a, b) => (defParseLocalDate(b.story.date) || new Date(0)) - (defParseLocalDate(a.story.date) || new Date(0)));
+    if (!articles.length) {
+        defShowMessage(container, 'No trade show articles have been published yet. Add a pre-show preview, during-show update or post-show recap in CMS.');
         return;
     }
-
-    const sectionTitle = currentEventsTab === 'past' ? 'Past Trade Shows' : 'Upcoming Trade Shows';
-    container.appendChild(defElement('h3', 'events-section-title', sectionTitle));
-    const grid = defElement('div', 'events-grid');
-    visibleItems.forEach(item => {
-        grid.appendChild(defMakeEventCard(item.event, item.index, item.status));
+    const grid = defElement('div', 'event-coverage-grid');
+    articles.forEach(({ story, index }) => {
+        const card = defElement('article', 'event-coverage-card');
+        card.tabIndex = 0;
+        card.setAttribute('role', 'button');
+        card.setAttribute('aria-label', 'Read trade show article: ' + defSafeText(story.title, 180));
+        const imageWrap = defElement('div', 'event-coverage-card-image');
+        const image = defElement('img');
+        image.src = defGetImageUrl(story.image, '/images/story-cover.jpg');
+        image.alt = defSafeText(story.image_alt || story.title, 180);
+        image.loading = 'lazy';
+        image.decoding = 'async';
+        image.onerror = () => { image.onerror = null; image.src = '/images/story-cover.jpg'; };
+        imageWrap.appendChild(image);
+        const body = defElement('div', 'event-coverage-card-body');
+        const stage = defSafeText(story.event_content_stage || story.content_stage || 'Trade Show Article', 100);
+        body.appendChild(defElement('span', 'event-stage-badge', stage));
+        const date = fmtDate(story.date || story.published_date);
+        if (date) body.appendChild(defElement('span', 'date', date));
+        body.appendChild(defElement('h3', '', defSafeText(story.title || 'Untitled trade show article', 300)));
+        const summary = defSafeText(story.summary || story.excerpt || '', 500);
+        if (summary) body.appendChild(defElement('p', 'story-summary', summary));
+        const tags = defElement('div', 'story-tags');
+        defGetTopicTags(story).slice(0, 4).forEach(tag => tags.appendChild(defElement('span', 'kone-tag', tag)));
+        if (tags.childElementCount) body.appendChild(tags);
+        card.append(imageWrap, body);
+        card.addEventListener('click', () => showStoryDetail(index, 'events'));
+        card.addEventListener('keydown', event => {
+            if (event.key === 'Enter' || event.key === ' ') { event.preventDefault(); showStoryDetail(index, 'events'); }
+        });
+        grid.appendChild(card);
     });
     container.appendChild(grid);
 }
 
-async function defLoadEventCoverage(path, stage) {
+async function defLoadEventCoverage() {
+    const path = '/data/event-coverage.json';
     try {
         const response = await fetch(path, { cache: 'no-store' });
         if (!response.ok) throw new Error(path + ' returned ' + response.status);
         const data = await response.json();
-        const articles = Array.isArray(data.articles) ? data.articles : [];
-        return articles.map(article => Object.assign({}, article, {
-            event_content_stage: stage,
-            is_event_coverage: true,
-            content_format: 'Trade Show Coverage',
-            related_event_titles: article.related_event_title ? [{ title: article.related_event_title }] : (article.related_event_titles || [])
-        }));
+        const validStages = ['Pre-show Preview', 'During-show Update', 'Post-show Recap'];
+        return (Array.isArray(data.articles) ? data.articles : []).map(article => {
+            const stage = validStages.includes(article.content_stage) ? article.content_stage : 'Post-show Recap';
+            return Object.assign({}, article, {
+                event_content_stage: stage,
+                is_event_coverage: true,
+                content_format: 'Trade Show Coverage'
+            });
+        });
     } catch (error) {
-        console.warn('Optional trade-show coverage could not be loaded:', path, error);
+        console.warn('Trade show articles could not be loaded:', path, error);
         return [];
     }
 }
+
+
 
 async function loadCloudData() {
     const storiesContainer = document.getElementById('stories-list');
@@ -1339,12 +1291,8 @@ async function loadCloudData() {
         if (!response.ok) throw new Error('Could not load stories data');
         const data = await response.json();
         storiesData = Array.isArray(data.articles) ? data.articles : [];
-        const coverageSets = await Promise.all([
-            defLoadEventCoverage('/data/event-previews.json', 'Pre-show Preview'),
-            defLoadEventCoverage('/data/event-live-updates.json', 'During-show Update'),
-            defLoadEventCoverage('/data/event-recaps.json', 'Post-show Recap')
-        ]);
-        storiesData = storiesData.concat(...coverageSets);
+        const coverageArticles = await defLoadEventCoverage();
+        storiesData = storiesData.concat(coverageArticles);
         renderStories();
     } catch (error) {
         console.error('Stories data could not be loaded:', error);
