@@ -443,8 +443,7 @@ function defIsLongForm(content) {
 function defHasPastShowContent(event) {
     return Boolean(
         defPlainTextLength(event && (event.body || event.recap || event.highlights || event.key_highlights || '')) >= 80 ||
-        (Array.isArray(event && event.gallery) && event.gallery.length > 0) ||
-        defGetStringList(event && event.related_story_titles).length > 0
+        (Array.isArray(event && event.gallery) && event.gallery.length > 0)
     );
 }
 
@@ -571,8 +570,9 @@ function defFindRelatedEventsForStory(story, limit = 3) {
 
     const upcoming = matches.filter(item => item.status === 'upcoming').sort((a, b) => b.score - a.score || ((defGetEventDates(a.content).start || new Date(8640000000000000)) - (defGetEventDates(b.content).start || new Date(8640000000000000))));
     const past = matches.filter(item => item.status === 'past').sort((a, b) => b.score - a.score);
-    // Future shows receive priority. One relevant past recap may supplement a short upcoming list.
-    return upcoming.slice(0, 2).concat(past.slice(0, Math.max(0, Math.min(1, limit - Math.min(upcoming.length, 2))))).slice(0, limit);
+    // Keep recommendations focused: when a matching future/in-progress show exists, use it to drive attendance.
+    // Only fall back to a relevant past show when no matching upcoming show exists.
+    return upcoming.length ? upcoming.slice(0, limit) : past.slice(0, limit);
 }
 
 function defFindRelatedStoriesForEvent(event, eventStatus, limit = 3) {
@@ -603,7 +603,8 @@ function defFindRelatedEventsForEvent(event, currentIndex, limit = 3) {
     }).filter(Boolean);
     const upcoming = matches.filter(item => item.status === 'upcoming').sort((a, b) => b.score - a.score);
     const past = matches.filter(item => item.status === 'past').sort((a, b) => b.score - a.score);
-    return upcoming.concat(past).slice(0, limit);
+    // Promote future event attendance; historical shows appear only as a fallback.
+    return upcoming.length ? upcoming.slice(0, limit) : past.slice(0, limit);
 }
 
 // ---------- Stories rendering ----------
@@ -939,6 +940,28 @@ function initEventsControls() {
     defUpdateEventsTabs();
 }
 
+function defCreateMetaIcon(kind) {
+    const svgNs = 'http://www.w3.org/2000/svg';
+    const svg = document.createElementNS(svgNs, 'svg');
+    svg.setAttribute('viewBox', '0 0 24 24');
+    svg.setAttribute('aria-hidden', 'true');
+    svg.setAttribute('focusable', 'false');
+    svg.classList.add('event-card-meta-icon');
+    const addPath = (tag, attributes) => {
+        const node = document.createElementNS(svgNs, tag);
+        Object.entries(attributes).forEach(([key, value]) => node.setAttribute(key, value));
+        svg.appendChild(node);
+    };
+    if (kind === 'calendar') {
+        addPath('rect', { x: 3, y: 5, width: 18, height: 16, rx: 2, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.7 });
+        addPath('path', { d: 'M16 3v4M8 3v4M3 10h18', fill: 'none', stroke: 'currentColor', 'stroke-width': 1.7, 'stroke-linecap': 'round' });
+    } else {
+        addPath('path', { d: 'M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z', fill: 'none', stroke: 'currentColor', 'stroke-width': 1.7 });
+        addPath('circle', { cx: 12, cy: 10, r: 2.4, fill: 'none', stroke: 'currentColor', 'stroke-width': 1.7 });
+    }
+    return svg;
+}
+
 function defMakeEventCard(event, index, status) {
     const card = defElement('article', 'event-card event-card-clickable');
     card.tabIndex = 0;
@@ -960,14 +983,33 @@ function defMakeEventCard(event, index, status) {
     body.appendChild(defElement('h3', 'event-title', event.title || 'Untitled event'));
 
     const booth = defSafeText(event.booth || '', 120);
-    if (booth) body.appendChild(defElement('p', 'event-card-booth', 'Booth: ' + booth));
+    if (booth) {
+        const boothBadge = defElement('p', 'event-card-booth');
+        boothBadge.appendChild(defElement('span', 'event-card-booth-label', 'Booth'));
+        boothBadge.appendChild(defElement('strong', 'event-card-booth-value', booth));
+        body.appendChild(boothBadge);
+    }
 
     const dates = defGetEventDates(event);
     const dateLabel = defFormatEventDate(event, dates);
-    if (dateLabel) body.appendChild(defElement('p', 'event-card-date', 'Date: ' + dateLabel));
-
     const location = defGetEventLocation(event);
-    if (location) body.appendChild(defElement('p', 'event-card-location', 'Location: ' + location));
+    if (dateLabel || location) {
+        const meta = defElement('div', 'event-card-meta');
+        if (dateLabel) {
+            const dateItem = defElement('span', 'event-card-meta-item');
+            dateItem.appendChild(defCreateMetaIcon('calendar'));
+            dateItem.appendChild(defElement('span', '', dateLabel));
+            meta.appendChild(dateItem);
+        }
+        if (dateLabel && location) meta.appendChild(defElement('span', 'event-card-meta-separator', '·'));
+        if (location) {
+            const locationItem = defElement('span', 'event-card-meta-item');
+            locationItem.appendChild(defCreateMetaIcon('location'));
+            locationItem.appendChild(defElement('span', '', location));
+            meta.appendChild(locationItem);
+        }
+        body.appendChild(meta);
+    }
 
     const theme = defSafeText(event.theme || '', 250);
     if (theme) body.appendChild(defElement('p', 'event-card-theme', theme));

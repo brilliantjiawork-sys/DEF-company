@@ -1,6 +1,6 @@
 /*
  * DEF Company CMS-driven marketing content.
- * Marketing-owned text, images, social links, and media contacts are read from data/*.json,
+ * Marketing-owned text, images and social links are read from data/*.json,
  * so routine content updates can be completed in Sveltia CMS without editing HTML.
  */
 (() => {
@@ -36,7 +36,6 @@
     observer.observe(container, { childList: true, subtree: true, characterData: true });
     applyEventSectionHeadings();
   }
-  const get = (object, path) => path.split('.').reduce((value, key) => value && value[key], object);
   const setText = (selector, value) => {
     const element = document.querySelector(selector);
     if (element && value !== undefined && value !== null) element.textContent = safeText(value);
@@ -81,18 +80,15 @@
     setText('.logo h1', brand.name);
     setText('.logo span', brand.tagline);
 
-    const menu = document.querySelector('.menu');
-    if (menu) {
-      const links = menu.querySelectorAll('a');
-      const labels = [nav.home, nav.products, nav.solutions, nav.support, nav.newsroom, nav.contact_sales];
-      labels.forEach((label, index) => { if (links[index] && label) links[index].textContent = safeText(label, 120); });
-    }
+    // Update navigation by stable IDs. Never rely on child positions: content config and HTML must stay in sync.
+    setText('#nav-home', nav.home || 'Home');
+    setText('#nav-newsroom', nav.newsroom || 'Newsroom');
+    setText('#nav-contact-sales', nav.contact_sales || 'Contact Sales');
+
     const sidebarLabels = {
-      '#nav-ov': newsroom.sidebar_overview,
-      '#nav-stories': newsroom.sidebar_stories,
-      '#nav-events': newsroom.sidebar_events,
-      '#nav-social': newsroom.sidebar_social,
-      '#nav-media': newsroom.sidebar_media
+      '#nav-stories': newsroom.sidebar_stories || 'Stories',
+      '#nav-events': newsroom.sidebar_events || 'Trade Shows',
+      '#nav-social': newsroom.sidebar_social || 'Social Media'
     };
     Object.entries(sidebarLabels).forEach(([selector, value]) => setText(selector, value));
 
@@ -110,8 +106,6 @@
     setText('#nl-success-box h3', home.newsletter_success_title);
     setText('#nl-success-box p', home.newsletter_success_description);
 
-    setText('#view-ov > .nr-title', newsroom.overview_title);
-    renderOverviewCards(newsroom.overview_cards || {});
     setText('#view-stories > .nr-title', newsroom.stories_title);
     setText('#view-stories .stories-intro', newsroom.stories_intro);
     setText('#view-story-detail .back-btn', newsroom.stories_back_button);
@@ -125,7 +119,6 @@
     const eventVisit = document.getElementById('ed-url');
     if (eventVisit && newsroom.events_visit_link) eventVisit.textContent = safeText(newsroom.events_visit_link, 100);
     setText('#view-social > .nr-title', newsroom.social_title);
-    setText('#view-media > .nr-title', newsroom.media_title);
 
     setText('#contact .form-header h2', contact.title);
     setText('#contact .form-header p', contact.description);
@@ -171,40 +164,10 @@
     });
 
     renderNotice(document.querySelector('.social-disclaimer'), newsroom.social_disclaimer_lead, newsroom.social_disclaimer_text, newsroom.image_source_label, newsroom.image_source_url);
-    renderNotice(document.querySelector('.media-disclaimer'), newsroom.media_disclaimer_lead, newsroom.media_disclaimer_text, newsroom.image_source_label, newsroom.image_source_url);
   }
 
   function setTextFrom(element, value) {
     if (element && value !== undefined && value !== null) element.textContent = safeText(value);
-  }
-
-  function renderOverviewCards(cards) {
-    const grid = document.querySelector('#view-ov .ov-grid');
-    if (!grid || !cards || typeof cards !== 'object') return;
-    const routes = ['social', 'stories', 'events', 'media'];
-    const fragment = document.createDocumentFragment();
-    routes.forEach((route) => {
-      const item = cards[route];
-      if (!item) return;
-      const card = el('div', 'ov-card');
-      card.tabIndex = 0;
-      card.setAttribute('role', 'button');
-      card.setAttribute('aria-label', safeText(item.title || route));
-      const image = el('img');
-      setImage(image, item.image, item.image_alt || item.title);
-      const overlay = el('div', 'ov-overlay');
-      overlay.appendChild(el('h3', '', item.title || route));
-      card.append(image, overlay);
-      card.addEventListener('click', () => { if (typeof window.switchView === 'function') window.switchView(route); });
-      card.addEventListener('keydown', (event) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          if (typeof window.switchView === 'function') window.switchView(route);
-        }
-      });
-      fragment.appendChild(card);
-    });
-    grid.replaceChildren(fragment);
   }
 
   function renderNotice(container, lead, body, sourceLabel, sourceUrl) {
@@ -235,7 +198,8 @@
     setImage(image, channel.image, channel.image_alt || channel.platform);
     image.onerror = () => { image.onerror = null; image.removeAttribute('src'); image.alt = safeText(channel.image_alt || channel.platform); };
     const logo = el('div', 'social-logo');
-    logo.appendChild(el('span', 'social-logo-label', platformMark(channel.platform)));
+    const platformClass = 'platform-' + safeText(channel.platform, 50).toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    logo.appendChild(el('span', 'social-logo-label ' + platformClass, platformMark(channel.platform)));
     imageWrap.append(image, logo);
 
     const textWrap = el('div', featured ? 'social-main-text' : 'social-card-text');
@@ -276,53 +240,16 @@
     wrapper.replaceChildren(fragment);
   }
 
-  function renderMediaContacts(data) {
-    const grid = document.querySelector('#view-media .media-grid');
-    if (!grid) return;
-    const contacts = Array.isArray(data?.contacts) ? data.contacts.filter(item => item && item.active !== false) : [];
-    const fragment = document.createDocumentFragment();
-    contacts.forEach((contact) => {
-      const card = el('article', 'media-card');
-      const imageWrap = el('div', 'media-card-img-container');
-      const image = el('img');
-      setImage(image, contact.portrait, contact.portrait_alt || contact.name);
-      image.onerror = () => { image.onerror = null; image.removeAttribute('src'); };
-      imageWrap.appendChild(image);
-      card.appendChild(imageWrap);
-      card.appendChild(el('h4', '', contact.name || 'Media contact'));
-      const details = el('p');
-      details.appendChild(document.createTextNode(safeText(contact.title, 200)));
-      if (contact.email) {
-        details.appendChild(document.createElement('br'));
-        const email = safeText(contact.email, 250);
-        if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-          const link = el('a', '', email);
-          link.href = 'mailto:' + email;
-          details.appendChild(link);
-        } else {
-          details.appendChild(document.createTextNode(email));
-        }
-      }
-      card.appendChild(details);
-      fragment.appendChild(card);
-    });
-    if (!contacts.length) fragment.appendChild(el('p', 'content-status-message', 'Media contacts will be published here soon.'));
-    grid.replaceChildren(fragment);
-  }
-
   document.addEventListener('DOMContentLoaded', async () => {
     watchEventSectionHeadings();
     // Load each file independently so a missing optional file does not block all CMS-managed content.
     const results = await Promise.allSettled([
       readJson('/data/site-content.json'),
-      readJson('/data/social-media.json'),
-      readJson('/data/media-contacts.json')
+      readJson('/data/social-media.json')
     ]);
     if (results[0].status === 'fulfilled') applySiteContent(results[0].value);
     else console.error('Site content could not be loaded:', results[0].reason);
     if (results[1].status === 'fulfilled') renderSocialMedia(results[1].value);
     else console.error('Social media content could not be loaded:', results[1].reason);
-    if (results[2].status === 'fulfilled') renderMediaContacts(results[2].value);
-    else console.error('Media contacts could not be loaded:', results[2].reason);
   });
 })();

@@ -15,8 +15,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DEF Company | Newsroom</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-    <link rel="stylesheet" href="cms-content.css">
+    <link rel="stylesheet" href="style.css?v=20261028-navfix2">
+    <link rel="stylesheet" href="cms-content.css?v=20261028-navfix2">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.17/dist/purify.min.js"></script>
 </head>
@@ -31,10 +31,9 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div><h1>DEF Company</h1><span>DEFINE THE STANDARD OF SIGHT.</span></div>
         </div>
         <div class="menu">
-            <a onclick="showPage('home')">Home</a>
-            <!-- Products, Solutions and Support are hidden until their real pages are ready. -->
-            <a onclick="showPage('newsroom')">Newsroom</a>
-            <a class="btn-y" onclick="openContact('contact_sales', '', 'Contact Sales')" style="padding:10px 24px; font-size:15px;">Contact Sales</a>
+            <a id="nav-home" onclick="showPage('home')">Home</a>
+            <a id="nav-newsroom" onclick="showPage('newsroom')">Newsroom</a>
+            <a id="nav-contact-sales" class="btn-y" onclick="openContact('contact_sales', '', 'Contact Sales')" style="padding:10px 24px; font-size:15px;">Contact Sales</a>
         </div>
     </div>
 
@@ -73,23 +72,12 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     <div id="newsroom" class="page">
         <div class="nr-layout">
             <div class="nr-sidebar" aria-label="Newsroom sections">
-                <a id="nav-ov" hidden aria-hidden="true">Overview</a>
-                <a onclick="switchView('stories')" id="nav-stories" class="active">Stories</a>
+<a onclick="switchView('stories')" id="nav-stories" class="active">Stories</a>
                 <a onclick="switchView('events')" id="nav-events">Trade Shows</a>
                 <a onclick="switchView('social')" id="nav-social">Social Media</a>
-                <a id="nav-media" hidden aria-hidden="true">Media</a>
-            </div>
+</div>
             <div class="nr-main">
-                <div id="view-ov" class="view">
-                    <h2 class="nr-title">Corporate Newsroom</h2>
-                    <div class="ov-grid">
-                        <div class="ov-card" onclick="switchView('social')"><img id="ov-img-social" src="images/11.jpg"><div class="ov-overlay"><h3>Social Media</h3></div></div>
-                        <div class="ov-card" onclick="switchView('stories')"><img id="ov-img-stories" src="images/story-cover.jpg"><div class="ov-overlay"><h3>Stories</h3></div></div>
-                        <div class="ov-card" onclick="switchView('events')"><img id="ov-img-events" src="images/event-1.jpg"><div class="ov-overlay"><h3>Trade Shows</h3></div></div>
-                        <div class="ov-card" onclick="switchView('media')"><img id="ov-img-media" src="images/media-cover.jpg"><div class="ov-overlay"><h3>Media</h3></div></div>
-                    </div>
-                </div>
-                <div id="view-stories" class="view active">
+                                <div id="view-stories" class="view active">
                     <h2 class="nr-title">Explore our stories</h2>
                     <p class="stories-intro">Explore industrial vision technology, applications and industry insights.</p>
                     <div id="stories-filters" class="stories-filters" aria-label="Filter stories by topic"></div>
@@ -186,23 +174,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                     </div>
                 </div>
 
-                <div id="view-media" class="view">
-                    <h2 class="nr-title">Media Contacts</h2>
-                    <div class="media-grid">
-                        <div class="media-card">
-                            <div class="media-card-img-container"><img id="media-img-1" src="images/media-1.jpg" alt="Portfolio demonstration portrait"></div>
-                            <h4>Jane Doe</h4><p>Senior PR Manager<br>pr@defcompany.com</p>
-                        </div>
-                        <div class="media-card">
-                            <div class="media-card-img-container"><img id="media-img-2" src="images/media-2.jpg" alt="Portfolio demonstration portrait"></div>
-                            <h4>Sarah Smith</h4><p>Communications Lead<br>press@defcompany.com</p>
-                        </div>
-                    </div>
-                    <div class="media-disclaimer" role="note">
-                        <strong>Learning &amp; portfolio notice:</strong> This Media Contacts page is a fictional example for learning and portfolio presentation. All names, job titles, and email addresses shown here are made up and do not refer to real media contacts. The portrait photos are from <a href="https://unsplash.com/" target="_blank" rel="noopener noreferrer">Unsplash</a>.
-                    </div>
-                </div>
-            </div>
+                            </div>
         </div>
     </div>
 
@@ -267,7 +239,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <button type="button" id="cookie-reopen">Cookie settings</button>
     <script src="events-adapter.js"></script>
-    <script src="app.js"></script>
-    <script src="marketing-content.js"></script>
+    <script src="app.js?v=20261028-navfix2"></script>
+    <script src="marketing-content.js?v=20261028-navfix2"></script>
 </body>
 </html> 

@@ -43,14 +43,6 @@ a { text-decoration: none; color: inherit; cursor: pointer; }
 .nr-main { flex: 1; min-width: 0; padding: 40px; }
 .nr-title { font-size: 48px; font-weight: 300; margin: 0 0 24px; }
 
-/* 四宫格 */
-.ov-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-.ov-card { position: relative; aspect-ratio: 16 / 9; cursor: pointer; overflow: hidden; border-radius: 2px; background: #eee; }
-.ov-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.3s; }
-.ov-card:hover img { transform: scale(1.05); }
-.ov-overlay { position: absolute; inset: 0; background: rgba(0,0,0,0.4); display: flex; align-items: flex-end; padding: 24px; }
-.ov-overlay h3 { color: white; font-size: 26px; margin: 0; }
-
 /* --- 核心：列表卡片画框 --- */
 .list-card { display: flex; gap: 24px; border: 1px solid var(--line); padding: 20px; margin-bottom: 20px; cursor: pointer; border-radius: 4px; align-items: center; }
 .list-card:hover { background: var(--bg); }
@@ -99,13 +91,6 @@ a { text-decoration: none; color: inherit; cursor: pointer; }
 .social-logo { position: absolute; bottom: 20px; left: 20px; background: rgba(255, 255, 255, 0.95); padding: 12px; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.2);}
 .social-logo svg { width: 32px; height: 32px; display: block; }
 
-/* Media */
-.media-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 30px; }
-.media-card-img-container { width: 100%; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 4px; background: #eee;}
-.media-card-img-container img { width: 100%; height: 100%; object-fit: cover; }
-.media-card h4 { font-size: 22px; font-weight: 500; margin: 16px 0 6px; }
-.media-card p { color: var(--gray); font-size: 15px; margin: 0 0 12px; }
-
 /* 表单 */
 .form-container { background-color: #ffffff; width: 100%; max-width: 700px; margin: 0 auto; padding: 48px; border: 1px solid var(--line); box-shadow: 0 10px 30px rgba(0,0,0,0.03); }
 .form-header h2 { font-size: 32px; font-weight: 400; margin: 0 0 12px 0; }
@@ -146,7 +131,7 @@ a { text-decoration: none; color: inherit; cursor: pointer; }
   .cookie-btns { flex-wrap: wrap; }
   .story-card { flex-direction: column; align-items: stretch; }
   .story-card .image-container { width: 100%; aspect-ratio: 16 / 9; }
-  .social-disclaimer, .media-disclaimer { margin-top: 18px; padding: 14px 0; font-size: 12px; }
+  .social-disclaimer { margin-top: 18px; padding: 14px 0; font-size: 12px; }
   .events-grid { grid-template-columns: 1fr; }
   .event-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .detail-layout { display: block; }
@@ -173,11 +158,6 @@ a { text-decoration: none; color: inherit; cursor: pointer; }
 .social-disclaimer strong { color: #334155; }
 .social-disclaimer a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
 
-/* Media Contacts portfolio disclaimer */
-.media-disclaimer { margin-top: 24px; padding: 16px 18px; border-top: 1px solid var(--line); color: var(--gray); font-size: 13px; line-height: 1.7; }
-.media-disclaimer strong { color: #334155; }
-.media-disclaimer a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
-
 /* Events fields supported by the CMS */
 .events-section-title { font-size: 24px; font-weight: 400; margin: 30px 0 18px; padding-bottom: 10px; border-bottom: 2px solid var(--yellow); }
 .events-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; margin-bottom: 32px; }
@@ -202,7 +182,6 @@ a { text-decoration: none; color: inherit; cursor: pointer; }
 @media (max-width: 800px) {
   .story-card { flex-direction: column; align-items: stretch; }
   .story-card .image-container { width: 100%; aspect-ratio: 16 / 9; }
-  .media-disclaimer { margin-top: 18px; padding: 14px 0; font-size: 12px; }
   .events-grid { grid-template-columns: 1fr; }
   .event-gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .detail-layout { display: block; }
@@ -248,3 +227,12 @@ a { text-decoration: none; color: inherit; cursor: pointer; }
   .events-year-filter { align-items: flex-start; flex-direction: column; gap: 6px; }
   .event-booth { font-size: 13px; }
 }
+
+/* Trade-show card metadata: compact, icon-led facts with the booth shown first. */
+.event-card-booth { display: inline-flex; align-items: center; gap: 8px; margin: 0; padding: 7px 11px; border-left: 3px solid var(--yellow); background: #fff6d6; color: var(--dark); font-size: 13px; }
+.event-card-booth-label { font-weight: 500; color: #5b4a16; }
+.event-card-booth-value { font-weight: 750; letter-spacing: .01em; }
+.event-card-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; color: var(--gray); font-size: 13px; line-height: 1.5; }
+.event-card-meta-item { display: inline-flex; align-items: center; gap: 6px; min-width: 0; }
+.event-card-meta-icon { width: 15px; height: 15px; flex: 0 0 15px; color: var(--blue); }
+.event-card-meta-separator { color: #b6bcc3; }
