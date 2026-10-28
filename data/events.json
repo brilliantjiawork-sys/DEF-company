@@ -1,76 +1,124 @@
 {
-  "announcements": [
+  "exhibitions": [
     {
-      "title": "Automate 2026",
+      "title": "Industrial Vision & Automation Showcase 2026",
       "start_date": "2026-11-12",
       "end_date": "2026-11-15",
-      "booth": "#4022",
-      "loc": "Detroit, MI",
+      "booth": "TBC",
+      "loc": "Detroit, MI, USA (illustrative location)",
+      "venue": "Illustrative event venue",
       "theme": "AI-driven inspection systems",
-      "desc": "Live demonstrations of our latest AI-driven inspection systems.",
+      "summary": "A fictional event concept focused on AI-assisted inspection, defect detection and automation workflows.",
       "tags": [
-        "Trade Shows & Exhibitions",
-        "Product Demonstrations",
-        "AI Vision",
-        "Automation"
+        "AI & Deep Learning",
+        "Defect Detection",
+        "Quality Control",
+        "Robotics & Automation"
+      ],
+      "industries": [
+        "Automotive",
+        "Electronics"
       ],
       "cover": "/images/event-1.jpg",
-      "url": ""
+      "body": "## Illustrative event concept\n\nThis fictional portfolio event demonstrates how an industrial vision brand could organise a trade-show page around AI-assisted inspection, defect detection and automation integration. The date and location are illustrative planning fields only.\n\nNo real exhibitor participation, booth allocation, customer interaction, product performance or commercial result is claimed.",
+      "highlights": "- AI-assisted inspection concepts\n- Defect-detection workflow discussions\n- Automation integration topics",
+      "recap": "",
+      "gallery": [],
+      "related_story_titles": [
+        {
+          "title": "Preview: AI Inspection Themes for the Industrial Vision & Automation Showcase 2026"
+        }
+      ],
+      "url": "",
+      "cta_enabled": true,
+      "cta_label": "Book a Meeting at This Show"
     },
     {
-      "title": "Vision Expo 2026",
+      "title": "Smart Inspection & Vision Forum 2026",
       "start_date": "2026-12-05",
       "end_date": "2026-12-08",
-      "booth": "",
-      "loc": "Stuttgart, Germany",
+      "booth": "TBC",
+      "loc": "Stuttgart, Germany (illustrative location)",
+      "venue": "Illustrative event venue",
       "theme": "Industrial camera solutions",
-      "desc": "Join us to explore next-generation industrial camera solutions for European manufacturers.",
+      "summary": "A fictional event concept focused on industrial cameras, 3D vision and quality-control applications.",
       "tags": [
-        "Trade Shows & Exhibitions",
-        "Product Demonstrations",
-        "Machine Vision"
+        "Machine Vision",
+        "3D Vision",
+        "Quality Control"
+      ],
+      "industries": [
+        "Electronics",
+        "Semiconductors"
       ],
       "cover": "/images/event-2.jpg",
-      "url": ""
+      "body": "## Illustrative event concept\n\nThis simulated event page demonstrates how machine-vision themes can be connected to useful technical content and a meeting CTA. The date and location are placeholders for the portfolio project, not a real event listing.\n\nNo real attendance, customer, product performance or commercial result is claimed.",
+      "highlights": "- Industrial camera solution concepts\n- 3D vision applications\n- Quality-control workflow discussions",
+      "recap": "",
+      "gallery": [],
+      "related_story_titles": [],
+      "url": "",
+      "cta_enabled": true,
+      "cta_label": "Book a Meeting at This Show"
     },
     {
-      "title": "Automate 2027",
+      "title": "Robotics & Vision Integration Expo 2027",
       "start_date": "2027-05-10",
       "end_date": "2027-05-13",
-      "booth": "",
-      "loc": "Chicago, IL",
-      "theme": "Ultra-compact smart cameras",
-      "desc": "Showcasing our first generation of ultra-compact smart cameras.",
+      "booth": "TBC",
+      "loc": "Chicago, IL, USA (illustrative location)",
+      "venue": "Illustrative event venue",
+      "theme": "Compact smart cameras and automation",
+      "summary": "An illustrative future-show concept around smart cameras, measurement and automation integration.",
       "tags": [
-        "Trade Shows & Exhibitions",
-        "New Product Launch",
-        "Machine Vision"
+        "Machine Vision",
+        "Robotics & Automation",
+        "Positioning & Measurement"
+      ],
+      "industries": [
+        "Automotive",
+        "Electronics"
       ],
       "cover": "/images/event-3.jpg",
-      "url": ""
-    }
-  ],
-  "reports": [
+      "body": "## Illustrative event concept\n\nA fictional portfolio example showing how a future exhibition could be connected to technical content about compact vision systems, positioning and automated inspection. The dates and location are illustrative placeholders.\n\nNo real participation or commercial result is claimed.",
+      "highlights": "- Compact smart-camera concepts\n- Positioning and measurement\n- Automation workflows",
+      "recap": "",
+      "gallery": [],
+      "related_story_titles": [],
+      "url": "",
+      "cta_enabled": true,
+      "cta_label": "Book a Meeting at This Show"
+    },
     {
-      "title": "Vision Expo 2025: A Milestone in AI-Driven Quality Control",
+      "title": "Industrial Vision Application Showcase 2025: Product Demonstrations and Quality-Control Applications",
       "event_year": "2025",
       "published_date": "2026-10-23",
       "start_date": "",
       "end_date": "",
-      "loc": "Stuttgart, Germany",
+      "loc": "Stuttgart, Germany (illustrative location)",
+      "venue": "Illustrative event venue",
       "booth": "",
-      "theme": "AI-driven quality control",
-      "summary": "A recap of DEF Company's fictional Vision Expo 2025 showcase...",
+      "theme": "Machine vision and quality-control applications",
+      "summary": "A fictional recap concept showing how product demonstration themes and quality-control applications might be presented after an event.",
       "tags": [
-        "Trade Shows & Exhibitions",
-        "Product Demonstrations",
-        "AI Vision",
-        "Automation"
+        "Machine Vision",
+        "AI & Deep Learning",
+        "Quality Control",
+        "Robotics & Automation"
+      ],
+      "industries": [
+        "Electronics",
+        "Semiconductors"
       ],
       "cover": "/images/event-3.jpg",
-      "body": "## A Record-Breaking Event\n\n![Onsite at the exhibition](/images/event-3.jpg)\n\nThe Vision Expo 2025 in Stuttgart was a tremendous success for DEF Company. We welcomed over **500 industry professionals** to our booth to discuss the future of automated inspection.\n\n## Showcasing the X1 Smart Camera\n\nOur highlight of the event was the live demonstration of the new X1 Smart Camera.\nVisitors were impressed by its ability to process 10,000 frames per second.\n\n## Key Highlights\n\n- **Real-time Defect Detection:** Showcased flaw detection as small as 0.1 mm.\n- **Seamless Integration:** Demonstrated plug-and-play compatibility with major PLC networks.\n- **Predictive Analytics:** Introduced our new dashboard for predictive maintenance.\n\n## What’s Next?\n\nMissed us at the show? We will be attending Automate 2026 in Detroit this coming November.\nStay tuned for more updates on our upcoming trade shows!",
+      "body": "## Illustrative post-show recap\n\nThis is a fictional portfolio example, not a report of a real DEF Company event. It demonstrates a way to summarize the technology themes that could be presented at an industrial vision exhibition.\n\n## Product and solution themes\n\n- Industrial camera and machine-vision concepts\n- Defect-detection and quality-control workflows\n- Potential integration points with factory automation\n\nNo real customer relationships, visitor counts, verified product-performance metrics, certifications or commercial results are claimed.",
+      "highlights": "- Machine-vision product showcase concept\n- Quality-control application discussion\n- Automation integration topics",
+      "recap": "The content above is an illustrative post-show recap template for a fictional portfolio project.",
       "gallery": [],
-      "url": ""
+      "related_story_titles": [],
+      "url": "",
+      "cta_enabled": true,
+      "cta_label": "Talk to Our Team"
     }
   ]
 }

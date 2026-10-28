@@ -16,19 +16,19 @@
   },
   "home": {
     "hero_title": "Precision Industrial Vision.",
-    "hero_description": "DEF Company designs high-performance machine vision systems to help global manufacturers optimize quality control and increase throughput.",
+    "hero_description": "DEF Company designs industrial vision concepts to help manufacturers explore inspection quality, automation and production challenges.",
     "hero_button": "Book a Demo",
     "hero_image": "images/hero-bg.jpg",
-    "hero_image_alt": "Industrial machine vision systems",
+    "hero_image_alt": "Illustrative industrial machine vision system",
     "newsletter_image": "images/team.jpg",
-    "newsletter_image_alt": "Engineering team collaborating on industrial vision systems",
-    "newsletter_image_caption": "* The DEF Company engineering team collaborating on next-generation systems.",
+    "newsletter_image_alt": "Illustrative engineering team collaborating on industrial vision concepts",
+    "newsletter_image_caption": "Illustrative engineering-team imagery for a fictional portfolio project.",
     "newsletter_title": "Subscribe to our Technical Newsletter",
-    "newsletter_description": "Receive exclusive product releases, engineering case studies, and industry insights tailored for B2B manufacturers.",
+    "newsletter_description": "Receive illustrative product and technology explainers, industry application ideas and machine-vision insights for B2B manufacturers.",
     "newsletter_email_placeholder": "Enter your Work Email",
     "newsletter_button": "Subscribe",
     "newsletter_success_title": "Welcome to DEF Insights!",
-    "newsletter_success_description": "Thank you for subscribing. You will now receive our latest B2B industry trends directly in your inbox."
+    "newsletter_success_description": "Thank you for subscribing to this portfolio demonstration newsletter."
   },
   "newsroom": {
     "sidebar_overview": "Overview",
@@ -41,7 +41,7 @@
       "social": {
         "title": "Social Media",
         "image": "images/11.jpg",
-        "image_alt": "DEF Company social media channels"
+        "image_alt": "Illustrative DEF Company social media channels"
       },
       "stories": {
         "title": "Stories",
@@ -51,59 +51,54 @@
       "events": {
         "title": "Trade Shows",
         "image": "images/event-1.jpg",
-        "image_alt": "Industrial automation trade show"
+        "image_alt": "Illustrative industrial automation trade show"
       },
       "media": {
         "title": "Media",
         "image": "images/media-cover.jpg",
-        "image_alt": "Media contacts and press resources"
+        "image_alt": "Illustrative media resources"
       }
     },
-    "stories_title": "Explore our stories",
-    "stories_intro": "Product updates, application insights, customer stories and company news.",
+    "stories_title": "Explore our Stories",
+    "stories_intro": "Explore industrial vision technology, industry applications and insights. Categories describe the content type; shared topic tags connect related stories and trade shows.",
     "events_title": "Trade Shows",
-    "events_intro": "Meet our team at upcoming trade shows, or explore highlights from past exhibitions.",
+    "events_intro": "Explore upcoming demonstrations and useful technical highlights from previous shows.",
     "events_upcoming_tab": "Upcoming Trade Shows",
     "events_past_tab": "Past Trade Shows",
     "events_year_label": "Filter past trade shows by year",
-    "events_visit_link": "Visit trade show website",
-    "social_title": "Follow us",
+    "events_visit_link": "Visit event website",
+    "social_title": "Social Media",
     "social_disclaimer_lead": "Learning & portfolio notice:",
     "social_disclaimer_text": "DEF Company is a fictional project created only for learning and portfolio presentation. The social media cards on this page are examples, not official DEF Company accounts. The photos are from ",
     "media_title": "Media Contacts",
     "media_disclaimer_lead": "Learning & portfolio notice:",
     "media_disclaimer_text": "This Media Contacts page is a fictional example for learning and portfolio presentation. All names, job titles, and email addresses shown here are made up and do not refer to real media contacts. The portrait photos are from ",
     "image_source_label": "Unsplash",
-    "image_source_url": "https://unsplash.com/",
-    "events_upcoming_heading": "Upcoming Trade Shows",
-    "events_past_heading": "Past Trade Shows",
-    "events_unknown_heading": "Trade Shows — Dates to Be Confirmed",
-    "stories_back_button": "← Back to Stories",
-    "events_back_button": "← Back to Trade Shows"
+    "image_source_url": "https://unsplash.com/"
   },
   "contact": {
     "title": "Contact Sales",
-    "description": "Please fill out your business requirements below, and our experts will contact you within one business day.",
+    "description": "Please share your business requirements below. This fictional portfolio site demonstrates the B2B lead-submission flow.",
     "email_label": "Work Email *",
     "first_name_label": "First Name *",
     "last_name_label": "Last Name *",
     "company_label": "Company *",
     "phone_label": "Phone *",
     "country_label": "Country/Region *",
-    "zip_code_label": "Postal / Zip Code *",
+    "zip_code_label": "Zip Code",
     "industry_label": "Industry",
     "message_label": "Additional Comments",
     "country_placeholder": "Select Country",
     "industry_placeholder": "Select Industry",
-    "message_placeholder": "Please tell us about your specific application...",
+    "message_placeholder": "Please tell us about your application or requirements...",
     "submit_button": "Submit Inquiry",
     "success_title": "Inquiry Received",
-    "success_description": "Thank you for reaching out to DEF Company. Our machine vision experts are currently reviewing your requirements and will contact you within one business day.",
+    "success_description": "Thank you for submitting this portfolio demonstration form.",
     "return_button": "Return to Home"
   },
   "cookie": {
     "title": "Your privacy matters.",
-    "description": "We use cookies to make our website work and, with your permission, to understand how it is used and to measure our marketing. You can change your choice at any time.",
+    "description": "We use cookies to make this website work and, with your permission, to understand how it is used and measure marketing. You can change your choice at any time.",
     "reject_button": "Reject all",
     "customize_button": "Customize",
     "accept_button": "Accept all",
