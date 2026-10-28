@@ -440,11 +440,25 @@ function defIsLongForm(content) {
     return defPlainTextLength(content && (content.body || content.recap || content.article_body || '')) >= 220;
 }
 
+function defGetCoverageStage(content) {
+    return defSafeText(content && (content.event_content_stage || content.content_stage || ''), 100).toLowerCase();
+}
+
+function defFindLinkedEventCoverage(event, stages) {
+    const allowed = Array.isArray(stages) ? stages.map(value => String(value).toLowerCase()) : [];
+    return storiesData.map((story, index) => ({ story, index })).filter(({ story }) => {
+        if (!story || !story.is_event_coverage) return false;
+        if (!defContentNameMatches(story.related_event_titles, event)) return false;
+        const stage = defGetCoverageStage(story);
+        if (allowed.length && !allowed.some(value => stage.includes(value))) return false;
+        return defPlainTextLength(story.body || story.highlights || '') >= 80 || (Array.isArray(story.gallery) && story.gallery.length > 0);
+    }).sort((a, b) => (defParseLocalDate(b.story.date) || new Date(0)) - (defParseLocalDate(a.story.date) || new Date(0)));
+}
+
 function defHasPastShowContent(event) {
-    return Boolean(
-        defPlainTextLength(event && (event.body || event.recap || event.highlights || event.key_highlights || '')) >= 80 ||
-        (Array.isArray(event && event.gallery) && event.gallery.length > 0)
-    );
+    const embeddedContent = defPlainTextLength(event && (event.body || event.recap || event.highlights || event.key_highlights || '')) >= 80 ||
+        (Array.isArray(event && event.gallery) && event.gallery.length > 0);
+    return Boolean(embeddedContent || defFindLinkedEventCoverage(event, ['post-show', 'during-show']).length);
 }
 
 function defRenderFilterGroup(container, title, values, selected, onSelect, allLabel) {
@@ -476,7 +490,7 @@ function defRenderStoriesFilters() {
     if (!availableTopics.includes(currentStoryTopic)) currentStoryTopic = 'all';
     if (!availableIndustries.includes(currentStoryIndustry)) currentStoryIndustry = 'all';
 
-    defRenderFilterGroup(container, 'Category', availableCategories, currentStoryCategory, value => {
+    defRenderFilterGroup(container, 'Content Category', availableCategories, currentStoryCategory, value => {
         currentStoryCategory = value; renderStories();
     }, 'All categories');
     if (availableTopics.length) {
@@ -615,7 +629,7 @@ function renderStories() {
     defRenderStoriesFilters();
 
     if (!storiesData.length) {
-        defShowMessage(container, 'No stories have been published yet. Please check back soon.');
+        defShowMessage(container, 'No Stories have been published yet. Add a Story in CMS; its content category, topic tags and industry selections will appear here automatically.');
         return;
     }
 
@@ -650,7 +664,8 @@ function renderStories() {
         const info = defElement('div', 'list-info');
         const dateText = fmtDate(story.date || story.published_date);
         if (dateText) info.appendChild(defElement('span', 'date', dateText));
-        info.appendChild(defElement('span', 'story-category-label', defGetStoryCategory(story)));
+        const storyKicker = story.is_event_coverage ? defSafeText(story.event_content_stage || 'Trade Show Coverage', 100) : defGetStoryCategory(story);
+        info.appendChild(defElement('span', 'story-category-label', storyKicker));
         info.appendChild(defElement('h3', '', story.title || 'Untitled story'));
         const summary = defSafeText(story.summary || story.excerpt || '', 600);
         if (summary) info.appendChild(defElement('p', 'story-summary', summary));
@@ -696,7 +711,11 @@ function showStoryDetail(index) {
     if (body) defRenderMarkdownInto(body, story.body || '');
 
     const category = document.getElementById('sd-category');
-    if (category) { category.textContent = defGetStoryCategory(story); category.hidden = false; }
+    if (category) {
+        const stageLabel = story.is_event_coverage ? defSafeText(story.event_content_stage || 'Trade Show Coverage', 100) : '';
+        category.textContent = stageLabel ? defGetStoryCategory(story) + ' · ' + stageLabel : defGetStoryCategory(story);
+        category.hidden = false;
+    }
     const industry = document.getElementById('sd-industry');
     if (industry) {
         const values = defGetContentIndustries(story);
@@ -1184,7 +1203,9 @@ function showEventDetail(index) {
     if (ctaContainer) {
         ctaContainer.replaceChildren();
         const ctaEnabled = event.cta_enabled !== false;
-        const hasRecap = Boolean(defPlainTextLength(event.body || event.recap || event.highlights || event.key_highlights || '') >= 80 || (Array.isArray(event.gallery) && event.gallery.length));
+        const linkedRecaps = status === 'past' ? defFindLinkedEventCoverage(event, ['post-show']) : [];
+        const linkedDuringUpdates = status === 'past' ? defFindLinkedEventCoverage(event, ['during-show']) : [];
+        const hasRecap = Boolean(defPlainTextLength(event.body || event.recap || event.highlights || event.key_highlights || '') >= 80 || (Array.isArray(event.gallery) && event.gallery.length) || linkedRecaps.length || linkedDuringUpdates.length);
         if (status === 'upcoming' && ctaEnabled) {
             const ctaLabel = defSafeText(event.cta_label || 'Book a Meeting at This Show', 200);
             const cta = defElement('button', 'btn-y event-detail-cta', ctaLabel);
@@ -1195,6 +1216,11 @@ function showEventDetail(index) {
             const cta = defElement('button', 'btn-y event-detail-cta', 'Read Recap');
             cta.type = 'button';
             cta.addEventListener('click', () => {
+                const linkedContent = linkedRecaps[0] || linkedDuringUpdates[0];
+                if (linkedContent) {
+                    showStoryDetail(linkedContent.index);
+                    return;
+                }
                 const target = document.getElementById(event.recap ? 'ed-recap-section' : (event.highlights || event.key_highlights ? 'ed-highlights-section' : 'ed-body-section'));
                 if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
@@ -1286,6 +1312,24 @@ function renderEvents() {
     container.appendChild(grid);
 }
 
+async function defLoadEventCoverage(path, stage) {
+    try {
+        const response = await fetch(path, { cache: 'no-store' });
+        if (!response.ok) throw new Error(path + ' returned ' + response.status);
+        const data = await response.json();
+        const articles = Array.isArray(data.articles) ? data.articles : [];
+        return articles.map(article => Object.assign({}, article, {
+            event_content_stage: stage,
+            is_event_coverage: true,
+            content_format: 'Trade Show Coverage',
+            related_event_titles: article.related_event_title ? [{ title: article.related_event_title }] : (article.related_event_titles || [])
+        }));
+    } catch (error) {
+        console.warn('Optional trade-show coverage could not be loaded:', path, error);
+        return [];
+    }
+}
+
 async function loadCloudData() {
     const storiesContainer = document.getElementById('stories-list');
     const eventsContainer = document.getElementById('events-list');
@@ -1295,9 +1339,15 @@ async function loadCloudData() {
         if (!response.ok) throw new Error('Could not load stories data');
         const data = await response.json();
         storiesData = Array.isArray(data.articles) ? data.articles : [];
+        const coverageSets = await Promise.all([
+            defLoadEventCoverage('/data/event-previews.json', 'Pre-show Preview'),
+            defLoadEventCoverage('/data/event-live-updates.json', 'During-show Update'),
+            defLoadEventCoverage('/data/event-recaps.json', 'Post-show Recap')
+        ]);
+        storiesData = storiesData.concat(...coverageSets);
         renderStories();
     } catch (error) {
-        console.error('Stories data could not be loaded.');
+        console.error('Stories data could not be loaded:', error);
         defShowMessage(storiesContainer, 'Stories could not be loaded right now. Please try again later.');
     }
 
@@ -1308,7 +1358,7 @@ async function loadCloudData() {
         eventsData = defNormalizeEventsPayload(data);
         renderEvents();
     } catch (error) {
-        console.error('Events data could not be loaded.');
+        console.error('Events data could not be loaded:', error);
         defShowMessage(eventsContainer, 'Events could not be loaded right now. Please try again later.');
     }
 }

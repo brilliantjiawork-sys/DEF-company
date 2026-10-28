@@ -74,16 +74,16 @@ a { text-decoration: none; color: inherit; cursor: pointer; }
 /* --- 核心：Social Media (Kone 风格) --- */
 .social-wrapper { display: flex; flex-direction: column; gap: 30px; }
 .social-main { display: flex; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; height: 380px;}
-.social-main-img { width: 50%; background: #eee; position: relative;}
-.social-main-img img { width: 100%; height: 100%; object-fit: cover; }
+.social-main-img { width: 50%; min-width: 0; background: #eee; position: relative; overflow: hidden;}
+.social-main-img > img { display: block; position: absolute; inset: 0; width: 100% !important; height: 100% !important; max-width: none !important; object-fit: cover; object-position: center; }
 .social-main-text { width: 50%; padding: 40px; background: var(--bg); display: flex; flex-direction: column; justify-content: center;}
 .social-main-text h3 { font-size: 28px; margin: 0 0 12px; }
 .social-main-text p { font-size: 16px; color: var(--gray); margin-bottom: 24px; line-height: 1.6;}
 
 .social-sub { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
 .social-card { border: 1px solid var(--line); border-radius: 4px; overflow: hidden; display: flex; flex-direction: column; height: 100%; }
-.social-card-img { height: 240px; background: #eee; position: relative;}
-.social-card-img img { width: 100%; height: 100%; object-fit: cover; }
+.social-card-img { width: 100%; height: auto; aspect-ratio: 16 / 9; flex: 0 0 auto; background: #eee; position: relative; overflow: hidden;}
+.social-card-img > img { display: block; position: absolute; inset: 0; width: 100% !important; height: 100% !important; max-width: none !important; object-fit: cover; object-position: center; }
 .social-card-text { padding: 24px; flex: 1; display: flex; flex-direction: column; }
 .social-card-text h4 { font-size: 22px; margin: 0 0 10px; }
 .social-card-text p { font-size: 15px; color: var(--gray); margin-bottom: 20px; flex: 1;}
@@ -157,6 +157,22 @@ a { text-decoration: none; color: inherit; cursor: pointer; }
 .social-disclaimer { margin-top: 24px; padding: 16px 18px; border-top: 1px solid var(--line); color: var(--gray); font-size: 13px; line-height: 1.7; }
 .social-disclaimer strong { color: #334155; }
 .social-disclaimer a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+
+
+/* Media Contacts — CMS-managed fictional press contacts */
+.media-intro { margin: -8px 0 24px; color: var(--gray); font-size: 16px; line-height: 1.7; max-width: 760px; }
+.media-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.media-card { min-width: 0; border: 1px solid var(--line); border-radius: 4px; overflow: hidden; background: #fff; padding: 18px; }
+.media-card-img-container { width: 100%; aspect-ratio: 4 / 3; overflow: hidden; border-radius: 3px; background: #f1f3f5; }
+.media-card-img-container img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+.media-card h3 { margin: 16px 0 6px; font-size: 20px; font-weight: 600; }
+.media-card-details { display: flex; flex-direction: column; gap: 6px; margin: 0; color: var(--gray); font-size: 14px; }
+.media-contact-title { color: var(--gray); }
+.media-contact-email { color: var(--dark); text-decoration: underline; text-underline-offset: 3px; overflow-wrap: anywhere; }
+.media-disclaimer { margin-top: 24px; padding: 16px 18px; border-top: 1px solid var(--line); color: var(--gray); font-size: 13px; line-height: 1.7; }
+.media-disclaimer strong { color: #334155; }
+.media-disclaimer a { color: inherit; text-decoration: underline; text-underline-offset: 3px; }
+@media (max-width: 800px) { .media-grid { grid-template-columns: 1fr; } .social-main { height: auto; flex-direction: column; } .social-main-img, .social-main-text { width: 100%; box-sizing: border-box; } .social-main-img { aspect-ratio: 16 / 9; height: auto; min-height: 0; } .social-main-text { padding: 24px; } }
 
 /* Events fields supported by the CMS */
 .events-section-title { font-size: 24px; font-weight: 400; margin: 30px 0 18px; padding-bottom: 10px; border-bottom: 2px solid var(--yellow); }

@@ -88,7 +88,8 @@
     const sidebarLabels = {
       '#nav-stories': newsroom.sidebar_stories || 'Stories',
       '#nav-events': newsroom.sidebar_events || 'Trade Shows',
-      '#nav-social': newsroom.sidebar_social || 'Social Media'
+      '#nav-social': newsroom.sidebar_social || 'Social Media',
+      '#nav-media': newsroom.sidebar_media || 'Media'
     };
     Object.entries(sidebarLabels).forEach(([selector, value]) => setText(selector, value));
 
@@ -119,6 +120,8 @@
     const eventVisit = document.getElementById('ed-url');
     if (eventVisit && newsroom.events_visit_link) eventVisit.textContent = safeText(newsroom.events_visit_link, 100);
     setText('#view-social > .nr-title', newsroom.social_title);
+    setText('#view-media > .nr-title', newsroom.media_title || 'Media Contacts');
+    setText('#view-media .media-intro', newsroom.media_intro);
 
     setText('#contact .form-header h2', contact.title);
     setText('#contact .form-header p', contact.description);
@@ -164,6 +167,7 @@
     });
 
     renderNotice(document.querySelector('.social-disclaimer'), newsroom.social_disclaimer_lead, newsroom.social_disclaimer_text, newsroom.image_source_label, newsroom.image_source_url);
+    renderNotice(document.querySelector('.media-disclaimer'), newsroom.media_disclaimer_lead, newsroom.media_disclaimer_text, newsroom.image_source_label, newsroom.image_source_url);
   }
 
   function setTextFrom(element, value) {
@@ -240,16 +244,83 @@
     wrapper.replaceChildren(fragment);
   }
 
+
+  function renderMediaContacts(data) {
+    const grid = document.querySelector('#view-media .media-grid');
+    if (!grid) return;
+    const contacts = Array.isArray(data?.contacts) ? data.contacts.filter(item => item && item.active !== false) : [];
+    const fragment = document.createDocumentFragment();
+    contacts.forEach((contact) => {
+      const card = el('article', 'media-card');
+      const imageWrap = el('div', 'media-card-img-container');
+      const image = el('img');
+      setImage(image, contact.portrait, contact.portrait_alt || contact.name || 'Media contact portrait');
+      image.loading = 'lazy';
+      image.decoding = 'async';
+      image.onerror = () => { image.onerror = null; image.removeAttribute('src'); imageWrap.classList.add('media-card-no-image'); };
+      imageWrap.appendChild(image);
+      card.appendChild(imageWrap);
+      card.appendChild(el('h3', '', contact.name || 'Media contact'));
+      const details = el('p', 'media-card-details');
+      if (contact.title) details.appendChild(el('span', 'media-contact-title', contact.title));
+      if (contact.email && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(safeText(contact.email, 250))) {
+        const email = el('a', 'media-contact-email', safeText(contact.email, 250));
+        email.href = 'mailto:' + safeText(contact.email, 250);
+        details.appendChild(email);
+      }
+      card.appendChild(details);
+      fragment.appendChild(card);
+    });
+    if (!contacts.length) fragment.appendChild(el('p', 'content-status-message', 'Media contacts will be published here soon.'));
+    grid.replaceChildren(fragment);
+  }
+
+  function mergeSplitSiteContent(results) {
+    const legacy = results[0].status === 'fulfilled' ? results[0].value : {};
+    const valueAt = (index) => results[index].status === 'fulfilled' && results[index].value && typeof results[index].value === 'object' ? results[index].value : null;
+    const merged = {
+      brand: Object.assign({}, legacy.brand || {}),
+      navigation: Object.assign({}, legacy.navigation || {}),
+      home: Object.assign({}, legacy.home || {}),
+      newsroom: Object.assign({}, legacy.newsroom || {}),
+      contact: Object.assign({}, legacy.contact || {}),
+      cookie: Object.assign({}, legacy.cookie || {})
+    };
+    const brand = valueAt(1);
+    if (brand) {
+      Object.assign(merged.brand, { page_title: brand.page_title, name: brand.name, tagline: brand.tagline, logo: brand.logo, logo_alt: brand.logo_alt });
+      Object.assign(merged.navigation, { home: brand.nav_home, newsroom: brand.nav_newsroom, contact_sales: brand.nav_contact_sales });
+    }
+    const home = valueAt(2); if (home) merged.home = home;
+    const newsroomKeys = [valueAt(3), valueAt(4), valueAt(5), valueAt(6)].filter(Boolean);
+    newsroomKeys.forEach(section => Object.assign(merged.newsroom, section));
+    const contact = valueAt(7); if (contact) merged.contact = contact;
+    const cookie = valueAt(8); if (cookie) merged.cookie = cookie;
+    return merged;
+  }
+
   document.addEventListener('DOMContentLoaded', async () => {
     watchEventSectionHeadings();
-    // Load each file independently so a missing optional file does not block all CMS-managed content.
+    // The CMS now edits short, separate files. The old combined file remains a fallback during rollout.
     const results = await Promise.allSettled([
       readJson('/data/site-content.json'),
-      readJson('/data/social-media.json')
+      readJson('/data/site-brand.json'),
+      readJson('/data/home-content.json'),
+      readJson('/data/newsroom-stories.json'),
+      readJson('/data/newsroom-trade-shows.json'),
+      readJson('/data/newsroom-social-media.json'),
+      readJson('/data/newsroom-media.json'),
+      readJson('/data/contact-content.json'),
+      readJson('/data/cookie-content.json'),
+      readJson('/data/social-media.json'),
+      readJson('/data/media-contacts.json')
     ]);
-    if (results[0].status === 'fulfilled') applySiteContent(results[0].value);
-    else console.error('Site content could not be loaded:', results[0].reason);
-    if (results[1].status === 'fulfilled') renderSocialMedia(results[1].value);
-    else console.error('Social media content could not be loaded:', results[1].reason);
+    const splitContent = mergeSplitSiteContent(results);
+    if (results.slice(1, 9).some(result => result.status === 'fulfilled') || results[0].status === 'fulfilled') applySiteContent(splitContent);
+    else console.error('Neither split site content nor the legacy site-content.json could be loaded.');
+    if (results[9].status === 'fulfilled') renderSocialMedia(results[9].value);
+    else console.error('Social media content could not be loaded:', results[9].reason);
+    if (results[10].status === 'fulfilled') renderMediaContacts(results[10].value);
+    else console.error('Media contacts could not be loaded:', results[10].reason);
   });
 })();
