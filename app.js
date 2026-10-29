@@ -520,8 +520,6 @@ function defRenderStoriesFilters() {
 
 function defMakeRecommendationCard(content, index, type, badgeText) {
     const isStory = type === 'story';
-    const eventStatus = isStory ? '' : defGetEventStatus(content);
-    const isUpcomingEvent = !isStory && eventStatus === 'upcoming';
     const card = defElement('article', 'recommendation-card ' + (isStory ? 'recommendation-card-story' : 'recommendation-card-related-event'));
     card.tabIndex = 0;
     card.setAttribute('role', 'button');
@@ -548,51 +546,58 @@ function defMakeRecommendationCard(content, index, type, badgeText) {
         const summary = defSafeText(content.summary || content.excerpt || '', 360);
         if (summary) body.appendChild(defElement('p', 'recommendation-card-summary', summary));
     } else {
-        // Related events are intentionally lighter than primary Upcoming Show cards:
-        // no generic long description, no repeated topic chips, and no sales-meeting CTA.
-        const badge = badgeText || (isUpcomingEvent ? 'Upcoming' : 'Past');
-        const statusPill = defElement('span', 'recommendation-card-kicker ' + (isUpcomingEvent ? 'is-upcoming' : 'is-past'), badge);
-        body.appendChild(statusPill);
+        // Related-show cards stay concise and scannable: name, booth, date/location, then details.
+        const eventTitle = defSafeText(content.title, 300) || 'Untitled trade show';
+        body.appendChild(defElement('h4', 'recommendation-card-title', eventTitle));
 
         const booth = defSafeText(content.booth || content.booth_number || content.boothNumber || '', 100);
         if (booth) {
-            const boothLine = defElement('div', 'recommendation-card-booth', 'Booth ' + booth);
-            body.appendChild(boothLine);
+            const boothText = /^booth\\b/i.test(booth) ? booth : 'Booth ' + booth;
+            body.appendChild(defElement('div', 'recommendation-card-booth', boothText));
         }
-
 
         const dates = defGetEventDates(content);
         const dateLabel = defFormatEventDate(content, dates);
         const location = defGetEventLocation(content);
         const metadata = defElement('div', 'recommendation-card-event-meta');
-        if (dateLabel) {
-            const date = defElement('div', 'recommendation-card-event-meta-item');
-            date.appendChild(defElement('span', 'recommendation-card-meta-label', 'Date'));
-            date.appendChild(defElement('span', 'recommendation-card-meta-value', dateLabel));
-            metadata.appendChild(date);
-        }
-        if (location) {
-            const place = defElement('div', 'recommendation-card-event-meta-item');
-            place.appendChild(defElement('span', 'recommendation-card-meta-label', 'Location'));
-            place.appendChild(defElement('span', 'recommendation-card-meta-value', location));
-            metadata.appendChild(place);
-        }
-        if (metadata.childElementCount) body.appendChild(metadata);
-        body.appendChild(defElement('h4', 'recommendation-card-title', defSafeText(content.title, 300) || 'Untitled trade show'));
-        // Keep this preview intentionally concise: status, booth, date/location, event name, then detail CTA.
-        // The long description/theme belongs on the full event detail view, not this small recommendation card.
 
-        // Upcoming recommendations lead to the same detail view as the main Upcoming card.
-        if (isUpcomingEvent) {
-            const cta = defElement('button', 'recommendation-card-cta', 'View Show Details');
-            cta.type = 'button';
-            cta.addEventListener('click', event => {
-                event.preventDefault();
-                event.stopPropagation();
-                showEventDetail(index);
-            });
-            body.appendChild(cta);
-        }
+        const makeMetaIcon = kind => {
+            const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+            svg.setAttribute('viewBox', '0 0 24 24');
+            svg.setAttribute('aria-hidden', 'true');
+            svg.setAttribute('focusable', 'false');
+            svg.setAttribute('class', 'recommendation-card-meta-icon');
+            const path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+            path.setAttribute('fill', 'none');
+            path.setAttribute('stroke', 'currentColor');
+            path.setAttribute('stroke-width', '1.7');
+            path.setAttribute('stroke-linecap', 'round');
+            path.setAttribute('stroke-linejoin', 'round');
+            path.setAttribute('d', kind === 'date'
+                ? 'M8 2v4M16 2v4M3 9h18M5 4h14a2 2 0 0 1 2 2v13a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2Z'
+                : 'M20 10c0 5-8 12-8 12S4 15 4 10a8 8 0 1 1 16 0ZM12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z');
+            svg.appendChild(path);
+            return svg;
+        };
+        const appendMeta = (kind, value) => {
+            if (!value) return;
+            const row = defElement('div', 'recommendation-card-event-meta-item');
+            row.appendChild(makeMetaIcon(kind));
+            row.appendChild(defElement('span', 'recommendation-card-meta-value', value));
+            metadata.appendChild(row);
+        };
+        appendMeta('date', dateLabel);
+        appendMeta('location', location);
+        if (metadata.childElementCount) body.appendChild(metadata);
+
+        const cta = defElement('button', 'recommendation-card-cta', 'Explore Trade Show Details');
+        cta.type = 'button';
+        cta.addEventListener('click', event => {
+            event.preventDefault();
+            event.stopPropagation();
+            showEventDetail(index);
+        });
+        body.appendChild(cta);
     }
 
     card.append(imageWrap, body);
