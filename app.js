@@ -520,10 +520,12 @@ function defRenderStoriesFilters() {
 
 function defMakeRecommendationCard(content, index, type, badgeText) {
     const isStory = type === 'story';
+    const eventStatus = isStory ? '' : defGetEventStatus(content);
+    const isUpcomingEvent = !isStory && eventStatus === 'upcoming';
     const card = defElement('article', 'recommendation-card ' + (isStory ? 'recommendation-card-story' : 'recommendation-card-related-event'));
     card.tabIndex = 0;
     card.setAttribute('role', 'button');
-    card.setAttribute('aria-label', (isStory ? 'Read story: ' : 'View trade show: ') + defSafeText(content.title, 180));
+    card.setAttribute('aria-label', (isStory ? 'Read story: ' : 'View trade show details: ') + defSafeText(content.title, 180));
 
     const imageWrap = defElement('div', 'recommendation-card-image');
     const image = defElement('img');
@@ -537,28 +539,60 @@ function defMakeRecommendationCard(content, index, type, badgeText) {
     imageWrap.appendChild(image);
 
     const body = defElement('div', 'recommendation-card-body');
-    const eventStatus = isStory ? '' : defGetEventStatus(content);
-    const badge = badgeText || (isStory ? defGetStoryCategory(content) : (eventStatus === 'past' ? 'Past' : 'Upcoming'));
-    if (badge) body.appendChild(defElement('span', 'recommendation-card-kicker', badge));
-    const dateLabel = isStory ? fmtDate(content.date || content.published_date) : defFormatEventDate(content, defGetEventDates(content));
-    if (dateLabel) body.appendChild(defElement('span', 'recommendation-card-date', dateLabel));
-    body.appendChild(defElement('h4', 'recommendation-card-title', defSafeText(content.title, 300) || (isStory ? 'Untitled story' : 'Untitled trade show')));
+    if (isStory) {
+        const badge = badgeText || defGetStoryCategory(content);
+        if (badge) body.appendChild(defElement('span', 'recommendation-card-kicker', badge));
+        const dateLabel = fmtDate(content.date || content.published_date);
+        if (dateLabel) body.appendChild(defElement('span', 'recommendation-card-date', dateLabel));
+        body.appendChild(defElement('h4', 'recommendation-card-title', defSafeText(content.title, 300) || 'Untitled story'));
+        const summary = defSafeText(content.summary || content.excerpt || '', 360);
+        if (summary) body.appendChild(defElement('p', 'recommendation-card-summary', summary));
+    } else {
+        // Related events are intentionally lighter than primary Upcoming Show cards:
+        // no generic long description, no repeated topic chips, and no sales-meeting CTA.
+        const badge = badgeText || (isUpcomingEvent ? 'Upcoming' : 'Past');
+        const statusPill = defElement('span', 'recommendation-card-kicker ' + (isUpcomingEvent ? 'is-upcoming' : 'is-past'), badge);
+        body.appendChild(statusPill);
 
-    const summary = isStory
-        ? defSafeText(content.summary || content.excerpt || '', 360)
-        : defGetEventSummary(content);
-    if (summary) body.appendChild(defElement('p', 'recommendation-card-summary', summary));
-    // Topic tags stay on detail pages; keep recommendation cards visually clean.
+        const booth = defSafeText(content.booth || content.booth_number || content.boothNumber || '', 100);
+        if (booth) {
+            const boothLine = defElement('div', 'recommendation-card-booth', 'Booth ' + booth);
+            body.appendChild(boothLine);
+        }
 
-    if (!isStory && eventStatus === 'upcoming' && content.cta_enabled !== false) {
-        const ctaLabel = defSafeText(content.cta_label || 'Book a Meeting at This Show', 200);
-        const cta = defElement('button', 'btn-y recommendation-card-cta', ctaLabel);
-        cta.type = 'button';
-        cta.addEventListener('click', event => {
-            event.stopPropagation();
-            openContact('contact_sales', defSafeText(content.title || '', 300), ctaLabel, 'Trade Shows', 'Newsroom');
-        });
-        body.appendChild(cta);
+
+        const dates = defGetEventDates(content);
+        const dateLabel = defFormatEventDate(content, dates);
+        const location = defGetEventLocation(content);
+        const metadata = defElement('div', 'recommendation-card-event-meta');
+        if (dateLabel) {
+            const date = defElement('div', 'recommendation-card-event-meta-item');
+            date.appendChild(defElement('span', 'recommendation-card-meta-label', 'Date'));
+            date.appendChild(defElement('span', 'recommendation-card-meta-value', dateLabel));
+            metadata.appendChild(date);
+        }
+        if (location) {
+            const place = defElement('div', 'recommendation-card-event-meta-item');
+            place.appendChild(defElement('span', 'recommendation-card-meta-label', 'Location'));
+            place.appendChild(defElement('span', 'recommendation-card-meta-value', location));
+            metadata.appendChild(place);
+        }
+        if (metadata.childElementCount) body.appendChild(metadata);
+        body.appendChild(defElement('h4', 'recommendation-card-title', defSafeText(content.title, 300) || 'Untitled trade show'));
+        // Keep this preview intentionally concise: status, booth, date/location, event name, then detail CTA.
+        // The long description/theme belongs on the full event detail view, not this small recommendation card.
+
+        // Upcoming recommendations lead to the same detail view as the main Upcoming card.
+        if (isUpcomingEvent) {
+            const cta = defElement('button', 'recommendation-card-cta', 'View Show Details');
+            cta.type = 'button';
+            cta.addEventListener('click', event => {
+                event.preventDefault();
+                event.stopPropagation();
+                showEventDetail(index);
+            });
+            body.appendChild(cta);
+        }
     }
 
     card.append(imageWrap, body);
@@ -569,11 +603,12 @@ function defMakeRecommendationCard(content, index, type, badgeText) {
     });
     return card;
 }
-
 function defRenderRecommendationSection(sectionId, gridId, items, type, heading, emptyHide = true) {
     const section = document.getElementById(sectionId);
     const grid = document.getElementById(gridId);
     if (!section || !grid) return;
+    grid.classList.toggle('recommendation-grid-related-events', type === 'event');
+    grid.classList.toggle('recommendation-grid-related-stories', type === 'story');
     grid.replaceChildren();
     (items || []).forEach(item => {
         grid.appendChild(defMakeRecommendationCard(item.content, item.index, type, item.badge || ''));
