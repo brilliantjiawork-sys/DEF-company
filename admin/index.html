@@ -360,34 +360,117 @@
           !loading && !error && !filtered.length ? h('p', { style: { padding: 18, border: '1px solid #e4e9ed', borderRadius: 8, color: '#657381' } }, 'No matching assets. Try another search term or filter.') : null
         );
       };
-      CMS.registerCustomPage({ id: 'media-library', label: 'Library', icon: 'perm_media', component: MediaLibrary });
-      CMS.registerCustomPage({ id: 'content-navigator', label: 'Content Management', icon: 'dashboard', component: ContentManagement });
+      CMS.registerCustomPage({ id: 'media-library', label: 'Library', icon: 'library_books', component: MediaLibrary });
+      CMS.registerCustomPage({ id: 'content-navigator', label: 'Content Management', icon: 'dashboard_customize', component: ContentManagement });
 
-      // Keep the underlying collection available to dashboard links, but hide the duplicate
-      // native “All Resources / Contents” navigation from the everyday editor UI.
-      // Sveltia renders parts of its interface in Shadow DOM, so document.querySelectorAll()
-      // alone does not reach the navigation elements. Walk open shadow roots as well.
+      // Reduce Sveltia's global page toolbar to the two custom entry points only.
+      // Previous versions relied on tooltip text or exact routes for native controls;
+      // several native icons have neither, so those selectors could not hide them.
+      // This version keeps the two named custom pages by route/label and hides every
+      // other compact icon control in the top-left toolbar area, including unlabeled icons.
       const normalized = (value) => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
-      const resourceRowPattern = /^(?:全部资源|all resources|全局资源|global resources|内部内容资源（系统）|内部内容资源 \(系统\))(?:\s*\d+)?$/i;
-      const nativeContentsLabels = new Set([
-        'contents', 'content', 'collections', 'collection', 'entries', 'entry',
-        'all resources', '全部资源', 'global resources', '全局资源', '内容集合', '内容列表', '集合', '内容'
-      ]);
-      const validationLabels = new Set(['validation', 'validate', '验证']);
-      const hiddenOnce = new WeakSet();
+      const primaryRoutes = new Set(['#/pages/media-library', '#/pages/content-navigator']);
+      const primaryLabels = new Set(['library', 'content management']);
+      const primaryIconTokens = new Set(['library_books', 'dashboard_customize']);
+      const resourceRowPattern = /^(?:all resources|global resources|internal content resources\s*\(system\)|全部资源|全局资源|内部内容资源（系统）|内部内容资源 \(系统\))(?:\s*\d+)?$/i;
+      const navItemSelector = 'a, button, [role="button"], [role="link"], [role="menuitem"], [role="treeitem"], li';
       const observedRoots = new WeakSet();
 
+      const normalizeRoute = (href) => {
+        const raw = String(href || '').trim().toLowerCase();
+        const marker = raw.indexOf('#/');
+        return marker >= 0 ? raw.slice(marker).split(/[?&]/)[0] : raw.split(/[?&]/)[0];
+      };
+
+      const nodeLabels = (node) => {
+        if (!node || node.nodeType !== 1) return [];
+        return [
+          node.getAttribute('aria-label'), node.getAttribute('title'),
+          node.getAttribute('data-tooltip'), node.getAttribute('data-testid'),
+          node.getAttribute('aria-description'), node.getAttribute('data-label'),
+          node.getAttribute('data-page'), node.innerText || node.textContent
+        ].map(normalized).filter(Boolean);
+      };
+
+      const routeOf = (node) => normalizeRoute(
+        node && (node.getAttribute('href') || node.getAttribute('data-href') || node.getAttribute('data-route') || node.getAttribute('data-page')) || ''
+      );
+
+      // Only evaluate the actionable item itself (or its own compact list-item wrapper).
+      // Never let a shared toolbar/nav parent preserve every sibling icon just because
+      // that parent also contains Library or Content Management.
+      const hasPrimaryIdentity = (node) => {
+        if (!node || node.nodeType !== 1) return false;
+        if (primaryRoutes.has(routeOf(node))) return true;
+        const labels = nodeLabels(node);
+        if (labels.some(label => primaryLabels.has(label) || primaryIconTokens.has(label) || [...primaryIconTokens].some(token => label.split(/[\s·|]+/).includes(token)))) return true;
+        const iconNode = node.querySelector ? node.querySelector('.material-symbols-rounded, .material-symbols-outlined, [class*="material-symbols"]') : null;
+        const iconToken = normalized(iconNode && iconNode.textContent);
+        return primaryIconTokens.has(iconToken);
+      };
+
+      const isPrimaryItem = (node) => {
+        if (!node || node.nodeType !== 1) return false;
+        if (hasPrimaryIdentity(node)) return true;
+        const tag = (node.tagName || '').toLowerCase();
+        const isItemWrapper = tag === 'li' || /^(listitem|menuitem|treeitem)$/.test(node.getAttribute('role') || '');
+        if (isItemWrapper) {
+          const children = node.querySelectorAll ? node.querySelectorAll('a, button, [role="button"], [role="link"], [role="menuitem"], [role="treeitem"]') : [];
+          if (children.length === 1) return hasPrimaryIdentity(children[0]);
+        }
+        return false;
+      };
+
+      const getRect = (node) => {
+        try { return node.getBoundingClientRect(); } catch (_) { return null; }
+      };
+
+      const isTopLeftToolbarIcon = (node) => {
+        const rect = getRect(node);
+        if (!rect || rect.width <= 0 || rect.height <= 0) return false;
+        // The icon row in this site sits before the search input; the input itself is not a nav item.
+        return rect.top >= -4 && rect.top <= 62 && rect.bottom <= 72 &&
+          rect.left >= -4 && rect.left <= 470 && rect.width <= 92 && rect.height <= 72;
+      };
+
+      const toolbarItemContainer = (control) => {
+        // Choose the outermost compact wrapper around this one icon. Prefer the wrapper
+        // over the button itself so hiding an item also removes its empty flex/grid slot.
+        // Stop naturally before the shared toolbar because its width is much larger.
+        let current = control;
+        let candidate = control;
+        const interactiveSelector = 'a, button, [role="button"], [role="link"], [role="menuitem"], [role="treeitem"]';
+        for (let depth = 0; current && depth < 4; depth += 1) {
+          const tag = (current.tagName || '').toLowerCase();
+          const role = current.getAttribute && current.getAttribute('role') || '';
+          const rect = getRect(current);
+          const compact = rect && rect.width > 0 && rect.width <= 100 && rect.height > 0 && rect.height <= 76 && rect.top <= 62;
+          if (compact) {
+            const descendants = current.querySelectorAll ? current.querySelectorAll(interactiveSelector) : [];
+            const isItemWrapper = tag === 'li' || /^(listitem|menuitem|treeitem)$/.test(role);
+            if (current === control || isItemWrapper || descendants.length === 1) candidate = current;
+          }
+          current = current.parentElement;
+        }
+        return candidate;
+      };
+
       const hideElement = (element) => {
-        if (!element || hiddenOnce.has(element)) return;
-        hiddenOnce.add(element);
+        if (!element || element.getAttribute('data-def-hidden-native-nav') === 'true') return;
         element.style.setProperty('display', 'none', 'important');
         element.setAttribute('aria-hidden', 'true');
         element.setAttribute('data-def-hidden-native-nav', 'true');
       };
 
+      const restoreElement = (element) => {
+        if (!element || element.getAttribute('data-def-hidden-native-nav') !== 'true') return;
+        element.style.removeProperty('display');
+        element.removeAttribute('aria-hidden');
+        element.removeAttribute('data-def-hidden-native-nav');
+      };
+
       const hideResourceRow = (element) => {
         let target = element;
-        // Prefer hiding the row/link/button, not only the text label.
         if (typeof element.closest === 'function') {
           target = element.closest('a, button, [role="button"], [role="treeitem"], [role="link"], [role="listitem"], li') || element;
         }
@@ -401,71 +484,26 @@
         hideElement(target);
       };
 
-      const primaryNavigationRoutes = new Set([
-        '#/pages/media-library',
-        '#/pages/content-navigator'
-      ]);
-      const normalizeRoute = (href) => {
-        const raw = String(href || '').trim().toLowerCase();
-        const marker = raw.indexOf('#/');
-        return marker >= 0 ? raw.slice(marker) : raw;
-      };
-      const navItemSelector = 'a, button, [role="button"], [role="treeitem"], [role="link"], [role="menuitem"], li';
-      // Sveltia's built-in page buttons live in its global toolbar, which is not
-      // guaranteed to use a <nav> element. Detect common toolbar/sidebar containers too.
-      const globalChromeSelector = 'nav, header, aside, [role="navigation"], [role="toolbar"], [role="menubar"], [data-testid*="toolbar" i], [class*="toolbar" i], [class*="sidebar" i], [class*="navigation" i]';
-      const navLike = (element) => Boolean(element && element.closest && element.closest(globalChromeSelector));
-      const nativeToolbarLabels = new Set([
-        'contents', 'content library', 'content', 'collections', 'collection',
-        'assets', 'asset library', 'media library', 'editorial workflow', 'workflow',
-        'validation', 'validate', '验证', 'all resources', '全部资源', 'global resources', '全局资源'
-      ]);
-      const isCompactIconControl = (element) => {
-        if (!element) return false;
-        const label = normalized(element.innerText || element.textContent);
-        if (nativeToolbarLabels.has(label)) return true;
-        const rect = typeof element.getBoundingClientRect === 'function' ? element.getBoundingClientRect() : null;
-        return Boolean(rect && rect.width > 0 && rect.height > 0 && rect.width <= 100 && rect.height <= 100 && !label);
-      };
-
       const inspectElement = (element) => {
         if (!element || element.nodeType !== 1) return;
-        const attrs = [
-          element.getAttribute('aria-label'), element.getAttribute('title'),
-          element.getAttribute('data-tooltip'), element.getAttribute('data-testid'),
-          element.getAttribute('aria-description')
-        ].map(normalized);
-
-        // Only two custom pages are registered below. Hide Sveltia's built-in
-        // toolbar buttons (Content Library / Assets / Workflow) without requiring
-        // the toolbar to be marked up as <nav>; the previous nav-only guard failed
-        // on Sveltia's global toolbar and left all eight icons visible.
-        const navCandidate = element.closest ? element.closest(navItemSelector) : null;
-        if (navCandidate) {
-          const route = normalizeRoute(navCandidate.getAttribute('href') || element.getAttribute('href'));
-          const navLabels = [
-            navCandidate.getAttribute('aria-label'), navCandidate.getAttribute('title'),
-            navCandidate.getAttribute('data-tooltip'), navCandidate.getAttribute('data-testid'),
-            navCandidate.innerText || navCandidate.textContent, ...attrs
-          ].map(normalized).filter(Boolean);
-          const primaryLabel = navLabels.some(label => label === 'library' || label === 'content management');
-          const builtInLabel = navLabels.some(label => nativeToolbarLabels.has(label) || nativeContentsLabels.has(label) || validationLabels.has(label));
-          const rootBuiltInRoute = route === '#/collections' || route === '#/assets' || route.startsWith('#/assets/') || route === '#/workflow' || route.startsWith('#/workflow/');
-          const isToolbarItem = navLike(navCandidate) || isCompactIconControl(navCandidate);
-          if (!primaryLabel && isToolbarItem && (builtInLabel || rootBuiltInRoute)) hideElement(navCandidate);
-          // Any old custom-page toolbar shortcut is now obsolete; the destination remains
-          // accessible from the expanded Content Management dashboard where applicable.
-          const oldCustomRoute = /^#\/pages\/(?:stories-manager|stories-published|trade-show-manager|trade-articles-published)(?:$|\/)/.test(route);
-          if (oldCustomRoute && isToolbarItem) hideElement(navCandidate);
+        const control = element.matches && element.matches(navItemSelector)
+          ? element
+          : (element.closest ? element.closest(navItemSelector) : null);
+        if (control) {
+          const target = toolbarItemContainer(control);
+          if (isPrimaryItem(control) || isPrimaryItem(target)) {
+            // Restore both the clickable control and its one-item wrapper. This also
+            // handles scan order where a wrapper is visited before its inner link.
+            restoreElement(control);
+            if (target !== control) restoreElement(target);
+          } else if (isTopLeftToolbarIcon(control)) {
+            hideElement(target);
+          }
         }
-
-        const tooltipMatch = attrs.some((label) => nativeToolbarLabels.has(label) || nativeContentsLabels.has(label) || validationLabels.has(label));
-        const targetItem = element.closest ? element.closest(navItemSelector) : null;
-        if (tooltipMatch && targetItem && (navLike(targetItem) || isCompactIconControl(targetItem))) hideElement(targetItem);
-
         const text = normalized(element.innerText || element.textContent);
         if (resourceRowPattern.test(text)) hideResourceRow(element);
       };
+
       const scanTree = (root) => {
         if (!root) return;
         if (root.nodeType === 1) inspectElement(root);
@@ -492,16 +530,27 @@
             if (mutation.type === 'attributes' && mutation.target) inspectElement(mutation.target);
           });
         });
-        observer.observe(root, { childList: true, subtree: true, attributes: true, attributeFilter: ['aria-label', 'title', 'data-tooltip', 'data-testid'] });
+        observer.observe(root, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          attributeFilter: ['aria-label', 'title', 'data-tooltip', 'data-testid', 'aria-description', 'data-label', 'data-page', 'href', 'data-href', 'data-route']
+        });
       };
 
+      // Version marker makes it possible to confirm this exact navigation script reached production.
+      document.documentElement.setAttribute('data-def-cms-nav-fix', 'two-primary-pages-v5');
       observeAndScanRoot(document);
-      // Sveltia may attach a shadow root after a host has been inserted.
-      const rootObserver = new MutationObserver(() => {
-        if (document.documentElement) observeAndScanRoot(document.documentElement);
-        scanTree(document);
+      const rootObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
+          if (node.nodeType === 1) {
+            inspectElement(node);
+            scanTree(node);
+            if (node.shadowRoot) observeAndScanRoot(node.shadowRoot);
+          }
+        }));
       });
-      rootObserver.observe(document.documentElement, { childList: true, subtree: true });
+      if (document.documentElement) rootObserver.observe(document.documentElement, { childList: true, subtree: true });
 
       if (!window.location.hash || /^#\/collections\/content-management\/?$/.test(window.location.hash)) window.location.hash = '#/pages/content-navigator';
     })();

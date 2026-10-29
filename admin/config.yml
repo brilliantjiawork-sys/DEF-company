@@ -2,6 +2,12 @@ backend:
   name: github
   repo: brilliantjiawork-sys/DEF-company
   branch: main
+# A Save operation creates/updates an unpublished draft. Only Publish merges it into main.
+publish_mode:
+  type: editorial_workflow
+  stages:
+    - draft
+  direct_publish: false
 media_folder: images
 public_folder: /images
 media_libraries:
@@ -22,6 +28,11 @@ collections:
   icon: folder_managed
   hide: false
   description: 系统内容存储集合。请从内容管理入口编辑。
+  publish_mode:
+    type: editorial_workflow
+    stages:
+      - draft
+    direct_publish: false
   files:
   - name: home_intro
     label: Brand Introduction（品牌介绍）
@@ -541,6 +552,7 @@ collections:
     type: editorial_workflow
     stages:
     - draft
+    direct_publish: false
   editor:
     preview: false
   fields:
@@ -634,6 +646,7 @@ collections:
     type: editorial_workflow
     stages:
     - draft
+    direct_publish: false
   editor:
     preview: false
   fields:
