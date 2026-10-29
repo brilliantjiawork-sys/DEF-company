@@ -51,7 +51,7 @@ a { text-decoration: none; color: inherit; cursor: pointer; }
 .list-info { flex: 1; }
 .list-info .date { font-size: 13px; color: var(--light); display: block; margin-bottom: 8px; font-weight: 500;}
 .list-info h4 { font-size: 22px; font-weight: 500; margin: 0 0 12px; }
-.kone-tag { background: #e6f4f9; color: #45b2d3; padding: 4px 10px; border-radius: 2px; font-size: 12px; font-weight: 600; margin-right: 8px; }
+.kone-tag { display: inline-flex; width: fit-content; max-width: 100%; align-items: baseline; background: transparent; color: #235394; border: 0; padding: 0; border-radius: 0; font-size: 12px; font-weight: 600; line-height: 1.5; margin-right: 8px; overflow-wrap: anywhere; }
 
 /* --- 核心：文章详情页大图不糊 --- */
 .detail-layout { display: flex; gap: 40px; }
