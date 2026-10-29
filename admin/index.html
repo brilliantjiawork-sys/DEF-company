@@ -685,13 +685,20 @@
       const findSavePublishMenuButton = () => queryAllDeep('button, [role="button"]').filter(element => {
         const rect = element.getBoundingClientRect();
         return uiElementIsVisible(element) &&
-          /^(?:more options|更多选项|显示更多选项)$/i.test(editorButtonLabel(element)) &&
+          /^(?:more options|更多选项|显示更多选项|显示编辑器选项)$/i.test(editorButtonLabel(element)) &&
           rect.top >= -2 && rect.top < 110 && rect.right > window.innerWidth * 0.55;
       }).sort((a, b) => {
         const ar = a.getBoundingClientRect();
         const br = b.getBoundingClientRect();
         return ar.top - br.top || br.right - ar.right;
       })[0] || null;
+      const findSharedToolbarContainer = (saveButton, menuButton) => {
+        let node = menuButton && menuButton.parentElement;
+        for (let depth = 0; node && depth < 8; depth += 1, node = node.parentElement) {
+          if (node.contains(saveButton)) return node;
+        }
+        return null;
+      };
 
       // Cache toolbar controls so typing in the editor does not repeatedly scan the whole DOM.
       let activeExplicitPublishButton = null;
@@ -720,7 +727,8 @@
 
         const saveButton = findEditorSaveButton();
         const menuButton = findSavePublishMenuButton();
-        if (!saveButton || !menuButton || !menuButton.parentElement || !menuButton.parentElement.contains(saveButton)) return;
+        const sharedToolbar = saveButton && menuButton ? findSharedToolbarContainer(saveButton, menuButton) : null;
+        if (!saveButton || !menuButton || !menuButton.parentElement || !sharedToolbar) return;
         const parent = menuButton.parentElement;
         let publishButton = null;
         if (!publishButton) {
