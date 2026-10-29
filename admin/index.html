@@ -468,6 +468,18 @@
         hideElement(target);
       };
 
+      const primaryNavigationRoutes = new Set([
+        '#/pages/media-library',
+        '#/pages/content-navigator'
+      ]);
+      const normalizeRoute = (href) => {
+        const raw = String(href || '').trim().toLowerCase();
+        const marker = raw.indexOf('#/');
+        return marker >= 0 ? raw.slice(marker) : raw;
+      };
+      const navItemSelector = 'a, button, [role="button"], [role="treeitem"], [role="link"], [role="menuitem"], li';
+      const navLike = (element) => Boolean(element && element.closest && element.closest('nav,[role="navigation"]'));
+
       const inspectElement = (element) => {
         if (!element || element.nodeType !== 1) return;
         const attrs = [
@@ -475,20 +487,47 @@
           element.getAttribute('data-tooltip'), element.getAttribute('data-testid'),
           element.getAttribute('aria-description')
         ].map(normalized);
-        const tooltipMatch = attrs.some((label) => nativeContentsLabels.has(label) || validationLabels.has(label));
-        if (tooltipMatch) hideElement(element);
 
-        // Hide only the exact native resource-list row. Do not hide the custom Content Workbench.
+        // Keep only the two deliberately designed primary destinations in the native
+        // Sveltia navigation. All collection shortcuts and utility pages remain available
+        // from the expanded Content Management page, so they should not become extra icons.
+        const navCandidate = element.closest ? element.closest(navItemSelector) : null;
+        if (navCandidate && navLike(navCandidate)) {
+          const route = normalizeRoute(navCandidate.getAttribute('href') || element.getAttribute('href'));
+          if (route && (route.startsWith('#/collections/') || route === '#/collections' || route.startsWith('#/workflow') || route.startsWith('#/pages/'))) {
+            if (!primaryNavigationRoutes.has(route)) hideElement(navCandidate);
+          } else {
+            const navLabels = [
+              navCandidate.getAttribute('aria-label'), navCandidate.getAttribute('title'),
+              navCandidate.getAttribute('data-tooltip'), navCandidate.innerText || navCandidate.textContent,
+              ...attrs
+            ].map(normalized).filter(Boolean);
+            const primaryLabel = navLabels.some((label) => label === 'library' || label === 'content management');
+            const knownExtraLabel = navLabels.some((label) =>
+              ['stories', 'stories · 已发布', 'trade show', 'trade show articles · 已发布',
+               'published stories', 'draft stories', 'published trade show articles',
+               'all resources', '全部资源', 'global resources', '全局资源',
+               'contents', 'content', 'collections', 'collection', 'entries', 'entry',
+               'validation', 'validate', '验证'].includes(label)
+            );
+            if (!primaryLabel && knownExtraLabel) hideElement(navCandidate);
+          }
+        }
+
+        const tooltipMatch = attrs.some((label) => nativeContentsLabels.has(label) || validationLabels.has(label));
+        if (tooltipMatch && navLike(element)) hideElement(element.closest(navItemSelector) || element);
+
         const text = normalized(element.innerText || element.textContent);
         if (resourceRowPattern.test(text)) hideResourceRow(element);
-        const href = normalized(element.getAttribute('href'));
-        const utilityPage = /^#\/(?:collections\/(?:stories|trade-show-articles)(?:$|\/)|workflow(?:$|\/)|pages\/(?:stories-manager|stories-published|trade-show-manager|trade-articles-published))/.test(href);
-        if (utilityPage && element.closest && element.closest('nav,[role=\"navigation\"]')) hideElement(element.closest('a,button,[role=\"treeitem\"],[role=\"link\"],li') || element);
 
-        // Some versions label the validation page/control separately.
-        if (attrs.some((label) => validationLabels.has(label))) hideElement(element);
+        // Hide old direct utility links even when the CMS renders absolute URLs such as
+        // /admin/#/pages/stories-published rather than a hash-only href.
+        const href = normalizeRoute(element.getAttribute('href'));
+        const utilityPage = /^#\/(?:collections(?:$|\/)|workflow(?:$|\/)|pages\/(?!media-library(?:$|\/)|content-navigator(?:$|\/)))/.test(href);
+        if (utilityPage && navLike(element)) hideElement(element.closest(navItemSelector) || element);
+
+        if (attrs.some((label) => validationLabels.has(label)) && navLike(element)) hideElement(element.closest(navItemSelector) || element);
       };
-
       const scanTree = (root) => {
         if (!root) return;
         if (root.nodeType === 1) inspectElement(root);
