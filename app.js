@@ -1113,7 +1113,7 @@ function showEventDetail(index) {
     if (cover) {
         const imageUrl = defGetImageUrl(event.cover || event.image, '');
         cover.src = imageUrl || '/images/event-1.jpg';
-        cover.alt = titleText;
+        cover.alt = defSafeText(event.cover_alt || titleText, 300);
         cover.hidden = !imageUrl;
         cover.onerror = () => { cover.onerror = null; cover.hidden = true; };
     }
