@@ -47,15 +47,18 @@
         ], true),
         group('Newsroom', [
           subgroup('Stories｜常规文章', [
-            link('已发布 Stories｜查看与编辑', '#/collections/content-management/entries/stories_content', '先显示已保存文章的标题、日期和分类；点击已有文章行继续编辑。'),
-            link('新增 Stories｜页面设置', '#/collections/content-management/entries/stories_page_settings', '只修改 Stories 页面标题、简介和详情页返回按钮。')
+            link('Stories 文章｜新增、查看与编辑', '#/collections/content-management/entries/stories_content', '在同一个文章列表中新增 Story，或打开已有文章继续编辑。'),
+            link('Stories 页面设置', '#/collections/content-management/entries/stories_page_settings', '只修改 Stories 页面标题、简介和详情页返回按钮。')
           ], true),
           subgroup('Trade Shows｜展会', [
-            link('已发布展会文章｜查看与编辑', '#/collections/content-management/entries/trade_show_articles', '先显示已有文章标题与阶段；点击原有文章行继续编辑。'),
             link('Upcoming Shows｜即将举行的展会', '#/collections/content-management/entries/upcoming_shows', '编辑展会名称、展位、日期、地点、主题、话题标签和预约 CTA。'),
+            link('Trade Show Articles｜新增、查看与编辑', '#/collections/content-management/entries/trade_show_articles', '同一个展会文章列表管理展前预热、展中动态和展后回顾；已有文章可继续编辑。'),
             link('Trade Shows 页面设置', '#/collections/content-management/entries/events_page_settings', '只修改展会页面标题、简介和顶部切换按钮文字。')
           ], true)
         ], true),
+        group('Media Library｜图片库', [
+          link('打开 Media Library', '#/pages/media-library', '按 Stories 选题/文章标题、展会名称或展会文章标题查找图片，并查看图片在官网内容中的使用位置。')
+        ]),
         group('Social Media', [
           link('Social Media 页面文案', '#/collections/content-management/entries/social_page', '编辑社交媒体页面标题、说明和图片来源信息。'),
           link('社交媒体渠道卡片', '#/collections/content-management/entries/social_media', '编辑 LinkedIn、YouTube、Facebook 等渠道的简介、图片、网址和按钮。')
@@ -71,6 +74,154 @@
       );
 
       CMS.registerCustomPage({ id: 'content-navigator', label: '内容管理', icon: 'account_tree', component: ContentManagement });
+
+      // Media Library: index the public repository's existing image files and connect them
+      // to saved CMS content without moving, renaming, or deleting any asset.
+      const MediaLibrary = () => {
+        const [items, setItems] = CMS.React.useState([]);
+        const [query, setQuery] = CMS.React.useState('');
+        const [section, setSection] = CMS.React.useState('all');
+        const [loading, setLoading] = CMS.React.useState(true);
+        const [error, setError] = CMS.React.useState('');
+        const repo = 'brilliantjiawork-sys/DEF-company';
+        const branch = 'main';
+        const dataPaths = [
+          ['data/database.json', 'stories'],
+          ['data/event-coverage.json', 'tradeArticles'],
+          ['data/events.json', 'shows'],
+          ['data/social-media.json', 'other'],
+          ['data/newsroom-social-media.json', 'other'],
+          ['data/media-contacts.json', 'other'],
+          ['data/site-content.json', 'other'],
+          ['data/home-intro.json', 'other'],
+          ['data/home-newsletter.json', 'other'],
+          ['data/stories-page-settings.json', 'other'],
+          ['data/trade-shows-page-settings.json', 'other']
+        ];
+        const normalizePath = (value) => String(value || '').replace(/^\.\//, '').replace(/^\//, '').replace(/^images\//, '');
+        const fileName = (value) => normalizePath(value).split('/').pop().toLowerCase();
+        const collectImageRefs = (value, fieldPath = '', out = []) => {
+          if (typeof value === 'string') {
+            const matches = value.match(/\/?(?:images\/)?[A-Za-z0-9_./-]+\.(?:png|jpe?g|webp|gif|svg|avif)(?:[?#][A-Za-z0-9_=&.-]*)?/gi) || [];
+            matches.forEach(match => out.push({ path: match, field: fieldPath }));
+          } else if (Array.isArray(value)) {
+            value.forEach((item, index) => collectImageRefs(item, fieldPath + '[' + index + ']', out));
+          } else if (value && typeof value === 'object') {
+            Object.entries(value).forEach(([key, item]) => collectImageRefs(item, fieldPath ? fieldPath + '.' + key : key, out));
+          }
+          return out;
+        };
+        const recordImageRefs = (record) => collectImageRefs(record);
+        const titleOf = (record, fallback) => String(record?.title || record?.name || record?.platform || record?.page_title || fallback || 'Untitled').trim();
+        CMS.React.useEffect(() => {
+          let cancelled = false;
+          const fetchJson = async (path) => {
+            const url = `https://raw.githubusercontent.com/${repo}/${branch}/${path}`;
+            const response = await fetch(url, { cache: 'no-store' });
+            if (!response.ok) return null;
+            try { return await response.json(); } catch (_) { return null; }
+          };
+          const walkImages = async (path) => {
+            const url = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
+            const response = await fetch(url, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
+            if (!response.ok) throw new Error(`GitHub 图片目录读取失败（${response.status}）。请稍后重试。`);
+            const entries = await response.json();
+            const nested = await Promise.all((Array.isArray(entries) ? entries : []).map(async entry => {
+              if (entry.type === 'dir') return walkImages(entry.path);
+              if (entry.type === 'file' && /\.(png|jpe?g|webp|gif|svg|avif)$/i.test(entry.name)) return [{ name: entry.name, path: entry.path, url: entry.download_url, size: entry.size || 0 }];
+              return [];
+            }));
+            return nested.flat();
+          };
+          const load = async () => {
+            try {
+              const [images, loadedData] = await Promise.all([
+                walkImages('images'),
+                Promise.all(dataPaths.map(async ([path, kind]) => ({ path, kind, data: await fetchJson(path) })))
+              ]);
+              const usages = [];
+              loadedData.forEach(({ path, kind, data }) => {
+                if (!data) return;
+                let records = [];
+                if (kind === 'stories') records = (Array.isArray(data.articles) ? data.articles : []).map(record => ({ record, kind, source: path }));
+                else if (kind === 'tradeArticles') records = (Array.isArray(data.articles) ? data.articles : []).map(record => ({ record, kind, source: path }));
+                else if (kind === 'shows') records = (Array.isArray(data.exhibitions) ? data.exhibitions : []).map(record => ({ record, kind, source: path }));
+                else records = [{ record: data, kind, source: path }];
+                records.forEach(({ record, kind, source }) => {
+                  const title = titleOf(record, source);
+                  const textValues = recordImageRefs(record);
+                  textValues.forEach(ref => {
+                    const refName = fileName(ref.path.split(/[?#]/)[0]);
+                    if (!refName) return;
+                    const key = kind + '|' + title + '|' + refName + '|' + ref.field;
+                    if (!usages.some(usage => usage.key === key)) usages.push({ key, kind, title, source, refName, ref: ref.path, field: ref.field, record });
+                  });
+                });
+              });
+              const mapped = images.map(image => {
+                const name = image.name.toLowerCase();
+                const refs = usages.filter(usage => usage.refName === name);
+                const categories = new Set();
+                const links = [];
+                refs.forEach(usage => {
+                  let category = 'Other Media';
+                  let usageLabel = 'Page image';
+                  if (usage.kind === 'stories') { category = 'Stories'; usageLabel = /body|content|markdown/i.test(usage.field) ? 'Body Image' : /image|cover/i.test(usage.field) ? 'Cover Image' : 'Content Image'; }
+                  else if (usage.kind === 'tradeArticles') { category = 'Trade Show Articles'; usageLabel = /body|content|markdown/i.test(usage.field) ? 'Body Image' : /image|cover/i.test(usage.field) ? 'Cover Image' : 'Article Image'; }
+                  else if (usage.kind === 'shows') { category = 'Upcoming Shows'; usageLabel = /gallery/i.test(usage.field) ? 'Gallery Image' : /cover|image/i.test(usage.field) ? 'Show Cover Image' : 'Show Image'; }
+                  categories.add(category);
+                  links.push({ category, title: usage.title, label: usageLabel, source: usage.source, show: String(usage.record?.related_show || usage.record?.event_title || usage.record?.show_name || usage.record?.related_event || ''), topics: Array.isArray(usage.record?.tags) ? usage.record.tags : [], industries: Array.isArray(usage.record?.industries) ? usage.record.industries : [], contentFocus: String(usage.record?.category || '') });
+                });
+                const category = categories.has('Stories') ? 'Stories' : categories.has('Upcoming Shows') ? 'Upcoming Shows' : categories.has('Trade Show Articles') ? 'Trade Show Articles' : refs.length ? 'Other Media' : 'Unclassified';
+                if (!categories.size) categories.add('Unclassified');
+                return { ...image, category, categories: [...categories], usages: links };
+              });
+              if (!cancelled) { setItems(mapped.sort((a,b) => a.name.localeCompare(b.name))); setLoading(false); }
+            } catch (err) {
+              if (!cancelled) { setError(err?.message || '图片索引读取失败。'); setLoading(false); }
+            }
+          };
+          load();
+          return () => { cancelled = true; };
+        }, []);
+        const filtered = items.filter(item => (section === 'all' || (item.categories || [item.category]).includes(section)) &&
+          [item.name, item.path, item.category, ...(item.categories || []), ...item.usages.flatMap(usage => [usage.title, usage.show, usage.label, ...(usage.topics || []), ...(usage.industries || []), usage.contentFocus || ''])].join(' ').toLowerCase().includes(query.trim().toLowerCase()));
+        const css = { maxWidth: 1180, margin: '0 auto', padding: 24, color: '#1d2935', fontFamily: 'Inter,system-ui,sans-serif' };
+        const filterStyle = (id) => ({ padding: '8px 11px', border: '1px solid ' + (section === id ? '#1c3548' : '#ccd5dd'), borderRadius: 6, background: section === id ? '#1c3548' : '#fff', color: section === id ? '#fff' : '#243443', cursor: 'pointer', font: 'inherit', fontSize: 13 });
+        const filterButton = (id, label) => h('button', { type: 'button', key: id, onClick: () => setSection(id), style: filterStyle(id) }, label);
+        return h('main', { style: css },
+          h('h1', { style: { margin: '0 0 8px', fontSize: 28 } }, 'Media Library'),
+          h('p', { style: { color: '#596775', lineHeight: 1.6, maxWidth: 850 } }, '图片索引读取 GitHub 当前已保存的 images/ 文件和 CMS 数据。不会移动、重命名或删除图片。搜索支持文件名、选题、文章标题和展会名称。新上传图片提交到 GitHub 后刷新本页即可重新索引。'),
+          h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 10, margin: '18px 0' } },
+            h('input', { value: query, onChange: event => setQuery(event.target.value), placeholder: '搜索文件名、选题、文章标题或展会名称', 'aria-label': '搜索媒体', style: { flex: '1 1 300px', minWidth: 240, padding: '11px 12px', border: '1px solid #ccd5dd', borderRadius: 6, font: 'inherit' } }),
+            h('button', { type: 'button', onClick: () => { setLoading(true); setError(''); setItems([]); window.location.reload(); }, style: { padding: '11px 14px', border: '1px solid #ccd5dd', borderRadius: 6, background: '#fff', cursor: 'pointer', font: 'inherit' } }, 'Refresh index')
+          ),
+          h('nav', { 'aria-label': 'Media Library categories', style: { display: 'flex', flexWrap: 'wrap', alignItems: 'stretch', gap: 8, margin: '0 0 18px' } },
+            filterButton('all', 'All Media'), filterButton('Stories', 'Stories'),
+            h('div', { style: { display: 'flex', flexDirection: 'column', gap: 6, border: '1px solid #dce3e9', borderRadius: 7, padding: '7px 8px', background: '#f7f9fb' } },
+              h('strong', { style: { fontSize: 12, padding: '0 3px', color: '#425466' } }, 'Trade Show'),
+              h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 6 } }, filterButton('Upcoming Shows', 'Upcoming Shows'), filterButton('Trade Show Articles', 'Trade Show Articles'))
+            ),
+            filterButton('Other Media', 'Other Media'), filterButton('Unclassified', 'Unclassified')
+          ),
+          loading ? h('p', null, '正在读取图片和 CMS 内容索引…') : null,
+          error ? h('p', { role: 'alert', style: { padding: 14, border: '1px solid #e4b5b5', background: '#fff7f7', color: '#8b2424', borderRadius: 6 } }, error) : null,
+          !loading && !error ? h('p', { style: { color: '#596775', fontSize: 13 } }, `找到 ${items.length} 张图片；当前显示 ${filtered.length} 张。`) : null,
+          !loading && !error && filtered.length ? h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(250px,1fr))', gap: 14 } }, ...filtered.map(item => h('article', { key: item.path, style: { border: '1px solid #dce3e9', borderRadius: 8, overflow: 'hidden', background: '#fff', minWidth: 0 } },
+            h('div', { style: { aspectRatio: '16/9', background: '#f3f5f7', display: 'grid', placeItems: 'center', overflow: 'hidden' } }, h('img', { src: item.url, alt: item.name, loading: 'lazy', style: { width: '100%', height: '100%', objectFit: 'contain' }, onError: event => { event.currentTarget.style.display = 'none'; } })),
+            h('div', { style: { padding: 12 } },
+              h('strong', { style: { display: 'block', overflowWrap: 'anywhere', marginBottom: 5 } }, item.name),
+              h('div', { style: { fontSize: 12, color: '#526474', marginBottom: 8 } }, (item.categories || [item.category]).map(category => category === 'Upcoming Shows' || category === 'Trade Show Articles' ? `Trade Show / ${category}` : category).join(' · ')),
+              h('div', { style: { fontSize: 12, color: '#6a7784', overflowWrap: 'anywhere', marginBottom: 8 } }, item.path),
+              item.usages.length ? h('div', { style: { borderTop: '1px solid #edf0f2', paddingTop: 8 } }, ...item.usages.map((usage, i) => h('div', { key: usage.source + usage.title + i, style: { fontSize: 12, lineHeight: 1.5, marginBottom: 6 } },
+                h('strong', null, usage.title), h('div', { style: { color: '#657381' } }, `${usage.label}${usage.show ? ' · ' + usage.show : ''}`), (usage.topics?.length || usage.industries?.length || usage.contentFocus) ? h('div', { style: { color: '#526474', marginTop: 2 } }, [usage.contentFocus, ...(usage.industries || []), ...(usage.topics || [])].filter(Boolean).join(' · ')) : null, h('div', { style: { color: '#8a96a1' } }, usage.source)))) : h('div', { style: { fontSize: 12, color: '#8a5960', borderTop: '1px solid #edf0f2', paddingTop: 8 } }, '暂未匹配到已保存的 CMS 内容 · Unclassified'),
+              h('button', { type: 'button', onClick: () => { const value = window.location.origin + '/' + item.path; if (navigator.clipboard?.writeText) navigator.clipboard.writeText(value); }, style: { marginTop: 8, padding: '6px 9px', border: '1px solid #ccd5dd', borderRadius: 5, background: '#fff', cursor: 'pointer', fontSize: 12 } }, 'Copy image path')
+            )
+          ))) : null,
+          !loading && !error && !filtered.length ? h('p', { style: { padding: 18, background: '#f7f9fb', borderRadius: 6 } }, '没有匹配的图片。请尝试其他关键词或分类。') : null
+        );
+      };
+      CMS.registerCustomPage({ id: 'media-library', label: 'Media Library', icon: 'perm_media', component: MediaLibrary });
 
       // Keep the underlying collection available to dashboard links, but hide the duplicate
       // native “All Resources / Contents” navigation from the everyday editor UI.

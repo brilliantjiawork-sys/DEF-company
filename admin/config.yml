@@ -170,7 +170,7 @@ collections:
         date_format: YYYY-MM-DD
         time_format: false
         format: YYYY-MM-DD
-      - label: ① 内容分类｜文章类型（单选；不是话题标签）
+      - label: ① 内容选题｜文章定位（单选；不是话题标签）
         name: category
         widget: select
         required: true
@@ -195,7 +195,20 @@ collections:
         name: image_alt
         widget: string
         required: false
-      - label: ② Topic Tags｜话题标签（文章具体讲什么；多选；不选行业）
+      - label: ② Industry｜行业（内容面向哪个行业；多选；不选技术话题）
+        name: industries
+        widget: select
+        multiple: true
+        options: &id002
+        - Automotive
+        - Electronics
+        - Food & Beverage
+        - Packaging
+        - Semiconductors
+        - Logistics
+        - Pharmaceuticals
+        hint: 选择内容面向的行业领域，例如 Automotive、Packaging。它与上面的内容分类和话题标签不同。
+      - label: ③ Topic Tags｜话题标签（文章具体讲什么；多选；不选行业）
         name: tags
         widget: select
         multiple: true
@@ -215,19 +228,6 @@ collections:
         - Innovation
         - Sustainability
         hint: 选择文章讨论的技术或主题，例如 Machine Vision、Quality Control。不要在这里选择行业名称。
-      - label: ③ Industry｜行业（内容面向哪个行业；多选；不选技术话题）
-        name: industries
-        widget: select
-        multiple: true
-        options: &id002
-        - Automotive
-        - Electronics
-        - Food & Beverage
-        - Packaging
-        - Semiconductors
-        - Logistics
-        - Pharmaceuticals
-        hint: 选择内容面向的行业领域，例如 Automotive、Packaging。它与上面的内容分类和话题标签不同。
       - label: 虚构应用示例（仅模拟场景时开启 Fictional Example 标记）
         name: illustrative_example
         widget: boolean
@@ -348,16 +348,16 @@ collections:
         name: summary
         widget: text
         required: true
-      - label: Topic Tags｜话题标签（多选；代码自动用于展会推荐）
-        name: tags
-        widget: select
-        multiple: true
-        options: *id001
-      - label: Industry（行业，可多选）
+      - label: Industry｜行业（多选；与话题标签分开）
         name: industries
         widget: select
         multiple: true
         options: *id002
+      - label: Topic Tags｜话题标签（多选；用于官网筛选与相关推荐）
+        name: tags
+        widget: select
+        multiple: true
+        options: *id001
       - label: 展会封面图
         name: cover
         widget: image
@@ -418,6 +418,11 @@ collections:
         - Pre-show Preview
         - During-show Update
         - Post-show Recap
+      - label: 对应展会名称（可选，用于媒体库检索）
+        name: related_show
+        widget: string
+        required: false
+        hint: 填写 Upcoming Shows 中完全一致的展会名称，Media Library 可据此找到对应展会文章图片；不影响官网自动相关推荐。
       - label: 发布日期
         name: date
         widget: datetime
@@ -425,12 +430,6 @@ collections:
         date_format: YYYY-MM-DD
         time_format: false
         format: YYYY-MM-DD
-      - label: 内容分类
-        name: category
-        widget: select
-        required: true
-        default: Product & Technology
-        options: *id003
       - label: 卡片摘要
         name: summary
         widget: text
@@ -444,16 +443,16 @@ collections:
         name: image_alt
         widget: string
         required: false
-      - label: Topic Tags｜话题标签（多选；只用于自动匹配相关内容）
-        name: tags
-        widget: select
-        multiple: true
-        options: *id001
-      - label: Industry（行业，可多选）
+      - label: Industry｜行业（多选；与话题标签分开）
         name: industries
         widget: select
         multiple: true
         options: *id002
+      - label: Topic Tags｜话题标签（多选；用于官网筛选与相关推荐）
+        name: tags
+        widget: select
+        multiple: true
+        options: *id001
       - label: 虚构示例标记
         name: illustrative_example
         widget: boolean
