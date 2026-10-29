@@ -201,6 +201,16 @@ collections:
         name: title
         widget: string
         required: true
+      - label: 展会标题字号（px）
+        name: detail_title_font_size
+        hint: 控制官网展会详情页最上方的展会名称，不影响正文。
+        widget: number
+        value_type: int
+        default: 34
+        min: 28
+        max: 42
+        step: 1
+        required: false
       - label: 开始日期
         name: start_date
         widget: datetime
@@ -272,8 +282,9 @@ collections:
         widget: text
         required: false
         hint: 仅显示在展会详情页；建议写 1–3 句说明展会内容，不会显示在 Upcoming 卡片。
-      - label: 详情描述字号（px）
+      - label: About This Show 描述字号（px）
         name: description_font_size
+        hint: 只影响官网 About This Show 描述，不影响展会标题。
         widget: number
         value_type: int
         default: 16
@@ -305,6 +316,7 @@ collections:
         required: false
       - label: 正文/亮点字号（px）
         name: body_font_size
+        hint: 控制详情页正文和亮点内容的字号。
         widget: number
         value_type: int
         default: 16
@@ -313,15 +325,6 @@ collections:
         step: 1
         required: false
 
-      - label: 详情页标题字号（px）
-        name: detail_title_font_size
-        widget: number
-        value_type: int
-        default: 34
-        min: 28
-        max: 42
-        step: 1
-        required: false
       - label: 详情页图片集（可选）
         name: gallery
         widget: list
@@ -627,6 +630,16 @@ collections:
     name: title
     widget: string
     required: true
+  - label: 标题字号（px）
+    name: detail_title_font_size
+    hint: 控制官网详情页最上方的文章标题，不影响正文。
+    widget: number
+    value_type: int
+    default: 34
+    min: 28
+    max: 42
+    step: 1
+    required: false
   - label: 发布日期
     name: date
     widget: datetime
@@ -659,8 +672,9 @@ collections:
     name: summary
     widget: text
     required: true
-  - label: 摘要字号（px；同步到卡片和详情页）
+  - label: 摘要字号（px）
     name: summary_font_size
+    hint: 控制列表和推荐卡片里的摘要文字大小，不控制详情页标题。
     widget: number
     value_type: int
     default: 16
@@ -700,20 +714,12 @@ collections:
     required: true
   - label: 正文默认字号（px）
     name: body_font_size
+    hint: 控制官网详情页正文段落的基础字号，不影响文章标题。
     widget: number
     value_type: int
     default: 17
     min: 14
     max: 20
-    step: 1
-    required: false
-  - label: 详情页标题字号（px）
-    name: detail_title_font_size
-    widget: number
-    value_type: int
-    default: 34
-    min: 28
-    max: 42
     step: 1
     required: false
   - label: 显示销售 CTA
@@ -748,6 +754,16 @@ collections:
     name: title
     widget: string
     required: true
+  - label: 标题字号（px）
+    name: detail_title_font_size
+    hint: 控制官网详情页最上方的文章标题，不影响正文。
+    widget: number
+    value_type: int
+    default: 34
+    min: 28
+    max: 42
+    step: 1
+    required: false
   - label: 内容阶段
     name: content_stage
     widget: select
@@ -782,8 +798,9 @@ collections:
     name: summary
     widget: text
     required: true
-  - label: 摘要字号（px；同步到卡片和详情页）
+  - label: 摘要字号（px）
     name: summary_font_size
+    hint: 控制列表和推荐卡片里的摘要文字大小，不控制详情页标题。
     widget: number
     value_type: int
     default: 16
@@ -823,20 +840,12 @@ collections:
     required: true
   - label: 正文默认字号（px）
     name: body_font_size
+    hint: 控制官网详情页正文段落的基础字号，不影响文章标题。
     widget: number
     value_type: int
     default: 17
     min: 14
     max: 20
-    step: 1
-    required: false
-  - label: 详情页标题字号（px）
-    name: detail_title_font_size
-    widget: number
-    value_type: int
-    default: 34
-    min: 28
-    max: 42
     step: 1
     required: false
   - label: 显示销售 CTA
