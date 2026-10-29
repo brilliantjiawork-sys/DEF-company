@@ -18,10 +18,10 @@ media_libraries:
     providers: []
 collections:
 - name: content-management
-  label: 内部内容资源（从内容管理进入）
+  label: 内部内容资源（系统）
   icon: folder_managed
   hide: false
-  description: 内部内容集合。日常请从“内容管理”进入；此集合仅用于承载对应页面和内容文件。
+  description: 系统内容存储集合。请从内容管理入口编辑。
   files:
   - name: home_intro
     label: Brand Introduction（品牌介绍）
@@ -142,126 +142,6 @@ collections:
       name: back_button
       widget: string
       required: true
-  - name: stories_content
-    label: Stories 文章
-    file: data/database.json
-    format: json
-    editor:
-      preview: false
-    fields:
-    - label: Stories 文章（已发布文章在下面按标题显示；点击标题行即可继续编辑）
-      name: articles
-      widget: list
-      label_singular: 新增一篇 Story
-      collapsed: true
-      minimize_collapsed: false
-      add_to_top: true
-      summary: '{{title}} · {{date}} · {{category}}'
-      thumbnail: image
-      fields:
-      - label: 文章标题
-        name: title
-        widget: string
-        required: true
-      - label: 发布日期
-        name: date
-        widget: datetime
-        required: true
-        date_format: YYYY-MM-DD
-        time_format: false
-        format: YYYY-MM-DD
-      - label: ① 内容选题｜文章定位（单选；不是话题标签）
-        name: category
-        widget: select
-        required: true
-        default: Product & Technology
-        options: &id003
-        - Product & Technology
-        - Industry Applications
-        - Industry Insights
-        - Company & Culture
-        - Brand News & Updates
-      - label: 卡片摘要
-        name: summary
-        widget: text
-        required: true
-        hint: 前台卡片和相关推荐中显示的简短介绍。
-      - label: 封面图片
-        name: image
-        widget: image
-        required: false
-        choose_url: false
-      - label: 图片替代文本
-        name: image_alt
-        widget: string
-        required: false
-      - label: ② Industry｜行业（内容面向哪个行业；多选；不选技术话题）
-        name: industries
-        widget: select
-        multiple: true
-        options: &id002
-        - Automotive
-        - Electronics
-        - Food & Beverage
-        - Packaging
-        - Semiconductors
-        - Logistics
-        - Pharmaceuticals
-        hint: 选择内容面向的行业领域，例如 Automotive、Packaging。它与上面的内容分类和话题标签不同。
-      - label: ③ Topic Tags｜话题标签（文章具体讲什么；多选；不选行业）
-        name: tags
-        widget: select
-        multiple: true
-        options: &id001
-        - Machine Vision
-        - AI & Deep Learning
-        - Defect Detection
-        - Quality Control
-        - AOI
-        - 3D Vision
-        - Robotics & Automation
-        - Positioning & Measurement
-        - Electronics & Semiconductors
-        - Food & Beverage Inspection
-        - Packaging Inspection
-        - Warehouse & Logistics
-        - Innovation
-        - Sustainability
-        hint: 选择文章讨论的技术或主题，例如 Machine Vision、Quality Control。不要在这里选择行业名称。
-      - label: 虚构应用示例（仅模拟场景时开启 Fictional Example 标记）
-        name: illustrative_example
-        widget: boolean
-        default: false
-      - label: 正文（全文只写在这里）
-        name: body
-        widget: richtext
-        format: markdown
-        modes:
-        - rich_text
-        - raw
-        buttons:
-        - heading-two
-        - heading-three
-        - bold
-        - italic
-        - bulleted-list
-        - numbered-list
-        - link
-        - quote
-        required: true
-        hint: 工具栏可设置二级/三级标题、加粗、斜体、列表、链接和引用。网站统一控制正文与标题的实际字号，保持版式一致。
-      - label: 显示销售 CTA
-        name: cta_enabled
-        widget: boolean
-        default: false
-      - label: CTA 文案
-        name: cta_label
-        widget: select
-        default: Talk to Our Team
-        options:
-        - Talk to Our Team
-        - Contact Sales
-        - Book a Demo
   - name: events_page_settings
     label: Trade Shows 页面设置
     file: data/trade-shows-page-settings.json
@@ -328,7 +208,7 @@ collections:
         date_format: YYYY-MM-DD
         time_format: false
         format: YYYY-MM-DD
-      - label: 展位号（未确定填 TBC；前台会显示在日期前面）
+      - label: 展位号
         name: booth
         widget: string
         required: true
@@ -348,16 +228,37 @@ collections:
         name: summary
         widget: text
         required: true
-      - label: Industry｜行业（多选；与话题标签分开）
+      - label: Industry｜行业
         name: industries
         widget: select
         multiple: true
-        options: *id002
+        options: &id001
+        - Automotive
+        - Electronics
+        - Food & Beverage
+        - Packaging
+        - Semiconductors
+        - Logistics
+        - Pharmaceuticals
       - label: Topic Tags｜话题标签（多选；用于官网筛选与相关推荐）
         name: tags
         widget: select
         multiple: true
-        options: *id001
+        options: &id002
+        - Machine Vision
+        - AI & Deep Learning
+        - Defect Detection
+        - Quality Control
+        - AOI
+        - 3D Vision
+        - Robotics & Automation
+        - Positioning & Measurement
+        - Electronics & Semiconductors
+        - Food & Beverage Inspection
+        - Packaging Inspection
+        - Warehouse & Logistics
+        - Innovation
+        - Sustainability
       - label: 展会封面图
         name: cover
         widget: image
@@ -384,109 +285,10 @@ collections:
         - Talk to Our Team
         - Contact Sales
         - Book a Demo
-      - label: 虚构示例标记（模拟展会保持开启）
-        name: illustrative_example
-        widget: boolean
-        default: true
-  - name: trade_show_articles
-    label: Trade Show Articles（展会文章）
-    file: data/event-coverage.json
-    format: json
-    editor:
-      preview: false
-    fields:
-    - label: 展会文章
-      name: articles
-      widget: list
-      label_singular: 新增一篇展会文章
-      collapsed: true
-      minimize_collapsed: false
-      add_to_top: true
-      summary: '{{title}} · {{content_stage}} · {{date}}'
-      thumbnail: image
-      fields:
-      - label: 文章标题
-        name: title
-        widget: string
-        required: true
-      - label: 内容阶段
-        name: content_stage
-        widget: select
-        required: true
-        default: Pre-show Preview
-        options:
-        - Pre-show Preview
-        - During-show Update
-        - Post-show Recap
-      - label: 对应展会名称（可选，用于媒体库检索）
-        name: related_show
-        widget: string
-        required: false
-        hint: 填写 Upcoming Shows 中完全一致的展会名称，Media Library 可据此找到对应展会文章图片；不影响官网自动相关推荐。
-      - label: 发布日期
-        name: date
-        widget: datetime
-        required: true
-        date_format: YYYY-MM-DD
-        time_format: false
-        format: YYYY-MM-DD
-      - label: 卡片摘要
-        name: summary
-        widget: text
-        required: true
-      - label: 封面图片
-        name: image
-        widget: image
-        required: false
-        choose_url: false
-      - label: 图片替代文本
-        name: image_alt
-        widget: string
-        required: false
-      - label: Industry｜行业（多选；与话题标签分开）
-        name: industries
-        widget: select
-        multiple: true
-        options: *id002
-      - label: Topic Tags｜话题标签（多选；用于官网筛选与相关推荐）
-        name: tags
-        widget: select
-        multiple: true
-        options: *id001
       - label: 虚构示例标记
         name: illustrative_example
         widget: boolean
         default: true
-      - label: 正文（全文只写在这里）
-        name: body
-        widget: richtext
-        format: markdown
-        modes:
-        - rich_text
-        - raw
-        buttons:
-        - heading-two
-        - heading-three
-        - bold
-        - italic
-        - bulleted-list
-        - numbered-list
-        - link
-        - quote
-        required: true
-        hint: 工具栏可设置二级/三级标题、加粗、斜体、列表、链接和引用。网站统一控制正文与标题的实际字号，保持版式一致。
-      - label: 显示销售 CTA
-        name: cta_enabled
-        widget: boolean
-        default: false
-      - label: CTA 文案
-        name: cta_label
-        widget: select
-        default: Talk to Our Team
-        options:
-        - Talk to Our Team
-        - Contact Sales
-        - Book a Demo
   - name: social_page
     label: Social Media 页面文案
     file: data/newsroom-social-media.json
@@ -731,3 +533,191 @@ collections:
     - label: 重新打开设置按钮
       name: reopen_button
       widget: string
+- name: stories
+  label: Stories
+  icon: article
+  folder: data/stories
+  create: true
+  extension: json
+  format: json
+  slug: '{{slug}}'
+  publish_mode:
+    type: editorial_workflow
+    stages:
+    - draft
+  editor:
+    preview: false
+  fields:
+  - label: 文章标题
+    name: title
+    widget: string
+    required: true
+  - label: 发布日期
+    name: date
+    widget: datetime
+    required: true
+    date_format: YYYY-MM-DD
+    time_format: false
+    format: YYYY-MM-DD
+  - label: 内容选题
+    name: category
+    widget: select
+    required: true
+    default: Product & Technology
+    options:
+    - Product & Technology
+    - Industry Applications
+    - Industry Insights
+    - Company & Culture
+    - Brand News & Updates
+  - label: 卡片摘要
+    name: summary
+    widget: text
+    required: true
+  - label: 封面图片
+    name: image
+    widget: image
+    required: false
+    choose_url: false
+  - label: 图片替代文本
+    name: image_alt
+    widget: string
+    required: false
+  - label: Industry｜行业
+    name: industries
+    widget: select
+    multiple: true
+    options: *id001
+  - label: Topic Tags｜话题标签
+    name: tags
+    widget: select
+    multiple: true
+    options: *id002
+  - label: 虚构应用示例
+    name: illustrative_example
+    widget: boolean
+    default: false
+  - label: 正文
+    name: body
+    widget: richtext
+    format: markdown
+    modes:
+    - rich_text
+    - raw
+    buttons:
+    - heading-two
+    - heading-three
+    - bold
+    - italic
+    - bulleted-list
+    - numbered-list
+    - link
+    - quote
+    required: true
+  - label: 显示销售 CTA
+    name: cta_enabled
+    widget: boolean
+    default: false
+  - label: CTA 文案
+    name: cta_label
+    widget: select
+    default: Talk to Our Team
+    options:
+    - Talk to Our Team
+    - Contact Sales
+    - Book a Demo
+- name: trade-show-articles
+  label: Trade Show Articles
+  icon: event_note
+  folder: data/trade-show-articles
+  create: true
+  extension: json
+  format: json
+  slug: '{{slug}}'
+  publish_mode:
+    type: editorial_workflow
+    stages:
+    - draft
+  editor:
+    preview: false
+  fields:
+  - label: 文章标题
+    name: title
+    widget: string
+    required: true
+  - label: 内容阶段
+    name: content_stage
+    widget: select
+    required: true
+    default: Pre-show Preview
+    options:
+    - Pre-show Preview
+    - During-show Update
+    - Post-show Recap
+  - label: 对应展会名称（可选）
+    name: related_show
+    widget: string
+    required: false
+  - label: 发布日期
+    name: date
+    widget: datetime
+    required: true
+    date_format: YYYY-MM-DD
+    time_format: false
+    format: YYYY-MM-DD
+  - label: 卡片摘要
+    name: summary
+    widget: text
+    required: true
+  - label: 封面图片
+    name: image
+    widget: image
+    required: false
+    choose_url: false
+  - label: 图片替代文本
+    name: image_alt
+    widget: string
+    required: false
+  - label: Industry｜行业
+    name: industries
+    widget: select
+    multiple: true
+    options: *id001
+  - label: Topic Tags｜话题标签（多选；用于官网筛选与相关推荐）
+    name: tags
+    widget: select
+    multiple: true
+    options: *id002
+  - label: 虚构示例标记
+    name: illustrative_example
+    widget: boolean
+    default: true
+  - label: 正文
+    name: body
+    widget: richtext
+    format: markdown
+    modes:
+    - rich_text
+    - raw
+    buttons:
+    - heading-two
+    - heading-three
+    - bold
+    - italic
+    - bulleted-list
+    - numbered-list
+    - link
+    - quote
+    required: true
+  - label: 显示销售 CTA
+    name: cta_enabled
+    widget: boolean
+    default: false
+  - label: CTA 文案
+    name: cta_label
+    widget: select
+    default: Talk to Our Team
+    options:
+    - Talk to Our Team
+    - Contact Sales
+    - Book a Demo

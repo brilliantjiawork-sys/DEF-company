@@ -8,17 +8,19 @@
     :root { color-scheme: light; }
     .def-cms-dashboard { max-width: 980px; margin: 0 auto; padding: 28px 26px 44px; color: #1b2733; font-family: Inter, system-ui, sans-serif; }
     .def-cms-dashboard h1 { margin: 0 0 8px; font-size: 28px; font-weight: 650; }
-    .def-cms-dashboard .intro { margin: 0 0 24px; color: #586675; line-height: 1.65; }
+    .def-cms-dashboard h3 { margin: 22px 0 8px; font-size: 15px; font-weight: 650; }
+    .def-cms-dashboard .intro { margin: 0 0 20px; color: #586675; line-height: 1.4; }
     .def-cms-group { border: 1px solid #dce3e9; border-radius: 10px; background: #fff; margin: 0 0 12px; overflow: hidden; }
     .def-cms-group > summary { cursor: pointer; list-style: none; padding: 17px 18px; font-size: 16px; font-weight: 650; display: flex; align-items: center; gap: 10px; background: #f7f9fb; }
     .def-cms-group > summary::-webkit-details-marker, .def-cms-subgroup > summary::-webkit-details-marker { display: none; }
     .def-cms-group > summary::before { content: '▸'; display: inline-block; color: #526779; transition: transform .15s ease; }
     .def-cms-group[open] > summary::before { transform: rotate(90deg); }
     .def-cms-items { padding: 8px 14px 14px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
-    .def-cms-item { display: block; padding: 13px 14px; border: 1px solid #e0e7ed; border-radius: 8px; text-decoration: none; color: #1f2d3a; background: #fff; }
+    .def-cms-item { display: flex; align-items: center; gap: 11px; min-height: 56px; padding: 13px 14px; border: 1px solid #e0e7ed; border-radius: 8px; text-decoration: none; color: #1f2d3a; background: #fff; }
     .def-cms-item:hover, .def-cms-item:focus-visible { border-color: #93b7d4; background: #f7fbff; outline: none; }
-    .def-cms-item strong { display: block; font-size: 14px; margin-bottom: 4px; }
-    .def-cms-item span { display: block; color: #657381; font-size: 12px; line-height: 1.55; }
+    .def-cms-item strong { display: block; font-size: 14px; font-weight: 650; }
+    .def-cms-icon { display: grid; place-items: center; flex: 0 0 30px; width: 30px; height: 30px; border-radius: 7px; background: #eef4f8; color: #234b68; }
+    .def-cms-icon svg { width: 18px; height: 18px; display: block; }
     .def-cms-subgroup { margin: 8px 0 0; border: 1px dashed #d2dce4; border-radius: 8px; }
     .def-cms-subgroup > summary { padding: 12px 14px; cursor: pointer; font-weight: 650; list-style: none; }
     .def-cms-subgroup .def-cms-items { padding-top: 0; }
@@ -31,49 +33,116 @@
     (() => {
       if (!window.CMS || typeof CMS.registerCustomPage !== 'function' || !CMS.React) return;
       const h = CMS.React.createElement;
-      const link = (title, route, hint) => h('a', { className: 'def-cms-item', href: route },
-        h('strong', null, title), h('span', null, hint));
-      const group = (title, children, open = false) => h('details', { className: 'def-cms-group', open },
-        h('summary', null, title), h('div', { className: 'def-cms-items' }, ...children));
-      const subgroup = (title, children, open = false) => h('details', { className: 'def-cms-subgroup', open },
-        h('summary', null, title), h('div', { className: 'def-cms-items' }, ...children));
+      const iconPaths = {
+        plus: h('path', { d: 'M12 5v14M5 12h14', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' }),
+        check: h('path', { d: 'm5 12 4 4L19 6', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }),
+        draft: h('path', { d: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M8 13h8 M8 17h6', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' }),
+        settings: h('path', { d: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 3.1-.2-.1a1.7 1.7 0 0 0-1.9.2 1.7 1.7 0 0 0-.8 1.5v.3h-3.6v-.3a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.8.2l-.2.1-1.8-3.1.2-.2a1.7 1.7 0 0 0 .2-1.8A1.7 1.7 0 0 0 5.5 14h-.3v-3.6h.3a1.7 1.7 0 0 0 1.6-1.1 1.7 1.7 0 0 0-.2-1.8l-.1-.2 3.1-1.8.2.2a1.7 1.7 0 0 0 1.8.2A1.7 1.7 0 0 0 13 4.3V4h3.6v.3a1.7 1.7 0 0 0 1.1 1.6 1.7 1.7 0 0 0 1.8-.2l.2-.1 1.8 3.1-.2.2a1.7 1.7 0 0 0-.2 1.8 1.7 1.7 0 0 0 1.5.8h.3v3.6h-.3a1.7 1.7 0 0 0-1.2.1z', fill: 'none', stroke: 'currentColor', strokeWidth: 1.1, strokeLinejoin: 'round' }),
+        image: h('path', { d: 'M4 5h16v14H4z M8 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z M4 16l5-5 4 4 3-3 4 4', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinejoin: 'round' }),
+        home: h('path', { d: 'm3 10 9-7 9 7 M5 9v11h14V9 M9 20v-7h6v7', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinejoin: 'round' }),
+        social: h('path', { d: 'M7 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M17 14a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M7 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M9.5 6.5l5 3 M9.5 17.5l5-3', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round' }),
+        media: h('path', { d: 'M4 4h16v16H4z M8 9h8 M8 13h8 M8 17h5', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round' })
+      };
+      const icon = (name) => h('span', { className: 'def-cms-icon', 'aria-hidden': 'true' }, h('svg', { viewBox: '0 0 24 24', fill: 'none' }, iconPaths[name] || iconPaths.draft));
+      const link = (title, route, iconName = 'draft') => h('a', { className: 'def-cms-item', href: route }, icon(iconName), h('strong', null, title));
+      const group = (title, children, open = false) => h('details', { className: 'def-cms-group', open }, h('summary', null, title), h('div', { className: 'def-cms-items' }, ...children));
+      const subgroup = (title, children, open = false) => h('details', { className: 'def-cms-subgroup', open }, h('summary', null, title), h('div', { className: 'def-cms-items' }, ...children));
 
       const ContentManagement = () => h('div', { className: 'def-cms-dashboard' },
         h('h1', null, '内容管理'),
-        h('p', { className: 'intro' }, '日常编辑从这里直接进入。Website Basics 管首页，Newsroom 管 Stories 和展会内容。已发布文章会在文章列表中直接显示标题；点击原有标题即可继续编辑，不必重新创建。'),
-        group('Website Basics（Home）', [
-          link('Brand Introduction｜品牌介绍', '#/collections/content-management/entries/home_intro', '编辑首页品牌定位、主标题、介绍文案、图片和 Book a Demo 按钮。'),
-          link('Newsletter｜邮件订阅', '#/collections/content-management/entries/home_newsletter', '编辑订阅区图片、标题、介绍和按钮文案。')
+        group('Website Basics', [
+          link('Brand Introduction', '#/collections/content-management/entries/home_intro', 'home'),
+          link('Newsletter', '#/collections/content-management/entries/home_newsletter', 'plus')
         ], true),
         group('Newsroom', [
-          subgroup('Stories｜常规文章', [
-            link('Stories 文章｜新增、查看与编辑', '#/collections/content-management/entries/stories_content', '在同一个文章列表中新增 Story，或打开已有文章继续编辑。'),
-            link('Stories 页面设置', '#/collections/content-management/entries/stories_page_settings', '只修改 Stories 页面标题、简介和详情页返回按钮。')
-          ], true),
-          subgroup('Trade Shows｜展会', [
-            link('Upcoming Shows｜即将举行的展会', '#/collections/content-management/entries/upcoming_shows', '编辑展会名称、展位、日期、地点、主题、话题标签和预约 CTA。'),
-            link('Trade Show Articles｜新增、查看与编辑', '#/collections/content-management/entries/trade_show_articles', '同一个展会文章列表管理展前预热、展中动态和展后回顾；已有文章可继续编辑。'),
-            link('Trade Shows 页面设置', '#/collections/content-management/entries/events_page_settings', '只修改展会页面标题、简介和顶部切换按钮文字。')
-          ], true)
+          link('Stories', '#/pages/stories-manager', 'draft'),
+          link('Trade Show', '#/pages/trade-show-manager', 'check')
         ], true),
-        group('Media Library｜图片库', [
-          link('打开 Media Library', '#/pages/media-library', '按 Stories 选题/文章标题、展会名称或展会文章标题查找图片，并查看图片在官网内容中的使用位置。')
-        ]),
         group('Social Media', [
-          link('Social Media 页面文案', '#/collections/content-management/entries/social_page', '编辑社交媒体页面标题、说明和图片来源信息。'),
-          link('社交媒体渠道卡片', '#/collections/content-management/entries/social_media', '编辑 LinkedIn、YouTube、Facebook 等渠道的简介、图片、网址和按钮。')
+          link('页面文案', '#/collections/content-management/entries/social_page', 'social'),
+          link('渠道卡片', '#/collections/content-management/entries/social_media', 'image')
         ]),
         group('Media', [
-          link('Media 页面文案', '#/collections/content-management/entries/media_page', '编辑媒体联系人页面说明。'),
-          link('媒体联系人', '#/collections/content-management/entries/media_contacts', '新增、修改或隐藏媒体联系人。')
+          link('页面文案', '#/collections/content-management/entries/media_page', 'media'),
+          link('媒体联系人', '#/collections/content-management/entries/media_contacts', 'plus')
         ]),
         group('Forms & Privacy', [
-          link('Contact Sales 表单文案', '#/collections/content-management/entries/contact_content', '编辑表单标题、说明、字段标签和提交成功文案。'),
-          link('Cookie & Privacy 文案', '#/collections/content-management/entries/cookie_content', '编辑 Cookie 同意界面的文字。')
+          link('Contact Sales', '#/collections/content-management/entries/contact_content', 'draft'),
+          link('Cookie & Privacy', '#/collections/content-management/entries/cookie_content', 'settings')
         ])
       );
+      CMS.registerCustomPage({ id: 'content-navigator', label: '内容管理', icon: 'dashboard', component: ContentManagement });
 
-      CMS.registerCustomPage({ id: 'content-navigator', label: '内容管理', icon: 'account_tree', component: ContentManagement });
+      const PublishedListPage = (title, folder, collection) => {
+        const Page = () => {
+          const [rows, setRows] = CMS.React.useState([]);
+          const [loading, setLoading] = CMS.React.useState(true);
+          const [error, setError] = CMS.React.useState('');
+          const load = CMS.React.useCallback(async () => {
+            setLoading(true); setError('');
+            try {
+              const repo = 'brilliantjiawork-sys/DEF-company';
+              const branch = 'main';
+              const indexResponse = await fetch(`https://data.jsdelivr.com/v1/package/gh/${repo}@${branch}/flat`, { cache: 'no-store' });
+              if (!indexResponse.ok) throw new Error(`读取失败（${indexResponse.status}）`);
+              const index = await indexResponse.json();
+              const paths = (index.files || []).map(file => file.name.replace(/^\//, '')).filter(path => path.startsWith(`${folder}/`) && path.toLowerCase().endsWith('.json'));
+              const entries = await Promise.all(paths.map(async path => {
+                const response = await fetch(`https://raw.githubusercontent.com/${repo}/${branch}/${path}`, { cache: 'no-store' });
+                if (!response.ok) return null;
+                try { return { slug: path.split('/').pop().replace(/\.json$/i, ''), record: await response.json() }; } catch (_) { return null; }
+              }));
+              setRows(entries.filter(item => item && item.record && item.record.title).sort((a,b) => String(b.record.date || '').localeCompare(String(a.record.date || ''))));
+            } catch (err) { setError(err.message || '读取失败'); }
+            finally { setLoading(false); }
+          }, []);
+          CMS.React.useEffect(() => { load(); }, [load]);
+          return h('div', { className: 'def-cms-dashboard' },
+            h('h1', null, title),
+            h('div', { className: 'def-cms-items' },
+              link('新增文章', `#/collections/${collection}/entries/new`, 'plus'),
+              link('草稿', '#/workflow', 'draft'),
+              link('返回', collection === 'stories' ? '#/pages/stories-manager' : '#/pages/trade-show-manager', 'home')
+            ),
+            loading ? h('p', null, '正在读取…') : null,
+            error ? h('p', { role: 'alert' }, `文章列表读取失败：${error}`) : null,
+            !loading && !error && rows.length === 0 ? h('p', null, '暂无已发布文章。') : null,
+            ...rows.map(item => h('a', { key: item.slug, className: 'def-cms-item', href: `#/collections/${collection}/entries/${item.slug}` }, icon('check'), h('strong', null, item.record.title)))
+          );
+        };
+        return Page;
+      };
+      const StoriesManager = () => h('div', { className: 'def-cms-dashboard' },
+        h('h1', null, 'Stories'),
+        h('div', { className: 'def-cms-items' },
+          link('新增文章', '#/collections/stories/entries/new', 'plus'),
+          link('已发布', '#/pages/stories-published', 'check'),
+          link('草稿', '#/workflow', 'draft'),
+          link('页面设置', '#/collections/content-management/entries/stories_page_settings', 'settings')
+        )
+      );
+      const TradeShowManager = () => h('div', { className: 'def-cms-dashboard' },
+        h('h1', null, 'Trade Show'),
+        h('div', { className: 'def-cms-items' },
+          link('Upcoming Shows', '#/collections/content-management/entries/upcoming_shows', 'check')
+        ),
+        h('h3', null, 'Trade Show Articles'),
+        h('div', { className: 'def-cms-items' },
+          link('新增文章', '#/collections/trade-show-articles/entries/new', 'plus'),
+          link('已发布', '#/pages/trade-articles-published', 'check'),
+          link('草稿', '#/workflow', 'draft')
+        ),
+        h('h3', null, '页面设置'),
+        h('div', { className: 'def-cms-items' },
+          link('页面设置', '#/collections/content-management/entries/events_page_settings', 'settings')
+        )
+      );
+      const StoriesPublished = PublishedListPage('Stories · 已发布', 'data/stories', 'stories');
+      const TradeArticlesPublished = PublishedListPage('Trade Show Articles · 已发布', 'data/trade-show-articles', 'trade-show-articles');
+      CMS.registerCustomPage({ id: 'stories-manager', label: 'Stories', icon: 'article', component: StoriesManager });
+      CMS.registerCustomPage({ id: 'stories-published', label: 'Stories · 已发布', icon: 'task_alt', component: StoriesPublished });
+      CMS.registerCustomPage({ id: 'trade-show-manager', label: 'Trade Show', icon: 'event', component: TradeShowManager });
+      CMS.registerCustomPage({ id: 'trade-articles-published', label: 'Trade Show Articles · 已发布', icon: 'task_alt', component: TradeArticlesPublished });
 
       // Media Library: index the public repository's existing image files and connect them
       // to saved CMS content without moving, renaming, or deleting any asset.
@@ -122,9 +191,19 @@
             try { return await response.json(); } catch (_) { return null; }
           };
           const walkImages = async (path) => {
+            // Prefer jsDelivr's public package file index: it avoids GitHub REST API rate limits.
+            let cdnError = '';
+            try {
+              const cdnResponse = await fetch(`https://data.jsdelivr.com/v1/package/gh/${repo}@${branch}/flat`, { cache: 'no-store' });
+              if (cdnResponse.ok) {
+                const payload = await cdnResponse.json();
+                const files = (payload.files || []).filter(file => file.name.startsWith(`/${path}/`) && /\.(png|jpe?g|webp|gif|svg|avif)$/i.test(file.name));
+                if (files.length) return files.map(file => ({ name: file.name.split('/').pop(), path: file.name.replace(/^\//, ''), url: `https://cdn.jsdelivr.net/gh/${repo}@${branch}${file.name}`, size: file.size || 0 }));
+              } else cdnError = `CDN ${cdnResponse.status}`;
+            } catch (error) { cdnError = error.message || 'CDN unavailable'; }
             const url = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
             const response = await fetch(url, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
-            if (!response.ok) throw new Error(`GitHub 图片目录读取失败（${response.status}）。请稍后重试。`);
+            if (!response.ok) throw new Error(`图片目录读取失败：CDN 与 GitHub API 均不可用（GitHub ${response.status}；${cdnError || 'CDN 无结果'}）。请确认 images/ 已提交到 main 分支。`);
             const entries = await response.json();
             const nested = await Promise.all((Array.isArray(entries) ? entries : []).map(async entry => {
               if (entry.type === 'dir') return walkImages(entry.path);
@@ -170,7 +249,16 @@
                   else if (usage.kind === 'tradeArticles') { category = 'Trade Show Articles'; usageLabel = /body|content|markdown/i.test(usage.field) ? 'Body Image' : /image|cover/i.test(usage.field) ? 'Cover Image' : 'Article Image'; }
                   else if (usage.kind === 'shows') { category = 'Upcoming Shows'; usageLabel = /gallery/i.test(usage.field) ? 'Gallery Image' : /cover|image/i.test(usage.field) ? 'Show Cover Image' : 'Show Image'; }
                   categories.add(category);
-                  links.push({ category, title: usage.title, label: usageLabel, source: usage.source, show: String(usage.record?.related_show || usage.record?.event_title || usage.record?.show_name || usage.record?.related_event || ''), topics: Array.isArray(usage.record?.tags) ? usage.record.tags : [], industries: Array.isArray(usage.record?.industries) ? usage.record.industries : [], contentFocus: String(usage.record?.category || '') });
+                  const slug = String(usage.record?.slug || '').trim();
+                  const editUrl = usage.kind === 'stories' && slug ? `#/collections/stories/entries/${slug}`
+                    : usage.kind === 'tradeArticles' && slug ? `#/collections/trade-show-articles/entries/${slug}`
+                    : usage.kind === 'shows' ? '#/collections/content-management/entries/upcoming_shows'
+                    : usage.source.includes('home-intro') ? '#/collections/content-management/entries/home_intro'
+                    : usage.source.includes('home-newsletter') ? '#/collections/content-management/entries/home_newsletter'
+                    : usage.source.includes('social-media') ? '#/collections/content-management/entries/social_media'
+                    : usage.source.includes('media-contacts') ? '#/collections/content-management/entries/media_contacts'
+                    : '';
+                  links.push({ category, title: usage.title, label: usageLabel, source: usage.source, editUrl, show: String(usage.record?.related_show || usage.record?.event_title || usage.record?.show_name || usage.record?.related_event || ''), topics: Array.isArray(usage.record?.tags) ? usage.record.tags : [], industries: Array.isArray(usage.record?.industries) ? usage.record.industries : [], contentFocus: String(usage.record?.category || '') });
                 });
                 const category = categories.has('Stories') ? 'Stories' : categories.has('Upcoming Shows') ? 'Upcoming Shows' : categories.has('Trade Show Articles') ? 'Trade Show Articles' : refs.length ? 'Other Media' : 'Unclassified';
                 if (!categories.size) categories.add('Unclassified');
@@ -191,20 +279,19 @@
         const filterButton = (id, label) => h('button', { type: 'button', key: id, onClick: () => setSection(id), style: filterStyle(id) }, label);
         return h('main', { style: css },
           h('h1', { style: { margin: '0 0 8px', fontSize: 28 } }, 'Media Library'),
-          h('p', { style: { color: '#596775', lineHeight: 1.6, maxWidth: 850 } }, '图片索引读取 GitHub 当前已保存的 images/ 文件和 CMS 数据。不会移动、重命名或删除图片。搜索支持文件名、选题、文章标题和展会名称。新上传图片提交到 GitHub 后刷新本页即可重新索引。'),
           h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 10, margin: '18px 0' } },
             h('input', { value: query, onChange: event => setQuery(event.target.value), placeholder: '搜索文件名、选题、文章标题或展会名称', 'aria-label': '搜索媒体', style: { flex: '1 1 300px', minWidth: 240, padding: '11px 12px', border: '1px solid #ccd5dd', borderRadius: 6, font: 'inherit' } }),
-            h('button', { type: 'button', onClick: () => { setLoading(true); setError(''); setItems([]); window.location.reload(); }, style: { padding: '11px 14px', border: '1px solid #ccd5dd', borderRadius: 6, background: '#fff', cursor: 'pointer', font: 'inherit' } }, 'Refresh index')
+            h('button', { type: 'button', onClick: () => { setLoading(true); setError(''); setItems([]); window.location.reload(); }, style: { padding: '11px 14px', border: '1px solid #ccd5dd', borderRadius: 6, background: '#fff', cursor: 'pointer', font: 'inherit' } }, '刷新')
           ),
           h('nav', { 'aria-label': 'Media Library categories', style: { display: 'flex', flexWrap: 'wrap', alignItems: 'stretch', gap: 8, margin: '0 0 18px' } },
-            filterButton('all', 'All Media'), filterButton('Stories', 'Stories'),
+            filterButton('all', '全部图片'), filterButton('Stories', 'Stories'),
             h('div', { style: { display: 'flex', flexDirection: 'column', gap: 6, border: '1px solid #dce3e9', borderRadius: 7, padding: '7px 8px', background: '#f7f9fb' } },
               h('strong', { style: { fontSize: 12, padding: '0 3px', color: '#425466' } }, 'Trade Show'),
               h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 6 } }, filterButton('Upcoming Shows', 'Upcoming Shows'), filterButton('Trade Show Articles', 'Trade Show Articles'))
             ),
-            filterButton('Other Media', 'Other Media'), filterButton('Unclassified', 'Unclassified')
+            filterButton('Other Media', '其他图片'), filterButton('Unclassified', '未分类')
           ),
-          loading ? h('p', null, '正在读取图片和 CMS 内容索引…') : null,
+          loading ? h('p', null, '正在读取…') : null,
           error ? h('p', { role: 'alert', style: { padding: 14, border: '1px solid #e4b5b5', background: '#fff7f7', color: '#8b2424', borderRadius: 6 } }, error) : null,
           !loading && !error ? h('p', { style: { color: '#596775', fontSize: 13 } }, `找到 ${items.length} 张图片；当前显示 ${filtered.length} 张。`) : null,
           !loading && !error && filtered.length ? h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(250px,1fr))', gap: 14 } }, ...filtered.map(item => h('article', { key: item.path, style: { border: '1px solid #dce3e9', borderRadius: 8, overflow: 'hidden', background: '#fff', minWidth: 0 } },
@@ -214,8 +301,8 @@
               h('div', { style: { fontSize: 12, color: '#526474', marginBottom: 8 } }, (item.categories || [item.category]).map(category => category === 'Upcoming Shows' || category === 'Trade Show Articles' ? `Trade Show / ${category}` : category).join(' · ')),
               h('div', { style: { fontSize: 12, color: '#6a7784', overflowWrap: 'anywhere', marginBottom: 8 } }, item.path),
               item.usages.length ? h('div', { style: { borderTop: '1px solid #edf0f2', paddingTop: 8 } }, ...item.usages.map((usage, i) => h('div', { key: usage.source + usage.title + i, style: { fontSize: 12, lineHeight: 1.5, marginBottom: 6 } },
-                h('strong', null, usage.title), h('div', { style: { color: '#657381' } }, `${usage.label}${usage.show ? ' · ' + usage.show : ''}`), (usage.topics?.length || usage.industries?.length || usage.contentFocus) ? h('div', { style: { color: '#526474', marginTop: 2 } }, [usage.contentFocus, ...(usage.industries || []), ...(usage.topics || [])].filter(Boolean).join(' · ')) : null, h('div', { style: { color: '#8a96a1' } }, usage.source)))) : h('div', { style: { fontSize: 12, color: '#8a5960', borderTop: '1px solid #edf0f2', paddingTop: 8 } }, '暂未匹配到已保存的 CMS 内容 · Unclassified'),
-              h('button', { type: 'button', onClick: () => { const value = window.location.origin + '/' + item.path; if (navigator.clipboard?.writeText) navigator.clipboard.writeText(value); }, style: { marginTop: 8, padding: '6px 9px', border: '1px solid #ccd5dd', borderRadius: 5, background: '#fff', cursor: 'pointer', fontSize: 12 } }, 'Copy image path')
+                h('strong', null, usage.title), h('div', { style: { color: '#657381' } }, `${usage.label}${usage.show ? ' · ' + usage.show : ''}`), (usage.topics?.length || usage.industries?.length || usage.contentFocus) ? h('div', { style: { color: '#526474', marginTop: 2 } }, [usage.contentFocus, ...(usage.industries || []), ...(usage.topics || [])].filter(Boolean).join(' · ')) : null, usage.editUrl ? h('a', { href: usage.editUrl, style: { display: 'inline-block', marginTop: 5, fontSize: 12, color: '#234b68', textDecoration: 'underline' } }, '编辑并替换') : null))) : h('div', { style: { fontSize: 12, color: '#8a5960', borderTop: '1px solid #edf0f2', paddingTop: 8 } }, '暂未匹配到已保存的 CMS 内容 · Unclassified'),
+              h('button', { type: 'button', onClick: () => { const value = window.location.origin + '/' + item.path; if (navigator.clipboard?.writeText) navigator.clipboard.writeText(value); }, style: { marginTop: 8, padding: '6px 9px', border: '1px solid #ccd5dd', borderRadius: 5, background: '#fff', cursor: 'pointer', fontSize: 12 } }, '复制图片路径')
             )
           ))) : null,
           !loading && !error && !filtered.length ? h('p', { style: { padding: 18, background: '#f7f9fb', borderRadius: 6 } }, '没有匹配的图片。请尝试其他关键词或分类。') : null
@@ -228,10 +315,10 @@
       // Sveltia renders parts of its interface in Shadow DOM, so document.querySelectorAll()
       // alone does not reach the navigation elements. Walk open shadow roots as well.
       const normalized = (value) => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
-      const resourceRowPattern = /^(?:全部资源|all resources)(?:\s*\d+)?$/i;
+      const resourceRowPattern = /^(?:全部资源|all resources|全局资源|global resources|内部内容资源（系统）|内部内容资源 \(系统\))(?:\s*\d+)?$/i;
       const nativeContentsLabels = new Set([
         'contents', 'content', 'collections', 'collection', 'entries', 'entry',
-        'all resources', '全部资源', '内容集合', '内容列表', '集合', '内容'
+        'all resources', '全部资源', 'global resources', '全局资源', '内容集合', '内容列表', '集合', '内容'
       ]);
       const validationLabels = new Set(['validation', 'validate', '验证']);
       const hiddenOnce = new WeakSet();
@@ -274,6 +361,9 @@
         // Hide only the exact native resource-list row. Do not hide the custom Content Workbench.
         const text = normalized(element.innerText || element.textContent);
         if (resourceRowPattern.test(text)) hideResourceRow(element);
+        const href = normalized(element.getAttribute('href'));
+        const utilityPage = /^#\/(?:collections\/(?:stories|trade-show-articles)(?:$|\/)|workflow(?:$|\/)|pages\/(?:stories-manager|stories-published|trade-show-manager|trade-articles-published))/.test(href);
+        if (utilityPage && element.closest && element.closest('nav,[role=\"navigation\"]')) hideElement(element.closest('a,button,[role=\"treeitem\"],[role=\"link\"],li') || element);
 
         // Some versions label the validation page/control separately.
         if (attrs.some((label) => validationLabels.has(label))) hideElement(element);
