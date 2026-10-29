@@ -7,7 +7,7 @@ publish_mode:
   type: editorial_workflow
   stages:
     - draft
-  direct_publish: false
+  direct_publish: true
 media_folder: images
 public_folder: /images
 media_libraries:
@@ -32,7 +32,7 @@ collections:
     type: editorial_workflow
     stages:
       - draft
-    direct_publish: false
+    direct_publish: true
   files:
   - name: home_intro
     label: Brand Introduction（品牌介绍）
@@ -552,7 +552,7 @@ collections:
     type: editorial_workflow
     stages:
     - draft
-    direct_publish: false
+    direct_publish: true
   editor:
     preview: false
   fields:
@@ -646,7 +646,7 @@ collections:
     type: editorial_workflow
     stages:
     - draft
-    direct_publish: false
+    direct_publish: true
   editor:
     preview: false
   fields:
