@@ -651,129 +651,8 @@
         if (tag === 'button' && isValidationLabel(visibleLabel)) hideValidationElement(element);
       };
 
-      // Deep DOM helpers are needed because Sveltia may render parts of its UI in shadow roots.
-      const queryAllDeep = (selector, root = document, out = []) => {
-        if (!root) return out;
-        if (root.matches && root.matches(selector)) out.push(root);
-        if (!root.querySelectorAll) return out;
-        root.querySelectorAll(selector).forEach(element => out.push(element));
-        root.querySelectorAll('*').forEach(element => {
-          if (element.shadowRoot) queryAllDeep(selector, element.shadowRoot, out);
-        });
-        return [...new Set(out)];
-      };
-      const editorButtonLabel = element => normalized(
-        element && (element.getAttribute('aria-label') || element.getAttribute('title') || element.innerText || element.textContent)
-      );
-      const uiElementIsVisible = element => {
-        if (!element || !element.isConnected) return false;
-        const rect = element.getBoundingClientRect();
-        if (rect.width <= 0 || rect.height <= 0) return false;
-        const style = window.getComputedStyle(element);
-        return style.display !== 'none' && style.visibility !== 'hidden';
-      };
-      const findEditorSaveButton = () => queryAllDeep('button').filter(element => {
-        const rect = element.getBoundingClientRect();
-        return uiElementIsVisible(element) &&
-          /^(?:save|保存|保存更改)$/i.test(editorButtonLabel(element)) &&
-          rect.top >= -2 && rect.top < 110 && rect.right > window.innerWidth * 0.55;
-      }).sort((a, b) => {
-        const ar = a.getBoundingClientRect();
-        const br = b.getBoundingClientRect();
-        return ar.top - br.top || br.right - ar.right;
-      })[0] || null;
-      const findSavePublishMenuButton = () => queryAllDeep('button, [role="button"]').filter(element => {
-        const rect = element.getBoundingClientRect();
-        return uiElementIsVisible(element) &&
-          /^(?:more options|更多选项|显示更多选项|显示编辑器选项)$/i.test(editorButtonLabel(element)) &&
-          rect.top >= -2 && rect.top < 110 && rect.right > window.innerWidth * 0.55;
-      }).sort((a, b) => {
-        const ar = a.getBoundingClientRect();
-        const br = b.getBoundingClientRect();
-        return ar.top - br.top || br.right - ar.right;
-      })[0] || null;
-      // Cache toolbar controls so typing in the editor does not repeatedly scan the whole DOM.
-      let activeExplicitPublishButton = null;
-      let activeExplicitSaveButton = null;
-      let activeExplicitMenuButton = null;
-
-      // Add an explicit Publish button next to Save. It delegates to Sveltia’s own
-      // “Save and Publish” action so draft isolation and publishing safeguards stay native.
-      const installEditorPublishButton = () => {
-        if (
-          activeExplicitPublishButton && activeExplicitPublishButton.isConnected &&
-          activeExplicitSaveButton && activeExplicitSaveButton.isConnected &&
-          activeExplicitMenuButton && activeExplicitMenuButton.isConnected &&
-          activeExplicitPublishButton.parentElement === activeExplicitMenuButton.parentElement
-        ) {
-          if (!activeExplicitPublishButton.dataset.defPublishPending) {
-            activeExplicitPublishButton.disabled = activeExplicitSaveButton.disabled;
-          }
-          return;
-        }
-
-        if (activeExplicitPublishButton && activeExplicitPublishButton.isConnected) activeExplicitPublishButton.remove();
-        activeExplicitPublishButton = null;
-        activeExplicitSaveButton = null;
-        activeExplicitMenuButton = null;
-
-        const saveButton = findEditorSaveButton();
-        const menuButton = findSavePublishMenuButton();
-        // The CMS toolbar can contain shadow-root components; the visible menu button is
-        // the safest insertion anchor, while the independent Save lookup guards the editor state.
-        if (!saveButton || !menuButton || !menuButton.parentElement) return;
-        const parent = menuButton.parentElement;
-        let publishButton = null;
-        if (!publishButton) {
-          publishButton = document.createElement('button');
-          publishButton.type = 'button';
-          publishButton.textContent = '发布';
-          publishButton.setAttribute('aria-label', 'Publish');
-          publishButton.setAttribute('title', 'Publish');
-          publishButton.setAttribute('data-def-explicit-publish', 'true');
-          publishButton.className = (saveButton.className || '') + ' def-explicit-publish-button';
-          publishButton.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;min-height:36px;margin-inline-start:8px;padding:0 14px;border:1px solid #1b66bd;border-radius:6px;background:#1b66bd;color:#fff;font:inherit;font-size:14px;font-weight:600;line-height:1.2;white-space:nowrap;cursor:pointer;';
-
-          publishButton.addEventListener('click', event => {
-            event.preventDefault();
-            event.stopPropagation();
-            const currentSave = findEditorSaveButton();
-            const currentMenu = findSavePublishMenuButton();
-            if (!currentSave || currentSave.disabled || !currentMenu) return;
-
-            publishButton.disabled = true;
-            currentMenu.click();
-            const openedAt = Date.now();
-            const selectPublishOption = () => {
-              const item = queryAllDeep('[role="menuitem"], button').find(candidate =>
-                uiElementIsVisible(candidate) &&
-                /^(?:save and publish|保存并发布)$/i.test(editorButtonLabel(candidate))
-              );
-              if (item) {
-                publishButton.dataset.defPublishPending = 'true';
-                item.click();
-                window.setTimeout(() => {
-                  if (!publishButton.isConnected) return;
-                  delete publishButton.dataset.defPublishPending;
-                  publishButton.disabled = false;
-                }, 8000);
-              } else if (Date.now() - openedAt < 2500) {
-                window.setTimeout(selectPublishOption, 50);
-              } else {
-                publishButton.disabled = false;
-                publishButton.title = '无法找到“保存并发布”选项，请刷新 CMS 后重试。';
-              }
-            };
-            window.setTimeout(selectPublishOption, 0);
-          });
-          parent.insertBefore(publishButton, menuButton);
-        }
-        activeExplicitPublishButton = publishButton;
-        activeExplicitSaveButton = saveButton;
-        activeExplicitMenuButton = menuButton;
-        if (!publishButton.dataset.defPublishPending) publishButton.disabled = saveButton.disabled;
-      };
-
+      // Publishing is provided by Sveltia's native `direct_publish: true` workflow option.
+      // Avoid injecting custom toolbar controls; the native action safely saves/merges drafts.
       const restoreElement = (element) => {
         if (!element || element.getAttribute('data-def-hidden-native-nav') !== 'true') return;
         element.style.removeProperty('display');
@@ -845,7 +724,6 @@
               if (target) inspectElement(target);
             }
           });
-          installEditorPublishButton(); // Reuse cached controls; refresh disabled state after any toolbar/editor update.
         });
         observer.observe(root, {
           childList: true,
@@ -860,7 +738,6 @@
       document.documentElement.setAttribute('data-def-cms-nav-fix', 'two-primary-pages-v5');
       document.documentElement.setAttribute('data-def-cms-validation-ui', 'hidden-v1');
       observeAndScanRoot(document);
-      installEditorPublishButton();
       const rootObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
           if (node.nodeType === 1) {
@@ -869,7 +746,6 @@
             if (node.shadowRoot) observeAndScanRoot(node.shadowRoot);
           }
         }));
-        installEditorPublishButton();
       });
       if (document.documentElement) rootObserver.observe(document.documentElement, { childList: true, subtree: true });
 
