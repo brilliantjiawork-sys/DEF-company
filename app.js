@@ -547,7 +547,7 @@ function defMakeRecommendationCard(content, index, type, badgeText) {
         const summary = defSafeText(content.summary || content.excerpt || '', 360);
         if (summary) {
             const summaryElement = defElement('p', 'recommendation-card-summary', summary);
-            defApplyCmsFontSize(summaryElement, content.summary_font_size, 14, 13, 18);
+            defApplyCmsFontSize(summaryElement, content.summary_font_size, 15, 13, 20);
             body.appendChild(summaryElement);
         }
     } else {
@@ -729,7 +729,11 @@ function renderStories() {
         // remain available in the article detail page and as filters; don't stack taxonomies on cards.
         info.appendChild(defElement('h3', 'story-card-title', story.title || 'Untitled story'));
         const summary = defSafeText(story.summary || story.excerpt || '', 600);
-        if (summary) info.appendChild(defElement('p', 'story-summary', summary));
+        if (summary) {
+            const summaryElement = defElement('p', 'story-summary', summary);
+            defApplyCmsFontSize(summaryElement, story.summary_font_size, 15, 13, 20);
+            info.appendChild(summaryElement);
+        }
 
         article.append(imageWrap, info);
         article.addEventListener('click', () => showStoryDetail(index));
