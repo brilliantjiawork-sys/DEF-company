@@ -656,9 +656,9 @@
 .story-industry-values .story-industry-chip,
 .story-taxonomy .story-industry-chip {
   font-family: inherit !important;
-  font-size: 17px !important;
+  font-size: 16px !important;
   font-weight: 500 !important;
-  line-height: 1.65 !important;
+  line-height: 1.6 !important;
   letter-spacing: 0 !important;
   text-transform: none !important;
 }
@@ -749,15 +749,6 @@
   object-fit: cover !important;
   object-position: center;
 }
-.event-detail-theme {
-  margin: 10px 0 18px;
-  color: #354150;
-  font-family: inherit;
-  font-size: 20px;
-  font-weight: 650;
-  line-height: 1.45;
-  overflow-wrap: anywhere;
-}
 .event-detail-description {
   max-width: 760px;
   margin: 28px 0;
@@ -822,4 +813,36 @@
   }
   .event-detail-theme { font-size: 18px; }
   .recommendation-card-story .recommendation-card-body { padding: 18px; }
+}
+
+/* Final typography contract: labels are quiet metadata; values share one consistent readable size. */
+.story-taxonomy-label {
+  font-family: Inter, sans-serif;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  line-height: 1.65 !important;
+  letter-spacing: .045em !important;
+  text-transform: uppercase !important;
+}
+#sd-category,
+#sd-industry,
+#sd-tags .kone-tag,
+#ed-industry .story-industry-chip,
+#ed-tags .kone-tag,
+.story-taxonomy-item > .story-category-label,
+.story-taxonomy-item > .story-industry-label,
+.story-taxonomy .kone-tag,
+.event-taxonomy .kone-tag,
+.story-industry-values .story-industry-chip {
+  font-family: Inter, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 1.6 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
