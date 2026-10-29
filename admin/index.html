@@ -269,13 +269,32 @@
         const collectRefs = (value, fieldPath = '', out = []) => {
           if (typeof value === 'string') {
             const matches = value.match(/(?:\/?[A-Za-z0-9_ .@()/-]+\.(?:png|jpe?g|webp|gif|svg|avif|pdf|mp4|webm|mov|m4v|ogv|avi|mkv))(?:[?#][^\s"'<>]*)?/gi) || [];
-            matches.forEach(match => out.push({ path: cleanPath(match), field: fieldPath }));
+            matches.forEach((match, index) => out.push({ path: cleanPath(match), field: fieldPath, occurrence: index + 1 }));
           } else if (Array.isArray(value)) {
             value.forEach((item, index) => collectRefs(item, fieldPath ? `${fieldPath}[${index}]` : `[${index}]`, out));
           } else if (value && typeof value === 'object') {
             Object.entries(value).forEach(([key, item]) => collectRefs(item, fieldPath ? `${fieldPath}.${key}` : key, out));
           }
           return out;
+        };
+        const fieldLocationFor = (field, occurrence = 1, kind = '') => {
+          const raw = String(field || '').trim();
+          const normalizedField = raw.toLowerCase();
+          if (!raw) return 'Page content';
+          if (/gallery/.test(normalizedField)) {
+            const item = raw.match(/\[(\d+)\]/);
+            return 'Gallery image ' + (item ? Number(item[1]) + 1 : occurrence);
+          }
+          if (/cover/.test(normalizedField) || ((kind === 'stories' || kind === 'tradeArticles') && /^(?:image|thumbnail)$/i.test(raw))) return 'Cover image';
+          if (/hero/.test(normalizedField)) return 'Hero image';
+          if (/avatar|photo|portrait/.test(normalizedField)) return 'Contact photo';
+          if (/logo/.test(normalizedField)) return 'Logo';
+          if (/^(?:body|content|markdown)$/i.test(raw)) return 'Article body · image ' + occurrence;
+          return raw
+            .replace(/\[(\d+)\]/g, (_, index) => 'item ' + (Number(index) + 1))
+            .replace(/\./g, ' › ')
+            .replace(/_/g, ' ')
+            .replace(/^./, char => char.toUpperCase());
         };
         const getEditUrl = (kind, slug = '') => {
           const encoded = encodeURIComponent(slug);
@@ -371,10 +390,12 @@
                   const refPath = cleanPath(ref.path);
                   const base = baseName(refPath);
                   const fieldLower = ref.field.toLowerCase();
-                  let usageLabel = /gallery/.test(fieldLower) ? 'Gallery Image' : /avatar|photo|portrait/.test(fieldLower) ? 'Contact Photo' : /cover/.test(fieldLower) ? 'Cover Image' : /body|content|markdown/.test(fieldLower) ? 'Body Image' : /video/.test(fieldLower) ? 'Video' : /pdf|whitepaper|catalog|brochure|document|file/.test(fieldLower) ? 'PDF File' : /logo/.test(fieldLower) ? 'Brand Logo' : /hero/.test(fieldLower) ? 'Homepage Hero Image' : /image|thumbnail|media|asset/.test(fieldLower) ? 'Image' : 'Page Asset';
+                  const storyCoverField = (entry.kind === 'stories' || entry.kind === 'tradeArticles') && /^(?:image|thumbnail)$/i.test(ref.field);
+                  let usageLabel = /gallery/.test(fieldLower) ? 'Gallery Image' : /avatar|photo|portrait/.test(fieldLower) ? 'Contact Photo' : (/cover/.test(fieldLower) || storyCoverField) ? 'Cover Image' : /body|content|markdown/.test(fieldLower) ? 'Body Image' : /video/.test(fieldLower) ? 'Video' : /pdf|whitepaper|catalog|brochure|document|file/.test(fieldLower) ? 'PDF File' : /logo/.test(fieldLower) ? 'Brand Logo' : /hero/.test(fieldLower) ? 'Homepage Hero Image' : /image|thumbnail|media|asset/.test(fieldLower) ? 'Image' : 'Page Asset';
                   const usage = {
                     category: entry.category, title: entry.title, kind: entry.kind, source: entry.source,
-                    label: usageLabel, editUrl: entry.editUrl, topics: Array.isArray(entry.record?.tags) ? entry.record.tags : [],
+                    label: usageLabel, location: fieldLocationFor(ref.field, ref.occurrence, entry.kind), editUrl: entry.editUrl,
+                    topics: Array.isArray(entry.record?.tags) ? entry.record.tags : [],
                     industries: Array.isArray(entry.record?.industries) ? entry.record.industries : []
                   };
                   const keys = new Set([refPath]);
@@ -404,7 +425,7 @@
                 const unique = [];
                 const seen = new Set();
                 usages.forEach(usage => {
-                  const key = [usage.category, usage.title, usage.source, usage.label].join('|');
+                  const key = [usage.category, usage.title, usage.source, usage.label, usage.location].join('|');
                   if (!seen.has(key)) { seen.add(key); unique.push(usage); }
                 });
                 const categories = [...new Set(unique.map(usage => usage.category))];
@@ -453,15 +474,12 @@
                     ...item.usages.map((usage, index) => h('div', { key: `${usage.source}|${usage.title}|${index}`, style: { fontSize: 12, lineHeight: 1.5, marginBottom: 8 } },
                       h('div', { style: { color: '#53697a', fontSize: 11, marginBottom: 2 } }, `${usage.category} · ${usage.label}`),
                       h('strong', { style: { display: 'block', overflowWrap: 'anywhere' } }, usage.title),
+                      h('div', { style: { color: '#657381', fontSize: 11, marginTop: 3, overflowWrap: 'anywhere' } }, 'Location · ' + (usage.location || usage.label)),
                       (usage.topics.length || usage.industries.length) ? h('div', { style: { color: '#657381', marginTop: 3 } }, [...usage.industries, ...usage.topics].join(' · ')) : null,
                       usage.editUrl ? h('a', { href: usage.editUrl, style: { display: 'inline-block', marginTop: 4, color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 2 } }, 'Open related content') : null
                     ))
                   )
                 : h('div', { style: { borderTop: '1px solid #edf0f2', paddingTop: 8, color: '#7b6262', fontSize: 12 } }, 'Not currently referenced by a known CMS entry.'),
-              h('button', { type: 'button', onClick: async () => {
-                const value = `${window.location.origin}/${item.path}`;
-                try { await navigator.clipboard.writeText(value); } catch (_) {}
-              }, style: { marginTop: 8, padding: '6px 0', border: 0, background: 'transparent', color: '#234b68', cursor: 'pointer', fontSize: 12, textDecoration: 'underline', textUnderlineOffset: 2 } }, 'Copy public URL')
             )
           );
         };
@@ -589,6 +607,37 @@
         element.setAttribute('data-def-hidden-native-nav', 'true');
       };
 
+      // Hide the optional Validation panel and manual Validate action.
+      // Required-field checks at publish time remain enabled to protect live content.
+      const validationLabelPattern = /^(?:validation(?:\s+(?:panel|errors?))?|field validation|validate(?:\s+(?:entry|content|all))?|验证(?:功能|面板|信息)?|校验(?:功能|面板|信息)?)$/i;
+      const isValidationLabel = value => validationLabelPattern.test(normalized(value));
+      const hideValidationElement = element => {
+        if (!element || element.getAttribute('data-def-hidden-validation') === 'true') return;
+        element.style.setProperty('display', 'none', 'important');
+        element.setAttribute('aria-hidden', 'true');
+        element.setAttribute('data-def-hidden-validation', 'true');
+      };
+      const hideValidationUi = element => {
+        if (!element || element.nodeType !== 1) return;
+        const tag = String(element.tagName || '').toLowerCase();
+        const labels = nodeLabels(element);
+        const isInteractive = element.matches && element.matches(navItemSelector);
+        if (isInteractive && labels.some(isValidationLabel)) {
+          let target = element;
+          const parent = element.parentElement;
+          if (parent && parent.querySelectorAll) {
+            const controls = parent.querySelectorAll(navItemSelector);
+            if (controls.length === 1) target = parent;
+          }
+          hideValidationElement(target);
+        }
+        if (tag === 'button' && isValidationLabel(element.innerText || element.textContent)) hideValidationElement(element);
+        if (/^h[1-6]$/.test(tag) && /^(?:validation|field validation|验证(?:功能|面板|信息)?|校验(?:功能|面板|信息)?)$/i.test(normalized(element.innerText || element.textContent))) {
+          // Only hide the dedicated tabpanel. Never hide an entire editor sidebar/aside.
+          const panel = element.closest('[role="tabpanel"]');
+          if (panel) hideValidationElement(panel);
+        }
+      };
       const restoreElement = (element) => {
         if (!element || element.getAttribute('data-def-hidden-native-nav') !== 'true') return;
         element.style.removeProperty('display');
@@ -613,6 +662,7 @@
 
       const inspectElement = (element) => {
         if (!element || element.nodeType !== 1) return;
+        hideValidationUi(element);
         const control = element.matches && element.matches(navItemSelector)
           ? element
           : (element.closest ? element.closest(navItemSelector) : null);
@@ -654,19 +704,24 @@
                 if (node.shadowRoot) observeAndScanRoot(node.shadowRoot);
               }
             });
-            if (mutation.type === 'attributes' && mutation.target) inspectElement(mutation.target);
+            if ((mutation.type === 'attributes' || mutation.type === 'characterData') && mutation.target) {
+              const target = mutation.target.nodeType === 1 ? mutation.target : mutation.target.parentElement;
+              if (target) inspectElement(target);
+            }
           });
         });
         observer.observe(root, {
           childList: true,
           subtree: true,
           attributes: true,
+          characterData: true,
           attributeFilter: ['aria-label', 'title', 'data-tooltip', 'data-testid', 'aria-description', 'data-label', 'data-page', 'href', 'data-href', 'data-route']
         });
       };
 
       // Version marker makes it possible to confirm this exact navigation script reached production.
       document.documentElement.setAttribute('data-def-cms-nav-fix', 'two-primary-pages-v5');
+      document.documentElement.setAttribute('data-def-cms-validation-ui', 'hidden-v1');
       observeAndScanRoot(document);
       const rootObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
