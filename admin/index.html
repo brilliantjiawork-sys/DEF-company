@@ -693,22 +693,36 @@
         return ar.top - br.top || br.right - ar.right;
       })[0] || null;
 
+      // Cache toolbar controls so typing in the editor does not repeatedly scan the whole DOM.
+      let activeExplicitPublishButton = null;
+      let activeExplicitSaveButton = null;
+      let activeExplicitMenuButton = null;
+
       // Add an explicit Publish button next to Save. It delegates to Sveltia’s own
       // “Save and Publish” action so draft isolation and publishing safeguards stay native.
       const installEditorPublishButton = () => {
-        const saveButton = findEditorSaveButton();
-        const menuButton = findSavePublishMenuButton();
-        let publishButton = queryAllDeep('button[data-def-explicit-publish="true"]')[0] || null;
-
-        if (!saveButton || !menuButton || !menuButton.parentElement || !menuButton.parentElement.contains(saveButton)) {
-          if (publishButton && !publishButton.dataset.defPublishPending) publishButton.remove();
+        if (
+          activeExplicitPublishButton && activeExplicitPublishButton.isConnected &&
+          activeExplicitSaveButton && activeExplicitSaveButton.isConnected &&
+          activeExplicitMenuButton && activeExplicitMenuButton.isConnected &&
+          activeExplicitPublishButton.parentElement === activeExplicitMenuButton.parentElement
+        ) {
+          if (!activeExplicitPublishButton.dataset.defPublishPending) {
+            activeExplicitPublishButton.disabled = activeExplicitSaveButton.disabled;
+          }
           return;
         }
+
+        if (activeExplicitPublishButton && activeExplicitPublishButton.isConnected) activeExplicitPublishButton.remove();
+        activeExplicitPublishButton = null;
+        activeExplicitSaveButton = null;
+        activeExplicitMenuButton = null;
+
+        const saveButton = findEditorSaveButton();
+        const menuButton = findSavePublishMenuButton();
+        if (!saveButton || !menuButton || !menuButton.parentElement || !menuButton.parentElement.contains(saveButton)) return;
         const parent = menuButton.parentElement;
-        if (publishButton && publishButton.parentElement !== parent) {
-          if (!publishButton.dataset.defPublishPending) publishButton.remove();
-          publishButton = null;
-        }
+        let publishButton = null;
         if (!publishButton) {
           publishButton = document.createElement('button');
           publishButton.type = 'button';
@@ -753,6 +767,9 @@
           });
           parent.insertBefore(publishButton, menuButton);
         }
+        activeExplicitPublishButton = publishButton;
+        activeExplicitSaveButton = saveButton;
+        activeExplicitMenuButton = menuButton;
         if (!publishButton.dataset.defPublishPending) publishButton.disabled = saveButton.disabled;
       };
 
