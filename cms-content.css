@@ -260,15 +260,16 @@
 }
 .story-industry-chip {
   display: inline-flex;
+  width: fit-content;
   max-width: 100%;
   margin: 0;
-  padding: 4px 8px;
-  border: 1px solid #dce2e8;
-  border-radius: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
   color: #48515b;
-  background: #f7f8fa;
+  background: transparent;
   font-size: 12px;
-  line-height: 1.4;
+  line-height: 1.5;
   overflow-wrap: anywhere;
 }
 .story-card .kone-tag,
@@ -328,14 +329,17 @@
 .story-taxonomy-item[hidden] { display: none !important; }
 .story-taxonomy-item .story-industry-label {
   display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
   margin: 0;
-  padding: 5px 8px;
-  border: 1px solid #dce2e8;
-  border-radius: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
   color: #48515b;
-  background: #f7f8fa;
+  background: transparent;
   font-size: 12px;
-  line-height: 1.45;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 .story-taxonomy-item .story-tags { margin: 0; }
 .story-detail-article .detail-summary {
@@ -565,3 +569,35 @@
   .recommendation-card-related-event .recommendation-card-body { gap: 11px; padding: 18px; }
   .recommendation-card-related-event .recommendation-card-title { font-size: 19px; }
 }
+
+/* Sitewide taxonomy treatment: category, industry and topic values are text labels, not pills. */
+.story-category-label,
+.story-industry-label,
+.story-industry-chip,
+.story-tags .kone-tag,
+.event-card-tags .kone-tag,
+.story-taxonomy .kone-tag,
+.event-taxonomy .kone-tag {
+  display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
+  margin-block: 0;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+.story-tags,
+.event-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  min-width: 0;
+}
+.story-tags .kone-tag,
+.event-card-tags .kone-tag { margin-inline: 0; }
+
