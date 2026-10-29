@@ -767,7 +767,10 @@ function showStoryDetail(index, origin = 'stories') {
         image.onerror = () => { image.onerror = null; image.src = '/images/story-cover.jpg'; };
     }
     if (date) date.textContent = fmtDate(story.date);
-    if (title) title.textContent = story.title || 'Untitled story';
+    if (title) {
+        title.textContent = story.title || 'Untitled story';
+        defApplyCmsFontSize(title, story.detail_title_font_size, 36, 28, 48);
+    }
     if (summary) {
         summary.textContent = defSafeText(story.summary || story.excerpt || '', 1000);
         summary.hidden = !summary.textContent;
@@ -1125,6 +1128,7 @@ function showEventDetail(index) {
 
     defSetOptionalText('ed-published-date', defFormatEventDate(event, dates));
     defSetOptionalText('ed-title', titleText);
+    defApplyCmsFontSize(document.getElementById('ed-title'), event.detail_title_font_size, 36, 28, 48);
     defSetOptionalText('ed-theme', defSafeText(event.theme || '', 300));
     const eventSummaryText = defGetEventSummary(event);
     defSetOptionalText('ed-summary', eventSummaryText);
