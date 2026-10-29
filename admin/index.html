@@ -59,37 +59,164 @@
 
       // Every section and sub-entry is visible at once. There are no accordions here,
       // so high-frequency tasks never require an extra click just to reveal links.
-      const ContentManagement = () => h('div', { className: 'def-cms-dashboard' },
-        h('h1', null, 'Content Management'),
-        h('p', { className: 'intro' }, 'Edit website content and publishing settings. Assets are managed separately in Library.'),
-        group('Stories', [
-          link('New Story', '#/collections/stories/entries/new', 'plus'),
-          link('Draft Stories', '#/workflow', 'draft'),
-          link('Published Stories', '#/collections/stories', 'check'),
-          link('Stories Page Settings', '#/collections/content-management/entries/stories_page_settings', 'settings')
-        ]),
-        group('Trade Shows', [
-          link('Upcoming Shows', '#/collections/content-management/entries/upcoming_shows', 'check'),
-          subgroup('Trade Show Articles', [
-            link('New Trade Show Article', '#/collections/trade-show-articles/entries/new', 'plus'),
-            link('Draft Trade Show Articles', '#/workflow', 'draft'),
-            link('Published Trade Show Articles', '#/collections/trade-show-articles', 'check')
+      const contentViewFromHash = () => {
+        const hash = String(window.location.hash || '');
+        if (!hash.includes('/pages/content-navigator')) return 'dashboard';
+        const query = hash.includes('?') ? hash.slice(hash.indexOf('?') + 1) : '';
+        const params = new URLSearchParams(query);
+        const requested = params.get('view') || 'dashboard';
+        return new Set(['draft-stories', 'published-stories', 'draft-trade-show-articles', 'published-trade-show-articles']).has(requested) ? requested : 'dashboard';
+      };
+
+      const ContentEntryListing = ({ view, onBack }) => {
+        const [entries, setEntries] = CMS.React.useState([]);
+        const [query, setQuery] = CMS.React.useState('');
+        const [loading, setLoading] = CMS.React.useState(true);
+        const [error, setError] = CMS.React.useState('');
+        const repo = 'brilliantjiawork-sys/DEF-company';
+        const config = {
+          'draft-stories': { collection: 'stories', folder: 'data/stories', label: 'Draft Stories', mode: 'draft' },
+          'published-stories': { collection: 'stories', folder: 'data/stories', label: 'Published Stories', mode: 'published' },
+          'draft-trade-show-articles': { collection: 'trade-show-articles', folder: 'data/trade-show-articles', label: 'Draft Trade Show Articles', mode: 'draft' },
+          'published-trade-show-articles': { collection: 'trade-show-articles', folder: 'data/trade-show-articles', label: 'Published Trade Show Articles', mode: 'published' }
+        }[view];
+
+        CMS.React.useEffect(() => {
+          let cancelled = false;
+          const api = (path, params = {}) => {
+            const url = new URL(`https://api.github.com/repos/${repo}/${path}`);
+            Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
+            return fetch(url.toString(), { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
+          };
+          const jsonFromResponse = async response => {
+            if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
+            return response.json();
+          };
+          const fallbackTitle = slug => String(slug || 'Untitled').replace(/[-_]+/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+          const entryUrl = slug => `#/collections/${config.collection}/entries/${encodeURIComponent(slug)}`;
+          const loadPublished = async () => {
+            const response = await api(`contents/${config.folder}`, { ref: 'main' });
+            if (response.status === 404) return [];
+            const items = await jsonFromResponse(response);
+            const files = (Array.isArray(items) ? items : []).filter(item => item.type === 'file' && /\.json$/i.test(item.name));
+            const records = await Promise.all(files.map(async file => {
+              try {
+                const data = await jsonFromResponse(await fetch(file.download_url, { cache: 'no-store' }));
+                const slug = file.name.replace(/\.json$/i, '');
+                return { slug, title: data.title || data.name || fallbackTitle(slug), date: data.date || data.publish_date || '', category: data.category || '', status: 'Published', url: entryUrl(slug) };
+              } catch (_) {
+                const slug = file.name.replace(/\.json$/i, '');
+                return { slug, title: fallbackTitle(slug), date: '', category: '', status: 'Published', url: entryUrl(slug) };
+              }
+            }));
+            return records.sort((a, b) => String(b.date).localeCompare(String(a.date)) || a.title.localeCompare(b.title));
+          };
+          const loadDrafts = async () => {
+            const response = await api('pulls', { state: 'open', per_page: '100', sort: 'updated', direction: 'desc' });
+            const pulls = await jsonFromResponse(response);
+            const prefix = `cms/${config.collection}/`;
+            const related = (Array.isArray(pulls) ? pulls : []).filter(pr => String(pr.head?.ref || '').startsWith(prefix));
+            const records = await Promise.all(related.map(async pr => {
+              const slug = String(pr.head.ref).slice(prefix.length).replace(/\/$/, '');
+              let title = pr.title || fallbackTitle(slug);
+              let date = '';
+              let category = '';
+              try {
+                const branchResponse = await api(`contents/${config.folder}/${encodeURIComponent(slug)}.json`, { ref: pr.head.ref });
+                if (branchResponse.ok) {
+                  const file = await branchResponse.json();
+                  const bytes = Uint8Array.from(atob(String(file.content || '').replace(/\s/g, '')), char => char.charCodeAt(0));
+                  const data = JSON.parse(new TextDecoder('utf-8').decode(bytes));
+                  title = data.title || title;
+                  date = data.date || data.publish_date || '';
+                  category = data.category || '';
+                }
+              } catch (_) { /* Keep the pull-request title when branch content cannot be read. */ }
+              const labels = (pr.labels || []).map(label => label.name).filter(Boolean);
+              return { slug, title, date, category, status: labels.find(label => label.startsWith('sveltia-cms/'))?.replace('sveltia-cms/', '') || 'Draft', prNumber: pr.number, url: entryUrl(slug), updatedAt: pr.updated_at || '' };
+            }));
+            return records.sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)) || a.title.localeCompare(b.title));
+          };
+          (async () => {
+            setLoading(true); setError(''); setEntries([]);
+            try {
+              const data = config.mode === 'published' ? await loadPublished() : await loadDrafts();
+              if (!cancelled) setEntries(data);
+            } catch (err) {
+              if (!cancelled) setError(`无法读取${config.label}。请确认 GitHub 仓库公开可读、API 限额未用尽，然后重试。(${err?.message || 'Unknown error'})`);
+            } finally { if (!cancelled) setLoading(false); }
+          })();
+          return () => { cancelled = true; };
+        }, [view]);
+
+        const normalizedQuery = query.trim().toLowerCase();
+        const shown = entries.filter(entry => [entry.title, entry.date, entry.category, entry.slug, entry.status].join(' ').toLowerCase().includes(normalizedQuery));
+        const smallText = { color: '#657381', fontSize: 12, lineHeight: 1.5 };
+        return h('div', { className: 'def-cms-dashboard' },
+          h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 14 } },
+            h('div', null, h('h1', null, config.label), h('p', { className: 'intro', style: { marginBottom: 0 } }, config.mode === 'published' ? 'Only entries already merged into main are listed here. This page does not create new content.' : 'Only unpublished entries from this content type are listed here. Select an entry to continue editing it.')),
+            h('a', { href: '#/pages/content-navigator', onClick: onBack, style: { color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 3, fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap' } }, '← Content Management')
+          ),
+          h('input', { value: query, onChange: event => setQuery(event.target.value), placeholder: 'Search title, date, category…', 'aria-label': `Search ${config.label}`, style: { width: '100%', maxWidth: 620, boxSizing: 'border-box', padding: '10px 12px', border: '1px solid #ccd5dd', borderRadius: 7, font: 'inherit', margin: '0 0 16px' } }),
+          loading ? h('p', { style: smallText }, 'Loading entries…') : null,
+          error ? h('div', { role: 'alert', style: { border: '1px solid #e5c7c7', background: '#fffafa', padding: 14, borderRadius: 8, color: '#8a3434', lineHeight: 1.5 } }, error,
+            h('div', { style: { marginTop: 10 } }, h('a', { href: config.mode === 'draft' ? '#/workflow' : `#/collections/${config.collection}`, style: { color: '#234b68', textDecoration: 'underline' } }, config.mode === 'draft' ? 'Open native Editorial Workflow' : 'Open native collection list'))) : null,
+          !loading && !error ? h('p', { style: { ...smallText, margin: '0 0 10px' } }, `${shown.length} entries`) : null,
+          !loading && !error && shown.length ? h('div', { style: { border: '1px solid #dce3e9', borderRadius: 8, overflow: 'hidden', background: '#fff' } },
+            ...shown.map(entry => h('div', { key: entry.slug, style: { display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid #edf0f2', flexWrap: 'wrap' } },
+              h('div', { style: { minWidth: 0, flex: '1 1 280px' } },
+                h('strong', { style: { display: 'block', color: '#1d2d3b', fontSize: 14, lineHeight: 1.45, overflowWrap: 'anywhere' } }, entry.title),
+                h('div', { style: { ...smallText, marginTop: 4 } }, [entry.date, entry.category, entry.status].filter(Boolean).join(' · ')),
+                entry.prNumber ? h('div', { style: { ...smallText, marginTop: 2 } }, `Draft PR #${entry.prNumber}`) : null
+              ),
+              h('a', { href: entry.url, style: { color: '#234b68', fontSize: 13, fontWeight: 650, textDecoration: 'underline', textUnderlineOffset: 3, whiteSpace: 'nowrap' } }, 'Edit entry →')
+            ))
+          ) : null,
+          !loading && !error && !shown.length ? h('div', { style: { border: '1px solid #e0e7ed', background: '#fff', padding: 18, borderRadius: 8, color: '#657381', lineHeight: 1.5 } }, config.mode === 'draft' ? `No unpublished ${config.collection === 'stories' ? 'Stories' : 'Trade Show Articles'} found.` : `No published ${config.collection === 'stories' ? 'Stories' : 'Trade Show Articles'} found.`) : null
+        );
+      };
+
+      const ContentManagement = () => {
+        const [view, setView] = CMS.React.useState(contentViewFromHash);
+        CMS.React.useEffect(() => {
+          const onHashChange = () => setView(contentViewFromHash());
+          window.addEventListener('hashchange', onHashChange);
+          return () => window.removeEventListener('hashchange', onHashChange);
+        }, []);
+        const openView = viewName => () => setView(viewName);
+        if (view !== 'dashboard') return h(ContentEntryListing, { key: view, view, onBack: openView('dashboard') });
+        return h('div', { className: 'def-cms-dashboard' },
+          h('h1', null, 'Content Management'),
+          h('p', { className: 'intro' }, 'Edit website content and publishing settings. Assets are managed separately in Library.'),
+          group('Stories', [
+            link('New Story', '#/collections/stories/new', 'plus'),
+            link('Draft Stories', '#/pages/content-navigator?view=draft-stories', 'draft'),
+            link('Published Stories', '#/pages/content-navigator?view=published-stories', 'check'),
+            link('Stories Page Settings', '#/collections/content-management/entries/stories_page_settings', 'settings')
           ]),
-          link('Trade Shows Page Settings', '#/collections/content-management/entries/events_page_settings', 'settings')
-        ], '', true),
-        group('Social Media', [
-          link('Social Media Page Content', '#/collections/content-management/entries/social_page', 'social'),
-          link('Social Channel Cards', '#/collections/content-management/entries/social_media', 'image')
-        ]),
-        group('Media', [
-          link('Media Page Content', '#/collections/content-management/entries/media_page', 'media'),
-          link('Media Contacts', '#/collections/content-management/entries/media_contacts', 'plus')
-        ]),
-        group('Website Basics', [
-          link('Brand Introduction', '#/collections/content-management/entries/home_intro', 'home'),
-          link('Newsletter', '#/collections/content-management/entries/home_newsletter', 'plus')
-        ])
-      );
+          group('Trade Shows', [
+            link('Upcoming Shows', '#/collections/content-management/entries/upcoming_shows', 'check'),
+            subgroup('Trade Show Articles', [
+              link('New Trade Show Article', '#/collections/trade-show-articles/new', 'plus'),
+              link('Draft Trade Show Articles', '#/pages/content-navigator?view=draft-trade-show-articles', 'draft'),
+              link('Published Trade Show Articles', '#/pages/content-navigator?view=published-trade-show-articles', 'check')
+            ]),
+            link('Trade Shows Page Settings', '#/collections/content-management/entries/events_page_settings', 'settings')
+          ], '', true),
+          group('Social Media', [
+            link('Social Media Page Content', '#/collections/content-management/entries/social_page', 'social'),
+            link('Social Channel Cards', '#/collections/content-management/entries/social_media', 'image')
+          ]),
+          group('Media', [
+            link('Media Page Content', '#/collections/content-management/entries/media_page', 'media'),
+            link('Media Contacts', '#/collections/content-management/entries/media_contacts', 'plus')
+          ]),
+          group('Website Basics', [
+            link('Brand Introduction', '#/collections/content-management/entries/home_intro', 'home'),
+            link('Newsletter', '#/collections/content-management/entries/home_newsletter', 'plus')
+          ])
+        );
+      };
 
       // Only Library and Content Management are registered as custom pages.
       // Article management shortcuts live inside Content Management, not as toolbar icons.
