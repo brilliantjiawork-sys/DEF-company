@@ -113,7 +113,6 @@
 .recommendation-card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
 .recommendation-card-tags .kone-tag { margin: 0; }
 .event-card-booth { margin: 0; padding: 7px 10px; color: var(--dark); background: #fff6d6; border-left: 3px solid var(--yellow); font-weight: 700; font-size: 14px; }
-.event-card-theme { margin: 0; color: var(--dark); font-weight: 600; line-height: 1.5; }
 .event-card-summary { margin: 0; color: var(--gray); line-height: 1.6; }
 .site-disclaimer { max-width: 1180px; margin: 36px auto 0; padding: 22px 24px 28px; border-top: 1px solid var(--line); color: var(--gray); font-size: 12px; line-height: 1.65; }
 @media (max-width: 980px) { .stories-grid, .recommendation-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -684,15 +683,6 @@
   line-height: 1.3;
   font-weight: 650;
 }
-.event-card-theme {
-  max-width: 60ch;
-  margin: 0;
-  color: #354150;
-  font-size: 16px;
-  line-height: 1.55;
-  font-weight: 600;
-  overflow-wrap: anywhere;
-}
 .event-card-booth {
   width: fit-content;
   max-width: 100%;
@@ -811,7 +801,6 @@
     max-height: 340px;
     margin-bottom: 22px;
   }
-  .event-detail-theme { font-size: 18px; }
   .recommendation-card-story .recommendation-card-body { padding: 18px; }
 }
 
