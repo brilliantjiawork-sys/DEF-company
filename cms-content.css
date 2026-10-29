@@ -647,3 +647,179 @@
 .story-tags .kone-tag,
 .event-card-tags .kone-tag { margin-inline: 0; }
 
+
+/* Content details: align classification values with the body typography, not the old tiny chips. */
+.story-taxonomy-item > .story-category-label,
+.story-taxonomy-item > .story-industry-label,
+.story-taxonomy .kone-tag,
+.event-taxonomy .kone-tag,
+.story-industry-values .story-industry-chip,
+.story-taxonomy .story-industry-chip {
+  font-family: inherit !important;
+  font-size: 17px !important;
+  font-weight: 500 !important;
+  line-height: 1.65 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+.story-taxonomy-item > .story-category-label {
+  color: #176b85;
+}
+.story-taxonomy-item > .story-industry-label,
+.story-industry-values .story-industry-chip {
+  color: #525b65;
+}
+.story-taxonomy .kone-tag,
+.event-taxonomy .kone-tag {
+  color: #235394;
+}
+
+/* Upcoming / Past show cards: concise B2B hierarchy, no summary text in the listing card. */
+.event-card-body {
+  gap: 12px;
+}
+.event-card-body .event-title {
+  margin: 0;
+  font-size: clamp(20px, 1.8vw, 23px);
+  line-height: 1.3;
+  font-weight: 650;
+}
+.event-card-theme {
+  max-width: 60ch;
+  margin: 0;
+  color: #354150;
+  font-size: 16px;
+  line-height: 1.55;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+.event-card-booth {
+  width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 6px 9px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.event-card-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  color: var(--gray);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.event-card-meta-separator { display: none; }
+.event-card-meta-item {
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+.event-card-meta-icon {
+  margin-top: 2px;
+}
+.event-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* Trade Show detail pages use a full-bleed cover frame; crop portrait images to avoid side bars. */
+.event-detail-cover-wrap {
+  width: 100%;
+  height: clamp(280px, 35vw, 460px);
+  min-height: 280px;
+  max-height: 460px;
+  aspect-ratio: auto;
+  margin: 0 0 28px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #eef1f4;
+}
+.event-detail-cover {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: none !important;
+  object-fit: cover !important;
+  object-position: center;
+}
+.event-detail-theme {
+  margin: 10px 0 18px;
+  color: #354150;
+  font-family: inherit;
+  font-size: 20px;
+  font-weight: 650;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+.event-detail-description {
+  max-width: 760px;
+  margin: 28px 0;
+}
+.event-detail-description h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  line-height: 1.4;
+  font-weight: 650;
+}
+.event-detail-description .detail-summary {
+  max-width: 70ch;
+  margin: 0;
+  color: #525b65;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+/* Explore the Solution: topic → date → title → description, with editorial-size typography. */
+.recommendation-card-story .recommendation-card-body {
+  gap: 10px;
+  padding: 20px;
+}
+.recommendation-card-story .recommendation-card-kicker {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: .015em;
+  line-height: 1.5;
+  text-transform: none;
+}
+.recommendation-card-story .recommendation-card-date {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.recommendation-card-story .recommendation-card-title {
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.recommendation-card-story .recommendation-card-summary {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  overflow: hidden;
+}
+@media (max-width: 800px) {
+  .event-detail-cover-wrap {
+    height: clamp(230px, 56vw, 340px);
+    min-height: 230px;
+    max-height: 340px;
+    margin-bottom: 22px;
+  }
+  .event-detail-theme { font-size: 18px; }
+  .recommendation-card-story .recommendation-card-body { padding: 18px; }
+}
