@@ -65,7 +65,7 @@
         group('Stories', [
           link('New Story', '#/collections/stories/entries/new', 'plus'),
           link('Draft Stories', '#/workflow', 'draft'),
-          link('Published Stories', '#/pages/stories-published', 'check'),
+          link('Published Stories', '#/collections/stories', 'check'),
           link('Stories Page Settings', '#/collections/content-management/entries/stories_page_settings', 'settings')
         ]),
         group('Trade Shows', [
@@ -73,7 +73,7 @@
           subgroup('Trade Show Articles', [
             link('New Trade Show Article', '#/collections/trade-show-articles/entries/new', 'plus'),
             link('Draft Trade Show Articles', '#/workflow', 'draft'),
-            link('Published Trade Show Articles', '#/pages/trade-articles-published', 'check')
+            link('Published Trade Show Articles', '#/collections/trade-show-articles', 'check')
           ]),
           link('Trade Shows Page Settings', '#/collections/content-management/entries/events_page_settings', 'settings')
         ], '', true),
@@ -91,76 +91,9 @@
         ])
       );
 
-      const PublishedListPage = (title, folder, collection) => {
-        const Page = () => {
-          const [rows, setRows] = CMS.React.useState([]);
-          const [loading, setLoading] = CMS.React.useState(true);
-          const [error, setError] = CMS.React.useState('');
-          const load = CMS.React.useCallback(async () => {
-            setLoading(true); setError('');
-            try {
-              const repo = 'brilliantjiawork-sys/DEF-company';
-              const branch = 'main';
-              const indexResponse = await fetch(`https://data.jsdelivr.com/v1/package/gh/${repo}@${branch}/flat`, { cache: 'no-store' });
-              if (!indexResponse.ok) throw new Error(`读取失败（${indexResponse.status}）`);
-              const index = await indexResponse.json();
-              const paths = (index.files || []).map(file => file.name.replace(/^\//, '')).filter(path => path.startsWith(`${folder}/`) && path.toLowerCase().endsWith('.json'));
-              const entries = await Promise.all(paths.map(async path => {
-                const response = await fetch(`https://raw.githubusercontent.com/${repo}/${branch}/${path}`, { cache: 'no-store' });
-                if (!response.ok) return null;
-                try { return { slug: path.split('/').pop().replace(/\.json$/i, ''), record: await response.json() }; } catch (_) { return null; }
-              }));
-              setRows(entries.filter(item => item && item.record && item.record.title).sort((a,b) => String(b.record.date || '').localeCompare(String(a.record.date || ''))));
-            } catch (err) { setError(err.message || '读取失败'); }
-            finally { setLoading(false); }
-          }, []);
-          CMS.React.useEffect(() => { load(); }, [load]);
-          return h('div', { className: 'def-cms-dashboard' },
-            h('h1', null, title),
-            h('div', { className: 'def-cms-items' },
-              link('新增文章', `#/collections/${collection}/entries/new`, 'plus'),
-              link('草稿', '#/workflow', 'draft'),
-              link('返回内容列表', collection === 'stories' ? '#/collections/stories' : '#/collections/trade-show-articles', 'home')
-            ),
-            loading ? h('p', null, '正在读取…') : null,
-            error ? h('p', { role: 'alert' }, `文章列表读取失败：${error}`) : null,
-            !loading && !error && rows.length === 0 ? h('p', null, '暂无已发布文章。') : null,
-            ...rows.map(item => h('a', { key: item.slug, className: 'def-cms-item', href: `#/collections/${collection}/entries/${item.slug}` }, icon('check'), h('strong', null, item.record.title)))
-          );
-        };
-        return Page;
-      };
-      const StoriesManager = () => h('div', { className: 'def-cms-dashboard' },
-        h('h1', null, 'Stories'),
-        h('div', { className: 'def-cms-items' },
-          link('新增文章', '#/collections/stories/entries/new', 'plus'),
-          link('已发布', '#/pages/stories-published', 'check'),
-          link('草稿', '#/workflow', 'draft'),
-          link('页面设置', '#/collections/content-management/entries/stories_page_settings', 'settings')
-        )
-      );
-      const TradeShowManager = () => h('div', { className: 'def-cms-dashboard' },
-        h('h1', null, 'Trade Show'),
-        h('div', { className: 'def-cms-items' },
-          link('Upcoming Shows', '#/collections/content-management/entries/upcoming_shows', 'check')
-        ),
-        h('h3', null, 'Trade Show Articles'),
-        h('div', { className: 'def-cms-items' },
-          link('新增文章', '#/collections/trade-show-articles/entries/new', 'plus'),
-          link('已发布', '#/pages/trade-articles-published', 'check'),
-          link('草稿', '#/workflow', 'draft')
-        ),
-        h('h3', null, '页面设置'),
-        h('div', { className: 'def-cms-items' },
-          link('页面设置', '#/collections/content-management/entries/events_page_settings', 'settings')
-        )
-      );
-      const StoriesPublished = PublishedListPage('Stories · 已发布', 'data/stories', 'stories');
-      const TradeArticlesPublished = PublishedListPage('Trade Show Articles · 已发布', 'data/trade-show-articles', 'trade-show-articles');
-      CMS.registerCustomPage({ id: 'stories-manager', label: 'Stories', icon: 'article', component: StoriesManager });
-      CMS.registerCustomPage({ id: 'stories-published', label: 'Stories · 已发布', icon: 'task_alt', component: StoriesPublished });
-      CMS.registerCustomPage({ id: 'trade-show-manager', label: 'Trade Show', icon: 'event', component: TradeShowManager });
-      CMS.registerCustomPage({ id: 'trade-articles-published', label: 'Trade Show Articles · 已发布', icon: 'task_alt', component: TradeArticlesPublished });
+      // Only Library and Content Management are registered as custom pages.
+      // Article management shortcuts live inside Content Management, not as toolbar icons.
+
 
       // Library indexes assets already in the public repository and relates them back
       // to the CMS records that reference them. Uploading/replacing files remains in
@@ -478,7 +411,22 @@
         return marker >= 0 ? raw.slice(marker) : raw;
       };
       const navItemSelector = 'a, button, [role="button"], [role="treeitem"], [role="link"], [role="menuitem"], li';
-      const navLike = (element) => Boolean(element && element.closest && element.closest('nav,[role="navigation"]'));
+      // Sveltia's built-in page buttons live in its global toolbar, which is not
+      // guaranteed to use a <nav> element. Detect common toolbar/sidebar containers too.
+      const globalChromeSelector = 'nav, header, aside, [role="navigation"], [role="toolbar"], [role="menubar"], [data-testid*="toolbar" i], [class*="toolbar" i], [class*="sidebar" i], [class*="navigation" i]';
+      const navLike = (element) => Boolean(element && element.closest && element.closest(globalChromeSelector));
+      const nativeToolbarLabels = new Set([
+        'contents', 'content library', 'content', 'collections', 'collection',
+        'assets', 'asset library', 'media library', 'editorial workflow', 'workflow',
+        'validation', 'validate', '验证', 'all resources', '全部资源', 'global resources', '全局资源'
+      ]);
+      const isCompactIconControl = (element) => {
+        if (!element) return false;
+        const label = normalized(element.innerText || element.textContent);
+        if (nativeToolbarLabels.has(label)) return true;
+        const rect = typeof element.getBoundingClientRect === 'function' ? element.getBoundingClientRect() : null;
+        return Boolean(rect && rect.width > 0 && rect.height > 0 && rect.width <= 100 && rect.height <= 100 && !label);
+      };
 
       const inspectElement = (element) => {
         if (!element || element.nodeType !== 1) return;
@@ -488,45 +436,35 @@
           element.getAttribute('aria-description')
         ].map(normalized);
 
-        // Keep only the two deliberately designed primary destinations in the native
-        // Sveltia navigation. All collection shortcuts and utility pages remain available
-        // from the expanded Content Management page, so they should not become extra icons.
+        // Only two custom pages are registered below. Hide Sveltia's built-in
+        // toolbar buttons (Content Library / Assets / Workflow) without requiring
+        // the toolbar to be marked up as <nav>; the previous nav-only guard failed
+        // on Sveltia's global toolbar and left all eight icons visible.
         const navCandidate = element.closest ? element.closest(navItemSelector) : null;
-        if (navCandidate && navLike(navCandidate)) {
+        if (navCandidate) {
           const route = normalizeRoute(navCandidate.getAttribute('href') || element.getAttribute('href'));
-          if (route && (route.startsWith('#/collections/') || route === '#/collections' || route.startsWith('#/workflow') || route.startsWith('#/pages/'))) {
-            if (!primaryNavigationRoutes.has(route)) hideElement(navCandidate);
-          } else {
-            const navLabels = [
-              navCandidate.getAttribute('aria-label'), navCandidate.getAttribute('title'),
-              navCandidate.getAttribute('data-tooltip'), navCandidate.innerText || navCandidate.textContent,
-              ...attrs
-            ].map(normalized).filter(Boolean);
-            const primaryLabel = navLabels.some((label) => label === 'library' || label === 'content management');
-            const knownExtraLabel = navLabels.some((label) =>
-              ['stories', 'stories · 已发布', 'trade show', 'trade show articles · 已发布',
-               'published stories', 'draft stories', 'published trade show articles',
-               'all resources', '全部资源', 'global resources', '全局资源',
-               'contents', 'content', 'collections', 'collection', 'entries', 'entry',
-               'validation', 'validate', '验证'].includes(label)
-            );
-            if (!primaryLabel && knownExtraLabel) hideElement(navCandidate);
-          }
+          const navLabels = [
+            navCandidate.getAttribute('aria-label'), navCandidate.getAttribute('title'),
+            navCandidate.getAttribute('data-tooltip'), navCandidate.getAttribute('data-testid'),
+            navCandidate.innerText || navCandidate.textContent, ...attrs
+          ].map(normalized).filter(Boolean);
+          const primaryLabel = navLabels.some(label => label === 'library' || label === 'content management');
+          const builtInLabel = navLabels.some(label => nativeToolbarLabels.has(label) || nativeContentsLabels.has(label) || validationLabels.has(label));
+          const rootBuiltInRoute = route === '#/collections' || route === '#/assets' || route.startsWith('#/assets/') || route === '#/workflow' || route.startsWith('#/workflow/');
+          const isToolbarItem = navLike(navCandidate) || isCompactIconControl(navCandidate);
+          if (!primaryLabel && isToolbarItem && (builtInLabel || rootBuiltInRoute)) hideElement(navCandidate);
+          // Any old custom-page toolbar shortcut is now obsolete; the destination remains
+          // accessible from the expanded Content Management dashboard where applicable.
+          const oldCustomRoute = /^#\/pages\/(?:stories-manager|stories-published|trade-show-manager|trade-articles-published)(?:$|\/)/.test(route);
+          if (oldCustomRoute && isToolbarItem) hideElement(navCandidate);
         }
 
-        const tooltipMatch = attrs.some((label) => nativeContentsLabels.has(label) || validationLabels.has(label));
-        if (tooltipMatch && navLike(element)) hideElement(element.closest(navItemSelector) || element);
+        const tooltipMatch = attrs.some((label) => nativeToolbarLabels.has(label) || nativeContentsLabels.has(label) || validationLabels.has(label));
+        const targetItem = element.closest ? element.closest(navItemSelector) : null;
+        if (tooltipMatch && targetItem && (navLike(targetItem) || isCompactIconControl(targetItem))) hideElement(targetItem);
 
         const text = normalized(element.innerText || element.textContent);
         if (resourceRowPattern.test(text)) hideResourceRow(element);
-
-        // Hide old direct utility links even when the CMS renders absolute URLs such as
-        // /admin/#/pages/stories-published rather than a hash-only href.
-        const href = normalizeRoute(element.getAttribute('href'));
-        const utilityPage = /^#\/(?:collections(?:$|\/)|workflow(?:$|\/)|pages\/(?!media-library(?:$|\/)|content-navigator(?:$|\/)))/.test(href);
-        if (utilityPage && navLike(element)) hideElement(element.closest(navItemSelector) || element);
-
-        if (attrs.some((label) => validationLabels.has(label)) && navLike(element)) hideElement(element.closest(navItemSelector) || element);
       };
       const scanTree = (root) => {
         if (!root) return;
