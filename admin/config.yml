@@ -201,15 +201,6 @@ collections:
         name: title
         widget: string
         required: true
-      - label: 详情页标题字号（px）
-        name: detail_title_font_size
-        widget: number
-        value_type: int
-        default: 36
-        min: 28
-        max: 48
-        step: 1
-        required: false
       - label: 开始日期
         name: start_date
         widget: datetime
@@ -236,10 +227,6 @@ collections:
         name: venue
         widget: string
         required: false
-      - label: 展会主题
-        name: theme
-        widget: string
-        required: true
       - label: Industry｜行业
         name: industries
         widget: select
@@ -280,10 +267,11 @@ collections:
         name: cover_alt
         widget: string
         required: false
-      - label: 展会详情描述（仅在详情页显示）
+      - label: About This Show｜展会详情描述
         name: summary
         widget: text
-        required: true
+        required: false
+        hint: 仅显示在展会详情页；建议写 1–3 句说明展会内容，不会显示在 Upcoming 卡片。
       - label: 详情描述字号（px）
         name: description_font_size
         widget: number
@@ -321,10 +309,19 @@ collections:
         value_type: int
         default: 16
         min: 14
-        max: 22
+        max: 20
         step: 1
         required: false
 
+      - label: 详情页标题字号（px）
+        name: detail_title_font_size
+        widget: number
+        value_type: int
+        default: 34
+        min: 28
+        max: 42
+        step: 1
+        required: false
       - label: 详情页图片集（可选）
         name: gallery
         widget: list
@@ -634,9 +631,9 @@ collections:
     name: detail_title_font_size
     widget: number
     value_type: int
-    default: 36
+    default: 34
     min: 28
-    max: 48
+    max: 42
     step: 1
     required: false
   - label: 发布日期
@@ -716,7 +713,7 @@ collections:
     value_type: int
     default: 17
     min: 14
-    max: 22
+    max: 20
     step: 1
     required: false
   - label: 显示销售 CTA
@@ -755,9 +752,9 @@ collections:
     name: detail_title_font_size
     widget: number
     value_type: int
-    default: 36
+    default: 34
     min: 28
-    max: 48
+    max: 42
     step: 1
     required: false
   - label: 内容阶段
@@ -837,9 +834,9 @@ collections:
     name: body_font_size
     widget: number
     value_type: int
-    default: 16
+    default: 17
     min: 14
-    max: 22
+    max: 20
     step: 1
     required: false
   - label: 显示销售 CTA
