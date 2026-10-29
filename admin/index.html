@@ -692,14 +692,6 @@
         const br = b.getBoundingClientRect();
         return ar.top - br.top || br.right - ar.right;
       })[0] || null;
-      const findSharedToolbarContainer = (saveButton, menuButton) => {
-        let node = menuButton && menuButton.parentElement;
-        for (let depth = 0; node && depth < 8; depth += 1, node = node.parentElement) {
-          if (node.contains(saveButton)) return node;
-        }
-        return null;
-      };
-
       // Cache toolbar controls so typing in the editor does not repeatedly scan the whole DOM.
       let activeExplicitPublishButton = null;
       let activeExplicitSaveButton = null;
@@ -727,8 +719,9 @@
 
         const saveButton = findEditorSaveButton();
         const menuButton = findSavePublishMenuButton();
-        const sharedToolbar = saveButton && menuButton ? findSharedToolbarContainer(saveButton, menuButton) : null;
-        if (!saveButton || !menuButton || !menuButton.parentElement || !sharedToolbar) return;
+        // The CMS toolbar can contain shadow-root components; the visible menu button is
+        // the safest insertion anchor, while the independent Save lookup guards the editor state.
+        if (!saveButton || !menuButton || !menuButton.parentElement) return;
         const parent = menuButton.parentElement;
         let publishButton = null;
         if (!publishButton) {
