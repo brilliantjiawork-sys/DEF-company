@@ -231,6 +231,46 @@ collections:
         name: theme
         widget: string
         required: true
+      - label: Industry｜行业
+        name: industries
+        widget: select
+        multiple: true
+        options: &id001
+        - Automotive
+        - Electronics
+        - Food & Beverage
+        - Packaging
+        - Semiconductors
+        - Logistics
+        - Pharmaceuticals
+      - label: Topic Tags｜话题标签（多选；用于官网筛选与相关推荐）
+        name: tags
+        widget: select
+        multiple: true
+        options: &id002
+        - Machine Vision
+        - AI & Deep Learning
+        - Defect Detection
+        - Quality Control
+        - AOI
+        - 3D Vision
+        - Robotics & Automation
+        - Positioning & Measurement
+        - Electronics & Semiconductors
+        - Food & Beverage Inspection
+        - Packaging Inspection
+        - Warehouse & Logistics
+        - Innovation
+        - Sustainability
+      - label: 展会封面图
+        name: cover
+        widget: image
+        required: false
+        choose_url: false
+      - label: 图片替代文本
+        name: cover_alt
+        widget: string
+        required: false
       - label: 展会详情描述（仅在详情页显示）
         name: summary
         widget: text
@@ -296,46 +336,6 @@ collections:
           name: alt
           widget: string
           required: false
-      - label: Industry｜行业
-        name: industries
-        widget: select
-        multiple: true
-        options: &id001
-        - Automotive
-        - Electronics
-        - Food & Beverage
-        - Packaging
-        - Semiconductors
-        - Logistics
-        - Pharmaceuticals
-      - label: Topic Tags｜话题标签（多选；用于官网筛选与相关推荐）
-        name: tags
-        widget: select
-        multiple: true
-        options: &id002
-        - Machine Vision
-        - AI & Deep Learning
-        - Defect Detection
-        - Quality Control
-        - AOI
-        - 3D Vision
-        - Robotics & Automation
-        - Positioning & Measurement
-        - Electronics & Semiconductors
-        - Food & Beverage Inspection
-        - Packaging Inspection
-        - Warehouse & Logistics
-        - Innovation
-        - Sustainability
-      - label: 展会封面图
-        name: cover
-        widget: image
-        required: false
-        choose_url: false
-      - label: 图片替代文本
-        name: cover_alt
-        widget: string
-        required: false
       - label: 官方/报名网址（可选）
         name: url
         widget: string
