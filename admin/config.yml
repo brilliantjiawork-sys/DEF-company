@@ -157,10 +157,6 @@ collections:
       name: page_intro
       widget: text
       required: true
-    - label: Upcoming Shows 切换按钮文字
-      name: upcoming_tab_label
-      widget: string
-      required: true
     - label: Trade Show Articles 切换按钮文字
       name: articles_tab_label
       widget: string
@@ -559,7 +555,7 @@ collections:
     date_format: YYYY-MM-DD
     time_format: false
     format: YYYY-MM-DD
-  - label: 内容选题
+  - label: Content Category｜内容类别
     name: category
     widget: select
     required: true
@@ -570,6 +566,16 @@ collections:
     - Industry Insights
     - Company & Culture
     - Brand News & Updates
+  - label: Industry｜行业
+    name: industries
+    widget: select
+    multiple: true
+    options: *id001
+  - label: Topic Tags｜话题标签
+    name: tags
+    widget: select
+    multiple: true
+    options: *id002
   - label: 卡片摘要
     name: summary
     widget: text
@@ -583,16 +589,6 @@ collections:
     name: image_alt
     widget: string
     required: false
-  - label: Industry｜行业
-    name: industries
-    widget: select
-    multiple: true
-    options: *id001
-  - label: Topic Tags｜话题标签
-    name: tags
-    widget: select
-    multiple: true
-    options: *id002
   - label: 虚构应用示例
     name: illustrative_example
     widget: boolean
@@ -665,6 +661,16 @@ collections:
     date_format: YYYY-MM-DD
     time_format: false
     format: YYYY-MM-DD
+  - label: Industry｜行业
+    name: industries
+    widget: select
+    multiple: true
+    options: *id001
+  - label: Topic Tags｜话题标签（多选；用于官网筛选与相关推荐）
+    name: tags
+    widget: select
+    multiple: true
+    options: *id002
   - label: 卡片摘要
     name: summary
     widget: text
@@ -678,16 +684,6 @@ collections:
     name: image_alt
     widget: string
     required: false
-  - label: Industry｜行业
-    name: industries
-    widget: select
-    multiple: true
-    options: *id001
-  - label: Topic Tags｜话题标签（多选；用于官网筛选与相关推荐）
-    name: tags
-    widget: select
-    multiple: true
-    options: *id002
   - label: 虚构示例标记
     name: illustrative_example
     widget: boolean

@@ -10,20 +10,21 @@
     .def-cms-dashboard h1 { margin: 0 0 8px; font-size: 28px; font-weight: 650; }
     .def-cms-dashboard h3 { margin: 22px 0 8px; font-size: 15px; font-weight: 650; }
     .def-cms-dashboard .intro { margin: 0 0 20px; color: #586675; line-height: 1.4; }
-    .def-cms-group { border: 1px solid #dce3e9; border-radius: 10px; background: #fff; margin: 0 0 12px; overflow: hidden; }
-    .def-cms-group > summary { cursor: pointer; list-style: none; padding: 17px 18px; font-size: 16px; font-weight: 650; display: flex; align-items: center; gap: 10px; background: #f7f9fb; }
-    .def-cms-group > summary::-webkit-details-marker, .def-cms-subgroup > summary::-webkit-details-marker { display: none; }
-    .def-cms-group > summary::before { content: '▸'; display: inline-block; color: #526779; transition: transform .15s ease; }
-    .def-cms-group[open] > summary::before { transform: rotate(90deg); }
-    .def-cms-items { padding: 8px 14px 14px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
-    .def-cms-item { display: flex; align-items: center; gap: 11px; min-height: 56px; padding: 13px 14px; border: 1px solid #e0e7ed; border-radius: 8px; text-decoration: none; color: #1f2d3a; background: #fff; }
+    .def-cms-group { border-bottom: 1px solid #dce3e9; padding: 0 0 20px; margin: 0 0 20px; }
+    .def-cms-group > h2 { margin: 0 0 10px; padding: 0; font-size: 17px; line-height: 1.4; font-weight: 700; color: #172a3a; }
+    .def-cms-items { padding: 0; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+    .def-cms-item { display: flex; align-items: center; gap: 11px; min-height: 50px; padding: 10px 12px; border: 1px solid #e0e7ed; border-radius: 8px; text-decoration: none; color: #1f2d3a; background: #fff; }
     .def-cms-item:hover, .def-cms-item:focus-visible { border-color: #93b7d4; background: #f7fbff; outline: none; }
     .def-cms-item strong { display: block; font-size: 14px; font-weight: 650; }
-    .def-cms-icon { display: grid; place-items: center; flex: 0 0 30px; width: 30px; height: 30px; border-radius: 7px; background: #eef4f8; color: #234b68; }
+    .def-cms-icon { display: grid; place-items: center; flex: 0 0 28px; width: 28px; height: 28px; border-radius: 7px; background: #eef4f8; color: #234b68; }
     .def-cms-icon svg { width: 18px; height: 18px; display: block; }
-    .def-cms-subgroup { margin: 8px 0 0; border: 1px dashed #d2dce4; border-radius: 8px; }
-    .def-cms-subgroup > summary { padding: 12px 14px; cursor: pointer; font-weight: 650; list-style: none; }
+    .def-cms-subgroup { margin: 12px 0; padding: 0 0 4px; }
+    .def-cms-subgroup > h3 { margin: 0 0 8px; font-size: 14px; font-weight: 700; color: #43596b; }
     .def-cms-subgroup .def-cms-items { padding-top: 0; }
+    .def-cms-group-stacked > .def-cms-items { display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
+    .def-cms-group-stacked > .def-cms-items > .def-cms-subgroup { width: 100%; box-sizing: border-box; }
+    .def-cms-dashboard .def-cms-subgroup + .def-cms-item { margin-top: 8px; }
+    .def-cms-section-caption { margin: -3px 0 12px; color: #687887; font-size: 13px; line-height: 1.5; }
     @media (max-width: 720px) { .def-cms-items { grid-template-columns: 1fr; } .def-cms-dashboard { padding: 18px; } }
   </style>
 </head>
@@ -45,33 +46,50 @@
       };
       const icon = (name) => h('span', { className: 'def-cms-icon', 'aria-hidden': 'true' }, h('svg', { viewBox: '0 0 24 24', fill: 'none' }, iconPaths[name] || iconPaths.draft));
       const link = (title, route, iconName = 'draft') => h('a', { className: 'def-cms-item', href: route }, icon(iconName), h('strong', null, title));
-      const group = (title, children, open = false) => h('details', { className: 'def-cms-group', open }, h('summary', null, title), h('div', { className: 'def-cms-items' }, ...children));
-      const subgroup = (title, children, open = false) => h('details', { className: 'def-cms-subgroup', open }, h('summary', null, title), h('div', { className: 'def-cms-items' }, ...children));
+      const group = (title, children, caption = '', stacked = false) => h('section', { className: 'def-cms-group' + (stacked ? ' def-cms-group-stacked' : '') },
+        h('h2', null, title),
+        caption ? h('p', { className: 'def-cms-section-caption' }, caption) : null,
+        h('div', { className: 'def-cms-items' }, ...children)
+      );
+      const subgroup = (title, children, caption = '') => h('div', { className: 'def-cms-subgroup' },
+        h('h3', null, title),
+        caption ? h('p', { className: 'def-cms-section-caption' }, caption) : null,
+        h('div', { className: 'def-cms-items' }, ...children)
+      );
 
+      // Every section and sub-entry is visible at once. There are no accordions here,
+      // so high-frequency tasks never require an extra click just to reveal links.
       const ContentManagement = () => h('div', { className: 'def-cms-dashboard' },
-        h('h1', null, '内容管理'),
+        h('h1', null, 'Content Management'),
+        h('p', { className: 'intro' }, 'Edit website content and publishing settings. Assets are managed separately in Library.'),
+        group('Stories', [
+          link('New Story', '#/collections/stories/entries/new', 'plus'),
+          link('Draft Stories', '#/workflow', 'draft'),
+          link('Published Stories', '#/pages/stories-published', 'check'),
+          link('Stories Page Settings', '#/collections/content-management/entries/stories_page_settings', 'settings')
+        ]),
+        group('Trade Shows', [
+          link('Upcoming Shows', '#/collections/content-management/entries/upcoming_shows', 'check'),
+          subgroup('Trade Show Articles', [
+            link('New Trade Show Article', '#/collections/trade-show-articles/entries/new', 'plus'),
+            link('Draft Trade Show Articles', '#/workflow', 'draft'),
+            link('Published Trade Show Articles', '#/pages/trade-articles-published', 'check')
+          ]),
+          link('Trade Shows Page Settings', '#/collections/content-management/entries/events_page_settings', 'settings')
+        ], '', true),
+        group('Social Media', [
+          link('Social Media Page Content', '#/collections/content-management/entries/social_page', 'social'),
+          link('Social Channel Cards', '#/collections/content-management/entries/social_media', 'image')
+        ]),
+        group('Media', [
+          link('Media Page Content', '#/collections/content-management/entries/media_page', 'media'),
+          link('Media Contacts', '#/collections/content-management/entries/media_contacts', 'plus')
+        ]),
         group('Website Basics', [
           link('Brand Introduction', '#/collections/content-management/entries/home_intro', 'home'),
           link('Newsletter', '#/collections/content-management/entries/home_newsletter', 'plus')
-        ], true),
-        group('Newsroom', [
-          link('Stories', '#/pages/stories-manager', 'draft'),
-          link('Trade Show', '#/pages/trade-show-manager', 'check')
-        ], true),
-        group('Social Media', [
-          link('页面文案', '#/collections/content-management/entries/social_page', 'social'),
-          link('渠道卡片', '#/collections/content-management/entries/social_media', 'image')
-        ]),
-        group('Media', [
-          link('页面文案', '#/collections/content-management/entries/media_page', 'media'),
-          link('媒体联系人', '#/collections/content-management/entries/media_contacts', 'plus')
-        ]),
-        group('Forms & Privacy', [
-          link('Contact Sales', '#/collections/content-management/entries/contact_content', 'draft'),
-          link('Cookie & Privacy', '#/collections/content-management/entries/cookie_content', 'settings')
         ])
       );
-      CMS.registerCustomPage({ id: 'content-navigator', label: '内容管理', icon: 'dashboard', component: ContentManagement });
 
       const PublishedListPage = (title, folder, collection) => {
         const Page = () => {
@@ -102,7 +120,7 @@
             h('div', { className: 'def-cms-items' },
               link('新增文章', `#/collections/${collection}/entries/new`, 'plus'),
               link('草稿', '#/workflow', 'draft'),
-              link('返回', collection === 'stories' ? '#/pages/stories-manager' : '#/pages/trade-show-manager', 'home')
+              link('返回内容列表', collection === 'stories' ? '#/collections/stories' : '#/collections/trade-show-articles', 'home')
             ),
             loading ? h('p', null, '正在读取…') : null,
             error ? h('p', { role: 'alert' }, `文章列表读取失败：${error}`) : null,
@@ -144,171 +162,273 @@
       CMS.registerCustomPage({ id: 'trade-show-manager', label: 'Trade Show', icon: 'event', component: TradeShowManager });
       CMS.registerCustomPage({ id: 'trade-articles-published', label: 'Trade Show Articles · 已发布', icon: 'task_alt', component: TradeArticlesPublished });
 
-      // Media Library: index the public repository's existing image files and connect them
-      // to saved CMS content without moving, renaming, or deleting any asset.
+      // Library indexes assets already in the public repository and relates them back
+      // to the CMS records that reference them. Uploading/replacing files remains in
+      // Sveltia's native Asset Library, reached from the action at the top of this page.
       const MediaLibrary = () => {
         const [items, setItems] = CMS.React.useState([]);
         const [query, setQuery] = CMS.React.useState('');
-        const [section, setSection] = CMS.React.useState('all');
+        const [typeFilter, setTypeFilter] = CMS.React.useState('all');
+        const [useFilter, setUseFilter] = CMS.React.useState('all');
         const [loading, setLoading] = CMS.React.useState(true);
         const [error, setError] = CMS.React.useState('');
         const repo = 'brilliantjiawork-sys/DEF-company';
         const branch = 'main';
-        const dataPaths = [
-          ['data/database.json', 'stories'],
-          ['data/event-coverage.json', 'tradeArticles'],
+        const pdfExt = /\.pdf$/i;
+        const videoExt = /\.(?:mp4|webm|mov|m4v|ogv|avi|mkv)$/i;
+        const assetExt = /\.(?:png|jpe?g|webp|gif|svg|avif|pdf|mp4|webm|mov|m4v|ogv|avi|mkv)$/i;
+        const assetRoots = ['images/', 'videos/', 'pdf/', 'documents/', 'downloads/', 'whitepapers/', 'catalogs/', 'assets/'];
+        const staticData = [
           ['data/events.json', 'shows'],
-          ['data/social-media.json', 'other'],
-          ['data/newsroom-social-media.json', 'other'],
-          ['data/media-contacts.json', 'other'],
-          ['data/site-content.json', 'other'],
-          ['data/home-intro.json', 'other'],
-          ['data/home-newsletter.json', 'other'],
-          ['data/stories-page-settings.json', 'other'],
-          ['data/trade-shows-page-settings.json', 'other']
+          ['data/social-media.json', 'socialMedia'],
+          ['data/newsroom-social-media.json', 'socialPage'],
+          ['data/media-contacts.json', 'mediaContacts'],
+          ['data/newsroom-media.json', 'mediaPage'],
+          ['data/site-content.json', 'website'],
+          ['data/home-intro.json', 'website'],
+          ['data/home-newsletter.json', 'website'],
+          ['data/stories-page-settings.json', 'website'],
+          ['data/trade-shows-page-settings.json', 'website'],
+          ['data/contact-content.json', 'website'],
+          ['data/cookie-content.json', 'website']
         ];
-        const normalizePath = (value) => String(value || '').replace(/^\.\//, '').replace(/^\//, '').replace(/^images\//, '');
-        const fileName = (value) => normalizePath(value).split('/').pop().toLowerCase();
-        const collectImageRefs = (value, fieldPath = '', out = []) => {
+        const cleanPath = value => {
+          let result = String(value || '').split(/[?#]/)[0].trim().replace(/\\/g, '/').replace(/^\.\//, '').replace(/^\/+/, '');
+          try { result = decodeURIComponent(result); } catch (_) {}
+          return result;
+        };
+        const baseName = value => cleanPath(value).split('/').pop().toLowerCase();
+        const getType = path => pdfExt.test(path) ? 'pdf' : videoExt.test(path) ? 'video' : 'image';
+        const typeLabel = type => type === 'pdf' ? 'PDF' : type === 'video' ? 'Video' : 'Image';
+        const categoryForKind = kind => ({
+          stories: 'Stories', tradeArticles: 'Trade Shows', shows: 'Trade Shows',
+          socialMedia: 'Social Media', socialPage: 'Social Media',
+          mediaContacts: 'Media Contacts', mediaPage: 'Media Contacts', website: 'Website & Brand'
+        }[kind] || 'Website & Brand');
+        const titleForRecord = (record, fallback, kind) => String((kind === 'mediaContacts' ? record?.name : '') || record?.title || record?.name || record?.platform || record?.full_name || record?.contact_name || record?.page_title || fallback || 'Untitled').trim();
+        const collectRefs = (value, fieldPath = '', out = []) => {
           if (typeof value === 'string') {
-            const matches = value.match(/\/?(?:images\/)?[A-Za-z0-9_./-]+\.(?:png|jpe?g|webp|gif|svg|avif)(?:[?#][A-Za-z0-9_=&.-]*)?/gi) || [];
-            matches.forEach(match => out.push({ path: match, field: fieldPath }));
+            const matches = value.match(/(?:\/?[A-Za-z0-9_ .@()/-]+\.(?:png|jpe?g|webp|gif|svg|avif|pdf|mp4|webm|mov|m4v|ogv|avi|mkv))(?:[?#][^\s"'<>]*)?/gi) || [];
+            matches.forEach(match => out.push({ path: cleanPath(match), field: fieldPath }));
           } else if (Array.isArray(value)) {
-            value.forEach((item, index) => collectImageRefs(item, fieldPath + '[' + index + ']', out));
+            value.forEach((item, index) => collectRefs(item, fieldPath ? `${fieldPath}[${index}]` : `[${index}]`, out));
           } else if (value && typeof value === 'object') {
-            Object.entries(value).forEach(([key, item]) => collectImageRefs(item, fieldPath ? fieldPath + '.' + key : key, out));
+            Object.entries(value).forEach(([key, item]) => collectRefs(item, fieldPath ? `${fieldPath}.${key}` : key, out));
           }
           return out;
         };
-        const recordImageRefs = (record) => collectImageRefs(record);
-        const titleOf = (record, fallback) => String(record?.title || record?.name || record?.platform || record?.page_title || fallback || 'Untitled').trim();
+        const getEditUrl = (kind, slug = '') => {
+          const encoded = encodeURIComponent(slug);
+          if (kind === 'stories' && slug) return `#/collections/stories/entries/${encoded}`;
+          if (kind === 'tradeArticles' && slug) return `#/collections/trade-show-articles/entries/${encoded}`;
+          if (kind === 'shows') return '#/collections/content-management/entries/upcoming_shows';
+          if (kind === 'socialMedia') return '#/collections/content-management/entries/social_media';
+          if (kind === 'socialPage') return '#/collections/content-management/entries/social_page';
+          if (kind === 'mediaContacts' || kind === 'mediaPage') return `#/collections/content-management/entries/${kind === 'mediaContacts' ? 'media_contacts' : 'media_page'}`;
+          if (kind === 'website') {
+            if (slug === 'home-intro') return '#/collections/content-management/entries/home_intro';
+            if (slug === 'home-newsletter') return '#/collections/content-management/entries/home_newsletter';
+            if (slug === 'stories-page-settings') return '#/collections/content-management/entries/stories_page_settings';
+            if (slug === 'trade-shows-page-settings') return '#/collections/content-management/entries/events_page_settings';
+          }
+          return '';
+        };
+        const recordsFrom = (data, kind, path, explicitSlug = '') => {
+          if (!data) return [];
+          const toRecord = (record, slug, fallback) => ({
+            record, kind, source: path, slug: slug || String(record?.slug || ''),
+            title: titleForRecord(record, fallback, kind), category: categoryForKind(kind),
+            editUrl: getEditUrl(kind, slug || String(record?.slug || ''), path)
+          });
+          if (kind === 'stories' && Array.isArray(data.articles)) return data.articles.map(record => toRecord(record, String(record.slug || ''), 'Story'));
+          if (kind === 'tradeArticles' && Array.isArray(data.articles)) return data.articles.map(record => toRecord(record, String(record.slug || ''), 'Trade Show Article'));
+          if (kind === 'shows' && Array.isArray(data.exhibitions)) return data.exhibitions.map((record, i) => toRecord(record, '', `Trade Show ${i + 1}`));
+          if (kind === 'socialMedia' && Array.isArray(data.channels)) return data.channels.map((record, i) => toRecord(record, '', `Social Channel ${i + 1}`));
+          if (kind === 'mediaContacts' && Array.isArray(data.contacts)) return data.contacts.map((record, i) => toRecord(record, '', `Media Contact ${i + 1}`));
+          if (Array.isArray(data)) return data.map((record, i) => toRecord(record, '', `${kind} ${i + 1}`));
+          return [toRecord(data, explicitSlug, path.split('/').pop().replace(/\.json$/i, ''))];
+        };
+
         CMS.React.useEffect(() => {
           let cancelled = false;
-          const fetchJson = async (path) => {
-            const url = `https://raw.githubusercontent.com/${repo}/${branch}/${path}`;
-            const response = await fetch(url, { cache: 'no-store' });
-            if (!response.ok) return null;
-            try { return await response.json(); } catch (_) { return null; }
-          };
-          const walkImages = async (path) => {
-            // Prefer jsDelivr's public package file index: it avoids GitHub REST API rate limits.
-            let cdnError = '';
+          const fetchIndex = async () => {
             try {
-              const cdnResponse = await fetch(`https://data.jsdelivr.com/v1/package/gh/${repo}@${branch}/flat`, { cache: 'no-store' });
-              if (cdnResponse.ok) {
-                const payload = await cdnResponse.json();
-                const files = (payload.files || []).filter(file => file.name.startsWith(`/${path}/`) && /\.(png|jpe?g|webp|gif|svg|avif)$/i.test(file.name));
-                if (files.length) return files.map(file => ({ name: file.name.split('/').pop(), path: file.name.replace(/^\//, ''), url: `https://cdn.jsdelivr.net/gh/${repo}@${branch}${file.name}`, size: file.size || 0 }));
-              } else cdnError = `CDN ${cdnResponse.status}`;
-            } catch (error) { cdnError = error.message || 'CDN unavailable'; }
-            const url = `https://api.github.com/repos/${repo}/contents/${path}?ref=${branch}`;
-            const response = await fetch(url, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
-            if (!response.ok) throw new Error(`图片目录读取失败：CDN 与 GitHub API 均不可用（GitHub ${response.status}；${cdnError || 'CDN 无结果'}）。请确认 images/ 已提交到 main 分支。`);
-            const entries = await response.json();
-            const nested = await Promise.all((Array.isArray(entries) ? entries : []).map(async entry => {
-              if (entry.type === 'dir') return walkImages(entry.path);
-              if (entry.type === 'file' && /\.(png|jpe?g|webp|gif|svg|avif)$/i.test(entry.name)) return [{ name: entry.name, path: entry.path, url: entry.download_url, size: entry.size || 0 }];
-              return [];
-            }));
-            return nested.flat();
+              const response = await fetch(`https://data.jsdelivr.com/v1/package/gh/${repo}@${branch}/flat`, { cache: 'no-store' });
+              if (!response.ok) throw new Error(`CDN ${response.status}`);
+              const data = await response.json();
+              return (data.files || []).map(file => ({ path: cleanPath(file.name), size: file.size || 0, url: `https://cdn.jsdelivr.net/gh/${repo}@${branch}/${cleanPath(file.name)}` }));
+            } catch (cdnError) {
+              const response = await fetch(`https://api.github.com/repos/${repo}/git/trees/${branch}?recursive=1`, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
+              if (!response.ok) throw new Error(`素材索引暂时不可用（GitHub ${response.status}）。请刷新后重试。`);
+              const data = await response.json();
+              if (data.truncated) throw new Error('仓库文件列表超过单次索引范围，无法保证素材完整。');
+              return (data.tree || []).filter(file => file.type === 'blob').map(file => ({ path: cleanPath(file.path), size: file.size || 0, url: `https://raw.githubusercontent.com/${repo}/${branch}/${cleanPath(file.path)}` }));
+            }
+          };
+          const fetchJson = async path => {
+            try {
+              const response = await fetch(`https://raw.githubusercontent.com/${repo}/${branch}/${path}`, { cache: 'no-store' });
+              if (!response.ok) return null;
+              return await response.json();
+            } catch (_) { return null; }
           };
           const load = async () => {
             try {
-              const [images, loadedData] = await Promise.all([
-                walkImages('images'),
-                Promise.all(dataPaths.map(async ([path, kind]) => ({ path, kind, data: await fetchJson(path) })))
-              ]);
-              const usages = [];
-              loadedData.forEach(({ path, kind, data }) => {
-                if (!data) return;
-                let records = [];
-                if (kind === 'stories') records = (Array.isArray(data.articles) ? data.articles : []).map(record => ({ record, kind, source: path }));
-                else if (kind === 'tradeArticles') records = (Array.isArray(data.articles) ? data.articles : []).map(record => ({ record, kind, source: path }));
-                else if (kind === 'shows') records = (Array.isArray(data.exhibitions) ? data.exhibitions : []).map(record => ({ record, kind, source: path }));
-                else records = [{ record: data, kind, source: path }];
-                records.forEach(({ record, kind, source }) => {
-                  const title = titleOf(record, source);
-                  const textValues = recordImageRefs(record);
-                  textValues.forEach(ref => {
-                    const refName = fileName(ref.path.split(/[?#]/)[0]);
-                    if (!refName) return;
-                    const key = kind + '|' + title + '|' + refName + '|' + ref.field;
-                    if (!usages.some(usage => usage.key === key)) usages.push({ key, kind, title, source, refName, ref: ref.path, field: ref.field, record });
+              const repoFiles = await fetchIndex();
+              const assets = repoFiles.filter(file => assetRoots.some(root => file.path.startsWith(root)) && assetExt.test(file.path))
+                .map(file => ({ ...file, name: file.path.split('/').pop(), type: getType(file.path), usages: [], categories: [] }));
+              const hasStoryFiles = repoFiles.some(file => /^data\/stories\/[^/]+\.json$/i.test(file.path));
+              const hasTradeArticleFiles = repoFiles.some(file => /^data\/trade-show-articles\/[^/]+\.json$/i.test(file.path));
+              const contentSources = [];
+              if (hasStoryFiles) {
+                repoFiles.filter(file => /^data\/stories\/[^/]+\.json$/i.test(file.path)).forEach(file => contentSources.push({ path: file.path, kind: 'stories', slug: file.path.split('/').pop().replace(/\.json$/i, '') }));
+              } else contentSources.push({ path: 'data/database.json', kind: 'stories-index' });
+              if (hasTradeArticleFiles) {
+                repoFiles.filter(file => /^data\/trade-show-articles\/[^/]+\.json$/i.test(file.path)).forEach(file => contentSources.push({ path: file.path, kind: 'tradeArticles', slug: file.path.split('/').pop().replace(/\.json$/i, '') }));
+              } else contentSources.push({ path: 'data/event-coverage.json', kind: 'tradeArticles-index' });
+              staticData.forEach(([path, kind]) => contentSources.push({ path, kind, slug: path.split('/').pop().replace(/\.json$/i, '') }));
+              const loadedSources = await Promise.all(contentSources.map(async source => ({ ...source, data: await fetchJson(source.path) })));
+              const records = [];
+              loadedSources.forEach(source => {
+                if (!source.data) return;
+                let kind = source.kind;
+                if (kind === 'stories-index') kind = 'stories';
+                if (kind === 'tradeArticles-index') kind = 'tradeArticles';
+                if (source.path === 'data/social-media.json') kind = 'socialMedia';
+                records.push(...recordsFrom(source.data, kind, source.path, source.slug));
+                // Add the real per-file slug to folder-based content so the edit link points at the exact entry.
+                if ((kind === 'stories' || kind === 'tradeArticles') && source.path.match(/^data\/(?:stories|trade-show-articles)\/[^/]+\.json$/i) && records.length) {
+                  const last = records[records.length - 1];
+                  last.slug = source.slug;
+                  last.editUrl = getEditUrl(kind, source.slug);
+                }
+              });
+
+              const usageByExactPath = new Map();
+              const usageByBasename = new Map();
+              records.forEach(entry => {
+                collectRefs(entry.record).forEach(ref => {
+                  const refPath = cleanPath(ref.path);
+                  const base = baseName(refPath);
+                  const fieldLower = ref.field.toLowerCase();
+                  let usageLabel = /gallery/.test(fieldLower) ? 'Gallery Image' : /avatar|photo|portrait/.test(fieldLower) ? 'Contact Photo' : /cover/.test(fieldLower) ? 'Cover Image' : /body|content|markdown/.test(fieldLower) ? 'Body Image' : /video/.test(fieldLower) ? 'Video' : /pdf|whitepaper|catalog|brochure|document|file/.test(fieldLower) ? 'PDF File' : /logo/.test(fieldLower) ? 'Brand Logo' : /hero/.test(fieldLower) ? 'Homepage Hero Image' : /image|thumbnail|media|asset/.test(fieldLower) ? 'Image' : 'Page Asset';
+                  const usage = {
+                    category: entry.category, title: entry.title, kind: entry.kind, source: entry.source,
+                    label: usageLabel, editUrl: entry.editUrl, topics: Array.isArray(entry.record?.tags) ? entry.record.tags : [],
+                    industries: Array.isArray(entry.record?.industries) ? entry.record.industries : []
+                  };
+                  const keys = new Set([refPath]);
+                  if (refPath.startsWith('images/')) keys.add(refPath.slice('images/'.length));
+                  if (refPath.startsWith('/')) keys.add(refPath.slice(1));
+                  keys.forEach(key => {
+                    if (!usageByExactPath.has(key)) usageByExactPath.set(key, []);
+                    usageByExactPath.get(key).push(usage);
                   });
+                  if (!usageByBasename.has(base)) usageByBasename.set(base, []);
+                  usageByBasename.get(base).push(usage);
                 });
               });
-              const mapped = images.map(image => {
-                const name = image.name.toLowerCase();
-                const refs = usages.filter(usage => usage.refName === name);
-                const categories = new Set();
-                const links = [];
-                refs.forEach(usage => {
-                  let category = 'Other Media';
-                  let usageLabel = 'Page image';
-                  if (usage.kind === 'stories') { category = 'Stories'; usageLabel = /body|content|markdown/i.test(usage.field) ? 'Body Image' : /image|cover/i.test(usage.field) ? 'Cover Image' : 'Content Image'; }
-                  else if (usage.kind === 'tradeArticles') { category = 'Trade Show Articles'; usageLabel = /body|content|markdown/i.test(usage.field) ? 'Body Image' : /image|cover/i.test(usage.field) ? 'Cover Image' : 'Article Image'; }
-                  else if (usage.kind === 'shows') { category = 'Upcoming Shows'; usageLabel = /gallery/i.test(usage.field) ? 'Gallery Image' : /cover|image/i.test(usage.field) ? 'Show Cover Image' : 'Show Image'; }
-                  categories.add(category);
-                  const slug = String(usage.record?.slug || '').trim();
-                  const editUrl = usage.kind === 'stories' && slug ? `#/collections/stories/entries/${slug}`
-                    : usage.kind === 'tradeArticles' && slug ? `#/collections/trade-show-articles/entries/${slug}`
-                    : usage.kind === 'shows' ? '#/collections/content-management/entries/upcoming_shows'
-                    : usage.source.includes('home-intro') ? '#/collections/content-management/entries/home_intro'
-                    : usage.source.includes('home-newsletter') ? '#/collections/content-management/entries/home_newsletter'
-                    : usage.source.includes('social-media') ? '#/collections/content-management/entries/social_media'
-                    : usage.source.includes('media-contacts') ? '#/collections/content-management/entries/media_contacts'
-                    : '';
-                  links.push({ category, title: usage.title, label: usageLabel, source: usage.source, editUrl, show: String(usage.record?.related_show || usage.record?.event_title || usage.record?.show_name || usage.record?.related_event || ''), topics: Array.isArray(usage.record?.tags) ? usage.record.tags : [], industries: Array.isArray(usage.record?.industries) ? usage.record.industries : [], contentFocus: String(usage.record?.category || '') });
+              const mapped = assets.map(asset => {
+                const exactCandidates = [asset.path, asset.path.startsWith('images/') ? asset.path.slice('images/'.length) : asset.path];
+                let usages = [];
+                exactCandidates.some(key => {
+                  if (usageByExactPath.has(key)) { usages = usageByExactPath.get(key); return true; }
+                  return false;
                 });
-                const category = categories.has('Stories') ? 'Stories' : categories.has('Upcoming Shows') ? 'Upcoming Shows' : categories.has('Trade Show Articles') ? 'Trade Show Articles' : refs.length ? 'Other Media' : 'Unclassified';
-                if (!categories.size) categories.add('Unclassified');
-                return { ...image, category, categories: [...categories], usages: links };
+                if (!usages.length) {
+                  const byBase = usageByBasename.get(asset.name.toLowerCase()) || [];
+                  // Only use filename fallback if the repository contains a single asset with that name.
+                  const duplicatePathCount = assets.filter(other => other.name.toLowerCase() === asset.name.toLowerCase()).length;
+                  if (duplicatePathCount === 1) usages = byBase;
+                }
+                const unique = [];
+                const seen = new Set();
+                usages.forEach(usage => {
+                  const key = [usage.category, usage.title, usage.source, usage.label].join('|');
+                  if (!seen.has(key)) { seen.add(key); unique.push(usage); }
+                });
+                const categories = [...new Set(unique.map(usage => usage.category))];
+                return { ...asset, usages: unique, categories, category: categories[0] || 'unused' };
               });
-              if (!cancelled) { setItems(mapped.sort((a,b) => a.name.localeCompare(b.name))); setLoading(false); }
+              if (!cancelled) { setItems(mapped.sort((a, b) => a.name.localeCompare(b.name))); setError(''); }
             } catch (err) {
-              if (!cancelled) { setError(err?.message || '图片索引读取失败。'); setLoading(false); }
-            }
+              if (!cancelled) setError(err?.message || '读取素材失败。');
+            } finally { if (!cancelled) setLoading(false); }
           };
           load();
           return () => { cancelled = true; };
         }, []);
-        const filtered = items.filter(item => (section === 'all' || (item.categories || [item.category]).includes(section)) &&
-          [item.name, item.path, item.category, ...(item.categories || []), ...item.usages.flatMap(usage => [usage.title, usage.show, usage.label, ...(usage.topics || []), ...(usage.industries || []), usage.contentFocus || ''])].join(' ').toLowerCase().includes(query.trim().toLowerCase()));
-        const css = { maxWidth: 1180, margin: '0 auto', padding: 24, color: '#1d2935', fontFamily: 'Inter,system-ui,sans-serif' };
-        const filterStyle = (id) => ({ padding: '8px 11px', border: '1px solid ' + (section === id ? '#1c3548' : '#ccd5dd'), borderRadius: 6, background: section === id ? '#1c3548' : '#fff', color: section === id ? '#fff' : '#243443', cursor: 'pointer', font: 'inherit', fontSize: 13 });
-        const filterButton = (id, label) => h('button', { type: 'button', key: id, onClick: () => setSection(id), style: filterStyle(id) }, label);
-        return h('main', { style: css },
-          h('h1', { style: { margin: '0 0 8px', fontSize: 28 } }, 'Media Library'),
-          h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 10, margin: '18px 0' } },
-            h('input', { value: query, onChange: event => setQuery(event.target.value), placeholder: '搜索文件名、选题、文章标题或展会名称', 'aria-label': '搜索媒体', style: { flex: '1 1 300px', minWidth: 240, padding: '11px 12px', border: '1px solid #ccd5dd', borderRadius: 6, font: 'inherit' } }),
-            h('button', { type: 'button', onClick: () => { setLoading(true); setError(''); setItems([]); window.location.reload(); }, style: { padding: '11px 14px', border: '1px solid #ccd5dd', borderRadius: 6, background: '#fff', cursor: 'pointer', font: 'inherit' } }, '刷新')
-          ),
-          h('nav', { 'aria-label': 'Media Library categories', style: { display: 'flex', flexWrap: 'wrap', alignItems: 'stretch', gap: 8, margin: '0 0 18px' } },
-            filterButton('all', '全部图片'), filterButton('Stories', 'Stories'),
-            h('div', { style: { display: 'flex', flexDirection: 'column', gap: 6, border: '1px solid #dce3e9', borderRadius: 7, padding: '7px 8px', background: '#f7f9fb' } },
-              h('strong', { style: { fontSize: 12, padding: '0 3px', color: '#425466' } }, 'Trade Show'),
-              h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 6 } }, filterButton('Upcoming Shows', 'Upcoming Shows'), filterButton('Trade Show Articles', 'Trade Show Articles'))
-            ),
-            filterButton('Other Media', '其他图片'), filterButton('Unclassified', '未分类')
-          ),
-          loading ? h('p', null, '正在读取…') : null,
-          error ? h('p', { role: 'alert', style: { padding: 14, border: '1px solid #e4b5b5', background: '#fff7f7', color: '#8b2424', borderRadius: 6 } }, error) : null,
-          !loading && !error ? h('p', { style: { color: '#596775', fontSize: 13 } }, `找到 ${items.length} 张图片；当前显示 ${filtered.length} 张。`) : null,
-          !loading && !error && filtered.length ? h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(250px,1fr))', gap: 14 } }, ...filtered.map(item => h('article', { key: item.path, style: { border: '1px solid #dce3e9', borderRadius: 8, overflow: 'hidden', background: '#fff', minWidth: 0 } },
-            h('div', { style: { aspectRatio: '16/9', background: '#f3f5f7', display: 'grid', placeItems: 'center', overflow: 'hidden' } }, h('img', { src: item.url, alt: item.name, loading: 'lazy', style: { width: '100%', height: '100%', objectFit: 'contain' }, onError: event => { event.currentTarget.style.display = 'none'; } })),
+
+        const useOptions = [
+          ['all', 'All scenarios'], ['Stories', 'Stories'], ['Trade Shows', 'Trade Shows'],
+          ['Social Media', 'Social Media'], ['Media Contacts', 'Media Contacts'], ['Website & Brand', 'Website & Brand'], ['unused', 'Not currently used']
+        ];
+        const filtered = items.filter(item => {
+          if (typeFilter !== 'all' && item.type !== typeFilter) return false;
+          if (useFilter === 'unused' && item.usages.length) return false;
+          if (useFilter !== 'all' && useFilter !== 'unused' && !(item.categories || []).includes(useFilter)) return false;
+          const searchText = [item.name, item.path, ...(item.categories || []), ...item.usages.flatMap(usage => [usage.title, usage.label, usage.category, ...(usage.topics || []), ...(usage.industries || [])])].join(' ').toLowerCase();
+          return !query.trim() || searchText.includes(query.trim().toLowerCase());
+        });
+        const textFilterStyle = active => ({
+          border: 0, borderBottom: active ? '2px solid #234b68' : '2px solid transparent',
+          borderRadius: 0, padding: '5px 4px 6px', background: 'transparent', color: active ? '#1b3448' : '#526474',
+          fontWeight: active ? 700 : 500, cursor: 'pointer', font: 'inherit', fontSize: 13
+        });
+        const typeButton = (id, label) => h('button', { type: 'button', key: id, 'aria-pressed': String(typeFilter === id), onClick: () => setTypeFilter(typeFilter === id ? 'all' : id), style: textFilterStyle(typeFilter === id) }, label);
+        const useButton = (id, label) => h('button', { type: 'button', key: id, 'aria-pressed': String(useFilter === id), onClick: () => setUseFilter(id), style: textFilterStyle(useFilter === id) }, label);
+        const card = item => {
+          const preview = item.type === 'image'
+            ? h('img', { src: item.url, alt: item.name, loading: 'lazy', style: { width: '100%', height: '100%', objectFit: 'contain', display: 'block' }, onError: event => { event.currentTarget.style.display = 'none'; } })
+            : item.type === 'video'
+              ? h('video', { controls: true, muted: true, preload: 'metadata', style: { maxWidth: '100%', maxHeight: '100%' } }, h('source', { src: item.url }))
+              : h('a', { href: item.url, target: '_blank', rel: 'noreferrer', style: { color: '#234b68', fontSize: 13, textDecoration: 'underline' } }, 'Open PDF');
+          return h('article', { key: item.path, style: { border: '1px solid #dce3e9', borderRadius: 8, overflow: 'hidden', background: '#fff', minWidth: 0 } },
+            h('div', { style: { aspectRatio: '16/9', background: '#f3f5f7', display: 'grid', placeItems: 'center', overflow: 'hidden', padding: item.type === 'pdf' ? 10 : 0, boxSizing: 'border-box' } }, preview),
             h('div', { style: { padding: 12 } },
-              h('strong', { style: { display: 'block', overflowWrap: 'anywhere', marginBottom: 5 } }, item.name),
-              h('div', { style: { fontSize: 12, color: '#526474', marginBottom: 8 } }, (item.categories || [item.category]).map(category => category === 'Upcoming Shows' || category === 'Trade Show Articles' ? `Trade Show / ${category}` : category).join(' · ')),
-              h('div', { style: { fontSize: 12, color: '#6a7784', overflowWrap: 'anywhere', marginBottom: 8 } }, item.path),
-              item.usages.length ? h('div', { style: { borderTop: '1px solid #edf0f2', paddingTop: 8 } }, ...item.usages.map((usage, i) => h('div', { key: usage.source + usage.title + i, style: { fontSize: 12, lineHeight: 1.5, marginBottom: 6 } },
-                h('strong', null, usage.title), h('div', { style: { color: '#657381' } }, `${usage.label}${usage.show ? ' · ' + usage.show : ''}`), (usage.topics?.length || usage.industries?.length || usage.contentFocus) ? h('div', { style: { color: '#526474', marginTop: 2 } }, [usage.contentFocus, ...(usage.industries || []), ...(usage.topics || [])].filter(Boolean).join(' · ')) : null, usage.editUrl ? h('a', { href: usage.editUrl, style: { display: 'inline-block', marginTop: 5, fontSize: 12, color: '#234b68', textDecoration: 'underline' } }, '编辑并替换') : null))) : h('div', { style: { fontSize: 12, color: '#8a5960', borderTop: '1px solid #edf0f2', paddingTop: 8 } }, '暂未匹配到已保存的 CMS 内容 · Unclassified'),
-              h('button', { type: 'button', onClick: () => { const value = window.location.origin + '/' + item.path; if (navigator.clipboard?.writeText) navigator.clipboard.writeText(value); }, style: { marginTop: 8, padding: '6px 9px', border: '1px solid #ccd5dd', borderRadius: 5, background: '#fff', cursor: 'pointer', fontSize: 12 } }, '复制图片路径')
+              h('strong', { style: { display: 'block', overflowWrap: 'anywhere', marginBottom: 4 } }, item.name),
+              h('div', { style: { fontSize: 12, color: '#657381', marginBottom: 8 } }, `${typeLabel(item.type)} · ${item.path}`),
+              item.usages.length
+                ? h('div', { style: { borderTop: '1px solid #edf0f2', paddingTop: 9 } },
+                    ...item.usages.map((usage, index) => h('div', { key: `${usage.source}|${usage.title}|${index}`, style: { fontSize: 12, lineHeight: 1.5, marginBottom: 8 } },
+                      h('div', { style: { color: '#53697a', fontSize: 11, marginBottom: 2 } }, `${usage.category} · ${usage.label}`),
+                      h('strong', { style: { display: 'block', overflowWrap: 'anywhere' } }, usage.title),
+                      (usage.topics.length || usage.industries.length) ? h('div', { style: { color: '#657381', marginTop: 3 } }, [...usage.industries, ...usage.topics].join(' · ')) : null,
+                      usage.editUrl ? h('a', { href: usage.editUrl, style: { display: 'inline-block', marginTop: 4, color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 2 } }, 'Open related content') : null
+                    ))
+                  )
+                : h('div', { style: { borderTop: '1px solid #edf0f2', paddingTop: 8, color: '#7b6262', fontSize: 12 } }, 'Not currently referenced by a known CMS entry.'),
+              h('button', { type: 'button', onClick: async () => {
+                const value = `${window.location.origin}/${item.path}`;
+                try { await navigator.clipboard.writeText(value); } catch (_) {}
+              }, style: { marginTop: 8, padding: '6px 0', border: 0, background: 'transparent', color: '#234b68', cursor: 'pointer', fontSize: 12, textDecoration: 'underline', textUnderlineOffset: 2 } }, 'Copy public URL')
             )
-          ))) : null,
-          !loading && !error && !filtered.length ? h('p', { style: { padding: 18, background: '#f7f9fb', borderRadius: 6 } }, '没有匹配的图片。请尝试其他关键词或分类。') : null
+          );
+        };
+        return h('main', { style: { maxWidth: 1180, margin: '0 auto', padding: '28px 24px 44px', color: '#1b2733', fontFamily: 'Inter, system-ui, sans-serif' } },
+          h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 } },
+            h('div', null, h('h1', { style: { margin: '0 0 5px', fontSize: 28, fontWeight: 700 } }, 'Library'), h('p', { style: { margin: 0, color: '#687887', fontSize: 14 } }, 'Find website files and see where each asset is used.')),
+            h('a', { href: '#/assets/-/all', style: { display: 'inline-block', color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 3, fontWeight: 600, fontSize: 13 } }, 'Upload / Manage Assets')
+          ),
+          h('h2', { style: { margin: '24px 0 12px', fontSize: 17, fontWeight: 700 } }, 'All Assets'),
+          h('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginBottom: 10 } },
+            h('strong', { style: { fontSize: 13, fontWeight: 650, marginRight: 3 } }, 'All types:'),
+            typeButton('image', 'Images'), typeButton('pdf', 'PDF'), typeButton('video', 'Videos')
+          ),
+          h('input', { value: query, onChange: event => setQuery(event.target.value), placeholder: 'Search file name, Story title, or Trade Show title', 'aria-label': 'Search Library', style: { width: '100%', maxWidth: 680, boxSizing: 'border-box', padding: '11px 12px', border: '1px solid #ccd5dd', borderRadius: 6, font: 'inherit', margin: '4px 0 16px' } }),
+          h('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, margin: '0 0 18px' } },
+            h('strong', { style: { fontSize: 13, fontWeight: 650, marginRight: 3 } }, 'Used in:'),
+            ...useOptions.map(([id, label]) => useButton(id, label))
+          ),
+          loading ? h('p', { style: { color: '#657381' } }, 'Loading assets and usage references…') : null,
+          error ? h('p', { role: 'alert', style: { padding: 14, border: '1px solid #e4b5b5', color: '#8b2424', borderRadius: 6 } }, error) : null,
+          !loading && !error ? h('p', { style: { color: '#596775', fontSize: 13, margin: '0 0 14px' } }, `${items.length} assets · ${filtered.length} shown`) : null,
+          !loading && !error && filtered.length ? h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 14 } }, ...filtered.map(card)) : null,
+          !loading && !error && !filtered.length ? h('p', { style: { padding: 18, border: '1px solid #e4e9ed', borderRadius: 8, color: '#657381' } }, 'No matching assets. Try another search term or filter.') : null
         );
       };
-      CMS.registerCustomPage({ id: 'media-library', label: 'Media Library', icon: 'perm_media', component: MediaLibrary });
+      CMS.registerCustomPage({ id: 'media-library', label: 'Library', icon: 'perm_media', component: MediaLibrary });
+      CMS.registerCustomPage({ id: 'content-navigator', label: 'Content Management', icon: 'dashboard', component: ContentManagement });
 
       // Keep the underlying collection available to dashboard links, but hide the duplicate
       // native “All Resources / Contents” navigation from the everyday editor UI.
@@ -406,7 +526,7 @@
       });
       rootObserver.observe(document.documentElement, { childList: true, subtree: true });
 
-      if (!window.location.hash) window.location.hash = '#/pages/content-navigator';
+      if (!window.location.hash || /^#\/collections\/content-management\/?$/.test(window.location.hash)) window.location.hash = '#/pages/content-navigator';
     })();
   </script>
 </body>
