@@ -1153,6 +1153,7 @@ function showEventDetail(index) {
     const meta = document.getElementById('ed-meta');
     if (meta) {
         meta.replaceChildren();
+        const dateLabel = defFormatEventDate(event, dates);
         const location = defGetEventLocation(event);
         const booth = defSafeText(event.booth || '', 160);
         const addMeta = (label, value) => {
@@ -1163,6 +1164,7 @@ function showEventDetail(index) {
             meta.appendChild(item);
         };
         addMeta('Booth', booth);
+        addMeta('Date', dateLabel);
         addMeta('Location', location);
         meta.hidden = !meta.childElementCount;
     }
