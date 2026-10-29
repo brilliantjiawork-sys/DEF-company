@@ -633,16 +633,8 @@
         }
         if (tag === 'button' && isValidationLabel(element.innerText || element.textContent)) hideValidationElement(element);
         if (/^h[1-6]$/.test(tag) && /^(?:validation|field validation|验证(?:功能|面板|信息)?|校验(?:功能|面板|信息)?)$/i.test(normalized(element.innerText || element.textContent))) {
-          let panel = element.closest('[role="tabpanel"], aside, section');
-          if (!panel) {
-            let parent = element.parentElement;
-            for (let depth = 0; parent && depth < 6 && !panel; depth += 1, parent = parent.parentElement) {
-              const buttons = parent.querySelectorAll ? parent.querySelectorAll('button, [role="button"]') : [];
-              const hasValidateAction = Array.from(buttons).some(button => isValidationLabel(button.innerText || button.textContent));
-              const hasFormFields = parent.querySelectorAll && parent.querySelectorAll('input, textarea, select').length > 0;
-              if (hasValidateAction && !hasFormFields) panel = parent;
-            }
-          }
+          // Only hide the dedicated tabpanel. Never hide an entire editor sidebar/aside.
+          const panel = element.closest('[role="tabpanel"]');
           if (panel) hideValidationElement(panel);
         }
       };
