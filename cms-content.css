@@ -578,17 +578,49 @@
 .event-card-tags .kone-tag,
 .story-taxonomy .kone-tag,
 .event-taxonomy .kone-tag {
-  display: inline-flex;
-  width: fit-content;
+  display: inline-flex !important;
+  justify-self: start;
+  align-self: start;
+  width: fit-content !important;
+  min-width: 0 !important;
   max-width: 100%;
-  margin-block: 0;
-  padding: 0;
-  border: 0;
-  border-radius: 0;
-  background: transparent;
-  box-shadow: none;
+  margin: 0;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
   line-height: 1.5;
   overflow-wrap: anywhere;
+}
+/* Explicit IDs outrank older layout rules that may stretch taxonomy values across the row. */
+#sd-category,
+#sd-industry,
+#ed-industry {
+  display: inline-flex !important;
+  justify-self: start !important;
+  align-self: start !important;
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+#sd-tags,
+#ed-tags {
+  display: flex !important;
+  justify-self: start !important;
+  align-self: start !important;
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }
 .story-tags,
 .event-card-tags {
