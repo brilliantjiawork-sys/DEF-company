@@ -685,7 +685,7 @@
       const findSavePublishMenuButton = () => queryAllDeep('button, [role="button"]').filter(element => {
         const rect = element.getBoundingClientRect();
         return uiElementIsVisible(element) &&
-          /^(?:more options|更多选项|显示更多选项|显示编辑器选项)$/i.test(editorButtonLabel(element)) &&
+          /^(?:more options|更多选项|显示更多选项)$/i.test(editorButtonLabel(element)) &&
           rect.top >= -2 && rect.top < 110 && rect.right > window.innerWidth * 0.55;
       }).sort((a, b) => {
         const ar = a.getBoundingClientRect();
@@ -844,7 +844,7 @@
               if (target) inspectElement(target);
             }
           });
-          if (mutations.some(mutation => mutation.type === 'childList')) installEditorPublishButton();
+          installEditorPublishButton(); // Reuse cached controls; refresh disabled state after any toolbar/editor update.
         });
         observer.observe(root, {
           childList: true,
