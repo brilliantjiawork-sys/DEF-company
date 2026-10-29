@@ -607,37 +607,155 @@
         element.setAttribute('data-def-hidden-native-nav', 'true');
       };
 
-      // Hide the optional Validation panel and manual Validate action.
-      // Required-field checks at publish time remain enabled to protect live content.
-      const validationLabelPattern = /^(?:validation(?:\s+(?:panel|errors?))?|field validation|validate(?:\s+(?:entry|content|all))?|验证(?:功能|面板|信息)?|校验(?:功能|面板|信息)?)$/i;
+      // Hide only Sveltia's Validation tab/panel. Keep publishing-time required-field checks.
+      const validationLabelPattern = /^(?:validation|field validation|validate(?:\s+(?:entry|content|all))?|验证|校验)$/i;
       const isValidationLabel = value => validationLabelPattern.test(normalized(value));
+      const validationControlSelector = 'button, [role="button"], [role="radio"], [role="tab"], [role="menuitem"]';
       const hideValidationElement = element => {
         if (!element || element.getAttribute('data-def-hidden-validation') === 'true') return;
         element.style.setProperty('display', 'none', 'important');
         element.setAttribute('aria-hidden', 'true');
         element.setAttribute('data-def-hidden-validation', 'true');
       };
+      const restoreValidationElement = element => {
+        if (!element || element.getAttribute('data-def-hidden-validation') !== 'true') return;
+        element.style.removeProperty('display');
+        element.removeAttribute('aria-hidden');
+        element.removeAttribute('data-def-hidden-validation');
+      };
       const hideValidationUi = element => {
         if (!element || element.nodeType !== 1) return;
         const tag = String(element.tagName || '').toLowerCase();
-        const labels = nodeLabels(element);
-        const isInteractive = element.matches && element.matches(navItemSelector);
-        if (isInteractive && labels.some(isValidationLabel)) {
-          let target = element;
-          const parent = element.parentElement;
-          if (parent && parent.querySelectorAll) {
-            const controls = parent.querySelectorAll(navItemSelector);
-            if (controls.length === 1) target = parent;
+        const visibleLabel = normalized(element.getAttribute('aria-label') || element.getAttribute('title') || element.innerText || element.textContent);
+        if (element.matches && element.matches(validationControlSelector) && isValidationLabel(visibleLabel)) {
+          hideValidationElement(element);
+        }
+
+        // Sveltia keeps the active sidebar content in #entry-sidebar-content and labels its
+        // panel with an h3 (the Chinese locale calls this panel “验证”).
+        const sidebarContent = element.closest ? element.closest('#entry-sidebar-content') : null;
+        if (sidebarContent) {
+          const heading = sidebarContent.querySelector('h3');
+          if (heading && isValidationLabel(heading.innerText || heading.textContent)) {
+            hideValidationElement(sidebarContent);
+          } else {
+            restoreValidationElement(sidebarContent);
           }
-          hideValidationElement(target);
+        } else if (/^h[1-6]$/.test(tag) && isValidationLabel(visibleLabel)) {
+          const panel = element.closest('[role="group"][aria-labelledby]');
+          const sidebar = panel && panel.closest('#entry-sidebar-content');
+          if (sidebar) hideValidationElement(sidebar);
         }
-        if (tag === 'button' && isValidationLabel(element.innerText || element.textContent)) hideValidationElement(element);
-        if (/^h[1-6]$/.test(tag) && /^(?:validation|field validation|验证(?:功能|面板|信息)?|校验(?:功能|面板|信息)?)$/i.test(normalized(element.innerText || element.textContent))) {
-          // Only hide the dedicated tabpanel. Never hide an entire editor sidebar/aside.
-          const panel = element.closest('[role="tabpanel"]');
-          if (panel) hideValidationElement(panel);
-        }
+
+        // Hide the manual Validate action wherever Sveltia exposes it.
+        if (tag === 'button' && isValidationLabel(visibleLabel)) hideValidationElement(element);
       };
+
+      // Deep DOM helpers are needed because Sveltia may render parts of its UI in shadow roots.
+      const queryAllDeep = (selector, root = document, out = []) => {
+        if (!root) return out;
+        if (root.matches && root.matches(selector)) out.push(root);
+        if (!root.querySelectorAll) return out;
+        root.querySelectorAll(selector).forEach(element => out.push(element));
+        root.querySelectorAll('*').forEach(element => {
+          if (element.shadowRoot) queryAllDeep(selector, element.shadowRoot, out);
+        });
+        return [...new Set(out)];
+      };
+      const editorButtonLabel = element => normalized(
+        element && (element.getAttribute('aria-label') || element.getAttribute('title') || element.innerText || element.textContent)
+      );
+      const uiElementIsVisible = element => {
+        if (!element || !element.isConnected) return false;
+        const rect = element.getBoundingClientRect();
+        if (rect.width <= 0 || rect.height <= 0) return false;
+        const style = window.getComputedStyle(element);
+        return style.display !== 'none' && style.visibility !== 'hidden';
+      };
+      const findEditorSaveButton = () => queryAllDeep('button').filter(element => {
+        const rect = element.getBoundingClientRect();
+        return uiElementIsVisible(element) &&
+          /^(?:save|保存|保存更改)$/i.test(editorButtonLabel(element)) &&
+          rect.top >= -2 && rect.top < 110 && rect.right > window.innerWidth * 0.55;
+      }).sort((a, b) => {
+        const ar = a.getBoundingClientRect();
+        const br = b.getBoundingClientRect();
+        return ar.top - br.top || br.right - ar.right;
+      })[0] || null;
+      const findSavePublishMenuButton = () => queryAllDeep('button, [role="button"]').filter(element => {
+        const rect = element.getBoundingClientRect();
+        return uiElementIsVisible(element) &&
+          /^(?:more options|更多选项|显示更多选项)$/i.test(editorButtonLabel(element)) &&
+          rect.top >= -2 && rect.top < 110 && rect.right > window.innerWidth * 0.55;
+      }).sort((a, b) => {
+        const ar = a.getBoundingClientRect();
+        const br = b.getBoundingClientRect();
+        return ar.top - br.top || br.right - ar.right;
+      })[0] || null;
+
+      // Add an explicit Publish button next to Save. It delegates to Sveltia’s own
+      // “Save and Publish” action so draft isolation and publishing safeguards stay native.
+      const installEditorPublishButton = () => {
+        const saveButton = findEditorSaveButton();
+        const menuButton = findSavePublishMenuButton();
+        let publishButton = queryAllDeep('button[data-def-explicit-publish="true"]')[0] || null;
+
+        if (!saveButton || !menuButton || !menuButton.parentElement || !menuButton.parentElement.contains(saveButton)) {
+          if (publishButton && !publishButton.dataset.defPublishPending) publishButton.remove();
+          return;
+        }
+        const parent = menuButton.parentElement;
+        if (publishButton && publishButton.parentElement !== parent) {
+          if (!publishButton.dataset.defPublishPending) publishButton.remove();
+          publishButton = null;
+        }
+        if (!publishButton) {
+          publishButton = document.createElement('button');
+          publishButton.type = 'button';
+          publishButton.textContent = '发布';
+          publishButton.setAttribute('aria-label', 'Publish');
+          publishButton.setAttribute('title', 'Publish');
+          publishButton.setAttribute('data-def-explicit-publish', 'true');
+          publishButton.className = (saveButton.className || '') + ' def-explicit-publish-button';
+          publishButton.style.cssText = 'display:inline-flex;align-items:center;justify-content:center;min-height:36px;margin-inline-start:8px;padding:0 14px;border:1px solid #1b66bd;border-radius:6px;background:#1b66bd;color:#fff;font:inherit;font-size:14px;font-weight:600;line-height:1.2;white-space:nowrap;cursor:pointer;';
+
+          publishButton.addEventListener('click', event => {
+            event.preventDefault();
+            event.stopPropagation();
+            const currentSave = findEditorSaveButton();
+            const currentMenu = findSavePublishMenuButton();
+            if (!currentSave || currentSave.disabled || !currentMenu) return;
+
+            publishButton.disabled = true;
+            currentMenu.click();
+            const openedAt = Date.now();
+            const selectPublishOption = () => {
+              const item = queryAllDeep('[role="menuitem"], button').find(candidate =>
+                uiElementIsVisible(candidate) &&
+                /^(?:save and publish|保存并发布)$/i.test(editorButtonLabel(candidate))
+              );
+              if (item) {
+                publishButton.dataset.defPublishPending = 'true';
+                item.click();
+                window.setTimeout(() => {
+                  if (!publishButton.isConnected) return;
+                  delete publishButton.dataset.defPublishPending;
+                  publishButton.disabled = false;
+                }, 8000);
+              } else if (Date.now() - openedAt < 2500) {
+                window.setTimeout(selectPublishOption, 50);
+              } else {
+                publishButton.disabled = false;
+                publishButton.title = '无法找到“保存并发布”选项，请刷新 CMS 后重试。';
+              }
+            };
+            window.setTimeout(selectPublishOption, 0);
+          });
+          parent.insertBefore(publishButton, menuButton);
+        }
+        if (!publishButton.dataset.defPublishPending) publishButton.disabled = saveButton.disabled;
+      };
+
       const restoreElement = (element) => {
         if (!element || element.getAttribute('data-def-hidden-native-nav') !== 'true') return;
         element.style.removeProperty('display');
@@ -709,6 +827,7 @@
               if (target) inspectElement(target);
             }
           });
+          if (mutations.some(mutation => mutation.type === 'childList')) installEditorPublishButton();
         });
         observer.observe(root, {
           childList: true,
@@ -723,6 +842,7 @@
       document.documentElement.setAttribute('data-def-cms-nav-fix', 'two-primary-pages-v5');
       document.documentElement.setAttribute('data-def-cms-validation-ui', 'hidden-v1');
       observeAndScanRoot(document);
+      installEditorPublishButton();
       const rootObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
           if (node.nodeType === 1) {
@@ -731,6 +851,7 @@
             if (node.shadowRoot) observeAndScanRoot(node.shadowRoot);
           }
         }));
+        installEditorPublishButton();
       });
       if (document.documentElement) rootObserver.observe(document.documentElement, { childList: true, subtree: true });
 
