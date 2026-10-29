@@ -717,8 +717,8 @@ function showStoryDetail(index, origin = 'stories') {
     const category = document.getElementById('sd-category');
     const categoryMeta = document.getElementById('sd-category-meta');
     if (category) {
-        const stageLabel = story.is_event_coverage ? defSafeText(story.event_content_stage || 'Trade Show Article', 100) : '';
-        const categoryValue = stageLabel || defGetStoryCategory(story);
+        // Trade Show Articles use Industry + Topics only; the Story content-focus taxonomy is not applicable.
+        const categoryValue = story.is_event_coverage ? '' : defGetStoryCategory(story);
         category.textContent = categoryValue;
         category.hidden = !categoryValue;
         if (categoryMeta) categoryMeta.hidden = !categoryValue;
@@ -1059,11 +1059,20 @@ function showEventDetail(index) {
     defSetOptionalText('ed-title', titleText);
     defSetOptionalText('ed-summary', defGetEventSummary(event));
 
+    const industryWrap = document.getElementById('ed-industry');
+    const industryMeta = document.getElementById('ed-industry-meta');
+    if (industryWrap) {
+        industryWrap.replaceChildren();
+        defGetContentIndustries(event).forEach(value => industryWrap.appendChild(defElement('span', 'story-industry-chip', value)));
+        if (industryMeta) industryMeta.hidden = !industryWrap.childElementCount;
+    }
+
     const tags = document.getElementById('ed-tags');
+    const topicsMeta = document.getElementById('ed-topics-meta');
     if (tags) {
         tags.replaceChildren();
         defGetTopicTags(event).forEach(tag => { tags.appendChild(defElement('span', 'kone-tag', tag)); });
-        tags.hidden = !tags.childElementCount;
+        if (topicsMeta) topicsMeta.hidden = !tags.childElementCount;
     }
 
     const meta = document.getElementById('ed-meta');

@@ -407,3 +407,18 @@
   display: none !important;
 }
 .story-card .story-card-title { margin-top: 0 !important; }
+
+
+/* Final taxonomy layout: each attribute has its own readable row on detail pages. */
+.story-taxonomy,
+.event-taxonomy { display: grid; grid-template-columns: minmax(0, 1fr); gap: 14px; margin: 18px 0 22px; }
+.story-taxonomy-item { display: grid; grid-template-columns: minmax(105px, 150px) minmax(0, 1fr); align-items: start; gap: 12px; min-width: 0; }
+.story-taxonomy-label { color: var(--gray); font-size: 12px; font-weight: 700; letter-spacing: .045em; text-transform: uppercase; line-height: 1.8; }
+.story-category-label, .story-industry-label { min-width: 0; overflow-wrap: anywhere; }
+.story-tags, .story-industry-values { display: flex; flex-wrap: wrap; align-items: flex-start; gap: 7px; min-width: 0; }
+.story-tags .kone-tag, .story-industry-values .industry-chip { max-width: 100%; overflow-wrap: anywhere; }
+.event-detail-meta { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; }
+.event-detail-meta .event-detail-meta-item { display: block; }
+@media (max-width: 600px) {
+  .story-taxonomy-item { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
