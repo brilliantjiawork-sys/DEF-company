@@ -201,6 +201,15 @@ collections:
         name: title
         widget: string
         required: true
+      - label: 详情页标题字号（px）
+        name: detail_title_font_size
+        widget: number
+        value_type: int
+        default: 36
+        min: 28
+        max: 48
+        step: 1
+        required: false
       - label: 开始日期
         name: start_date
         widget: datetime
@@ -621,6 +630,15 @@ collections:
     name: title
     widget: string
     required: true
+  - label: 详情页标题字号（px）
+    name: detail_title_font_size
+    widget: number
+    value_type: int
+    default: 36
+    min: 28
+    max: 48
+    step: 1
+    required: false
   - label: 发布日期
     name: date
     widget: datetime
@@ -733,6 +751,15 @@ collections:
     name: title
     widget: string
     required: true
+  - label: 详情页标题字号（px）
+    name: detail_title_font_size
+    widget: number
+    value_type: int
+    default: 36
+    min: 28
+    max: 48
+    step: 1
+    required: false
   - label: 内容阶段
     name: content_stage
     widget: select
