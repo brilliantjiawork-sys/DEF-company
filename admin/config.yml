@@ -672,9 +672,9 @@ collections:
     name: summary_font_size
     widget: number
     value_type: int
-    default: 15
-    min: 13
-    max: 20
+    default: 16
+    min: 14
+    max: 18
     step: 1
     required: false
   - label: 封面图片
@@ -795,9 +795,9 @@ collections:
     name: summary_font_size
     widget: number
     value_type: int
-    default: 15
-    min: 13
-    max: 20
+    default: 16
+    min: 14
+    max: 18
     step: 1
     required: false
   - label: 封面图片
