@@ -627,15 +627,6 @@ collections:
     name: title
     widget: string
     required: true
-  - label: 详情页标题字号（px）
-    name: detail_title_font_size
-    widget: number
-    value_type: int
-    default: 34
-    min: 28
-    max: 42
-    step: 1
-    required: false
   - label: 发布日期
     name: date
     widget: datetime
@@ -668,7 +659,7 @@ collections:
     name: summary
     widget: text
     required: true
-  - label: 摘要字号（px）
+  - label: 摘要字号（px；同步到卡片和详情页）
     name: summary_font_size
     widget: number
     value_type: int
@@ -716,6 +707,15 @@ collections:
     max: 20
     step: 1
     required: false
+  - label: 详情页标题字号（px）
+    name: detail_title_font_size
+    widget: number
+    value_type: int
+    default: 34
+    min: 28
+    max: 42
+    step: 1
+    required: false
   - label: 显示销售 CTA
     name: cta_enabled
     widget: boolean
@@ -748,15 +748,6 @@ collections:
     name: title
     widget: string
     required: true
-  - label: 详情页标题字号（px）
-    name: detail_title_font_size
-    widget: number
-    value_type: int
-    default: 34
-    min: 28
-    max: 42
-    step: 1
-    required: false
   - label: 内容阶段
     name: content_stage
     widget: select
@@ -791,7 +782,7 @@ collections:
     name: summary
     widget: text
     required: true
-  - label: 摘要字号（px）
+  - label: 摘要字号（px；同步到卡片和详情页）
     name: summary_font_size
     widget: number
     value_type: int
@@ -837,6 +828,15 @@ collections:
     default: 17
     min: 14
     max: 20
+    step: 1
+    required: false
+  - label: 详情页标题字号（px）
+    name: detail_title_font_size
+    widget: number
+    value_type: int
+    default: 34
+    min: 28
+    max: 42
     step: 1
     required: false
   - label: 显示销售 CTA
