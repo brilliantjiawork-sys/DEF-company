@@ -113,7 +113,6 @@
 .recommendation-card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 2px; }
 .recommendation-card-tags .kone-tag { margin: 0; }
 .event-card-booth { margin: 0; padding: 7px 10px; color: var(--dark); background: #fff6d6; border-left: 3px solid var(--yellow); font-weight: 700; font-size: 14px; }
-.event-card-theme { margin: 0; color: var(--dark); font-weight: 600; line-height: 1.5; }
 .event-card-summary { margin: 0; color: var(--gray); line-height: 1.6; }
 .site-disclaimer { max-width: 1180px; margin: 36px auto 0; padding: 22px 24px 28px; border-top: 1px solid var(--line); color: var(--gray); font-size: 12px; line-height: 1.65; }
 @media (max-width: 980px) { .stories-grid, .recommendation-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
@@ -260,15 +259,16 @@
 }
 .story-industry-chip {
   display: inline-flex;
+  width: fit-content;
   max-width: 100%;
   margin: 0;
-  padding: 4px 8px;
-  border: 1px solid #dce2e8;
-  border-radius: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
   color: #48515b;
-  background: #f7f8fa;
+  background: transparent;
   font-size: 12px;
-  line-height: 1.4;
+  line-height: 1.5;
   overflow-wrap: anywhere;
 }
 .story-card .kone-tag,
@@ -328,14 +328,17 @@
 .story-taxonomy-item[hidden] { display: none !important; }
 .story-taxonomy-item .story-industry-label {
   display: inline-flex;
+  width: fit-content;
+  max-width: 100%;
   margin: 0;
-  padding: 5px 8px;
-  border: 1px solid #dce2e8;
-  border-radius: 3px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
   color: #48515b;
-  background: #f7f8fa;
+  background: transparent;
   font-size: 12px;
-  line-height: 1.45;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
 }
 .story-taxonomy-item .story-tags { margin: 0; }
 .story-detail-article .detail-summary {
@@ -564,4 +567,271 @@
   }
   .recommendation-card-related-event .recommendation-card-body { gap: 11px; padding: 18px; }
   .recommendation-card-related-event .recommendation-card-title { font-size: 19px; }
+}
+
+/* Sitewide taxonomy treatment: category, industry and topic values are text labels, not pills. */
+.story-category-label,
+.story-industry-label,
+.story-industry-chip,
+.story-tags .kone-tag,
+.event-card-tags .kone-tag,
+.story-taxonomy .kone-tag,
+.event-taxonomy .kone-tag {
+  display: inline-flex !important;
+  justify-self: start;
+  align-self: start;
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: 100%;
+  margin: 0;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+/* Explicit IDs outrank older layout rules that may stretch taxonomy values across the row. */
+#sd-category,
+#sd-industry {
+  display: inline-flex !important;
+  justify-self: start !important;
+  align-self: start !important;
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+#ed-industry {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-self: start !important;
+  align-self: start !important;
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  gap: 6px 12px;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+#sd-tags,
+#ed-tags {
+  display: flex !important;
+  justify-self: start !important;
+  align-self: start !important;
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+.story-tags,
+.event-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px 12px;
+  min-width: 0;
+}
+.story-tags .kone-tag,
+.event-card-tags .kone-tag { margin-inline: 0; }
+
+
+/* Content details: align classification values with the body typography, not the old tiny chips. */
+.story-taxonomy-item > .story-category-label,
+.story-taxonomy-item > .story-industry-label,
+.story-taxonomy .kone-tag,
+.event-taxonomy .kone-tag,
+.story-industry-values .story-industry-chip,
+.story-taxonomy .story-industry-chip {
+  font-family: inherit !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 1.6 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+}
+.story-taxonomy-item > .story-category-label {
+  color: #176b85;
+}
+.story-taxonomy-item > .story-industry-label,
+.story-industry-values .story-industry-chip {
+  color: #525b65;
+}
+.story-taxonomy .kone-tag,
+.event-taxonomy .kone-tag {
+  color: #235394;
+}
+
+/* Upcoming / Past show cards: concise B2B hierarchy, no summary text in the listing card. */
+.event-card-body {
+  gap: 12px;
+}
+.event-card-body .event-title {
+  margin: 0;
+  font-size: clamp(20px, 1.8vw, 23px);
+  line-height: 1.3;
+  font-weight: 650;
+}
+.event-card-booth {
+  width: fit-content;
+  max-width: 100%;
+  box-sizing: border-box;
+  padding: 6px 9px;
+  font-size: 13px;
+  line-height: 1.45;
+}
+.event-card-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 8px;
+  margin: 0;
+  color: var(--gray);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.event-card-meta-separator { display: none; }
+.event-card-meta-item {
+  align-items: flex-start;
+  gap: 8px;
+  min-width: 0;
+}
+.event-card-meta-icon {
+  margin-top: 2px;
+}
+.event-card-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+/* Trade Show detail pages use a full-bleed cover frame; crop portrait images to avoid side bars. */
+.event-detail-cover-wrap {
+  width: 100%;
+  height: clamp(280px, 35vw, 460px);
+  min-height: 280px;
+  max-height: 460px;
+  aspect-ratio: auto;
+  margin: 0 0 28px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #eef1f4;
+}
+.event-detail-cover {
+  display: block;
+  width: 100%;
+  height: 100%;
+  max-height: none !important;
+  object-fit: cover !important;
+  object-position: center;
+}
+.event-detail-description {
+  max-width: 760px;
+  margin: 28px 0;
+}
+.event-detail-description h3 {
+  margin: 0 0 10px;
+  font-size: 20px;
+  line-height: 1.4;
+  font-weight: 650;
+}
+.event-detail-description .detail-summary {
+  max-width: 70ch;
+  margin: 0;
+  color: #525b65;
+  font-family: inherit;
+  font-size: 16px;
+  line-height: 1.75;
+}
+
+/* Explore the Solution: topic → date → title → description, with editorial-size typography. */
+.recommendation-card-story .recommendation-card-body {
+  gap: 10px;
+  padding: 20px;
+}
+.recommendation-card-story .recommendation-card-kicker {
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: .015em;
+  line-height: 1.5;
+  text-transform: none;
+}
+.recommendation-card-story .recommendation-card-date {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.recommendation-card-story .recommendation-card-title {
+  font-family: inherit;
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.recommendation-card-story .recommendation-card-summary {
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 400;
+  line-height: 1.7;
+  overflow-wrap: anywhere;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+  overflow: hidden;
+}
+@media (max-width: 800px) {
+  .event-detail-cover-wrap {
+    height: clamp(230px, 56vw, 340px);
+    min-height: 230px;
+    max-height: 340px;
+    margin-bottom: 22px;
+  }
+  .recommendation-card-story .recommendation-card-body { padding: 18px; }
+}
+
+/* Final typography contract: labels are quiet metadata; values share one consistent readable size. */
+.story-taxonomy-label {
+  font-family: Inter, sans-serif;
+  font-size: 12px !important;
+  font-weight: 700 !important;
+  line-height: 1.65 !important;
+  letter-spacing: .045em !important;
+  text-transform: uppercase !important;
+}
+#sd-category,
+#sd-industry,
+#sd-tags .kone-tag,
+#ed-industry .story-industry-chip,
+#ed-tags .kone-tag,
+.story-taxonomy-item > .story-category-label,
+.story-taxonomy-item > .story-industry-label,
+.story-taxonomy .kone-tag,
+.event-taxonomy .kone-tag,
+.story-industry-values .story-industry-chip {
+  font-family: Inter, sans-serif !important;
+  font-size: 16px !important;
+  font-weight: 500 !important;
+  line-height: 1.6 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
 }

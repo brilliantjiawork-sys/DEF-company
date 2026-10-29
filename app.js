@@ -538,13 +538,18 @@ function defMakeRecommendationCard(content, index, type, badgeText) {
 
     const body = defElement('div', 'recommendation-card-body');
     if (isStory) {
-        const badge = badgeText || defGetStoryCategory(content);
+        const firstTopic = defGetTopicTags(content)[0] || '';
+        const badge = firstTopic || badgeText || defGetStoryCategory(content);
         if (badge) body.appendChild(defElement('span', 'recommendation-card-kicker', badge));
         const dateLabel = fmtDate(content.date || content.published_date);
         if (dateLabel) body.appendChild(defElement('span', 'recommendation-card-date', dateLabel));
         body.appendChild(defElement('h4', 'recommendation-card-title', defSafeText(content.title, 300) || 'Untitled story'));
         const summary = defSafeText(content.summary || content.excerpt || '', 360);
-        if (summary) body.appendChild(defElement('p', 'recommendation-card-summary', summary));
+        if (summary) {
+            const summaryElement = defElement('p', 'recommendation-card-summary', summary);
+            defApplyCmsFontSize(summaryElement, content.summary_font_size, 16, 14, 18, 1.65);
+            body.appendChild(summaryElement);
+        }
     } else {
         // Related-show cards stay concise and scannable: name, booth, date/location, then details.
         const eventTitle = defSafeText(content.title, 300) || 'Untitled trade show';
@@ -724,7 +729,11 @@ function renderStories() {
         // remain available in the article detail page and as filters; don't stack taxonomies on cards.
         info.appendChild(defElement('h3', 'story-card-title', story.title || 'Untitled story'));
         const summary = defSafeText(story.summary || story.excerpt || '', 600);
-        if (summary) info.appendChild(defElement('p', 'story-summary', summary));
+        if (summary) {
+            const summaryElement = defElement('p', 'story-summary', summary);
+            defApplyCmsFontSize(summaryElement, story.summary_font_size, 16, 14, 18, 1.65);
+            info.appendChild(summaryElement);
+        }
 
         article.append(imageWrap, info);
         article.addEventListener('click', () => showStoryDetail(index));
@@ -758,12 +767,19 @@ function showStoryDetail(index, origin = 'stories') {
         image.onerror = () => { image.onerror = null; image.src = '/images/story-cover.jpg'; };
     }
     if (date) date.textContent = fmtDate(story.date);
-    if (title) title.textContent = story.title || 'Untitled story';
+    if (title) {
+        title.textContent = story.title || 'Untitled story';
+        defApplyCmsFontSize(title, story.detail_title_font_size, 34, 28, 42, 1.2);
+    }
     if (summary) {
         summary.textContent = defSafeText(story.summary || story.excerpt || '', 1000);
         summary.hidden = !summary.textContent;
+        defApplyCmsFontSize(summary, story.summary_font_size, 16, 14, 18, 1.7);
     }
-    if (body) defRenderMarkdownInto(body, story.body || '');
+    if (body) {
+        defRenderMarkdownInto(body, story.body || '');
+        defApplyCmsFontSize(body, story.body_font_size, 17, 14, 20, 1.8);
+    }
 
     const category = document.getElementById('sd-category');
     const categoryMeta = document.getElementById('sd-category-meta');
@@ -994,6 +1010,10 @@ function defMakeEventCard(event, index, status) {
     const badgeLabel = status === 'upcoming' ? 'Upcoming' : 'Past';
     body.appendChild(defElement('span', 'event-status ' + (status === 'upcoming' ? 'is-upcoming' : 'is-past'), badgeLabel));
 
+    // B2B card hierarchy: status, event name, booth, date and location.
+    // Detail-only theme/description copy is intentionally not rendered in the listing card.
+    body.appendChild(defElement('h3', 'event-title', event.title || 'Untitled event'));
+
     const booth = defSafeText(event.booth || '', 120);
     if (booth) {
         const boothBadge = defElement('p', 'event-card-booth');
@@ -1022,15 +1042,6 @@ function defMakeEventCard(event, index, status) {
         }
         body.appendChild(meta);
     }
-    body.appendChild(defElement('h3', 'event-title', event.title || 'Untitled event'));
-
-    const theme = defSafeText(event.theme || '', 250);
-    if (theme) body.appendChild(defElement('p', 'event-card-theme', theme));
-    const summary = defGetEventSummary(event);
-    if (summary) body.appendChild(defElement('p', 'event-card-summary', summary));
-    const tagWrap = defElement('div', 'recommendation-card-tags');
-    defGetTopicTags(event).slice(0, 3).forEach(tag => tagWrap.appendChild(defElement('span', 'kone-tag', tag)));
-    if (tagWrap.childElementCount) body.appendChild(tagWrap);
 
     const actions = defElement('div', 'event-card-actions');
     const detailsButton = defElement('button', 'event-card-detail-link', 'View Show Details');
@@ -1057,6 +1068,14 @@ function defSetOptionalText(id, value) {
     const text = defSafeText(value, 5000);
     element.textContent = text;
     element.hidden = !text;
+}
+
+function defApplyCmsFontSize(element, value, fallback = 16, min = 12, max = 22, lineHeight = 1.65) {
+    if (!element) return;
+    const parsed = Number.parseInt(String(value ?? ''), 10);
+    const size = Number.isFinite(parsed) && parsed >= min && parsed <= max ? parsed : fallback;
+    element.style.fontSize = size + 'px';
+    element.style.lineHeight = String(lineHeight);
 }
 
 function defRenderMarkdownInto(element, markdown) {
@@ -1093,7 +1112,7 @@ function showEventDetail(index) {
     if (cover) {
         const imageUrl = defGetImageUrl(event.cover || event.image, '');
         cover.src = imageUrl || '/images/event-1.jpg';
-        cover.alt = titleText;
+        cover.alt = defSafeText(event.cover_alt || titleText, 300);
         cover.hidden = !imageUrl;
         cover.onerror = () => { cover.onerror = null; cover.hidden = true; };
     }
@@ -1108,7 +1127,12 @@ function showEventDetail(index) {
 
     defSetOptionalText('ed-published-date', defFormatEventDate(event, dates));
     defSetOptionalText('ed-title', titleText);
-    defSetOptionalText('ed-summary', defGetEventSummary(event));
+    defApplyCmsFontSize(document.getElementById('ed-title'), event.detail_title_font_size, 34, 28, 42, 1.2);
+    const eventSummaryText = defGetEventSummary(event);
+    defSetOptionalText('ed-summary', eventSummaryText);
+    const eventDescriptionSection = document.getElementById('ed-description-section');
+    if (eventDescriptionSection) eventDescriptionSection.hidden = !eventSummaryText;
+    defApplyCmsFontSize(document.getElementById('ed-summary'), event.description_font_size, 16, 14, 20, 1.75);
 
     const industryWrap = document.getElementById('ed-industry');
     const industryMeta = document.getElementById('ed-industry-meta');
@@ -1132,7 +1156,6 @@ function showEventDetail(index) {
         const dateLabel = defFormatEventDate(event, dates);
         const location = defGetEventLocation(event);
         const booth = defSafeText(event.booth || '', 160);
-        const theme = defSafeText(event.theme || '', 300);
         const addMeta = (label, value) => {
             if (!value) return;
             const item = defElement('span', 'event-detail-meta-item');
@@ -1143,7 +1166,6 @@ function showEventDetail(index) {
         addMeta('Booth', booth);
         addMeta('Date', dateLabel);
         addMeta('Location', location);
-        addMeta('Theme', theme);
         meta.hidden = !meta.childElementCount;
     }
 
@@ -1152,6 +1174,7 @@ function showEventDetail(index) {
     if (highlightsSection && highlights) {
         const highlightValue = event.highlights || event.key_highlights || event.highlights_markdown || '';
         defRenderMarkdownInto(highlights, Array.isArray(highlightValue) ? highlightValue.map(x => '- ' + String(x)).join('\n') : highlightValue);
+        defApplyCmsFontSize(highlights, event.body_font_size, 16, 14, 20, 1.8);
         highlightsSection.hidden = !String(Array.isArray(highlightValue) ? highlightValue.join('') : highlightValue).trim();
     }
 
@@ -1159,14 +1182,20 @@ function showEventDetail(index) {
     const bodyHeading = document.getElementById('ed-body-heading');
     const body = document.getElementById('ed-body');
     const longBody = defSafeText(event.body || event.article_body || '', 50000);
-    if (body) defRenderMarkdownInto(body, longBody);
+    if (body) {
+        defRenderMarkdownInto(body, longBody);
+        defApplyCmsFontSize(body, event.body_font_size, 16, 14, 20, 1.8);
+    }
     if (bodySection) bodySection.hidden = !longBody;
     if (bodyHeading) bodyHeading.textContent = status === 'past' ? 'Products & Solutions Showcased' : 'What We Will Showcase';
 
     const recapSection = document.getElementById('ed-recap-section');
     const recap = document.getElementById('ed-recap');
     const recapText = status === 'past' ? defSafeText(event.recap || '', 30000) : '';
-    if (recap) defRenderMarkdownInto(recap, recapText);
+    if (recap) {
+        defRenderMarkdownInto(recap, recapText);
+        defApplyCmsFontSize(recap, event.body_font_size, 16, 14, 20, 1.8);
+    }
     if (recapSection) recapSection.hidden = !recapText;
 
     const gallery = document.getElementById('ed-gallery');

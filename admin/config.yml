@@ -7,7 +7,7 @@ publish_mode:
   type: editorial_workflow
   stages:
     - draft
-  direct_publish: false
+  direct_publish: true
 media_folder: images
 public_folder: /images
 media_libraries:
@@ -32,7 +32,7 @@ collections:
     type: editorial_workflow
     stages:
       - draft
-    direct_publish: false
+    direct_publish: true
   files:
   - name: home_intro
     label: Brand Introduction（品牌介绍）
@@ -227,14 +227,6 @@ collections:
         name: venue
         widget: string
         required: false
-      - label: 展会主题
-        name: theme
-        widget: string
-        required: true
-      - label: 卡片摘要
-        name: summary
-        widget: text
-        required: true
       - label: Industry｜行业
         name: industries
         widget: select
@@ -275,6 +267,81 @@ collections:
         name: cover_alt
         widget: string
         required: false
+      - label: About This Show｜展会详情描述
+        name: summary
+        widget: text
+        required: false
+        hint: 仅显示在展会详情页；建议写 1–3 句说明展会内容，不会显示在 Upcoming 卡片。
+      - label: 详情描述字号（px）
+        name: description_font_size
+        widget: number
+        value_type: int
+        default: 16
+        min: 14
+        max: 20
+        step: 1
+        required: false
+
+      - label: 详情页亮点（可选）
+        name: highlights
+        widget: text
+        required: false
+      - label: 详情页正文（可选）
+        name: body
+        widget: richtext
+        format: markdown
+        modes:
+        - rich_text
+        - raw
+        buttons:
+        - heading-two
+        - heading-three
+        - bold
+        - italic
+        - bulleted-list
+        - numbered-list
+        - link
+        - quote
+        required: false
+      - label: 正文/亮点字号（px）
+        name: body_font_size
+        widget: number
+        value_type: int
+        default: 16
+        min: 14
+        max: 20
+        step: 1
+        required: false
+
+      - label: 详情页标题字号（px）
+        name: detail_title_font_size
+        widget: number
+        value_type: int
+        default: 34
+        min: 28
+        max: 42
+        step: 1
+        required: false
+      - label: 详情页图片集（可选）
+        name: gallery
+        widget: list
+        required: false
+        collapsed: true
+        label_singular: 展会图片
+        fields:
+        - label: 图片
+          name: image
+          widget: image
+          required: true
+          choose_url: false
+        - label: 图片说明
+          name: caption
+          widget: string
+          required: false
+        - label: 图片替代文本
+          name: alt
+          widget: string
+          required: false
       - label: 官方/报名网址（可选）
         name: url
         widget: string
@@ -552,7 +619,7 @@ collections:
     type: editorial_workflow
     stages:
     - draft
-    direct_publish: false
+    direct_publish: true
   editor:
     preview: false
   fields:
@@ -588,10 +655,19 @@ collections:
     widget: select
     multiple: true
     options: *id002
-  - label: 卡片摘要
+  - label: 卡片摘要（可调整官网字号）
     name: summary
     widget: text
     required: true
+  - label: 摘要字号（px；同步到卡片和详情页）
+    name: summary_font_size
+    widget: number
+    value_type: int
+    default: 16
+    min: 14
+    max: 18
+    step: 1
+    required: false
   - label: 封面图片
     name: image
     widget: image
@@ -622,6 +698,24 @@ collections:
     - link
     - quote
     required: true
+  - label: 正文默认字号（px）
+    name: body_font_size
+    widget: number
+    value_type: int
+    default: 17
+    min: 14
+    max: 20
+    step: 1
+    required: false
+  - label: 详情页标题字号（px）
+    name: detail_title_font_size
+    widget: number
+    value_type: int
+    default: 34
+    min: 28
+    max: 42
+    step: 1
+    required: false
   - label: 显示销售 CTA
     name: cta_enabled
     widget: boolean
@@ -646,7 +740,7 @@ collections:
     type: editorial_workflow
     stages:
     - draft
-    direct_publish: false
+    direct_publish: true
   editor:
     preview: false
   fields:
@@ -684,10 +778,19 @@ collections:
     widget: select
     multiple: true
     options: *id002
-  - label: 卡片摘要
+  - label: 卡片摘要（可调整官网字号）
     name: summary
     widget: text
     required: true
+  - label: 摘要字号（px；同步到卡片和详情页）
+    name: summary_font_size
+    widget: number
+    value_type: int
+    default: 16
+    min: 14
+    max: 18
+    step: 1
+    required: false
   - label: 封面图片
     name: image
     widget: image
@@ -718,6 +821,24 @@ collections:
     - link
     - quote
     required: true
+  - label: 正文默认字号（px）
+    name: body_font_size
+    widget: number
+    value_type: int
+    default: 17
+    min: 14
+    max: 20
+    step: 1
+    required: false
+  - label: 详情页标题字号（px）
+    name: detail_title_font_size
+    widget: number
+    value_type: int
+    default: 34
+    min: 28
+    max: 42
+    step: 1
+    required: false
   - label: 显示销售 CTA
     name: cta_enabled
     widget: boolean
