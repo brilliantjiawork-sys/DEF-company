@@ -1292,6 +1292,12 @@ function renderEventCoverageArticles() {
     container.appendChild(grid);
 }
 
+
+function defIsPublishedContent(item) {
+    const status = String(item && (item.status || item.publication_status) || 'published').trim().toLowerCase();
+    return !['draft', 'unpublished'].includes(status);
+}
+
 async function defLoadEventCoverage() {
     const path = '/data/event-coverage.json';
     try {
@@ -1299,7 +1305,7 @@ async function defLoadEventCoverage() {
         if (!response.ok) throw new Error(path + ' returned ' + response.status);
         const data = await response.json();
         const validStages = ['Pre-show Preview', 'During-show Update', 'Post-show Recap'];
-        return (Array.isArray(data.articles) ? data.articles : []).map(article => {
+        return (Array.isArray(data.articles) ? data.articles : []).filter(defIsPublishedContent).map(article => {
             const stage = validStages.includes(article.content_stage) ? article.content_stage : 'Post-show Recap';
             return Object.assign({}, article, {
                 event_content_stage: stage,
@@ -1361,7 +1367,7 @@ async function loadCloudData() {
         const response = await fetch('/data/database.json', { cache: 'no-store' });
         if (!response.ok) throw new Error('Could not load stories data');
         const data = await response.json();
-        storiesData = Array.isArray(data.articles) ? data.articles : [];
+        storiesData = (Array.isArray(data.articles) ? data.articles : []).filter(defIsPublishedContent);
         const coverageArticles = await defLoadEventCoverage();
         storiesData = storiesData.concat(coverageArticles);
         renderStories();
