@@ -552,7 +552,7 @@ function defMakeRecommendationCard(content, index, type, badgeText) {
 
         const booth = defSafeText(content.booth || content.booth_number || content.boothNumber || '', 100);
         if (booth) {
-            const boothText = /^booth\\b/i.test(booth) ? booth : 'Booth ' + booth;
+            const boothText = /^booth\b/i.test(booth) ? booth : 'Booth ' + booth;
             body.appendChild(defElement('div', 'recommendation-card-booth', boothText));
         }
 
