@@ -804,14 +804,35 @@
   .recommendation-card-story .recommendation-card-body { padding: 18px; }
 }
 
-/* Final typography contract: labels are quiet metadata; values share one consistent readable size. */
+/* One consistent taxonomy type system across Story and Trade Show detail pages. */
+.story-taxonomy-label,
+#sd-category,
+#sd-industry,
+#sd-tags .kone-tag,
+#ed-industry .story-industry-chip,
+#ed-tags .kone-tag,
+.story-taxonomy-item > .story-category-label,
+.story-taxonomy-item > .story-industry-label,
+.story-taxonomy .kone-tag,
+.event-taxonomy .kone-tag,
+.story-industry-values .story-industry-chip {
+  font-family: inherit !important;
+  font-size: 16px !important;
+  line-height: 1.6 !important;
+  letter-spacing: 0 !important;
+  text-transform: none !important;
+  color: #111827 !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+
+/* Metadata labels and values share size, typeface and color; weight alone conveys hierarchy. */
 .story-taxonomy-label {
-  font-family: Inter, sans-serif;
-  font-size: 12px !important;
-  font-weight: 700 !important;
-  line-height: 1.65 !important;
-  letter-spacing: .045em !important;
-  text-transform: uppercase !important;
+  display: block;
+  font-weight: 650 !important;
 }
 #sd-category,
 #sd-industry,
@@ -823,15 +844,5 @@
 .story-taxonomy .kone-tag,
 .event-taxonomy .kone-tag,
 .story-industry-values .story-industry-chip {
-  font-family: Inter, sans-serif !important;
-  font-size: 16px !important;
   font-weight: 500 !important;
-  line-height: 1.6 !important;
-  letter-spacing: 0 !important;
-  text-transform: none !important;
-  padding: 0 !important;
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
 }
