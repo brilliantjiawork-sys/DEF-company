@@ -595,14 +595,28 @@
 }
 /* Explicit IDs outrank older layout rules that may stretch taxonomy values across the row. */
 #sd-category,
-#sd-industry,
-#ed-industry {
+#sd-industry {
   display: inline-flex !important;
   justify-self: start !important;
   align-self: start !important;
   width: fit-content !important;
   min-width: 0 !important;
   max-width: 100% !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+}
+#ed-industry {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-self: start !important;
+  align-self: start !important;
+  width: fit-content !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  gap: 6px 12px;
   padding: 0 !important;
   border: 0 !important;
   border-radius: 0 !important;
