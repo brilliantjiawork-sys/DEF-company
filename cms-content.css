@@ -42,7 +42,7 @@
 }
 
 
-/* Social Media images: show the entire uploaded image without cropping. */
+/* Social Media image frames: use a consistent frame; horizontal source images fill it without side bars. */
 .social-main-img,
 .social-card-img {
   display: flex;
@@ -50,14 +50,6 @@
   justify-content: center;
   overflow: hidden;
   background: #f4f6f8;
-}
-.social-main-img img,
-.social-card-img img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: contain !important;
-  object-position: center center;
 }
 
 
@@ -421,4 +413,21 @@
 .event-detail-meta .event-detail-meta-item { display: block; }
 @media (max-width: 600px) {
   .story-taxonomy-item { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+}
+
+
+/* Related upcoming shows are compact contextual recommendations, not duplicate primary Upcoming cards. */
+.recommendation-card-related-event { display: grid; grid-template-columns: minmax(96px, 34%) minmax(0, 1fr); align-items: stretch; }
+.recommendation-card-related-event .recommendation-card-image { width: 100%; height: 100%; min-height: 136px; aspect-ratio: auto; }
+.recommendation-card-related-event .recommendation-card-image img { height: 100%; min-height: 136px; object-fit: cover; }
+.recommendation-card-related-event .recommendation-card-body { padding: 12px; gap: 6px; }
+.recommendation-card-related-event .recommendation-card-kicker { font-size: 10px; }
+.recommendation-card-related-event .recommendation-card-title { font-size: 14px; line-height: 1.35; }
+.recommendation-card-related-event .recommendation-card-summary { font-size: 12px; line-height: 1.45; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 3; overflow: hidden; }
+.recommendation-card-related-event .recommendation-card-cta { align-self: flex-start; font-size: 12px; padding: 8px 10px; min-height: 0; }
+@media (max-width: 620px) {
+  .recommendation-card-related-event { grid-template-columns: 104px minmax(0, 1fr); }
+  .recommendation-card-related-event .recommendation-card-image,
+  .recommendation-card-related-event .recommendation-card-image img { min-height: 120px; }
+  .recommendation-card-related-event .recommendation-card-body { padding: 10px; }
 }

@@ -28,7 +28,7 @@ let storiesPageSettings = {
 let tradeShowsPageSettings = {
     page_title: 'Trade Shows',
     page_intro: 'Explore upcoming exhibitions or browse trade show articles and technical highlights.',
-    upcoming_tab_label: 'Upcoming Trade Shows',
+    upcoming_tab_label: 'Upcoming',
     articles_tab_label: 'Trade Show Articles',
     articles_intro: 'Pre-show previews, during-show updates and post-show recaps.',
     back_button: '← Back to Trade Shows'
@@ -510,17 +510,17 @@ function defRenderStoriesFilters() {
     defRenderFilterGroup(container, 'Content Category', availableCategories, currentStoryCategory, value => {
         currentStoryCategory = value; renderStories();
     }, 'All categories', 'stories-category-filter');
-    defRenderFilterGroup(container, 'Topic', availableTopics, currentStoryTopic, value => {
-        currentStoryTopic = value; renderStories();
-    }, 'All topics', 'stories-topic-filter');
     defRenderFilterGroup(container, 'Industry', availableIndustries, currentStoryIndustry, value => {
         currentStoryIndustry = value; renderStories();
     }, 'All industries', 'stories-industry-filter');
+    defRenderFilterGroup(container, 'Topic', availableTopics, currentStoryTopic, value => {
+        currentStoryTopic = value; renderStories();
+    }, 'All topics', 'stories-topic-filter');
 }
 
 function defMakeRecommendationCard(content, index, type, badgeText) {
     const isStory = type === 'story';
-    const card = defElement('article', 'recommendation-card');
+    const card = defElement('article', 'recommendation-card ' + (isStory ? 'recommendation-card-story' : 'recommendation-card-related-event'));
     card.tabIndex = 0;
     card.setAttribute('role', 'button');
     card.setAttribute('aria-label', (isStory ? 'Read story: ' : 'View trade show: ') + defSafeText(content.title, 180));
@@ -537,18 +537,29 @@ function defMakeRecommendationCard(content, index, type, badgeText) {
     imageWrap.appendChild(image);
 
     const body = defElement('div', 'recommendation-card-body');
-    const badge = badgeText || (isStory ? defGetStoryCategory(content) : (defGetEventStatus(content) === 'past' ? 'Past Trade Show' : 'Upcoming Trade Show'));
+    const eventStatus = isStory ? '' : defGetEventStatus(content);
+    const badge = badgeText || (isStory ? defGetStoryCategory(content) : (eventStatus === 'past' ? 'Past' : 'Upcoming'));
     if (badge) body.appendChild(defElement('span', 'recommendation-card-kicker', badge));
+    const dateLabel = isStory ? fmtDate(content.date || content.published_date) : defFormatEventDate(content, defGetEventDates(content));
+    if (dateLabel) body.appendChild(defElement('span', 'recommendation-card-date', dateLabel));
     body.appendChild(defElement('h4', 'recommendation-card-title', defSafeText(content.title, 300) || (isStory ? 'Untitled story' : 'Untitled trade show')));
 
     const summary = isStory
         ? defSafeText(content.summary || content.excerpt || '', 360)
         : defGetEventSummary(content);
     if (summary) body.appendChild(defElement('p', 'recommendation-card-summary', summary));
-
-    const dateLabel = isStory ? fmtDate(content.date || content.published_date) : defFormatEventDate(content, defGetEventDates(content));
-    if (dateLabel) body.appendChild(defElement('span', 'recommendation-card-date', dateLabel));
     // Topic tags stay on detail pages; keep recommendation cards visually clean.
+
+    if (!isStory && eventStatus === 'upcoming' && content.cta_enabled !== false) {
+        const ctaLabel = defSafeText(content.cta_label || 'Book a Meeting at This Show', 200);
+        const cta = defElement('button', 'btn-y recommendation-card-cta', ctaLabel);
+        cta.type = 'button';
+        cta.addEventListener('click', event => {
+            event.stopPropagation();
+            openContact('contact_sales', defSafeText(content.title || '', 300), ctaLabel, 'Trade Shows', 'Newsroom');
+        });
+        body.appendChild(cta);
+    }
 
     card.append(imageWrap, body);
     const activate = () => isStory ? showStoryDetail(index, content.is_event_coverage ? 'events' : 'stories') : showEventDetail(index);
@@ -590,7 +601,7 @@ function defFindRelatedEventsForStory(story, limit = 3) {
         if (match.sharedTags.length === 0) return null;
         const status = defGetEventStatus(content);
         if (status === 'past' && !defHasPastShowContent(content)) return null;
-        return { content, index, status, score: match.score, badge: status === 'past' ? 'Past Show · Relevant Recap' : 'Upcoming Trade Show' };
+        return { content, index, status, score: match.score, badge: status === 'past' ? 'Past Show · Relevant Recap' : 'Upcoming' };
     }).filter(Boolean);
     const upcoming = matches.filter(item => item.status === 'upcoming')
         .sort((a, b) => b.score - a.score || ((defGetEventDates(a.content).start || new Date(8640000000000000)) - (defGetEventDates(b.content).start || new Date(8640000000000000))));
@@ -616,7 +627,7 @@ function defFindRelatedEventsForEvent(event, currentIndex, limit = 3) {
         if (match.sharedTags.length === 0) return null;
         const status = defGetEventStatus(content);
         if (status === 'past' && !defHasPastShowContent(content)) return null;
-        return { content, index, status, score: match.score, badge: status === 'past' ? 'Past Show · Relevant Recap' : 'Upcoming Trade Show' };
+        return { content, index, status, score: match.score, badge: status === 'past' ? 'Past Show · Relevant Recap' : 'Upcoming' };
     }).filter(Boolean);
     const upcoming = matches.filter(item => item.status === 'upcoming').sort((a, b) => b.score - a.score);
     const past = matches.filter(item => item.status === 'past').sort((a, b) => b.score - a.score);
@@ -942,7 +953,6 @@ function defMakeEventCard(event, index, status) {
     const body = defElement('div', 'event-card-body');
     const badgeLabel = status === 'upcoming' ? 'Upcoming' : 'Past';
     body.appendChild(defElement('span', 'event-status ' + (status === 'upcoming' ? 'is-upcoming' : 'is-past'), badgeLabel));
-    body.appendChild(defElement('h3', 'event-title', event.title || 'Untitled event'));
 
     const booth = defSafeText(event.booth || '', 120);
     if (booth) {
@@ -972,6 +982,7 @@ function defMakeEventCard(event, index, status) {
         }
         body.appendChild(meta);
     }
+    body.appendChild(defElement('h3', 'event-title', event.title || 'Untitled event'));
 
     const theme = defSafeText(event.theme || '', 250);
     if (theme) body.appendChild(defElement('p', 'event-card-theme', theme));
@@ -1342,6 +1353,10 @@ async function defLoadPageSettings() {
     }
     if (eventsSettings && typeof eventsSettings === 'object') {
         tradeShowsPageSettings = { ...tradeShowsPageSettings, ...eventsSettings };
+        // Normalize the old default label so legacy CMS settings do not restore the longer wording.
+        if (tradeShowsPageSettings.upcoming_tab_label === 'Upcoming Trade Shows') {
+            tradeShowsPageSettings.upcoming_tab_label = 'Upcoming';
+        }
     }
 
     const setText = (id, value) => {
@@ -1353,7 +1368,7 @@ async function defLoadPageSettings() {
     setText('stories-page-intro', storiesPageSettings.page_intro);
     setText('events-page-title', tradeShowsPageSettings.page_title);
     setText('events-page-intro', tradeShowsPageSettings.page_intro);
-    setText('tab-upcoming-shows', tradeShowsPageSettings.upcoming_tab_label);
+    setText('tab-upcoming-shows', 'Upcoming');
     setText('tab-trade-show-articles', tradeShowsPageSettings.articles_tab_label);
     setText('event-articles-intro', tradeShowsPageSettings.articles_intro);
     setText('event-detail-back', tradeShowsPageSettings.back_button);
