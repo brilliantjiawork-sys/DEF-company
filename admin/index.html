@@ -609,7 +609,7 @@
 
       // Hide the optional Validation panel and manual Validate action.
       // Required-field checks at publish time remain enabled to protect live content.
-      const validationLabelPattern = /^(?:validation(?:\\s+(?:panel|errors?))?|field validation|validate(?:\\s+(?:entry|content|all))?|验证(?:功能|面板|信息)?|校验(?:功能|面板|信息)?)$/i;
+      const validationLabelPattern = /^(?:validation(?:\s+(?:panel|errors?))?|field validation|validate(?:\s+(?:entry|content|all))?|验证(?:功能|面板|信息)?|校验(?:功能|面板|信息)?)$/i;
       const isValidationLabel = value => validationLabelPattern.test(normalized(value));
       const hideValidationElement = element => {
         if (!element || element.getAttribute('data-def-hidden-validation') === 'true') return;
@@ -712,7 +712,10 @@
                 if (node.shadowRoot) observeAndScanRoot(node.shadowRoot);
               }
             });
-            if (mutation.type === 'attributes' && mutation.target) inspectElement(mutation.target);
+            if ((mutation.type === 'attributes' || mutation.type === 'characterData') && mutation.target) {
+              const target = mutation.target.nodeType === 1 ? mutation.target : mutation.target.parentElement;
+              if (target) inspectElement(target);
+            }
           });
         });
         observer.observe(root, {
