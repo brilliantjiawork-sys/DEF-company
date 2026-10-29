@@ -651,8 +651,168 @@
         if (tag === 'button' && isValidationLabel(visibleLabel)) hideValidationElement(element);
       };
 
-      // Publishing is provided by Sveltia's native `direct_publish: true` workflow option.
-      // Avoid injecting custom toolbar controls; the native action safely saves/merges drafts.
+      // Sveltia v0.250.2 renders the native Save/Save and Publish split control as
+      // .sui.split-button > button + button.menu-button. Add a clearly labelled Publish
+      // button beside that native control, but delegate the actual publish action to Sveltia.
+      const allOpenDomRoots = () => {
+        const roots = [document];
+        for (let index = 0; index < roots.length; index += 1) {
+          const root = roots[index];
+          if (!root || !root.querySelectorAll) continue;
+          root.querySelectorAll('*').forEach(node => {
+            if (node.shadowRoot && !roots.includes(node.shadowRoot)) roots.push(node.shadowRoot);
+          });
+        }
+        return roots;
+      };
+      const queryAllOpenRoots = selector => {
+        const found = [];
+        allOpenDomRoots().forEach(root => {
+          if (root.querySelectorAll) root.querySelectorAll(selector).forEach(node => found.push(node));
+        });
+        return [...new Set(found)];
+      };
+      const getEditorControlLabel = element => normalized(
+        element && (element.getAttribute('aria-label') || element.getAttribute('title') || element.innerText || element.textContent)
+      );
+      const visibleEditorElement = element => {
+        if (!element || !element.isConnected) return false;
+        const rect = element.getBoundingClientRect();
+        if (rect.width < 1 || rect.height < 1) return false;
+        const style = window.getComputedStyle(element);
+        return style.display !== 'none' && style.visibility !== 'hidden';
+      };
+      const findNativeSaveSplit = () => queryAllOpenRoots('.sui.split-button').find(group => {
+        const rect = group.getBoundingClientRect();
+        if (rect.top < -2 || rect.top > 130 || rect.right < window.innerWidth * 0.45) return false;
+        const buttons = Array.from(group.querySelectorAll('button'));
+        const save = buttons.find(button =>
+          !button.classList.contains('menu-button') &&
+          /^(?:save|保存|保存更改|saving|保存中|publishing|发布中)$/i.test(getEditorControlLabel(button))
+        );
+        const menu = buttons.find(button => button.classList.contains('menu-button'));
+        return visibleEditorElement(group) && !!save && !!menu;
+      }) || null;
+
+      let activePublishGroup = null;
+      let activeNativeSaveButton = null;
+      let activeNativeMenuButton = null;
+      let activePublishButton = null;
+
+      const installEditorPublishButton = () => {
+        if (
+          activePublishButton && activePublishButton.isConnected &&
+          activePublishGroup && activePublishGroup.isConnected &&
+          activeNativeSaveButton && activeNativeSaveButton.isConnected &&
+          activeNativeMenuButton && activeNativeMenuButton.isConnected &&
+          activePublishButton.parentElement === activePublishGroup.parentElement
+        ) {
+          if (!activePublishButton.dataset.defPublishPending) {
+            activePublishButton.disabled = activeNativeSaveButton.disabled ||
+              activePublishGroup.getAttribute('aria-disabled') === 'true';
+          }
+          return;
+        }
+
+        if (activePublishButton && activePublishButton.isConnected) activePublishButton.remove();
+        activePublishGroup = null;
+        activeNativeSaveButton = null;
+        activeNativeMenuButton = null;
+        activePublishButton = null;
+
+        const group = findNativeSaveSplit();
+        if (!group || !group.parentElement) return;
+        const buttons = Array.from(group.querySelectorAll('button'));
+        const saveButton = buttons.find(button =>
+          !button.classList.contains('menu-button') &&
+          /^(?:save|保存|保存更改|saving|保存中|publishing|发布中)$/i.test(getEditorControlLabel(button))
+        );
+        const menuButton = buttons.find(button => button.classList.contains('menu-button'));
+        if (!saveButton || !menuButton) return;
+
+        const publishButton = document.createElement('button');
+        publishButton.type = 'button';
+        publishButton.textContent = '发布';
+        publishButton.setAttribute('aria-label', 'Publish');
+        publishButton.setAttribute('title', 'Publish this entry to the website');
+        publishButton.setAttribute('data-def-explicit-publish', 'true');
+        publishButton.style.cssText = [
+          'display:inline-flex',
+          'align-items:center',
+          'justify-content:center',
+          'min-height:36px',
+          'margin-inline-start:8px',
+          'padding:0 16px',
+          'border:1px solid #1b66bd',
+          'border-radius:6px',
+          'background:#1b66bd',
+          'color:#fff',
+          'font:inherit',
+          'font-size:14px',
+          'font-weight:600',
+          'line-height:1.2',
+          'white-space:nowrap',
+          'cursor:pointer'
+        ].join(';');
+
+        publishButton.addEventListener('click', event => {
+          event.preventDefault();
+          event.stopPropagation();
+          const currentGroup = findNativeSaveSplit();
+          if (!currentGroup) {
+            publishButton.title = '未找到 CMS 原生发布菜单，请刷新编辑页后重试。';
+            return;
+          }
+          const currentSave = Array.from(currentGroup.querySelectorAll('button')).find(button =>
+            !button.classList.contains('menu-button') &&
+            /^(?:save|保存|保存更改|saving|保存中|publishing|发布中)$/i.test(getEditorControlLabel(button))
+          );
+          const currentMenu = Array.from(currentGroup.querySelectorAll('button')).find(button => button.classList.contains('menu-button'));
+          if (!currentSave || !currentMenu || currentSave.disabled || currentGroup.getAttribute('aria-disabled') === 'true') return;
+
+          publishButton.disabled = true;
+          publishButton.dataset.defPublishPending = 'true';
+          currentMenu.click();
+
+          const startedAt = Date.now();
+          const triggerNativePublish = () => {
+            const option = queryAllOpenRoots('button, [role="menuitem"], [role="option"]').find(candidate =>
+              visibleEditorElement(candidate) &&
+              !candidate.disabled &&
+              /^(?:save and publish|保存并发布)$/i.test(getEditorControlLabel(candidate))
+            );
+            if (option) {
+              option.click();
+              publishButton.title = '已将发布操作交给 CMS 处理。';
+              window.setTimeout(() => {
+                if (!publishButton.isConnected) return;
+                delete publishButton.dataset.defPublishPending;
+                const nativeGroup = findNativeSaveSplit();
+                const nativeSave = nativeGroup && Array.from(nativeGroup.querySelectorAll('button')).find(button =>
+                  !button.classList.contains('menu-button') &&
+                  /^(?:save|保存|保存更改|saving|保存中|publishing|发布中)$/i.test(getEditorControlLabel(button))
+                );
+                publishButton.disabled = !nativeSave || nativeSave.disabled;
+              }, 5000);
+            } else if (Date.now() - startedAt < 3000) {
+              window.setTimeout(triggerNativePublish, 60);
+            } else {
+              delete publishButton.dataset.defPublishPending;
+              publishButton.disabled = false;
+              publishButton.title = '没有找到“保存并发布”菜单项。请用 Save 旁边的下拉菜单执行发布。';
+            }
+          };
+          window.setTimeout(triggerNativePublish, 0);
+        });
+
+        group.insertAdjacentElement('afterend', publishButton);
+        activePublishGroup = group;
+        activeNativeSaveButton = saveButton;
+        activeNativeMenuButton = menuButton;
+        activePublishButton = publishButton;
+        publishButton.disabled = saveButton.disabled || group.getAttribute('aria-disabled') === 'true';
+      };
+
       const restoreElement = (element) => {
         if (!element || element.getAttribute('data-def-hidden-native-nav') !== 'true') return;
         element.style.removeProperty('display');
@@ -724,6 +884,7 @@
               if (target) inspectElement(target);
             }
           });
+          installEditorPublishButton();
         });
         observer.observe(root, {
           childList: true,
@@ -738,6 +899,7 @@
       document.documentElement.setAttribute('data-def-cms-nav-fix', 'two-primary-pages-v5');
       document.documentElement.setAttribute('data-def-cms-validation-ui', 'hidden-v1');
       observeAndScanRoot(document);
+      installEditorPublishButton();
       const rootObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
           if (node.nodeType === 1) {
@@ -746,6 +908,7 @@
             if (node.shadowRoot) observeAndScanRoot(node.shadowRoot);
           }
         }));
+        installEditorPublishButton();
       });
       if (document.documentElement) rootObserver.observe(document.documentElement, { childList: true, subtree: true });
 
