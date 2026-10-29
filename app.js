@@ -547,7 +547,7 @@ function defMakeRecommendationCard(content, index, type, badgeText) {
         const summary = defSafeText(content.summary || content.excerpt || '', 360);
         if (summary) {
             const summaryElement = defElement('p', 'recommendation-card-summary', summary);
-            defApplyCmsFontSize(summaryElement, content.summary_font_size, 15, 13, 20, 1.7);
+            defApplyCmsFontSize(summaryElement, content.summary_font_size, 16, 14, 18, 1.65);
             body.appendChild(summaryElement);
         }
     } else {
@@ -731,7 +731,7 @@ function renderStories() {
         const summary = defSafeText(story.summary || story.excerpt || '', 600);
         if (summary) {
             const summaryElement = defElement('p', 'story-summary', summary);
-            defApplyCmsFontSize(summaryElement, story.summary_font_size, 15, 13, 20, 1.7);
+            defApplyCmsFontSize(summaryElement, story.summary_font_size, 16, 14, 18, 1.65);
             info.appendChild(summaryElement);
         }
 
@@ -769,16 +769,16 @@ function showStoryDetail(index, origin = 'stories') {
     if (date) date.textContent = fmtDate(story.date);
     if (title) {
         title.textContent = story.title || 'Untitled story';
-        defApplyCmsFontSize(title, story.detail_title_font_size, 36, 28, 48, 1.2);
+        defApplyCmsFontSize(title, story.detail_title_font_size, 34, 28, 42, 1.2);
     }
     if (summary) {
         summary.textContent = defSafeText(story.summary || story.excerpt || '', 1000);
         summary.hidden = !summary.textContent;
-        defApplyCmsFontSize(summary, story.summary_font_size, 17, 14, 20, 1.7);
+        defApplyCmsFontSize(summary, story.summary_font_size, 16, 14, 18, 1.7);
     }
     if (body) {
         defRenderMarkdownInto(body, story.body || '');
-        defApplyCmsFontSize(body, story.body_font_size, 17, 14, 22, 1.85);
+        defApplyCmsFontSize(body, story.body_font_size, 17, 14, 20, 1.8);
     }
 
     const category = document.getElementById('sd-category');
@@ -1127,7 +1127,7 @@ function showEventDetail(index) {
 
     defSetOptionalText('ed-published-date', defFormatEventDate(event, dates));
     defSetOptionalText('ed-title', titleText);
-    defApplyCmsFontSize(document.getElementById('ed-title'), event.detail_title_font_size, 36, 28, 48);
+    defApplyCmsFontSize(document.getElementById('ed-title'), event.detail_title_font_size, 34, 28, 42, 1.2);
     const eventSummaryText = defGetEventSummary(event);
     defSetOptionalText('ed-summary', eventSummaryText);
     const eventDescriptionSection = document.getElementById('ed-description-section');
@@ -1172,7 +1172,7 @@ function showEventDetail(index) {
     if (highlightsSection && highlights) {
         const highlightValue = event.highlights || event.key_highlights || event.highlights_markdown || '';
         defRenderMarkdownInto(highlights, Array.isArray(highlightValue) ? highlightValue.map(x => '- ' + String(x)).join('\n') : highlightValue);
-        defApplyCmsFontSize(highlights, event.body_font_size, 16, 14, 22, 1.8);
+        defApplyCmsFontSize(highlights, event.body_font_size, 16, 14, 20, 1.8);
         highlightsSection.hidden = !String(Array.isArray(highlightValue) ? highlightValue.join('') : highlightValue).trim();
     }
 
@@ -1182,7 +1182,7 @@ function showEventDetail(index) {
     const longBody = defSafeText(event.body || event.article_body || '', 50000);
     if (body) {
         defRenderMarkdownInto(body, longBody);
-        defApplyCmsFontSize(body, event.body_font_size, 16, 14, 22, 1.8);
+        defApplyCmsFontSize(body, event.body_font_size, 16, 14, 20, 1.8);
     }
     if (bodySection) bodySection.hidden = !longBody;
     if (bodyHeading) bodyHeading.textContent = status === 'past' ? 'Products & Solutions Showcased' : 'What We Will Showcase';
@@ -1192,7 +1192,7 @@ function showEventDetail(index) {
     const recapText = status === 'past' ? defSafeText(event.recap || '', 30000) : '';
     if (recap) {
         defRenderMarkdownInto(recap, recapText);
-        defApplyCmsFontSize(recap, event.body_font_size, 16, 14, 22, 1.8);
+        defApplyCmsFontSize(recap, event.body_font_size, 16, 14, 20, 1.8);
     }
     if (recapSection) recapSection.hidden = !recapText;
 
