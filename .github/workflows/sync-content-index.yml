@@ -1,0 +1,39 @@
+name: Sync CMS article indexes
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'admin/config.yml'
+      - 'data/database.json'
+      - 'data/event-coverage.json'
+      - 'data/stories/**'
+      - 'data/trade-show-articles/**'
+      - 'scripts/sync-content-index.mjs'
+      - '.github/workflows/sync-content-index.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  sync-content-index:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+      - name: Sync article indexes
+        run: node scripts/sync-content-index.mjs
+      - name: Commit generated indexes and migrated articles
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A data/
+          if git diff --cached --quiet; then
+            echo 'No generated content changes.'
+          else
+            git commit -m 'Sync CMS article indexes'
+            git push origin main
+          fi
