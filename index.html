@@ -15,8 +15,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>DEF Company | Newsroom</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css?v=20261030-taxonomy-clean-v17">
-    <link rel="stylesheet" href="cms-content.css?v=20261030-taxonomy-clean-v17">
+    <link rel="stylesheet" href="style.css?v=20261030-content-layout-v18">
+    <link rel="stylesheet" href="cms-content.css?v=20261030-content-layout-v18">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.4.17/dist/purify.min.js"></script>
 </head>
@@ -143,7 +143,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                         </div>
                         <span id="ed-published-date" class="detail-date"></span>
                         <h2 id="ed-title" class="detail-title"></h2>
-                        <p id="ed-summary" class="detail-summary" hidden></p>
+                        <p id="ed-theme" class="event-detail-theme" hidden></p>
                         <div class="event-taxonomy" aria-label="Trade show classification">
                             <div id="ed-industry-meta" class="story-taxonomy-item" hidden>
                                 <span class="story-taxonomy-label">Industry</span>
@@ -155,6 +155,10 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
                             </div>
                         </div>
                         <div id="ed-meta" class="event-detail-meta" hidden></div>
+                        <section id="ed-description-section" class="event-detail-section event-detail-description" hidden>
+                            <h3>About This Show</h3>
+                            <p id="ed-summary" class="detail-summary"></p>
+                        </section>
                         <section id="ed-highlights-section" class="event-detail-section" hidden>
                             <h3>Highlights</h3>
                             <div id="ed-highlights" class="detail-text"></div>
