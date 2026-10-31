@@ -7,7 +7,7 @@ const DEF_UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content']
 
 // This is the action used internally by the shared sales form, not a Google Sheet column.
 let currentLeadSource = 'contact_sales';
-let currentLeadContext = { formEntry: 'Home', contentType: '', contentTitle: '', ctaLabel: 'Contact Sales' };
+let currentLeadContext = { formEntry: 'Home', contentType: '', contentTitle: '', contentTopic: '', ctaLabel: 'Contact Sales', ctaLocation: 'homepage' };
 let firstLandingPage = '';
 let pendingContactSubmissionId = '';
 let pendingNewsletterSubmissionId = '';
@@ -269,7 +269,9 @@ function defNormalizeFormEntry(value) {
 function defNormalizeContentType(value) {
     const text = defSafeText(value, 80).toLowerCase();
     if (text === 'story' || text === 'stories') return 'Story';
-    if (['trade shows', 'trade show', 'event', 'events'].includes(text)) return 'Trade Shows';
+    if (['trade show article', 'trade show articles', 'event coverage'].includes(text)) return 'Trade Show Article';
+    if (['upcoming trade show', 'upcoming show', 'trade show event'].includes(text)) return 'Upcoming Trade Show';
+    if (['trade shows', 'trade show', 'event', 'events'].includes(text)) return 'Upcoming Trade Show';
     return '';
 }
 
@@ -280,15 +282,17 @@ function defInferLeadContextFromCurrentView() {
     }
 
     const inNewsroom = Boolean(activePage && activePage.id === 'newsroom');
-    const result = { formEntry: inNewsroom ? 'Newsroom' : 'Home', contentType: '', contentTitle: '' };
+    const result = { formEntry: inNewsroom ? 'Newsroom' : 'Home', contentType: '', contentTitle: '', contentTopic: '', ctaLocation: inNewsroom ? 'newsroom' : 'homepage' };
     const storyDetail = document.getElementById('view-story-detail');
     const tradeShowDetail = document.getElementById('view-event-detail');
 
     if (inNewsroom && storyDetail && storyDetail.classList.contains('active')) {
         const story = storiesData[currentStoryDetailIndex];
         if (story) {
-            result.contentType = 'Story';
+            result.contentType = story.is_event_coverage ? 'Trade Show Article' : 'Story';
             result.contentTitle = defSafeText(story.title || '', 300);
+            result.contentTopic = defGetTopicTags(story).join(', ');
+            result.ctaLocation = story.is_event_coverage ? 'trade_show_article_detail' : 'story_detail';
         }
         return result;
     }
@@ -296,8 +300,10 @@ function defInferLeadContextFromCurrentView() {
     if (inNewsroom && tradeShowDetail && tradeShowDetail.classList.contains('active')) {
         const item = eventsData[currentEventDetailIndex];
         if (item) {
-            result.contentType = 'Trade Shows';
+            result.contentType = defGetEventStatus(item) === 'upcoming' ? 'Upcoming Trade Show' : 'Trade Show';
             result.contentTitle = defSafeText(item.title || '', 300);
+            result.contentTopic = defGetTopicTags(item).join(', ');
+            result.ctaLocation = 'trade_show_detail';
         }
         return result;
     }
@@ -305,7 +311,7 @@ function defInferLeadContextFromCurrentView() {
     return result;
 }
 
-function openContact(source, contentTitle, ctaLabel, contentType, sourceSection) {
+function openContact(source, contentTitle, ctaLabel, contentType, sourceSection, ctaLocation, contentTopic) {
     // `source` identifies the requested action internally; the sheet records its visible CTA label instead.
     currentLeadSource = source === 'book_demo' ? 'book_demo' : 'contact_sales';
     const inferred = defInferLeadContextFromCurrentView();
@@ -320,19 +326,25 @@ function openContact(source, contentTitle, ctaLabel, contentType, sourceSection)
         ctaLabel || (currentLeadSource === 'book_demo' ? 'Book a Demo' : 'Contact Sales'),
         200
     );
+    const topic = hasContentContext ? defSafeText(contentTopic || inferred.contentTopic || '', 500) : '';
+    const location = defSafeText(ctaLocation || inferred.ctaLocation || (entry === 'Newsroom' ? 'newsroom' : 'homepage'), 100);
 
     currentLeadContext = {
         formEntry: entry,
         contentType: normalizedType,
         contentTitle: title,
-        ctaLabel: label
+        contentTopic: topic,
+        ctaLabel: label,
+        ctaLocation: location
     };
 
     track('cta_click', {
         form_entry: entry,
         content_type: normalizedType,
         content_title: title,
-        cta_label: label
+        content_topic: topic,
+        cta_label: label,
+        cta_location: location
     });
 
     const box = document.getElementById('form-container-box');
@@ -818,7 +830,7 @@ function showStoryDetail(index, origin = 'stories') {
             const ctaLabel = defSafeText(story.cta_label || 'Talk to our team', 200);
             const storyCta = defElement('button', 'btn-y event-detail-cta', ctaLabel);
             storyCta.type = 'button';
-            storyCta.addEventListener('click', () => openContact('contact_sales', story.title || '', ctaLabel, 'Story', 'Newsroom'));
+            storyCta.addEventListener('click', () => openContact('contact_sales', story.title || '', ctaLabel, story.is_event_coverage ? 'Trade Show Article' : 'Story', 'Newsroom', story.is_event_coverage ? 'trade_show_article_detail' : 'story_detail', defGetTopicTags(story).join(', ')));
             storyCtaContainer.appendChild(storyCta);
         }
     }
@@ -829,7 +841,11 @@ function showStoryDetail(index, origin = 'stories') {
     defRenderRecommendationSection('sd-related-events-section', 'sd-related-events', relatedEvents, 'event', 'Explore Related Trade Shows');
 
     switchView('story-detail');
-    track('content_view', { content_type: 'Story', content_title: defSafeText(story.title || 'Untitled story', 300) });
+    track('content_view', {
+        content_type: story.is_event_coverage ? 'Trade Show Article' : 'Story',
+        content_title: defSafeText(story.title || 'Untitled story', 300),
+        content_topic: defGetTopicTags(story).join(', ')
+    });
     defTrackVirtualPageView('/newsroom/stories/' + encodeURIComponent(defContentSlug(story, index)), defSafeText(story.title || 'Untitled story', 300));
 }
 
@@ -1053,7 +1069,7 @@ function defMakeEventCard(event, index, status) {
         const ctaLabel = defSafeText(event.cta_label || 'Book a Meeting at This Show', 200);
         const ctaButton = defElement('button', 'btn-y event-card-cta', ctaLabel);
         ctaButton.type = 'button';
-        ctaButton.addEventListener('click', () => openContact('contact_sales', defSafeText(event.title || '', 300), ctaLabel, 'Trade Shows', 'Newsroom'));
+        ctaButton.addEventListener('click', () => openContact('contact_sales', defSafeText(event.title || '', 300), ctaLabel, 'Upcoming Trade Show', 'Newsroom', 'upcoming_show_card', defGetTopicTags(event).join(', ')));
         actions.appendChild(ctaButton);
     }
     body.appendChild(actions);
@@ -1249,7 +1265,7 @@ function showEventDetail(index) {
             const ctaLabel = defSafeText(event.cta_label || 'Book a Meeting at This Show', 200);
             const cta = defElement('button', 'btn-y event-detail-cta', ctaLabel);
             cta.type = 'button';
-            cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, 'Trade Shows', 'Newsroom'));
+            cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, status === 'upcoming' ? 'Upcoming Trade Show' : 'Trade Show', 'Newsroom', 'trade_show_detail', defGetTopicTags(event).join(', ')));
             ctaContainer.appendChild(cta);
         } else if (status === 'past' && hasRecap) {
             const cta = defElement('button', 'btn-y event-detail-cta', 'Read Related Recap');
@@ -1269,7 +1285,7 @@ function showEventDetail(index) {
             const ctaLabel = /book a meeting|book a demo/i.test(requestedLabel) ? 'Talk to Our Team' : requestedLabel;
             const cta = defElement('button', 'btn-y event-detail-cta', ctaLabel);
             cta.type = 'button';
-            cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, 'Trade Shows', 'Newsroom'));
+            cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, status === 'upcoming' ? 'Upcoming Trade Show' : 'Trade Show', 'Newsroom', 'trade_show_detail', defGetTopicTags(event).join(', ')));
             ctaContainer.appendChild(cta);
         }
     }
@@ -1282,8 +1298,9 @@ function showEventDetail(index) {
     // Send only the existing content_view and virtual_page_view contracts; recommendation clicks do not add a new event.
     switchView('event-detail', { suppressVirtualPageView: true });
     track('content_view', {
-        content_type: 'Trade Shows',
-        content_title: titleText
+        content_type: status === 'upcoming' ? 'Upcoming Trade Show' : 'Trade Show',
+        content_title: titleText,
+        content_topic: defGetTopicTags(event).join(', ')
     });
     defTrackVirtualPageView('/newsroom/events/' + encodeURIComponent(slug), titleText);
 }
@@ -1600,6 +1617,8 @@ function initContactForm() {
             form_entry: analyticsConsent ? (currentLeadContext.formEntry || 'Home') : '',
             content_type: analyticsConsent ? (currentLeadContext.contentType || '') : '',
             content_title: analyticsConsent ? (currentLeadContext.contentTitle || '') : '',
+            content_topic: analyticsConsent ? (currentLeadContext.contentTopic || '') : '',
+            cta_location: analyticsConsent ? (currentLeadContext.ctaLocation || '') : '',
             cta_label: analyticsConsent ? (currentLeadContext.ctaLabel || (currentLeadSource === 'book_demo' ? 'Book a Demo' : 'Contact Sales')) : ''
         });
 
@@ -1610,6 +1629,8 @@ function initContactForm() {
                     form_entry: currentLeadContext.formEntry || 'Home',
                     content_type: currentLeadContext.contentType || '',
                     content_title: currentLeadContext.contentTitle || '',
+                    content_topic: currentLeadContext.contentTopic || '',
+                    cta_location: currentLeadContext.ctaLocation || '',
                     cta_label: currentLeadContext.ctaLabel || (currentLeadSource === 'book_demo' ? 'Book a Demo' : 'Contact Sales'),
                     landing_page: attribution.landing_page,
                     utm_source: attribution.utm_source,
