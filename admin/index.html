@@ -95,17 +95,42 @@
           const fallbackTitle = slug => String(slug || 'Untitled').replace(/[-_]+/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
           const entryUrl = slug => `#/collections/${config.collection}/entries/${encodeURIComponent(slug)}`;
           const loadPublished = async () => {
-            const response = await api(`contents/${config.folder}`, { ref: 'main' });
-            if (response.status === 404) return [];
-            const items = await jsonFromResponse(response);
-            const files = (Array.isArray(items) ? items : []).filter(item => item.type === 'file' && /\.json$/i.test(item.name));
+            const folderPrefix = `${config.folder}/`;
+            const cdnIndexUrl = `https://data.jsdelivr.com/v1/package/gh/${repo}@main/flat`;
+            let files = [];
+
+            // Prefer jsDelivr's public package index so the CMS does not depend on
+            // the visitor's unauthenticated GitHub REST API quota.
+            try {
+              const indexResponse = await fetch(cdnIndexUrl, { cache: 'no-store' });
+              if (!indexResponse.ok) throw new Error(`CDN index ${indexResponse.status}`);
+              const indexData = await indexResponse.json();
+              files = (indexData.files || [])
+                .map(file => String(file.name || '').replace(/^\//, ''))
+                .filter(path => path.startsWith(folderPrefix) && /^.+\.json$/i.test(path))
+                .map(path => ({
+                  path,
+                  name: path.slice(folderPrefix.length),
+                  url: `https://cdn.jsdelivr.net/gh/${repo}@main/${path.split('/').map(encodeURIComponent).join('/')}`
+                }));
+            } catch (cdnError) {
+              // Fallback for a CDN outage. A GitHub 403/429 will be surfaced clearly below.
+              const response = await api(`contents/${config.folder}`, { ref: 'main' });
+              if (response.status === 404) return [];
+              const items = await jsonFromResponse(response);
+              files = (Array.isArray(items) ? items : [])
+                .filter(item => item.type === 'file' && /\.json$/i.test(item.name))
+                .map(item => ({ path: item.path, name: item.name, url: item.download_url }));
+            }
+
             const records = await Promise.all(files.map(async file => {
+              const slug = file.name.replace(/\.json$/i, '');
               try {
-                const data = await jsonFromResponse(await fetch(file.download_url, { cache: 'no-store' }));
-                const slug = file.name.replace(/\.json$/i, '');
+                const response = await fetch(file.url, { cache: 'no-store' });
+                if (!response.ok) throw new Error(`Content file ${response.status}`);
+                const data = await response.json();
                 return { slug, title: data.title || data.name || fallbackTitle(slug), date: data.date || data.publish_date || '', category: data.category || '', status: 'Published', url: entryUrl(slug) };
               } catch (_) {
-                const slug = file.name.replace(/\.json$/i, '');
                 return { slug, title: fallbackTitle(slug), date: '', category: '', status: 'Published', url: entryUrl(slug) };
               }
             }));
