@@ -187,7 +187,7 @@ collections:
     editor:
       preview: false
     fields:
-    - label: 展会活动
+    - label: 展会活动（只编辑官网卡片内容）
       name: exhibitions
       widget: list
       label_singular: 新增一场展会
@@ -201,16 +201,21 @@ collections:
         name: title
         widget: string
         required: true
-      - label: 展会标题字号（px）
-        name: detail_title_font_size
-        hint: 控制官网展会详情页最上方的展会名称，不影响正文。
-        widget: number
-        value_type: int
-        default: 34
-        min: 28
-        max: 42
-        step: 1
+      - label: 展会封面图（卡片顶部图片）
+        name: cover
+        widget: image
+        required: true
+        choose_url: false
+        hint: 上传后官网卡片会按原图比例完整显示，不裁剪、不拉伸。
+      - label: 图片替代文本（无障碍说明，可选）
+        name: cover_alt
+        widget: string
         required: false
+      - label: 展位号
+        name: booth
+        widget: string
+        required: true
+        hint: 尚未确认时填写 TBC。
       - label: 开始日期
         name: start_date
         widget: datetime
@@ -225,133 +230,16 @@ collections:
         date_format: YYYY-MM-DD
         time_format: false
         format: YYYY-MM-DD
-      - label: 展位号（官网显示在日期和地点之前）
-        name: booth
-        widget: string
-        required: true
-        hint: 请填写实际展位编号；尚未确认时填写 TBC。官网 Upcoming 卡片会将展位号放在日期和地点之前。
       - label: 地点（城市、地区和国家）
         name: loc
         widget: string
         required: true
-      - label: 场馆（可选）
-        name: venue
-        widget: string
-        required: false
-      - label: Industry｜行业
-        name: industries
-        widget: select
-        multiple: true
-        options: &id001
-        - Automotive
-        - Electronics
-        - Food & Beverage
-        - Packaging
-        - Semiconductors
-        - Logistics
-        - Pharmaceuticals
-      - label: Content Topic｜内容话题（与 Stories、Trade Show Articles 共用同一套选项）
+      - label: 卡片话题标签
         name: tags
         widget: select
         multiple: true
-        options: &content_topics
-        - Machine Vision
-        - AI & Deep Learning
-        - Defect Detection
-        - Quality Control
-        - AOI
-        - 3D Vision
-        - Robotics & Automation
-        - Positioning & Measurement
-        - Electronics & Semiconductors
-        - Food & Beverage Inspection
-        - Packaging Inspection
-        - Warehouse & Logistics
-        - Innovation
-        - Sustainability
-      - label: 展会封面图（官网卡片图片）
-        name: cover
-        widget: image
-        required: false
-        choose_url: false
-        hint: "官网 Upcoming 卡片采用上图下文布局：图片横跨卡片内容区，并按上传图片的原始宽高比例完整显示，不使用固定高度、不裁剪、不拉伸。建议上传清晰的大尺寸现场照片；横图和竖图都会按原比例显示。图片原文件不会被修改。"
-      - label: 图片替代文本
-        name: cover_alt
-        widget: string
-        required: false
-      - label: About This Show｜展会详情描述
-        name: summary
-        widget: text
-        required: false
-        hint: 仅显示在展会详情页；建议写 1–3 句说明展会内容，不会显示在 Upcoming 卡片。
-      - label: About This Show 描述字号（px）
-        name: description_font_size
-        hint: 只影响官网 About This Show 描述，不影响展会标题。
-        widget: number
-        value_type: int
-        default: 16
-        min: 14
-        max: 20
-        step: 1
-        required: false
-
-      - label: 详情页亮点（可选）
-        name: highlights
-        widget: text
-        required: false
-      - label: 详情页正文（可选）
-        name: body
-        widget: richtext
-        format: markdown
-        modes:
-        - rich_text
-        - raw
-        buttons:
-        - heading-two
-        - heading-three
-        - bold
-        - italic
-        - bulleted-list
-        - numbered-list
-        - link
-        - quote
-        required: false
-      - label: 正文/亮点字号（px）
-        name: body_font_size
-        hint: 控制详情页正文和亮点内容的字号。
-        widget: number
-        value_type: int
-        default: 16
-        min: 14
-        max: 20
-        step: 1
-        required: false
-
-      - label: 详情页图片集（可选）
-        name: gallery
-        widget: list
-        required: false
-        collapsed: true
-        label_singular: 展会图片
-        fields:
-        - label: 图片
-          name: image
-          widget: image
-          required: true
-          choose_url: false
-        - label: 图片说明
-          name: caption
-          widget: string
-          required: false
-        - label: 图片替代文本
-          name: alt
-          widget: string
-          required: false
-      - label: 官方/报名网址（可选）
-        name: url
-        widget: string
-        required: false
-      - label: 显示预约 CTA
+        options: *content_topics
+      - label: 显示预约按钮
         name: cta_enabled
         widget: boolean
         default: true
