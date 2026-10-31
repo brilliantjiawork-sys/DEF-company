@@ -1044,7 +1044,7 @@ function defMakeEventCard(event, index, status) {
     const imageWrap = defElement('div', 'event-card-image');
     const image = defElement('img');
     image.src = defGetImageUrl(event.cover || event.image, '/images/event-1.jpg');
-    image.alt = defSafeText(event.title, 160);
+    image.alt = defSafeText(event.cover_alt || event.title, 180);
     image.loading = 'lazy';
     image.decoding = 'async';
     image.onerror = () => { image.onerror = null; image.src = '/images/event-1.jpg'; };
@@ -1054,17 +1054,8 @@ function defMakeEventCard(event, index, status) {
     const badgeLabel = status === 'upcoming' ? 'Upcoming' : 'Past';
     body.appendChild(defElement('span', 'event-status ' + (status === 'upcoming' ? 'is-upcoming' : 'is-past'), badgeLabel));
 
-    // B2B card hierarchy: status, event name, booth, date and location.
-    // Detail-only theme/description copy is intentionally not rendered in the listing card.
+    // Upcoming is a concise event announcement card, not an expandable detail preview.
     body.appendChild(defElement('h3', 'event-title', event.title || 'Untitled event'));
-
-    const booth = defSafeText(event.booth || '', 120);
-    if (booth) {
-        const boothBadge = defElement('p', 'event-card-booth');
-        boothBadge.appendChild(defElement('span', 'event-card-booth-label', 'Booth'));
-        boothBadge.appendChild(defElement('strong', 'event-card-booth-value', booth));
-        body.appendChild(boothBadge);
-    }
 
     const dates = defGetEventDates(event);
     const dateLabel = defFormatEventDate(event, dates);
@@ -1074,33 +1065,44 @@ function defMakeEventCard(event, index, status) {
         if (dateLabel) {
             const dateItem = defElement('span', 'event-card-meta-item');
             dateItem.appendChild(defCreateMetaIcon('calendar'));
-            dateItem.appendChild(defElement('span', '', dateLabel));
+            dateItem.appendChild(defElement('span', 'event-card-meta-value', dateLabel));
             meta.appendChild(dateItem);
         }
-        if (dateLabel && location) meta.appendChild(defElement('span', 'event-card-meta-separator', '·'));
         if (location) {
             const locationItem = defElement('span', 'event-card-meta-item');
             locationItem.appendChild(defCreateMetaIcon('location'));
-            locationItem.appendChild(defElement('span', '', location));
+            locationItem.appendChild(defElement('span', 'event-card-meta-value', location));
             meta.appendChild(locationItem);
         }
         body.appendChild(meta);
     }
 
-    const actions = defElement('div', 'event-card-actions');
-    const detailsButton = defElement('button', 'event-card-detail-link', 'View Show Details');
-    detailsButton.type = 'button';
-    detailsButton.addEventListener('click', () => showEventDetail(index));
-    actions.appendChild(detailsButton);
+    const topics = defGetTopicTags(event);
+    if (topics.length) {
+        const topicWrap = defElement('div', 'event-card-topics');
+        topicWrap.setAttribute('aria-label', 'Topics');
+        topics.forEach(topic => topicWrap.appendChild(defElement('span', 'event-card-topic', topic)));
+        body.appendChild(topicWrap);
+    }
 
     if (status === 'upcoming' && event.cta_enabled !== false) {
-        const ctaLabel = defSafeText(event.cta_label || 'Book a Meeting at This Show', 200);
+        const ctaLabel = defSafeText(event.cta_label || 'Book a Meeting', 200);
+        const actions = defElement('div', 'event-card-actions');
         const ctaButton = defElement('button', 'btn-y event-card-cta', ctaLabel);
         ctaButton.type = 'button';
-        ctaButton.addEventListener('click', () => openContact('contact_sales', defSafeText(event.title || '', 300), ctaLabel, 'Upcoming Trade Show', 'Newsroom', 'Upcoming Trade Show Card', defGetAnalyticsContentTopic(event), ''));
+        ctaButton.addEventListener('click', () => openContact(
+            'contact_sales',
+            defSafeText(event.title || '', 300),
+            ctaLabel,
+            'Upcoming Trade Show',
+            'Newsroom',
+            'Upcoming Trade Show Card',
+            defGetAnalyticsContentTopic(event),
+            ''
+        ));
         actions.appendChild(ctaButton);
+        body.appendChild(actions);
     }
-    body.appendChild(actions);
 
     card.append(imageWrap, body);
     return card;
