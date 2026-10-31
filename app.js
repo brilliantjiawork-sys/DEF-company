@@ -1047,6 +1047,9 @@ function defMakeEventCard(event, index, status) {
     image.alt = defSafeText(event.cover_alt || event.title, 180);
     image.loading = 'lazy';
     image.decoding = 'async';
+    image.addEventListener('load', () => {
+        card.classList.toggle('is-portrait-image', image.naturalHeight > image.naturalWidth * 1.08);
+    }, { once: true });
     image.onerror = () => { image.onerror = null; image.src = '/images/event-1.jpg'; };
     imageWrap.appendChild(image);
 
@@ -1404,9 +1407,9 @@ function renderEventCoverageArticles() {
         const body = defElement('div', 'event-coverage-card-body');
         const stage = defSafeText(story.event_content_stage || story.content_stage || 'Trade Show Article', 100);
         body.appendChild(defElement('span', 'event-stage-badge', stage));
-        body.appendChild(defElement('h3', '', defSafeText(story.title || 'Untitled trade show article', 300)));
         const date = fmtDate(story.date || story.published_date);
         if (date) body.appendChild(defElement('span', 'date', date));
+        body.appendChild(defElement('h3', '', defSafeText(story.title || 'Untitled trade show article', 300)));
         const summary = defSafeText(story.summary || story.excerpt || '', 500);
         if (summary) body.appendChild(defElement('p', 'story-summary', summary));
         // Keep topic tags on the article detail page, not on the list card.
