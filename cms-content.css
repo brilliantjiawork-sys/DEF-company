@@ -1246,163 +1246,88 @@
   background: transparent;
 }
 
-/* Final card balance: portrait uploads get a narrower natural-size image column. */
-.event-card {
-  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
-  align-items: stretch;
-}
 
-.event-card.is-portrait-image {
-  grid-template-columns: minmax(0, 0.66fr) minmax(0, 1.34fr);
-}
-
-.event-card.is-portrait-image .event-card-image {
-  align-self: start;
-  align-items: flex-start;
-  justify-content: flex-start;
+/* Upcoming Shows: independent photo + framed information panel. */
+.events-grid .event-card {
+  display: grid;
+  grid-template-columns: minmax(0, 0.78fr) minmax(0, 1.22fr);
+  align-items: center;
+  gap: 22px;
+  min-width: 0;
   padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+.events-grid .event-card:hover { transform: none; box-shadow: none; }
+.events-grid .event-card-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-width: 0;
+  min-height: 0;
+  height: auto;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
   background: transparent;
 }
-
-.event-card.is-portrait-image .event-card-image img {
+.events-grid .event-card-image img {
+  display: block;
   width: 100%;
   height: auto;
   min-height: 0;
   max-height: none;
   object-fit: contain;
+  object-position: center;
+  border-radius: 6px;
 }
-
-@media (max-width: 760px) {
-  .event-card.is-portrait-image {
-    grid-template-columns: minmax(0, 1fr);
-  }
-  .event-card.is-portrait-image .event-card-image {
-    width: 100%;
-    align-self: auto;
-  }
-}
-
-/* Trade Show Articles listing: explicit editorial card structure and correct date hierarchy. */
-.event-coverage-grid {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  align-items: start;
-  gap: 24px;
-  margin: 20px 0 32px;
-}
-
-.event-coverage-card {
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-  overflow: hidden;
-  border: 1px solid var(--line, #dce3e8);
-  border-radius: 8px;
-  background: #fff;
-  box-shadow: 0 2px 10px rgba(18, 42, 61, .045);
-  cursor: pointer;
-  transition: box-shadow .18s ease, transform .18s ease;
-}
-
-.event-coverage-card:hover {
-  box-shadow: 0 8px 24px rgba(18, 42, 61, .09);
-  transform: translateY(-2px);
-}
-
-.event-coverage-card:focus-visible {
-  outline: 3px solid var(--blue, #2c9ec0);
-  outline-offset: 3px;
-}
-
-.event-coverage-card-image {
-  width: 100%;
-  height: auto;
-  margin: 0;
-  overflow: visible;
-  background: transparent;
-}
-
-.event-coverage-card-image img {
-  display: block;
-  width: 100%;
-  height: auto;
-  max-height: none;
-  object-fit: contain;
-}
-
-.event-coverage-card-body {
+.events-grid .event-card-body {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 12px;
-  padding: 22px 24px 24px;
+  justify-content: center;
+  gap: 14px;
+  min-width: 0;
+  min-height: 100%;
+  padding: 28px 30px;
+  border: 1px solid var(--line, #dce3e8);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(18, 42, 61, .055);
+}
+.events-grid .event-card-body .event-title { margin: 0; max-width: 100%; line-height: 1.25; }
+.events-grid .event-card-meta { display: grid; gap: 9px; width: 100%; }
+.events-grid .event-card-topics { display: flex; flex-wrap: wrap; gap: 8px; width: 100%; }
+.events-grid .event-card-actions { margin-top: 2px; }
+@media (max-width: 900px) {
+  .events-grid .event-card { grid-template-columns: minmax(0, 0.7fr) minmax(0, 1.3fr); gap: 16px; }
+  .events-grid .event-card-body { padding: 22px; }
+}
+@media (max-width: 680px) {
+  .events-grid .event-card { grid-template-columns: minmax(0, 1fr); gap: 12px; }
+  .events-grid .event-card-image { justify-content: flex-start; }
+  .events-grid .event-card-image img { width: min(100%, 420px); }
+  .events-grid .event-card-body { min-height: 0; padding: 20px; }
 }
 
-.event-coverage-card-body .event-stage-badge {
-  display: inline-flex;
-  align-self: flex-start;
-  margin: 0;
-}
-
-.event-coverage-card-body .date {
-  display: block;
-  align-self: flex-start;
-  width: 100%;
-  margin: 8px 0 4px;
-  padding: 0;
-  text-align: left;
-  color: #687783;
-  font-size: 14px;
-  line-height: 1.45;
-}
-
-.event-coverage-card-body h3 {
-  margin: 0;
-  color: var(--dark, #172d3d);
-  font-size: clamp(20px, 1.8vw, 26px);
-  font-weight: 650;
-  line-height: 1.3;
-}
-
-.event-coverage-card-body .story-summary {
-  margin: 0;
-  color: var(--gray, #5f6870);
-  font-size: 15px;
-  line-height: 1.65;
-}
-
-@media (max-width: 760px) {
-  .event-coverage-grid {
-    grid-template-columns: minmax(0, 1fr);
-    gap: 18px;
-  }
-  .event-coverage-card-body {
-    gap: 10px;
-    padding: 18px;
-  }
-}
-
-
-/* Explicit final alignment for Trade Show article metadata. */
+/* Trade Show Articles: stage → date → title → summary. */
 #event-coverage-list .event-coverage-card-body {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: flex-start !important;
-  gap: 0 !important;
+  display: flex; flex-direction: column; align-items: flex-start; gap: 0; text-align: left;
 }
 #event-coverage-list .event-coverage-card-body > .event-stage-badge {
-  align-self: flex-start !important;
-  margin: 0 !important;
+  display: inline-flex; align-self: flex-start; margin: 0 0 10px;
 }
 #event-coverage-list .event-coverage-card-body > .date {
-  display: block !important;
-  align-self: flex-start !important;
-  width: 100% !important;
-  margin: 8px 0 8px !important;
-  padding: 0 !important;
-  text-align: left !important;
+  display: block; align-self: flex-start; width: auto; margin: 0 0 14px;
+  padding: 0; text-align: left; color: #687783; font-size: 14px; line-height: 1.45;
 }
 #event-coverage-list .event-coverage-card-body > h3 {
-  align-self: flex-start !important;
-  margin: 0 !important;
+  align-self: flex-start; margin: 0 0 10px; text-align: left;
+}
+#event-coverage-list .event-coverage-card-body > .story-summary {
+  align-self: flex-start; margin: 0; text-align: left;
 }
