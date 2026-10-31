@@ -182,44 +182,6 @@ collections:
       required: true
   # Shared option sets used by Stories and Trade Show Articles.
   # Keep anchors in this same config file so Sveltia CMS can resolve aliases.
-  - name: _shared_options_placeholder
-    label: Internal shared options
-    file: data/_shared-options.json
-    format: json
-    editor:
-      preview: false
-    fields:
-    - label: Industry options source
-      name: industry_options
-      widget: select
-      multiple: true
-      options: &id001
-      - Automotive
-      - Electronics
-      - Food & Beverage
-      - Packaging
-      - Semiconductors
-      - Logistics
-      - Pharmaceuticals
-    - label: Topic options source
-      name: topic_options
-      widget: select
-      multiple: true
-      options: &content_topics
-      - Machine Vision
-      - AI & Deep Learning
-      - Defect Detection
-      - Quality Control
-      - AOI
-      - 3D Vision
-      - Robotics & Automation
-      - Positioning & Measurement
-      - Electronics & Semiconductors
-      - Food & Beverage Inspection
-      - Packaging Inspection
-      - Warehouse & Logistics
-      - Innovation
-      - Sustainability
   - name: upcoming_shows
     label: Upcoming Shows｜展会资料
     file: data/events.json
@@ -274,7 +236,21 @@ collections:
         name: tags
         widget: select
         multiple: true
-        options: *content_topics
+        options:
+        - Machine Vision
+        - AI & Deep Learning
+        - Defect Detection
+        - Quality Control
+        - AOI
+        - 3D Vision
+        - Robotics & Automation
+        - Positioning & Measurement
+        - Electronics & Semiconductors
+        - Food & Beverage Inspection
+        - Packaging Inspection
+        - Warehouse & Logistics
+        - Innovation
+        - Sustainability
       - label: 显示预约按钮
         name: cta_enabled
         widget: boolean
@@ -584,12 +560,33 @@ collections:
     name: industries
     widget: select
     multiple: true
-    options: *id001
+    options:
+        - Automotive
+        - Electronics
+        - Food & Beverage
+        - Packaging
+        - Semiconductors
+        - Logistics
+        - Pharmaceuticals
   - label: Content Topic｜内容话题（与 Upcoming Shows、Trade Show Articles 共用同一套选项）
     name: tags
     widget: select
     multiple: true
-    options: *content_topics
+    options:
+        - Machine Vision
+        - AI & Deep Learning
+        - Defect Detection
+        - Quality Control
+        - AOI
+        - 3D Vision
+        - Robotics & Automation
+        - Positioning & Measurement
+        - Electronics & Semiconductors
+        - Food & Beverage Inspection
+        - Packaging Inspection
+        - Warehouse & Logistics
+        - Innovation
+        - Sustainability
   - label: 卡片摘要（可调整官网字号）
     name: summary
     widget: text
@@ -711,12 +708,33 @@ collections:
     name: industries
     widget: select
     multiple: true
-    options: *id001
+    options:
+        - Automotive
+        - Electronics
+        - Food & Beverage
+        - Packaging
+        - Semiconductors
+        - Logistics
+        - Pharmaceuticals
   - label: Content Topic｜内容话题（与 Upcoming Shows、Stories 共用同一套选项）
     name: tags
     widget: select
     multiple: true
-    options: *content_topics
+    options:
+        - Machine Vision
+        - AI & Deep Learning
+        - Defect Detection
+        - Quality Control
+        - AOI
+        - 3D Vision
+        - Robotics & Automation
+        - Positioning & Measurement
+        - Electronics & Semiconductors
+        - Food & Beverage Inspection
+        - Packaging Inspection
+        - Warehouse & Logistics
+        - Innovation
+        - Sustainability
   - label: 卡片摘要（可调整官网字号）
     name: summary
     widget: text
