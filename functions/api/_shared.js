@@ -1,6 +1,6 @@
 const UTM_FIELDS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content'];
 export const COMMON_ATTRIBUTION_FIELDS = [...UTM_FIELDS, 'landing_page', 'submission_id'];
-const ATTRIBUTION_ONLY_FIELDS = ['landing_page', 'form_entry', 'content_type', 'content_title', 'cta_label', ...UTM_FIELDS];
+const ATTRIBUTION_ONLY_FIELDS = ['landing_page', 'form_entry', 'content_type', 'content_title', 'content_category', 'content_topic', 'cta_location', 'cta_label', ...UTM_FIELDS];
 
 function jsonResponse(payload, status = 200) {
   return new Response(JSON.stringify(payload), {
@@ -23,7 +23,7 @@ export async function proxyToAppsScript({ request, env, envKey, allowedFields, r
   const limits = {
     email: 254, first_name: 120, last_name: 120, company: 250, phone: 100,
     country: 120, zip_code: 40, industry: 150, message: 5000,
-    form_entry: 40, content_type: 80, content_title: 300, cta_label: 200,
+    form_entry: 40, content_type: 80, content_title: 300, content_category: 100, content_topic: 1000, cta_location: 100, cta_label: 200,
     landing_page: 1500, submission_id: 120, analytics_consent: 10,
     utm_source: 200, utm_medium: 200, utm_campaign: 200, utm_content: 200
   };
