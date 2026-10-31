@@ -1043,14 +1043,20 @@ function defMakeEventCard(event, index, status) {
 
     const imageWrap = defElement('div', 'event-card-image');
     const image = defElement('img');
-    image.src = defGetImageUrl(event.cover || event.image, '/images/event-1.jpg');
     image.alt = defSafeText(event.cover_alt || event.title, 180);
     image.loading = 'lazy';
     image.decoding = 'async';
-    image.addEventListener('load', () => {
+    const applyImageOrientation = () => {
+        if (!image.naturalWidth || !image.naturalHeight) return;
         card.classList.toggle('is-portrait-image', image.naturalHeight > image.naturalWidth * 1.08);
+    };
+    image.addEventListener('load', applyImageOrientation);
+    image.addEventListener('error', () => {
+        image.onerror = null;
+        image.src = '/images/event-1.jpg';
     }, { once: true });
-    image.onerror = () => { image.onerror = null; image.src = '/images/event-1.jpg'; };
+    image.src = defGetImageUrl(event.cover || event.image, '/images/event-1.jpg');
+    if (image.complete) applyImageOrientation();
     imageWrap.appendChild(image);
 
     const body = defElement('div', 'event-card-body');
