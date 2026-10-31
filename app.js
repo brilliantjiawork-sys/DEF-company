@@ -684,18 +684,18 @@ function defFindRelatedStoriesForStory(story, currentIndex, limit = 3) {
 }
 
 function defFindRelatedEventsForStory(story, limit = 3) {
-    // Explore Related Trade Shows contains event cards only. It is independent from Story recommendations.
-    const matches = eventsData.map((content, index) => {
+    // Article recommendations are a traffic path to future shows only.
+    // Require at least one identical Topic tag; never recommend completed/past shows.
+    return eventsData.map((content, index) => {
+        if (!content || defGetEventStatus(content) !== 'upcoming') return null;
         const match = defContentMatchScore(story, content);
         if (match.sharedTags.length === 0) return null;
-        const status = defGetEventStatus(content);
-        if (status === 'past' && !defHasPastShowContent(content)) return null;
-        return { content, index, status, score: match.score, badge: status === 'past' ? 'Past Show · Relevant Recap' : 'Upcoming' };
-    }).filter(Boolean);
-    const upcoming = matches.filter(item => item.status === 'upcoming')
-        .sort((a, b) => b.score - a.score || ((defGetEventDates(a.content).start || new Date(8640000000000000)) - (defGetEventDates(b.content).start || new Date(8640000000000000))));
-    const past = matches.filter(item => item.status === 'past').sort((a, b) => b.score - a.score);
-    return [...upcoming, ...past].slice(0, limit);
+        return { content, index, status: 'upcoming', score: match.score };
+    }).filter(Boolean)
+      .sort((a, b) => b.score - a.score ||
+          ((defGetEventDates(a.content).start || new Date(8640000000000000)) -
+           (defGetEventDates(b.content).start || new Date(8640000000000000))))
+      .slice(0, limit);
 }
 
 function defFindRelatedStoriesForEvent(event, eventStatus, limit = 3) {
