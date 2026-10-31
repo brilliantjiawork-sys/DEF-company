@@ -249,11 +249,11 @@ collections:
         - Semiconductors
         - Logistics
         - Pharmaceuticals
-      - label: Topic Tags｜话题标签（多选；用于官网筛选与相关推荐）
+      - label: Content Topic｜内容话题（与 Stories、Trade Show Articles 共用同一套选项）
         name: tags
         widget: select
         multiple: true
-        options: &id002
+        options: &content_topics
         - Machine Vision
         - AI & Deep Learning
         - Defect Detection
@@ -663,11 +663,11 @@ collections:
     widget: select
     multiple: true
     options: *id001
-  - label: Topic Tags｜话题标签
+  - label: Content Topic｜内容话题（与 Upcoming Shows、Trade Show Articles 共用同一套选项）
     name: tags
     widget: select
     multiple: true
-    options: *id002
+    options: *content_topics
   - label: 卡片摘要（可调整官网字号）
     name: summary
     widget: text
@@ -789,11 +789,11 @@ collections:
     widget: select
     multiple: true
     options: *id001
-  - label: Topic Tags｜话题标签（多选；用于官网筛选与相关推荐）
+  - label: Content Topic｜内容话题（与 Upcoming Shows、Stories 共用同一套选项）
     name: tags
     widget: select
     multiple: true
-    options: *id002
+    options: *content_topics
   - label: 卡片摘要（可调整官网字号）
     name: summary
     widget: text
