@@ -1041,30 +1041,29 @@ function defCreateMetaIcon(kind) {
 function defMakeEventCard(event, index, status) {
     const card = defElement('article', 'event-card');
 
+    // Full-width image: preserve the uploaded asset's intrinsic aspect ratio.
     const imageWrap = defElement('div', 'event-card-image');
     const image = defElement('img');
     image.alt = defSafeText(event.cover_alt || event.title, 180);
     image.loading = 'lazy';
     image.decoding = 'async';
-    const applyImageOrientation = () => {
-        if (!image.naturalWidth || !image.naturalHeight) return;
-        card.classList.toggle('is-portrait-image', image.naturalHeight > image.naturalWidth * 1.08);
-    };
-    image.addEventListener('load', applyImageOrientation);
-    image.addEventListener('error', () => {
-        image.onerror = null;
-        image.src = '/images/event-1.jpg';
-    }, { once: true });
     image.src = defGetImageUrl(event.cover || event.image, '/images/event-1.jpg');
-    if (image.complete) applyImageOrientation();
     imageWrap.appendChild(image);
 
     const body = defElement('div', 'event-card-body');
     const badgeLabel = status === 'upcoming' ? 'Upcoming' : 'Past';
     body.appendChild(defElement('span', 'event-status ' + (status === 'upcoming' ? 'is-upcoming' : 'is-past'), badgeLabel));
 
-    // Upcoming is a concise event announcement card, not an expandable detail preview.
     body.appendChild(defElement('h3', 'event-title', event.title || 'Untitled event'));
+
+    // Booth is intentionally shown before date and location.
+    const booth = defSafeText(event.booth || event.booth_number || '', 120);
+    if (booth) {
+        const boothItem = defElement('div', 'event-card-booth');
+        boothItem.appendChild(defElement('span', 'event-card-booth-label', 'Booth'));
+        boothItem.appendChild(defElement('span', 'event-card-booth-value', booth));
+        body.appendChild(boothItem);
+    }
 
     const dates = defGetEventDates(event);
     const dateLabel = defFormatEventDate(event, dates);
