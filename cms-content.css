@@ -977,7 +977,7 @@
   width: 100%;
   height: auto;
   min-height: 0;
-  max-height: 270px;
+  max-height: none;
   object-fit: contain;
   object-position: center;
 }
@@ -1065,7 +1065,7 @@
   .event-card-image img {
     width: 100%;
     height: auto;
-    max-height: 240px;
+    max-height: none;
     min-height: 0;
     object-fit: contain;
   }
