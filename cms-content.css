@@ -952,3 +952,130 @@
   .event-card-image img { min-height: 0; }
   .event-card-body { gap: 13px; padding: 19px; }
 }
+
+/* Upcoming show cards v2: preserve the complete CMS-uploaded image and simplify topic layout. */
+.event-card {
+  grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+  align-items: stretch;
+  min-height: 0;
+}
+
+.event-card-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 0;
+  aspect-ratio: auto;
+  padding: 16px;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: #f7f9fb;
+}
+
+.event-card-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  max-height: 270px;
+  object-fit: contain;
+  object-position: center;
+}
+
+.event-card-body {
+  justify-content: flex-start;
+  gap: 11px;
+  padding: 22px 24px;
+}
+
+.event-card-body .event-title {
+  max-width: 100%;
+  font-size: clamp(19px, 1.55vw, 22px);
+  line-height: 1.32;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.event-card-meta {
+  display: grid;
+  gap: 6px;
+  width: 100%;
+  font-size: 13px;
+  line-height: 1.45;
+}
+
+.event-card-meta-item {
+  display: grid;
+  grid-template-columns: 16px minmax(0, 1fr);
+  align-items: start;
+  gap: 8px;
+}
+
+.event-card-meta-value {
+  overflow-wrap: break-word;
+  word-break: normal;
+}
+
+.event-card-topics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+  width: 100%;
+  margin-top: 1px;
+}
+
+.event-card-topic {
+  display: inline;
+  max-width: none;
+  padding: 3px 8px;
+  border: 1px solid #e1e8ed;
+  border-radius: 2px;
+  background: #f7f9fa;
+  color: #40596b;
+  font-size: 11px;
+  font-weight: 500;
+  line-height: 1.45;
+  overflow-wrap: normal;
+  word-break: normal;
+}
+
+.event-card-actions {
+  margin-top: 2px;
+  padding-top: 2px;
+}
+
+.event-card-actions .event-card-cta {
+  min-height: 38px;
+  padding: 9px 16px;
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .event-card {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .event-card-image {
+    min-height: 0;
+    max-height: none;
+    padding: 14px;
+  }
+
+  .event-card-image img {
+    width: 100%;
+    height: auto;
+    max-height: 240px;
+    min-height: 0;
+    object-fit: contain;
+  }
+
+  .event-card-body {
+    gap: 10px;
+    padding: 18px;
+  }
+
+  .event-card-body .event-title {
+    font-size: 19px;
+  }
+}
