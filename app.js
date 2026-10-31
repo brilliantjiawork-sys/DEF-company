@@ -660,7 +660,12 @@ function defRenderRecommendationSection(sectionId, gridId, items, type, heading,
     grid.classList.toggle('recommendation-grid-related-stories', type === 'story');
     grid.replaceChildren();
     (items || []).forEach(item => {
-        grid.appendChild(defMakeRecommendationCard(item.content, item.index, type, item.badge || ''));
+        if (type === 'event') {
+            // Reuse the exact Upcoming/Past card layout; recommendations remain tag-match only.
+            grid.appendChild(defMakeEventCard(item.content, item.index, item.status || defGetEventStatus(item.content), 'recommendation-event-card'));
+        } else {
+            grid.appendChild(defMakeRecommendationCard(item.content, item.index, type, item.badge || ''));
+        }
     });
     section.hidden = emptyHide && !grid.childElementCount;
     const headingElement = section.querySelector('h3');
@@ -1038,8 +1043,8 @@ function defCreateMetaIcon(kind) {
     return svg;
 }
 
-function defMakeEventCard(event, index, status) {
-    const card = defElement('article', 'event-card');
+function defMakeEventCard(event, index, status, extraClass = '') {
+    const card = defElement('article', 'event-card' + (extraClass ? ' ' + extraClass : ''));
 
     // Full-width image: preserve the uploaded asset's intrinsic aspect ratio.
     const imageWrap = defElement('div', 'event-card-image');
