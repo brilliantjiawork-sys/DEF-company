@@ -207,10 +207,6 @@ collections:
         required: true
         choose_url: false
         hint: 上传后官网卡片会按原图比例完整显示，不裁剪、不拉伸。
-      - label: 图片替代文本（无障碍说明，可选）
-        name: cover_alt
-        widget: string
-        required: false
       - label: 展位号
         name: booth
         widget: string
@@ -252,10 +248,6 @@ collections:
         - Talk to Our Team
         - Contact Sales
         - Book a Demo
-      - label: 虚构示例标记
-        name: illustrative_example
-        widget: boolean
-        default: true
   - name: social_page
     label: Social Media 页面文案
     file: data/newsroom-social-media.json
