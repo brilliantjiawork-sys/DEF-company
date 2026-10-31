@@ -95,87 +95,35 @@
           const fallbackTitle = slug => String(slug || 'Untitled').replace(/[-_]+/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
           const entryUrl = slug => `#/collections/${config.collection}/entries/${encodeURIComponent(slug)}`;
           const loadPublished = async () => {
-            const folderPrefix = `${config.folder}/`;
-            const recordsBySlug = new Map();
-            const filesByPath = new Map();
-            const errors = [];
-
-            const addRecord = (record, fallbackSlug = '') => {
-              if (!record || typeof record !== 'object') return;
-              const slug = String(record.slug || fallbackSlug || '').trim();
-              if (!slug) return;
-              recordsBySlug.set(slug, {
-                slug,
-                title: record.title || record.name || fallbackTitle(slug),
-                date: record.date || record.publish_date || record.published_date || '',
-                category: record.category || '',
-                status: 'Published',
-                url: entryUrl(slug)
-              });
-            };
-
-            // The generated database is the site's own published-content manifest.
-            // It is updated by the repository workflow after each Story is published
-            // and avoids relying on the unauthenticated GitHub API rate limit.
-            try {
-              const manifestUrl = `https://raw.githubusercontent.com/${repo}/main/data/database.json?ts=${Date.now()}`;
-              const manifestResponse = await fetch(manifestUrl, {
-                headers: { 'Cache-Control': 'no-cache' },
-                cache: 'no-store'
-              });
-              if (!manifestResponse.ok) throw new Error(`Story manifest ${manifestResponse.status}`);
-              const manifest = await manifestResponse.json();
-              (Array.isArray(manifest.articles) ? manifest.articles : []).forEach(record => addRecord(record));
-            } catch (error) {
-              errors.push(error?.message || 'Story manifest unavailable');
-            }
-
-            // Also inspect the actual collection directory. This catches a newly
-            // published Story before the generated manifest workflow has finished.
-            try {
-              const directoryUrl = `https://api.github.com/repos/${repo}/contents/${config.folder}?ref=main&ts=${Date.now()}`;
-              const response = await fetch(directoryUrl, {
-                headers: {
-                  Accept: 'application/vnd.github+json',
-                  'Cache-Control': 'no-cache'
-                },
-                cache: 'no-store'
-              });
-              if (!response.ok) throw new Error(`GitHub directory ${response.status}`);
-              const items = await response.json();
-              (Array.isArray(items) ? items : [])
-                .filter(item => item.type === 'file' && /\\.json$/i.test(item.name || ''))
-                .forEach(item => filesByPath.set(item.path, {
-                  path: item.path,
-                  name: item.name,
-                  url: item.download_url
-                }));
-            } catch (error) {
-              errors.push(error?.message || 'GitHub directory unavailable');
-            }
-
-            // Read any collection entries not yet present in the generated manifest.
-            await Promise.all([...filesByPath.values()].map(async file => {
-              const fallbackSlug = file.name.replace(/\\.json$/i, '');
-              if ([...recordsBySlug.values()].some(record => record.slug === fallbackSlug)) return;
-              try {
-                const rawUrl = `https://raw.githubusercontent.com/${repo}/main/${file.path.split('/').map(encodeURIComponent).join('/')}?ts=${Date.now()}`;
-                const response = await fetch(rawUrl, {
-                  headers: { 'Cache-Control': 'no-cache' },
-                  cache: 'no-store'
-                });
-                if (!response.ok) throw new Error(`Content file ${response.status}`);
-                addRecord(await response.json(), fallbackSlug);
-              } catch (_) {
-                // A discovered file remains visible even if its metadata cannot be read.
-                addRecord({ title: fallbackTitle(fallbackSlug) }, fallbackSlug);
-              }
-            }));
-
-            if (!recordsBySlug.size && errors.length) {
-              throw new Error(errors.join('; '));
-            }
-            return [...recordsBySlug.values()].sort((a, b) =>
+            // Read the site's already-generated Story manifest from the same
+            // Cloudflare Pages origin. Browser requests to GitHub's API/raw host
+            // were failing in production ("Failed to fetch"), even though deploys
+            // had succeeded. The sync-content-index workflow updates this file
+            // after a Story is merged into main, then Pages deploys the new version.
+            const manifestUrl = new URL('/data/database.json', window.location.origin);
+            manifestUrl.searchParams.set('_', String(Date.now()));
+            const response = await fetch(manifestUrl.toString(), {
+              headers: { 'Cache-Control': 'no-cache' },
+              cache: 'no-store'
+            });
+            if (!response.ok) throw new Error(`Story manifest ${response.status}`);
+            const manifest = await response.json();
+            const records = (Array.isArray(manifest.articles) ? manifest.articles : [])
+              .map(record => {
+                const slug = String(record.slug || '').trim();
+                if (!slug) return null;
+                return {
+                  slug,
+                  title: record.title || record.name || fallbackTitle(slug),
+                  date: record.date || record.publish_date || record.published_date || '',
+                  category: record.category || '',
+                  status: 'Published',
+                  url: entryUrl(slug)
+                };
+              })
+              .filter(Boolean);
+            const unique = new Map(records.map(record => [record.slug, record]));
+            return [...unique.values()].sort((a, b) =>
               String(b.date).localeCompare(String(a.date)) || a.title.localeCompare(b.title)
             );
           };
