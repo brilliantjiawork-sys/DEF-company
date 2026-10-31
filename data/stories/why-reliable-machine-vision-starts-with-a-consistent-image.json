@@ -1,0 +1,23 @@
+{
+  "title": "Why Reliable Machine Vision Starts with a Consistent Image",
+  "detail_title_font_size": 34,
+  "date": "2026-10-31",
+  "category": "Product & Technology",
+  "industries": [
+    "Electronics"
+  ],
+  "tags": [
+    "Machine Vision",
+    "Defect Detection",
+    "Quality Control"
+  ],
+  "summary": "Reliable automated inspection starts with consistent image acquisition. Explore how camera settings, lighting conditions, and inspection requirements work together to support more stable machine vision workflows.",
+  "summary_font_size": 16,
+  "image": "/images/social-youtube-wide.jpg",
+  "image_alt": "none",
+  "illustrative_example": false,
+  "body": "**A Good Inspection Begins with a Good Image**\n\nMachine vision systems help manufacturers inspect products, identify visible defects and support quality control across production processes. However, the performance of an inspection workflow depends on more than the camera itself.\n\nBefore an image can be analyzed, the system needs to capture it under suitable and repeatable conditions. Changes in lighting, object position, exposure or surface reflection can make the same feature appear different from one image to another.\n\nThis is why image consistency should be considered at the beginning of an inspection project.\n\n**Three Factors That Influence Image Consistency**\n\n**1. Lighting conditions**\n\nLighting determines how product features appear in an image. Different surfaces may require different lighting approaches to make scratches, edges, marks or other visual characteristics easier to distinguish.\n\n**2. Camera configuration**\n\nExposure time, gain, resolution and image acquisition timing all influence the captured image. These settings should be considered in relation to product movement, inspection speed and the details that need to be identified.\n\n**3. Inspection requirements**\n\nNot every application needs the same image detail. A project should first define which features matter, what types of defects need to be identified and how consistently the system must perform.\n\n**From Image Acquisition to Inspection**\n\nA practical machine vision workflow connects image acquisition with image processing and inspection decisions.\n\nThe objective is not simply to capture a high-resolution image. It is to obtain useful, repeatable image data that supports the specific inspection task.\n\nWhen camera configuration, lighting and application requirements are considered together, manufacturers can build a clearer foundation for automated visual inspection.\n\n**Start with the Application**\n\nEvery production environment presents different inspection conditions. A suitable machine vision setup should be evaluated according to the product, production process and quality requirements.\n\nContact our team to discuss your machine vision inspection requirements.\n\n\n\n\n**Past Trade Show Article**\n\n**Content Type:** Trade Show Article\n\n**Title:** Inside the DEF Vision & Automation Showcase: Connecting Machine Vision with Production Quality\n\n**Content Stage:** Post-show Recap\n\n**Category:** Do not add a Content Category. This is a Trade Show Article, not a Story topic category.\n\n**Tags:**\n\n- AI & Deep Learning\n- Defect Detection\n- Quality Control\n- Robotics & Automation\n\n**Summary:**\n\nAn illustrative recap of how machine vision, AI-assisted inspection and automation workflows can address practical manufacturing quality challenges. This sample article demonstrates how a B2B trade show report can connect technology discussions with application needs.",
+  "body_font_size": 18,
+  "cta_enabled": true,
+  "cta_label": "Contact Sales"
+}
