@@ -7,7 +7,7 @@ const DEF_UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_content']
 
 // This is the action used internally by the shared sales form, not a Google Sheet column.
 let currentLeadSource = 'contact_sales';
-let currentLeadContext = { formEntry: 'Home', contentType: '', contentTitle: '', contentTopic: '', ctaLabel: 'Contact Sales', ctaLocation: 'homepage' };
+let currentLeadContext = { formEntry: 'Home', contentType: '', contentTitle: '', contentCategory: '', contentTopic: '', ctaLabel: 'Contact Sales', ctaLocation: 'Home Page' };
 let firstLandingPage = '';
 let pendingContactSubmissionId = '';
 let pendingNewsletterSubmissionId = '';
@@ -280,39 +280,43 @@ function defInferLeadContextFromCurrentView() {
     if (activePage && activePage.id === 'contact' && currentLeadContext) {
         return Object.assign({}, currentLeadContext);
     }
-
     const inNewsroom = Boolean(activePage && activePage.id === 'newsroom');
-    const result = { formEntry: inNewsroom ? 'Newsroom' : 'Home', contentType: '', contentTitle: '', contentTopic: '', ctaLocation: inNewsroom ? 'newsroom' : 'homepage' };
+    const result = {
+        formEntry: inNewsroom ? 'Newsroom' : 'Home',
+        contentType: '',
+        contentTitle: '',
+        contentCategory: '',
+        contentTopic: '',
+        ctaLocation: inNewsroom ? 'Newsroom Page' : 'Home Page'
+    };
     const storyDetail = document.getElementById('view-story-detail');
     const tradeShowDetail = document.getElementById('view-event-detail');
-
     if (inNewsroom && storyDetail && storyDetail.classList.contains('active')) {
         const story = storiesData[currentStoryDetailIndex];
         if (story) {
             result.contentType = story.is_event_coverage ? 'Trade Show Article' : 'Story';
             result.contentTitle = defSafeText(story.title || '', 300);
-            result.contentTopic = (defGetTopicTags(story)[0] || '');
-            result.ctaLocation = story.is_event_coverage ? 'trade_show_article_detail' : 'story_detail';
+            result.contentCategory = defGetAnalyticsContentCategory(story);
+            result.contentTopic = defGetAnalyticsContentTopic(story);
+            result.ctaLocation = story.is_event_coverage ? 'Trade Show Article CTA Area' : 'Story Detail CTA Area';
         }
         return result;
     }
-
     if (inNewsroom && tradeShowDetail && tradeShowDetail.classList.contains('active')) {
         const item = eventsData[currentEventDetailIndex];
         if (item) {
-            result.contentType = defGetEventStatus(item) === 'upcoming' ? 'Upcoming Trade Show' : 'Trade Show';
+            result.contentType = defGetEventAnalyticsContentType(item);
             result.contentTitle = defSafeText(item.title || '', 300);
-            result.contentTopic = (defGetTopicTags(item)[0] || '');
-            result.ctaLocation = 'trade_show_detail';
+            result.contentTopic = defGetAnalyticsContentTopic(item);
+            result.ctaLocation = defGetEventStatus(item) === 'upcoming' ? 'Upcoming Trade Show Detail' : 'Past Trade Show Detail';
         }
         return result;
     }
-
     return result;
 }
 
-function openContact(source, contentTitle, ctaLabel, contentType, sourceSection, ctaLocation, contentTopic) {
-    // `source` identifies the requested action internally; the sheet records its visible CTA label instead.
+function openContact(source, contentTitle, ctaLabel, contentType, sourceSection, ctaLocation, contentTopic, contentCategory) {
+    // The visible CTA text and its physical page location are separate values.
     currentLeadSource = source === 'book_demo' ? 'book_demo' : 'contact_sales';
     const inferred = defInferLeadContextFromCurrentView();
     const suppliedEntry = sourceSection ? defNormalizeFormEntry(sourceSection) : inferred.formEntry;
@@ -322,31 +326,38 @@ function openContact(source, contentTitle, ctaLabel, contentType, sourceSection,
     const hasContentContext = entry === 'Newsroom' && Boolean(requestedType && requestedTitle);
     const normalizedType = hasContentContext ? requestedType : '';
     const title = hasContentContext ? requestedTitle : '';
+    const category = hasContentContext && normalizedType === 'Story'
+        ? defSafeText(contentCategory || inferred.contentCategory || '', 100)
+        : '';
+    const topic = hasContentContext
+        ? defSafeText(contentTopic || inferred.contentTopic || '', 1000)
+        : '';
     const label = defSafeText(
         ctaLabel || (currentLeadSource === 'book_demo' ? 'Book a Demo' : 'Contact Sales'),
         200
     );
-    const topic = hasContentContext ? defSafeText(contentTopic || inferred.contentTopic || '', 500) : '';
-    const location = defSafeText(ctaLocation || inferred.ctaLocation || (entry === 'Newsroom' ? 'newsroom' : 'homepage'), 100);
-
+    const location = defSafeText(
+        ctaLocation || inferred.ctaLocation || (entry === 'Newsroom' ? 'Newsroom Page' : 'Home Page'),
+        100
+    );
     currentLeadContext = {
         formEntry: entry,
         contentType: normalizedType,
         contentTitle: title,
+        contentCategory: category,
         contentTopic: topic,
         ctaLabel: label,
         ctaLocation: location
     };
-
     track('cta_click', {
         form_entry: entry,
         content_type: normalizedType,
         content_title: title,
+        content_category: category,
         content_topic: topic,
         cta_label: label,
         cta_location: location
     });
-
     const box = document.getElementById('form-container-box');
     const done = document.getElementById('success-screen');
     const form = document.getElementById('detailed-contact-form');
@@ -413,6 +424,22 @@ function defGetTopicTags(content) {
         if (tag && !topics.includes(tag)) topics.push(tag);
     }
     return topics;
+}
+
+function defGetAnalyticsContentCategory(content) {
+    // Only ordinary Story records have an editorial Content Category.
+    // Trade Show Articles may contain a legacy CMS category, which must never be sent to GA4.
+    if (!content || content.is_event_coverage) return '';
+    return defSafeText(content.category || '', 100);
+}
+
+function defGetAnalyticsContentTopic(content) {
+    // Preserve every CMS Topic Tag in one readable parameter value.
+    return defGetTopicTags(content).join(' | ');
+}
+
+function defGetEventAnalyticsContentType(event) {
+    return defGetEventStatus(event) === 'upcoming' ? 'Upcoming Trade Show' : 'Trade Show Article';
 }
 
 function defGetContentIndustries(content) {
@@ -830,7 +857,7 @@ function showStoryDetail(index, origin = 'stories') {
             const ctaLabel = defSafeText(story.cta_label || 'Talk to our team', 200);
             const storyCta = defElement('button', 'btn-y event-detail-cta', ctaLabel);
             storyCta.type = 'button';
-            storyCta.addEventListener('click', () => openContact('contact_sales', story.title || '', ctaLabel, story.is_event_coverage ? 'Trade Show Article' : 'Story', 'Newsroom', story.is_event_coverage ? 'trade_show_article_detail' : 'story_detail', (defGetTopicTags(story)[0] || '')));
+            storyCta.addEventListener('click', () => openContact('contact_sales', story.title || '', ctaLabel, story.is_event_coverage ? 'Trade Show Article' : 'Story', 'Newsroom', story.is_event_coverage ? 'Trade Show Article CTA Area' : 'Story Detail CTA Area', defGetAnalyticsContentTopic(story), defGetAnalyticsContentCategory(story)));
             storyCtaContainer.appendChild(storyCta);
         }
     }
@@ -844,7 +871,8 @@ function showStoryDetail(index, origin = 'stories') {
     track('content_view', {
         content_type: story.is_event_coverage ? 'Trade Show Article' : 'Story',
         content_title: defSafeText(story.title || 'Untitled story', 300),
-        content_topic: (defGetTopicTags(story)[0] || '')
+        content_category: defGetAnalyticsContentCategory(story),
+        content_topic: defGetAnalyticsContentTopic(story)
     });
     defTrackVirtualPageView('/newsroom/stories/' + encodeURIComponent(defContentSlug(story, index)), defSafeText(story.title || 'Untitled story', 300));
 }
@@ -1069,7 +1097,7 @@ function defMakeEventCard(event, index, status) {
         const ctaLabel = defSafeText(event.cta_label || 'Book a Meeting at This Show', 200);
         const ctaButton = defElement('button', 'btn-y event-card-cta', ctaLabel);
         ctaButton.type = 'button';
-        ctaButton.addEventListener('click', () => openContact('contact_sales', defSafeText(event.title || '', 300), ctaLabel, 'Upcoming Trade Show', 'Newsroom', 'upcoming_show_card', (defGetTopicTags(event)[0] || '')));
+        ctaButton.addEventListener('click', () => openContact('contact_sales', defSafeText(event.title || '', 300), ctaLabel, 'Upcoming Trade Show', 'Newsroom', 'Upcoming Trade Show Card', defGetAnalyticsContentTopic(event), ''));
         actions.appendChild(ctaButton);
     }
     body.appendChild(actions);
@@ -1265,7 +1293,7 @@ function showEventDetail(index) {
             const ctaLabel = defSafeText(event.cta_label || 'Book a Meeting at This Show', 200);
             const cta = defElement('button', 'btn-y event-detail-cta', ctaLabel);
             cta.type = 'button';
-            cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, status === 'upcoming' ? 'Upcoming Trade Show' : 'Trade Show', 'Newsroom', 'trade_show_detail', (defGetTopicTags(event)[0] || '')));
+            cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, defGetEventAnalyticsContentType(event), 'Newsroom', status === 'upcoming' ? 'Upcoming Trade Show Detail' : 'Past Trade Show Detail', defGetAnalyticsContentTopic(event), ''));
             ctaContainer.appendChild(cta);
         } else if (status === 'past' && hasRecap) {
             const cta = defElement('button', 'btn-y event-detail-cta', 'Read Related Recap');
@@ -1285,7 +1313,7 @@ function showEventDetail(index) {
             const ctaLabel = /book a meeting|book a demo/i.test(requestedLabel) ? 'Talk to Our Team' : requestedLabel;
             const cta = defElement('button', 'btn-y event-detail-cta', ctaLabel);
             cta.type = 'button';
-            cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, status === 'upcoming' ? 'Upcoming Trade Show' : 'Trade Show', 'Newsroom', 'trade_show_detail', (defGetTopicTags(event)[0] || '')));
+            cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, defGetEventAnalyticsContentType(event), 'Newsroom', status === 'upcoming' ? 'Upcoming Trade Show Detail' : 'Past Trade Show Detail', defGetAnalyticsContentTopic(event), ''));
             ctaContainer.appendChild(cta);
         }
     }
@@ -1298,9 +1326,10 @@ function showEventDetail(index) {
     // Send only the existing content_view and virtual_page_view contracts; recommendation clicks do not add a new event.
     switchView('event-detail', { suppressVirtualPageView: true });
     track('content_view', {
-        content_type: status === 'upcoming' ? 'Upcoming Trade Show' : 'Trade Show',
+        content_type: defGetEventAnalyticsContentType(event),
         content_title: titleText,
-        content_topic: (defGetTopicTags(event)[0] || '')
+        content_category: '',
+        content_topic: defGetAnalyticsContentTopic(event)
     });
     defTrackVirtualPageView('/newsroom/events/' + encodeURIComponent(slug), titleText);
 }
@@ -1629,6 +1658,7 @@ function initContactForm() {
                     form_entry: currentLeadContext.formEntry || 'Home',
                     content_type: currentLeadContext.contentType || '',
                     content_title: currentLeadContext.contentTitle || '',
+                    content_category: currentLeadContext.contentCategory || '',
                     content_topic: currentLeadContext.contentTopic || '',
                     cta_location: currentLeadContext.ctaLocation || '',
                     cta_label: currentLeadContext.ctaLabel || (currentLeadSource === 'book_demo' ? 'Book a Demo' : 'Contact Sales'),
