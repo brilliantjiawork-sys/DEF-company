@@ -846,3 +846,109 @@
 .story-industry-values .story-industry-chip {
   font-weight: 500 !important;
 }
+
+
+/* Upcoming Shows: compact B2B announcement cards with visible shared Content Topics. */
+.event-card {
+  display: grid;
+  grid-template-columns: minmax(0, 0.92fr) minmax(0, 1.08fr);
+  align-items: stretch;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line, #dce3e8);
+  border-radius: 6px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(18, 42, 61, .045);
+}
+.event-card-image {
+  min-width: 0;
+  min-height: 100%;
+  aspect-ratio: 4 / 3;
+  overflow: hidden;
+  background: #eef2f5;
+}
+.event-card-image img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 250px;
+  object-fit: cover;
+}
+.event-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 15px;
+  min-width: 0;
+  padding: 24px 26px;
+}
+.event-card-body .event-title {
+  margin: 0;
+  color: var(--dark, #172d3d);
+  font-size: clamp(20px, 1.8vw, 25px);
+  font-weight: 650;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+}
+.event-card-meta {
+  display: grid;
+  gap: 9px;
+  width: 100%;
+  color: #536474;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.event-card-meta-item {
+  display: grid;
+  grid-template-columns: 18px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px;
+  min-width: 0;
+}
+.event-card-meta-icon {
+  width: 17px;
+  height: 17px;
+  margin-top: 2px;
+  color: #6b7d8b;
+}
+.event-card-meta-value { min-width: 0; overflow-wrap: anywhere; }
+.event-card-topics {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  margin-top: 1px;
+}
+.event-card-topic {
+  display: inline-flex;
+  max-width: 100%;
+  padding: 5px 9px;
+  border: 1px solid #dce6ed;
+  border-radius: 3px;
+  background: #f5f8fa;
+  color: #31566f;
+  font-size: 12px;
+  font-weight: 550;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+.event-card-actions {
+  width: 100%;
+  margin-top: auto;
+  padding-top: 5px;
+}
+.event-card-actions .event-card-cta {
+  min-height: 42px;
+  padding: 11px 19px;
+  border-radius: 3px;
+  font-size: 13px;
+  font-weight: 650;
+  letter-spacing: .01em;
+}
+@media (max-width: 760px) {
+  .event-card { grid-template-columns: minmax(0, 1fr); }
+  .event-card-image { aspect-ratio: 16 / 9; }
+  .event-card-image img { min-height: 0; }
+  .event-card-body { gap: 13px; padding: 19px; }
+}
