@@ -1079,3 +1079,168 @@
     font-size: 19px;
   }
 }
+
+/* Image display audit: preserve source proportions across CMS-driven cards and galleries. */
+.event-card {
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: stretch;
+}
+
+.event-card-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: center;
+  width: 100%;
+  min-height: 0;
+  height: auto;
+  aspect-ratio: auto;
+  padding: 0;
+  overflow: visible;
+  background: transparent;
+}
+
+.event-card-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  object-fit: contain;
+  object-position: center;
+}
+
+@media (max-width: 760px) {
+  .event-card { grid-template-columns: minmax(0, 1fr); }
+  .event-card-image {
+    width: 100%;
+    padding: 0;
+    align-self: auto;
+  }
+  .event-card-image img {
+    width: 100%;
+    height: auto;
+    max-height: none;
+    object-fit: contain;
+  }
+}
+
+/* Trade Show article listing: keep the date on its own line beneath the stage badge. */
+.event-coverage-card-body .event-stage-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  margin: 0;
+}
+
+.event-coverage-card-body .date {
+  display: block;
+  align-self: flex-start;
+  margin: -2px 0 2px;
+  color: #687783;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+/* Related Trade Show cards: show the entire uploaded cover, never a center crop. */
+.recommendation-card-related-event {
+  align-items: center;
+  grid-template-columns: minmax(190px, 36%) minmax(0, 1fr);
+  min-height: 0;
+}
+
+.recommendation-card-related-event .recommendation-card-image {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: auto;
+  overflow: visible;
+  background: transparent;
+}
+
+.recommendation-card-related-event .recommendation-card-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  object-fit: contain;
+  object-position: center;
+}
+
+@media (max-width: 980px) {
+  .recommendation-card-related-event {
+    grid-template-columns: minmax(190px, 36%) minmax(0, 1fr);
+    min-height: 0;
+  }
+  .recommendation-card-related-event .recommendation-card-image,
+  .recommendation-card-related-event .recommendation-card-image img {
+    min-height: 0;
+    height: auto;
+  }
+}
+
+@media (max-width: 620px) {
+  .recommendation-card-related-event {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .recommendation-card-related-event .recommendation-card-image img {
+    width: 100%;
+    height: auto;
+    max-height: none;
+  }
+}
+
+/* Other editorial cards and detail galleries also retain the CMS image's full frame. */
+.story-card .image-container {
+  height: auto;
+  aspect-ratio: auto;
+  overflow: visible;
+}
+
+.story-card .image-container img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.recommendation-card-image {
+  height: auto;
+  aspect-ratio: auto;
+  overflow: visible;
+}
+
+.recommendation-card-image img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+
+.event-detail-cover-wrap {
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+  background: transparent;
+}
+
+.event-detail-cover {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 720px !important;
+  object-fit: contain !important;
+  object-position: center;
+}
+
+.event-detail-gallery-item img,
+.event-detail-gallery img {
+  width: 100%;
+  height: auto;
+  max-height: 520px;
+  aspect-ratio: auto;
+  object-fit: contain;
+  background: transparent;
+}
