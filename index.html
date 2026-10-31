@@ -52,7 +52,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
         <div class="menu">
             <a id="nav-home" onclick="showPage('home')">Home</a>
             <a id="nav-newsroom" onclick="showPage('newsroom')">Newsroom</a>
-            <a id="nav-contact-sales" class="btn-y" onclick="openContact('contact_sales', '', 'Contact Sales')" style="padding:10px 24px; font-size:15px;">Contact Sales</a>
+            <a id="nav-contact-sales" class="btn-y" onclick="openContact('contact_sales', '', this.textContent, '', '', 'Header Navigation')" style="padding:10px 24px; font-size:15px;">Contact Sales</a>
         </div>
     </div>
 
@@ -61,7 +61,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
             <div class="hero-text">
                 <h2>Precision Industrial Vision.</h2>
                 <p>DEF Company designs high-performance machine vision systems to help global manufacturers optimize quality control and increase throughput.</p>
-                <button class="btn-y" onclick="openContact('book_demo', '', 'Book a Demo')">Book a Demo</button>
+                <button class="btn-y" onclick="openContact('book_demo', '', this.textContent, '', 'Home', 'Home Hero')">Book a Demo</button>
             </div>
             <img src="images/hero-bg.jpg" alt="Vision">
         </div>
@@ -290,7 +290,7 @@ height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
     </div>
     <button type="button" id="cookie-reopen">Cookie settings</button>
     <script src="events-adapter.js"></script>
-    <script src="app.js?v=20261031-ga4-content-lead-v1"></script>
+    <script src="app.js?v=20261031-content-attribution-v2"></script>
     <script src="marketing-content.js?v=20261029-final-content-review"></script>
 </body>
 </html> 
