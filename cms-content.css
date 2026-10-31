@@ -1244,3 +1244,135 @@
   object-fit: contain;
   background: transparent;
 }
+
+/* Final card balance: portrait uploads get a narrower natural-size image column. */
+.event-card {
+  grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+  align-items: stretch;
+}
+
+.event-card.is-portrait-image {
+  grid-template-columns: minmax(0, 0.66fr) minmax(0, 1.34fr);
+}
+
+.event-card.is-portrait-image .event-card-image {
+  align-self: start;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 0;
+  background: transparent;
+}
+
+.event-card.is-portrait-image .event-card-image img {
+  width: 100%;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  object-fit: contain;
+}
+
+@media (max-width: 760px) {
+  .event-card.is-portrait-image {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .event-card.is-portrait-image .event-card-image {
+    width: 100%;
+    align-self: auto;
+  }
+}
+
+/* Trade Show Articles listing: explicit editorial card structure and correct date hierarchy. */
+.event-coverage-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 24px;
+  margin: 20px 0 32px;
+}
+
+.event-coverage-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line, #dce3e8);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 2px 10px rgba(18, 42, 61, .045);
+  cursor: pointer;
+  transition: box-shadow .18s ease, transform .18s ease;
+}
+
+.event-coverage-card:hover {
+  box-shadow: 0 8px 24px rgba(18, 42, 61, .09);
+  transform: translateY(-2px);
+}
+
+.event-coverage-card:focus-visible {
+  outline: 3px solid var(--blue, #2c9ec0);
+  outline-offset: 3px;
+}
+
+.event-coverage-card-image {
+  width: 100%;
+  height: auto;
+  margin: 0;
+  overflow: visible;
+  background: transparent;
+}
+
+.event-coverage-card-image img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  object-fit: contain;
+}
+
+.event-coverage-card-body {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 22px 24px 24px;
+}
+
+.event-coverage-card-body .event-stage-badge {
+  display: inline-flex;
+  align-self: flex-start;
+  margin: 0;
+}
+
+.event-coverage-card-body .date {
+  display: block;
+  margin: -5px 0 0;
+  color: #687783;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.event-coverage-card-body h3 {
+  margin: 0;
+  color: var(--dark, #172d3d);
+  font-size: clamp(20px, 1.8vw, 26px);
+  font-weight: 650;
+  line-height: 1.3;
+}
+
+.event-coverage-card-body .story-summary {
+  margin: 0;
+  color: var(--gray, #5f6870);
+  font-size: 15px;
+  line-height: 1.65;
+}
+
+@media (max-width: 760px) {
+  .event-coverage-grid {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 18px;
+  }
+  .event-coverage-card-body {
+    gap: 10px;
+    padding: 18px;
+  }
+}
