@@ -115,7 +115,7 @@
               if (!response.ok) throw new Error(`GitHub directory ${response.status}`);
               const items = await response.json();
               (Array.isArray(items) ? items : [])
-                .filter(item => item.type === 'file' && /\\.json$/i.test(item.name || ''))
+                .filter(item => item.type === 'file' && /\.json$/i.test(item.name || ''))
                 .forEach(item => filesByPath.set(item.path, {
                   path: item.path,
                   name: item.name,
@@ -135,8 +135,8 @@
               if (!indexResponse.ok) throw new Error(`CDN index ${indexResponse.status}`);
               const indexData = await indexResponse.json();
               (indexData.files || [])
-                .map(file => String(file.name || '').replace(/^\\//, ''))
-                .filter(filePath => filePath.startsWith(folderPrefix) && /^.+\\.json$/i.test(filePath))
+                .map(file => String(file.name || '').replace(/^\//, ''))
+                .filter(filePath => filePath.startsWith(folderPrefix) && /^.+\.json$/i.test(filePath))
                 .forEach(filePath => {
                   if (!filesByPath.has(filePath)) {
                     filesByPath.set(filePath, {
@@ -156,7 +156,7 @@
             }
 
             const records = await Promise.all(files.map(async file => {
-              const slug = file.name.replace(/\\.json$/i, '');
+              const slug = file.name.replace(/\.json$/i, '');
               try {
                 // Read the published file itself from raw GitHub with a cache-buster.
                 // This avoids stale CDN file bodies as well as stale directory indexes.
