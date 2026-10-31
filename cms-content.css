@@ -1397,3 +1397,28 @@
 #event-coverage-list .event-coverage-card-body > .story-summary {
   align-self: flex-start; margin: 0; text-align: left;
 }
+
+
+/* Final title wrapping fix for image-first Upcoming cards.
+   Keep English words intact; let long titles wrap naturally without clipping. */
+.events-grid .event-card,
+.events-grid .event-card-body,
+.events-grid .event-card-body > .event-title {
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+.events-grid .event-card-body > .event-title {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: none;
+  overflow: visible;
+  white-space: normal;
+  overflow-wrap: normal;
+  word-break: normal;
+  hyphens: manual;
+  text-overflow: clip;
+  -webkit-line-clamp: unset;
+  line-clamp: unset;
+}
