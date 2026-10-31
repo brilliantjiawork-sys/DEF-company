@@ -1,6 +1,31 @@
 {
   "articles": [
     {
+      "title": "Connecting Machine Vision with Production Quality",
+      "detail_title_font_size": 34,
+      "content_stage": "Post-show Recap",
+      "related_show": "",
+      "date": "2026-10-31",
+      "industries": [
+        "Automotive"
+      ],
+      "tags": [
+        "AI & Deep Learning",
+        "Defect Detection",
+        "Robotics & Automation"
+      ],
+      "summary": "A recap of the DEF Vision & Automation Showcase, exploring machine vision demonstrations, industrial inspection applications and key discussions on connecting imaging technology with real manufacturing needs.",
+      "summary_font_size": 16,
+      "image": "/images/social-linkedin.jpg",
+      "image_alt": "",
+      "illustrative_example": true,
+      "body": "At the DEF booth, we focused on several application areas that reflect common challenges across industrial production.\n\nOne of the main demonstration themes was automated visual inspection. Visitors could explore how industrial cameras and image-processing systems work together to identify product features, detect visible defects and support more consistent inspection processes.\n\nWe also highlighted vision-guided positioning and measurement applications. In automated production, even small variations in product position can influence the accuracy of downstream operations. Machine vision provides visual information that can help equipment identify object locations and support more precise positioning.\n\nAnother topic was the relationship between image acquisition and inspection performance. Camera selection is only one part of a successful vision application. Lighting, lens configuration, exposure settings and the characteristics of the target object all influence the quality of the captured image.\n\nThese demonstrations helped create a practical starting point for discussions about how machine vision systems should be evaluated and configured.\n\nThe Questions Behind the Technology\n\nThroughout the exhibition, discussions repeatedly returned to a few important questions.\n\n**How can inspection remain consistent when products vary?**\n\nManufacturing environments rarely operate under perfectly identical conditions. Changes in product appearance, position, surface reflection and production speed can affect image acquisition. Visitors showed interest in how imaging conditions and inspection parameters can be designed around these variations.\n\n**How should manufacturers choose between different vision configurations?**\n\nThere is no single camera or imaging setup suitable for every application. The appropriate configuration depends on the inspection target, required image detail, working distance, available installation space and production requirements.\n\nFor some applications, a 2D imaging solution may be sufficient. Others may require additional depth information or a different imaging approach. Defining the actual inspection task is an important first step before selecting equipment.\n\n**How can machine vision fit into an existing production line?**\n\nA vision system needs to work as part of a wider production process. Communication with automation equipment, installation conditions, cycle time and system integration all influence the final solution.\n\nThese conversations reinforced an important point: successful machine vision projects begin with a clear understanding of the application, rather than selecting equipment based on specifications alone.\n\nFrom Product Demonstrations to Application Discussions\n\nAn exhibition provides an opportunity to move beyond product descriptions and discuss how technology can be applied in real production environments.\n\n**1. Image quality remains the foundation of inspection.**\n\nReliable image acquisition is essential for meaningful image analysis. Lighting, optics, camera settings and object characteristics should be considered together.\n\n**2. Application requirements should guide system selection.**\n\nA suitable machine vision configuration is determined by the inspection task, production environment and expected performance—not simply by choosing the highest specification.\n\n**3. Integration matters as much as individual components.**\n\nCameras, lighting, processing software and automation equipment need to operate as a coordinated system.\n\n**4. Practical communication helps turn technical possibilities into workable solutions.**\n\nUnderstanding a manufacturer's production process is an important part of evaluating whether a vision application is suitable.\n\nContinuing the Conversation Beyond the Exhibition\n\nThe showcase may have ended, but the conversations around industrial vision and automation continue.\n\nThe questions raised during the event provide useful starting points for further application discussions, technical evaluation and solution development.\n\nAt DEF, we believe that effective machine vision begins with understanding the production challenge. By connecting imaging technology with specific inspection and automation requirements, manufacturers can build solutions that are better aligned with their operational needs.\n\nThank you to everyone who visited the DEF Vision & Automation Showcase and took the time to exchange ideas with our team.\n\nIf you are exploring machine vision for automated inspection, positioning, measurement or robotic guidance, we welcome the opportunity to discuss your application.\n\n**Contact our team to start a conversation about your machine vision requirements.**",
+      "body_font_size": 17,
+      "cta_enabled": true,
+      "cta_label": "Talk to Our Team",
+      "slug": "connecting-machine-vision-with-production-quality"
+    },
+    {
       "title": "Industrial Vision Application Showcase 2025",
       "content_stage": "Post-show Recap",
       "related_show": "",
