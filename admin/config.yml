@@ -225,10 +225,11 @@ collections:
         date_format: YYYY-MM-DD
         time_format: false
         format: YYYY-MM-DD
-      - label: 展位号
+      - label: 展位号（官网显示在日期和地点之前）
         name: booth
         widget: string
         required: true
+        hint: 请填写实际展位编号；尚未确认时填写 TBC。官网 Upcoming 卡片会将展位号放在日期和地点之前。
       - label: 地点（城市、地区和国家）
         name: loc
         widget: string
@@ -273,7 +274,7 @@ collections:
         widget: image
         required: false
         choose_url: false
-        hint: "官网会完整展示上传图片，不裁剪、不拉伸、不改变原图比例。为让展会卡片更协调，建议优先上传横向 4:3 图片（建议 1200×900 px）；横图会使用标准图文比例，竖图会自动缩窄图片栏并完整展示。图片原文件不会被修改。"
+        hint: "官网 Upcoming 卡片采用上图下文布局：图片横跨卡片内容区，并按上传图片的原始宽高比例完整显示，不使用固定高度、不裁剪、不拉伸。建议上传清晰的大尺寸现场照片；横图和竖图都会按原比例显示。图片原文件不会被修改。"
       - label: 图片替代文本
         name: cover_alt
         widget: string
