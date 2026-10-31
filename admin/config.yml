@@ -268,11 +268,12 @@ collections:
         - Warehouse & Logistics
         - Innovation
         - Sustainability
-      - label: 展会封面图
+      - label: 展会封面图（官网卡片图片）
         name: cover
         widget: image
         required: false
         choose_url: false
+        hint: "请优先上传横向 4:3 图片（建议 1200×900 px）。官网会完整展示原图，不裁剪、不拉伸。请勿上传竖版海报或明显过窄的图片；不同宽高比会按原比例缩放，在卡片中可能显得过小或出现留白。上传前请先确认图片主体适合横向卡片展示。"
       - label: 图片替代文本
         name: cover_alt
         widget: string
