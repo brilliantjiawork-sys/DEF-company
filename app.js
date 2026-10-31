@@ -291,7 +291,7 @@ function defInferLeadContextFromCurrentView() {
         if (story) {
             result.contentType = story.is_event_coverage ? 'Trade Show Article' : 'Story';
             result.contentTitle = defSafeText(story.title || '', 300);
-            result.contentTopic = defGetTopicTags(story).join(', ');
+            result.contentTopic = (defGetTopicTags(story)[0] || '');
             result.ctaLocation = story.is_event_coverage ? 'trade_show_article_detail' : 'story_detail';
         }
         return result;
@@ -302,7 +302,7 @@ function defInferLeadContextFromCurrentView() {
         if (item) {
             result.contentType = defGetEventStatus(item) === 'upcoming' ? 'Upcoming Trade Show' : 'Trade Show';
             result.contentTitle = defSafeText(item.title || '', 300);
-            result.contentTopic = defGetTopicTags(item).join(', ');
+            result.contentTopic = (defGetTopicTags(item)[0] || '');
             result.ctaLocation = 'trade_show_detail';
         }
         return result;
@@ -830,7 +830,7 @@ function showStoryDetail(index, origin = 'stories') {
             const ctaLabel = defSafeText(story.cta_label || 'Talk to our team', 200);
             const storyCta = defElement('button', 'btn-y event-detail-cta', ctaLabel);
             storyCta.type = 'button';
-            storyCta.addEventListener('click', () => openContact('contact_sales', story.title || '', ctaLabel, story.is_event_coverage ? 'Trade Show Article' : 'Story', 'Newsroom', story.is_event_coverage ? 'trade_show_article_detail' : 'story_detail', defGetTopicTags(story).join(', ')));
+            storyCta.addEventListener('click', () => openContact('contact_sales', story.title || '', ctaLabel, story.is_event_coverage ? 'Trade Show Article' : 'Story', 'Newsroom', story.is_event_coverage ? 'trade_show_article_detail' : 'story_detail', (defGetTopicTags(story)[0] || '')));
             storyCtaContainer.appendChild(storyCta);
         }
     }
@@ -844,7 +844,7 @@ function showStoryDetail(index, origin = 'stories') {
     track('content_view', {
         content_type: story.is_event_coverage ? 'Trade Show Article' : 'Story',
         content_title: defSafeText(story.title || 'Untitled story', 300),
-        content_topic: defGetTopicTags(story).join(', ')
+        content_topic: (defGetTopicTags(story)[0] || '')
     });
     defTrackVirtualPageView('/newsroom/stories/' + encodeURIComponent(defContentSlug(story, index)), defSafeText(story.title || 'Untitled story', 300));
 }
@@ -1069,7 +1069,7 @@ function defMakeEventCard(event, index, status) {
         const ctaLabel = defSafeText(event.cta_label || 'Book a Meeting at This Show', 200);
         const ctaButton = defElement('button', 'btn-y event-card-cta', ctaLabel);
         ctaButton.type = 'button';
-        ctaButton.addEventListener('click', () => openContact('contact_sales', defSafeText(event.title || '', 300), ctaLabel, 'Upcoming Trade Show', 'Newsroom', 'upcoming_show_card', defGetTopicTags(event).join(', ')));
+        ctaButton.addEventListener('click', () => openContact('contact_sales', defSafeText(event.title || '', 300), ctaLabel, 'Upcoming Trade Show', 'Newsroom', 'upcoming_show_card', (defGetTopicTags(event)[0] || '')));
         actions.appendChild(ctaButton);
     }
     body.appendChild(actions);
@@ -1265,7 +1265,7 @@ function showEventDetail(index) {
             const ctaLabel = defSafeText(event.cta_label || 'Book a Meeting at This Show', 200);
             const cta = defElement('button', 'btn-y event-detail-cta', ctaLabel);
             cta.type = 'button';
-            cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, status === 'upcoming' ? 'Upcoming Trade Show' : 'Trade Show', 'Newsroom', 'trade_show_detail', defGetTopicTags(event).join(', ')));
+            cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, status === 'upcoming' ? 'Upcoming Trade Show' : 'Trade Show', 'Newsroom', 'trade_show_detail', (defGetTopicTags(event)[0] || '')));
             ctaContainer.appendChild(cta);
         } else if (status === 'past' && hasRecap) {
             const cta = defElement('button', 'btn-y event-detail-cta', 'Read Related Recap');
@@ -1285,7 +1285,7 @@ function showEventDetail(index) {
             const ctaLabel = /book a meeting|book a demo/i.test(requestedLabel) ? 'Talk to Our Team' : requestedLabel;
             const cta = defElement('button', 'btn-y event-detail-cta', ctaLabel);
             cta.type = 'button';
-            cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, status === 'upcoming' ? 'Upcoming Trade Show' : 'Trade Show', 'Newsroom', 'trade_show_detail', defGetTopicTags(event).join(', ')));
+            cta.addEventListener('click', () => openContact('contact_sales', titleText, ctaLabel, status === 'upcoming' ? 'Upcoming Trade Show' : 'Trade Show', 'Newsroom', 'trade_show_detail', (defGetTopicTags(event)[0] || '')));
             ctaContainer.appendChild(cta);
         }
     }
@@ -1300,7 +1300,7 @@ function showEventDetail(index) {
     track('content_view', {
         content_type: status === 'upcoming' ? 'Upcoming Trade Show' : 'Trade Show',
         content_title: titleText,
-        content_topic: defGetTopicTags(event).join(', ')
+        content_topic: (defGetTopicTags(event)[0] || '')
     });
     defTrackVirtualPageView('/newsroom/events/' + encodeURIComponent(slug), titleText);
 }
