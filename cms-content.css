@@ -1130,6 +1130,7 @@
   display: inline-flex;
   align-self: flex-start;
   margin: 0;
+  flex: 0 0 auto;
 }
 
 .event-coverage-card-body .date {
@@ -1345,7 +1346,11 @@
 
 .event-coverage-card-body .date {
   display: block;
-  margin: -5px 0 0;
+  align-self: flex-start;
+  width: 100%;
+  margin: 8px 0 4px;
+  padding: 0;
+  text-align: left;
   color: #687783;
   font-size: 14px;
   line-height: 1.45;
@@ -1375,4 +1380,29 @@
     gap: 10px;
     padding: 18px;
   }
+}
+
+
+/* Explicit final alignment for Trade Show article metadata. */
+#event-coverage-list .event-coverage-card-body {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: flex-start !important;
+  gap: 0 !important;
+}
+#event-coverage-list .event-coverage-card-body > .event-stage-badge {
+  align-self: flex-start !important;
+  margin: 0 !important;
+}
+#event-coverage-list .event-coverage-card-body > .date {
+  display: block !important;
+  align-self: flex-start !important;
+  width: 100% !important;
+  margin: 8px 0 8px !important;
+  padding: 0 !important;
+  text-align: left !important;
+}
+#event-coverage-list .event-coverage-card-body > h3 {
+  align-self: flex-start !important;
+  margin: 0 !important;
 }
