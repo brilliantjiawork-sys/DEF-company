@@ -1661,6 +1661,7 @@ function initContactForm() {
             form_entry: analyticsConsent ? (currentLeadContext.formEntry || 'Home') : '',
             content_type: analyticsConsent ? (currentLeadContext.contentType || '') : '',
             content_title: analyticsConsent ? (currentLeadContext.contentTitle || '') : '',
+            content_category: analyticsConsent ? (currentLeadContext.contentCategory || '') : '',
             content_topic: analyticsConsent ? (currentLeadContext.contentTopic || '') : '',
             cta_location: analyticsConsent ? (currentLeadContext.ctaLocation || '') : '',
             cta_label: analyticsConsent ? (currentLeadContext.ctaLabel || (currentLeadSource === 'book_demo' ? 'Book a Demo' : 'Contact Sales')) : ''
