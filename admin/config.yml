@@ -765,8 +765,9 @@ collections:
     max: 42
     step: 1
     required: false
-  - label: 内容阶段
+  - label: 文章阶段标签（官网卡片显示）
     name: content_stage
+    hint: 选择文章所处的展会阶段。官网文章卡片会按“阶段标签 → 发布日期 → 标题 → 摘要”的顺序展示。
     widget: select
     required: true
     default: Pre-show Preview
