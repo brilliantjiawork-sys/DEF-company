@@ -60,9 +60,6 @@ collections:
       - label: 使用规则
         name: rules
         widget: text
-      - label: Figma 操作说明
-        name: figma
-        widget: text
     - label: 色彩系统 Color System
       name: colors
       widget: list
@@ -110,9 +107,6 @@ collections:
       - label: 字体层级
         name: hierarchy
         widget: text
-      - label: Figma 操作说明
-        name: figma
-        widget: text
     - label: 图片规范 Imagery
       name: imagery
       widget: list
@@ -143,9 +137,6 @@ collections:
       - label: 使用场景
         name: use
         widget: text
-      - label: Figma 搭建方法
-        name: figma
-        widget: text
     - label: 渠道应用 Channel Applications
       name: channels
       widget: list
@@ -170,9 +161,6 @@ collections:
         widget: text
       - label: 需要管理的视频素材
         name: assets
-        widget: text
-      - label: Figma 操作说明
-        name: figma
         widget: text
     - label: 展会应用 Trade Show Applications
       name: events
