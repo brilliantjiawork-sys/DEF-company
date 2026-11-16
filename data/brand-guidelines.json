@@ -1,0 +1,168 @@
+{
+  "status": "Working draft · confirm through Figma practice",
+  "foundation": "DEF Company is a fictional B2B industrial-vision brand for portfolio demonstration. It communicates precision, reliability and practical machine-vision expertise to manufacturers, automation integrators and equipment builders. Use this as the content and design reference; do not present fictional customers, certifications or performance claims as real.",
+  "logo": {
+    "currentFile": "/images/logo.jpg",
+    "currentVersion": "Current website lockup: symbol on the left, DEF Company wordmark and tagline on the right.",
+    "variants": "Only the current horizontal lockup is confirmed in the supplied website asset. A stacked version and symbol-only version are not yet approved. Do not crop the existing JPG to invent official variants; create them only from an original vector/source file and review them at real sizes.",
+    "rules": "Keep the original proportions. Do not stretch, skew, rotate, recolor, add effects, redraw, or place on a busy background. Preserve clear space around the complete lockup. Use the original file rather than screenshots. A white/reversed version is not confirmed yet.",
+    "figma": "In Figma: place the supplied logo inside a Frame; set image constraints to Scale and preserve aspect ratio. Make a separate test Frame for light and dark backgrounds. To study clear space, duplicate the logo, add a Rectangle around it as a measurement guide, and keep other text/images outside that area. Reduce the Frame width gradually to test legibility. Do not detach or edit the logo artwork."
+  },
+  "colors": [
+    {
+      "name": "DEF Blue",
+      "hex": "#45B2D3",
+      "role": "Primary",
+      "use": "Main brand recognition: key headings, graphic anchors, links and selected visual blocks. Keep large areas balanced with white/neutral space.",
+      "source": "Current website CSS token --blue; provisional until checked against the original logo."
+    },
+    {
+      "name": "DEF Yellow",
+      "hex": "#FFE817",
+      "role": "Primary accent",
+      "use": "High-attention actions and small highlights, such as CTA buttons, key figures or a short underline. Avoid using it for long body text.",
+      "source": "Current website CSS token --yellow; provisional until checked against the original logo."
+    },
+    {
+      "name": "Deep Charcoal",
+      "hex": "#111111",
+      "role": "Neutral",
+      "use": "Main text, strong contrast and dark backgrounds.",
+      "source": "Current website CSS token --dark."
+    },
+    {
+      "name": "Body Gray",
+      "hex": "#555555",
+      "role": "Neutral",
+      "use": "Supporting text and secondary information.",
+      "source": "Current website CSS token --gray."
+    },
+    {
+      "name": "Soft Gray",
+      "hex": "#F9F9F9",
+      "role": "Neutral",
+      "use": "Quiet page or card backgrounds.",
+      "source": "Current website CSS token --bg."
+    },
+    {
+      "name": "White",
+      "hex": "#FFFFFF",
+      "role": "Neutral",
+      "use": "Main background and negative space.",
+      "source": "Current website CSS token --white."
+    },
+    {
+      "name": "Success",
+      "hex": "#2E7D32",
+      "role": "Functional UI",
+      "use": "CMS status feedback only, such as successful save or approved asset. Not automatically a campaign brand color.",
+      "source": "Interface convention; not part of the confirmed brand palette."
+    },
+    {
+      "name": "Warning",
+      "hex": "#B7791F",
+      "role": "Functional UI",
+      "use": "CMS warning states only.",
+      "source": "Interface convention; not part of the confirmed brand palette."
+    },
+    {
+      "name": "Error",
+      "hex": "#B42318",
+      "role": "Functional UI",
+      "use": "CMS error states only.",
+      "source": "Interface convention; not part of the confirmed brand palette."
+    }
+  ],
+  "typography": {
+    "family": "Inter is currently used by the website. Treat it as the working typeface, not a permanently approved corporate font until verified.",
+    "hierarchy": "Use a consistent scale: H1 for the main message; H2 for section titles; H3 for feature headings; Body for explanation; Caption for specs, notes and image credits. Establish hierarchy with size, weight, line-height and spacing before adding extra fonts.",
+    "figma": "In Figma: create Text Styles named H1 / H2 / H3 / Body / Caption. Set the font family and weight in the right Design panel. Apply styles rather than manually formatting every text layer. Keep product specifications readable and use consistent units."
+  },
+  "imagery": [
+    {
+      "name": "Product photos",
+      "purpose": "Show the camera or device itself: front, side, 3/4 angle, ports, lens mount and product family.",
+      "good": "Sharp focus, accurate color and geometry, clean background, consistent angle and scale. Preserve product details.",
+      "avoid": "Distorted proportions, unapproved recoloring, low resolution or decorative effects that misrepresent the product."
+    },
+    {
+      "name": "Application / scene photos",
+      "purpose": "Show the camera working in a real industrial context: production lines, inspection stations, robotics, packaging or logistics.",
+      "good": "Make the application understandable; show the camera or inspection process where possible; keep the subject clear and the environment credible.",
+      "avoid": "Generic factory stock photos with no visible connection to machine vision or the stated application."
+    },
+    {
+      "name": "Technical detail images",
+      "purpose": "Explain a feature, component, imaging result, interface, sensor, inspection area or technical process.",
+      "good": "Use precise close-ups, annotated diagrams or comparison crops; labels must be technically accurate and readable.",
+      "avoid": "Decorative callouts, inaccurate diagrams or claims that engineering has not confirmed."
+    },
+    {
+      "name": "Trade show / event photos",
+      "purpose": "Document booth, product demos, staff interactions, talks and real event moments.",
+      "good": "Show brand presence, readable booth graphics, real equipment and meaningful interaction; capture both wide and detail shots.",
+      "avoid": "Empty booth shots, cluttered backgrounds, unreadable signage or photos with unclear usage rights."
+    },
+    {
+      "name": "Social graphics",
+      "purpose": "Designed communication assets for LinkedIn, Facebook and other channels; these are designed graphics, not a photo category.",
+      "good": "Use approved colors, typography and layouts; keep one clear message per visual.",
+      "avoid": "Treating every social graphic as a separate brand style or duplicating near-identical artwork without a channel reason."
+    }
+  ],
+  "layouts": [
+    {
+      "name": "Single-image social post",
+      "use": "One main message, one strong image or product visual, concise headline and restrained supporting copy.",
+      "figma": "Create a Frame using the current platform export size; use Auto Layout for text groups; keep a reusable logo and footer component."
+    },
+    {
+      "name": "Carousel / document post",
+      "use": "A consistent cover, one idea per slide, repeatable title and page-number system, clear final CTA.",
+      "figma": "Create one master slide Frame, then duplicate it. Use Components for repeated headers, footers and page numbers; use Auto Layout for text blocks."
+    },
+    {
+      "name": "Product one-pager",
+      "use": "Product name, product image, value proposition, key features/specifications, application fit and enquiry CTA.",
+      "figma": "Use a grid and consistent spacing. Keep technical specs in a readable table; align image, heading and CTA to the same grid."
+    },
+    {
+      "name": "Trade show banner / booth graphic",
+      "use": "Recognisable brand, one primary message, product/application visual, short proof points and a simple next step. Readable from a distance.",
+      "figma": "Start with the supplier's exact print template and bleed/safe-area specs. Build the design in a Frame matching the final dimensions; do not guess print dimensions."
+    }
+  ],
+  "channels": [
+    {
+      "name": "LinkedIn",
+      "use": "B2B thought leadership, product/application education, case-style stories and trade-show announcements. Prefer informative visuals and a clear professional message.",
+      "format": "Single image, carousel/document post, short native video. Confirm current platform dimensions before export."
+    },
+    {
+      "name": "Facebook",
+      "use": "Adapt the same campaign idea for community updates, event photos and accessible product/application stories. Do not simply shrink a LinkedIn layout if the crop or reading order changes.",
+      "format": "Image, album, short video and event updates."
+    },
+    {
+      "name": "YouTube",
+      "use": "Product demonstrations, application walkthroughs, technical explainers, event highlights and company/brand videos.",
+      "format": "Thumbnail system, channel banner, opening/end cards, subtitles and reusable video lower-thirds."
+    },
+    {
+      "name": "Website / Stories",
+      "use": "Use the same approved image language and type hierarchy, but prioritise reading comfort, clear article imagery and accessible alt text.",
+      "format": "Story cover, body images, diagrams and downloadable resources."
+    }
+  ],
+  "video": {
+    "principle": "Treat video as a brand application with its own reusable visual system, not as a separate brand. A video may be reused across YouTube, LinkedIn, Facebook, the website and exhibition screens when the format and audience fit.",
+    "assets": "Keep the original master video, clean footage, approved music/voice files, subtitles, thumbnail, logo end card and platform-specific exports. Record usage rights and source project location.",
+    "figma": "Use Figma for storyboard frames, thumbnail concepts, title cards and end cards. Use a video editor for actual editing. Create reusable Components for logo placement, title treatment and lower-thirds; adapt the final export to each channel."
+  },
+  "events": {
+    "before": "Pre-show: event announcement, invitation/meeting-booking graphic, landing-page hero, email header and social countdown assets.",
+    "onsite": "On-site: booth backwall or shell-scheme graphics, roll-up banner where suitable, counter/table graphics, product/demo screen loop, product one-pagers, datasheets, brochures, QR/contact cards and staff briefing visuals.",
+    "after": "Post-show: recap article, photo gallery, highlight video, social recap/carousel and sales follow-up material.",
+    "note": "Not every event needs every item. Select collateral based on booth size, audience, budget, organiser rules and sales objective. Print files must follow the printer or stand contractor's supplied dimensions, bleed and safe-area template."
+  }
+}
