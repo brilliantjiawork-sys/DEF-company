@@ -164,5 +164,11 @@
     "onsite": "On-site: booth backwall or shell-scheme graphics, roll-up banner where suitable, counter/table graphics, product/demo screen loop, product one-pagers, datasheets, brochures, QR/contact cards and staff briefing visuals.",
     "after": "Post-show: recap article, photo gallery, highlight video, social recap/carousel and sales follow-up material.",
     "note": "Not every event needs every item. Select collateral based on booth size, audience, budget, organiser rules and sales objective. Print files must follow the printer or stand contractor's supplied dimensions, bleed and safe-area template."
+  },
+  "verbal": {
+    "voice": "品牌整体表达保持专业、准确、清晰、可信。避免空泛的夸张词和无法证明的领先性表述。先解释客户问题和应用价值，再说明技术能力。",
+    "tones": "产品介绍：信息准确、技术清楚；行业洞察：客观、有依据；应用案例：讲清楚场景、挑战、方案和结果；展会预告：简洁、明确地点与行动；公司动态：事实优先。",
+    "terminology": "产品型号、接口、传感器、分辨率、帧率、检测精度等术语以产品资料为准。相同产品名称和技术术语在官网、社媒、视频和销售材料中保持一致。",
+    "writing": "英文文案优先使用短句和主动语态；数字、单位、大小写和产品型号保持统一。不得为了营销效果虚构客户、测试数据、认证、性能或应用成果。"
   }
 }
