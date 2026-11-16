@@ -588,205 +588,83 @@
       };
 
       const BrandHub = () => {
-        const [section, setSection] = CMS.React.useState('start');
-        const [completed, setCompleted] = CMS.React.useState({});
         const [guide, setGuide] = CMS.React.useState(null);
+        const [active, setActive] = CMS.React.useState('overview');
         const [error, setError] = CMS.React.useState('');
-
         CMS.React.useEffect(() => {
           let cancelled = false;
-          fetch('https://raw.githubusercontent.com/brilliantjiawork-sys/DEF-company/main/data/brand-guidelines.json', { cache: 'no-store' })
-            .then(response => { if (!response.ok) throw new Error('品牌资料暂时无法读取'); return response.json(); })
+          fetch('/data/brand-guidelines.json', { cache: 'no-store' })
+            .then(response => { if (!response.ok) throw new Error('品牌规范暂时无法读取'); return response.json(); })
             .then(data => { if (!cancelled) setGuide(data); })
             .catch(err => { if (!cancelled) setError(err.message); });
           return () => { cancelled = true; };
         }, []);
 
-        const lessons = [
-          { id:'basics', label:'Figma 基础操作', short:'先熟悉画布、图层和基本工具', output:'做出一张包含标题、图片和按钮的简单画板', goal:'先学会在 Figma 里完成基本操作。暂时不追求好看，先做到能创建、选择、移动、调整和导出设计元素。', tasks:[
-            ['创建文件和页面','左上角文件名区域创建 Design file；左侧 Pages 面板点击 + 新建页面，命名为 01 Practice。'],
-            ['创建 Frame 画板','按 F，右侧选择 Desktop / Social media 等预设；也可以在右侧输入 W、H 自定义尺寸。Frame 是设计画布，不是普通矩形。'],
-            ['认识图层','在左侧 Layers 面板选中图层、双击重命名；拖动图层调整顺序。给图层起有意义的名字，不要保留 Rectangle 12。'],
-            ['练习基本工具','按 R 画矩形、按 T 输入文字、按 O 画圆；按 V 切回 Move，拖动对象位置。'],
-            ['放入图片','把图片文件拖进画布；选中图片后在右侧 Fill / Image 设置中调整填充，双击图片进入裁切调整。'],
-            ['导出画板','选中 Frame，在右侧面板底部 Export 添加导出设置；练习导出 PNG。']
-          ]},
-          { id:'logo', label:'Logo 使用', short:'学会正确放置，不重新设计 Logo', output:'做出浅色、深色、浅灰三种背景测试页', goal:'你现在练的是品牌资产的正确使用，不是 Logo 设计。现有仓库只确认了一份官网横向组合 JPG，不能自行裁切成图形版、竖版或反白版。', tasks:[
-            ['找到现有 Logo','在画布中导入 /images/logo.jpg。保留原文件，不要在 Figma 里描摹、拆分或改变图形。'],
-            ['建立三种背景 Frame','按 F 建立三个同尺寸 Frame，分别设置白色、深色和浅灰 Fill；把同一份 Logo 放入三个画板。'],
-            ['保持比例','选中 Logo，在右侧 W / H 检查比例；拖动角点缩放。不要只拉横边或竖边。'],
-            ['测试留白','用 R 画一个临时矩形框作为安全空间参考，检查文字和其他图形是否靠 Logo 太近；测试完删除参考框。'],
-            ['测试最小尺寸','复制 Logo 并逐步缩小，观察字标是否仍清晰。无法辨认时停止缩小，并记录测试尺寸。'],
-            ['记录不可做的事','不要改色、加描边、加阴影、拉伸、旋转，也不要把 JPG 裁成未经确认的 Logo 版本。']
-          ]},
-          { id:'color', label:'颜色系统', short:'识别颜色角色并建立可复用色板', output:'建立一页颜色板，并标注角色和用途', goal:'先区分颜色承担的功能，再决定是否把颜色纳入正式品牌标准。官网 CSS 中出现的颜色只能作为参考，最终仍要和原始 Logo 文件及实际设计效果核对。', tasks:[
-            ['查看参考色','先看本页下方的 DEF 现有颜色参考。颜色值来自当前网站样式，不代表已完成正式品牌定稿。'],
-            ['建立颜色样本','按 R 画矩形，在右侧 Fill 点击颜色方块，输入 HEX；复制矩形，分别建立主色、强调色、中性色样本。'],
-            ['理解颜色角色','Primary 用于品牌识别；Accent 用于少量重点；Neutral 用于背景和阅读；Functional 用于成功、警告、错误等界面状态，不自动等于品牌宣传色。'],
-            ['创建 Color Styles','选中颜色样本，在 Fill 颜色选择器中创建 Color Style；按 Primary / Accent / Neutral 分类命名。若使用 Variables，先完成基础色板再学。'],
-            ['检查文字对比','分别测试深色文字放浅色背景、浅色文字放深色背景；黄色只做短促强调，不用作大段正文。'],
-            ['输出颜色规范页','每个色块旁写颜色名称、HEX、角色和使用场景；暂未确认的颜色标注 Draft。']
-          ]},
-          { id:'type', label:'字体与文字层级', short:'先学排版，不急着定品牌字体', output:'完成一页 H1 / H2 / H3 / Body / Caption 字体样张', goal:'“网站当前加载什么字体”不等于“品牌应该使用什么字体”。这节先练字体选择和层级建立，不预设 DEF 的最终字体。', tasks:[
-            ['比较字体候选','按 T 输入同一句英文标题，复制成几组，在右侧 Design 面板的 Typography / Font 选择不同候选字体；比较字形、数字、标点和可读性。'],
-            ['先控制字体家族数量','先用一个适合英文技术内容的字体家族，通过不同 Weight 建立层级；只有确有需要时才考虑第二套字体。'],
-            ['建立五级文字','制作 H1、H2、H3、Body、Caption 五种文字样式，分别调整字号、字重、行高和段落间距。'],
-            ['创建 Text Styles','选中文字图层，在右侧 Typography 样式入口创建 Text Style；命名为 H1 / H2 / H3 / Body / Caption。'],
-            ['检查真实内容','放入产品型号、分辨率、帧率和单位，检查数字是否清楚、单位是否统一、正文是否容易阅读。'],
-            ['完成对照页','把五级文字放在同一 Frame 中，检查标题、正文、参数和注释是否一眼可区分。']
-          ]},
-          { id:'image-layout', label:'图片与版式', short:'学会选图、裁切和组织信息', output:'做一张左图右文和一张上图下文的产品介绍图', goal:'B2B 工业视觉不能只追求画面漂亮。图片要解释产品、应用或技术；版式要让客户快速看懂信息。', tasks:[
-            ['区分四类图片','分别准备产品图、应用场景图、技术细节图、展会活动图；先判断图片要证明什么，再决定放在哪里。'],
-            ['练习图片裁切','拖入图片后双击进入 Crop，调整主体位置；检查镜头、接口、设备边缘等关键细节没有被裁掉。'],
-            ['建立左图右文','按 F 创建 Frame，用两个区域安排图片和文字；让标题、图片边缘和正文对齐同一条网格线。'],
-            ['建立上图下文','复制 Frame，把图片放在上方、文字放在下方；控制标题、说明和 CTA 的阅读顺序。'],
-            ['练习参数布局','用 R 建立参数行，型号、参数名称、数值和单位分列对齐；不要把参数做成难以阅读的装饰。'],
-            ['学习 Auto Layout','选中一组相关图层按 Shift + A；在右侧设置方向、间距、Padding 和对齐。先用于按钮、标签和参数行，不必一开始就全页使用。']
-          ]},
-          { id:'social', label:'社媒图片', short:'练习 LinkedIn 单图和轮播图', output:'完成一张 LinkedIn 单图和三页 Carousel', goal:'先建立通用视觉规则，再按平台调整尺寸、裁切和信息密度。LinkedIn 与 Facebook 可以共享同一套品牌元素，不需要完全相同的版式。', tasks:[
-            ['先做单图结构','建立一个社媒 Frame，安排一个核心标题、一张产品或应用图、简短说明和 Logo。'],
-            ['再做 Carousel 封面','复制 Frame，做一个能在缩略预览中读懂的封面；标题只表达一个主题。'],
-            ['做内容页','每页只解释一个要点；使用相同标题位置、页码和边距，保持连续性。'],
-            ['做结尾 CTA','最后一页放总结和明确行动，例如 Visit our website / Talk to our team；不要堆多个 CTA。'],
-            ['适配不同平台','复制原 Frame，再按平台当前发布规格调整比例和裁切；不要直接拉伸原图。'],
-            ['导出前检查','检查文字是否过小、Logo 是否清楚、图片是否模糊、边缘是否被平台裁切。']
-          ]},
-          { id:'exhibition', label:'展会物料', short:'重点练习易拉宝和产品单页', output:'完成一张易拉宝视觉稿和一张产品单页', goal:'这是最贴近工业品牌市场岗位的练习。易拉宝不是把社媒图放大，而是面向展馆远距离观看；产品单页则要让客户快速理解产品价值和关键参数。', tasks:[
-            ['先拿到真实尺寸','先向展会主办方、搭建商或印刷供应商取得成品尺寸、出血和安全区模板。没有规格时只做练习稿，不假设某个尺寸就是最终标准。'],
-            ['搭建易拉宝 Frame','按供应商规格创建 Frame；如果只是练习，可先用常见竖版比例做视觉草稿，并在文件名注明 Practice。'],
-            ['安排易拉宝信息','从上到下安排品牌识别、一个核心价值主张、产品/应用主视觉、2–3 个关键卖点和二维码/行动指引。'],
-            ['检查远距离阅读','把画板缩小到屏幕预览，检查标题和核心信息是否仍然突出；不要塞入长段正文和完整参数表。'],
-            ['搭建产品单页','另建页面，包含产品名称、产品图、核心价值、关键特性、关键参数、适用场景和联系入口。'],
-            ['检查印刷交付','确认尺寸、出血、安全区、图片清晰度和字体；Figma 练习稿不等于印刷厂最终生产文件，交付前要按供应商要求复核。']
-          ]},
-          { id:'video', label:'视频视觉', short:'练封面、片头片尾和字幕样式', output:'完成一个 YouTube 封面和一套视频标题/片尾组件', goal:'Figma 负责视频视觉设计和分镜，不负责真正剪辑。一个视频母版可以按 YouTube、LinkedIn、Facebook 和展会屏幕需求输出不同版本。', tasks:[
-            ['设计 YouTube 封面','建立横版 Frame，产品主体清楚，标题简短；缩小预览时仍能读懂主题。'],
-            ['设计片头标题卡','建立简短标题卡，控制 Logo 露出和标题层级，不要做冗长开场。'],
-            ['设计字幕样式','建立字幕文字和底色组件，检查在浅色、深色画面上都能读清楚，并避开关键产品区域。'],
-            ['设计片尾组件','放置 Logo、网站或 CTA，保持简洁，避免同时出现太多行动入口。'],
-            ['区分视频文件','原始素材、剪辑工程、字幕文件、封面和各平台成片分别保存；记录版权和授权来源。']
-          ]}
+        const sections = [
+          {id:'overview',label:'品牌概览',desc:'品牌定位与核心表达'},
+          {id:'logo',label:'Logo 使用规范',desc:'现有版本与使用边界'},
+          {id:'colors',label:'色彩系统',desc:'主色、强调色、中性色与功能色'},
+          {id:'typography',label:'字体与排版',desc:'字体方案与文字层级'},
+          {id:'imagery',label:'图片规范',desc:'产品、应用、技术与展会图片'},
+          {id:'layouts',label:'版式规范',desc:'常用内容布局与信息组织'},
+          {id:'channels',label:'渠道规范',desc:'官网、LinkedIn、Facebook、YouTube'},
+          {id:'video',label:'视频规范',desc:'视频内容与视觉资产'},
+          {id:'events',label:'展会应用',desc:'展前、展中与展后物料'},
+          {id:'verbal',label:'品牌语言',desc:'语气、术语与文案规则'}
         ];
-
-        const nav = [{id:'start',label:'学习总览',short:'先看学习顺序'}, ...lessons];
-        const activeLesson = lessons.find(item => item.id === section);
-        const allTasks = lessons.reduce((sum, lesson) => sum + lesson.tasks.length, 0);
-        const doneCount = Object.values(completed).filter(Boolean).length;
-        const panel = { border:'1px solid #dce3e9', borderRadius:10, padding:18, background:'#fff' };
-        const muted = { color:'#667583', fontSize:13, lineHeight:1.65 };
-        const heading = { margin:0, color:'#172a3a', fontSize:18, lineHeight:1.4 };
-        const buttonStyle = active => ({ border:active?'1px solid #7ea4bf':'1px solid #dce3e9', background:active?'#eef5f9':'#fff', color:'#23394a', borderRadius:7, padding:'10px 11px', textAlign:'left', font:'inherit', fontSize:13, cursor:'pointer', width:'100%' });
-        const toggleTask = key => setCompleted(previous => ({...previous,[key]:!previous[key]}));
-        const taskList = lesson => h('div',{style:{display:'grid',gap:10,marginTop:14}},
-          ...lesson.tasks.map((task,index)=>{
-            const key=lesson.id+'-'+index;
-            const checked=!!completed[key];
-            return h('label',{key,style:{display:'grid',gridTemplateColumns:'20px minmax(0,1fr)',gap:11,alignItems:'start',padding:13,border:'1px solid '+(checked?'#b7d4c2':'#e2e8ed'),borderRadius:8,background:checked?'#f4faf6':'#fff',cursor:'pointer'}},
-              h('input',{type:'checkbox',checked,onChange:()=>toggleTask(key),style:{marginTop:3,accentColor:'#356d50',width:16,height:16}}),
-              h('span',{style:{minWidth:0}},
-                h('strong',{style:{display:'block',fontSize:13,color:'#243746',marginBottom:5}},(index+1)+'. '+task[0]),
-                h('span',{style:{display:'block',fontSize:11,color:'#39718f',fontWeight:650,marginBottom:4}},'Figma 操作位置'),
-                h('span',{style:{display:'block',...muted}},task[1])
-              )
-            );
-          })
+        const card={border:'1px solid #dfe5e9',borderRadius:9,background:'#fff',padding:18};
+        const title={fontSize:18,fontWeight:700,color:'#203747',margin:'0 0 10px'};
+        const body={fontSize:13,lineHeight:1.75,color:'#526372',whiteSpace:'pre-wrap',margin:0};
+        const sectionButton=id=>({textAlign:'left',padding:'12px 14px',borderRadius:8,border:'1px solid '+(active===id?'#8daec2':'#e0e6ea'),background:active===id?'#f0f6f9':'#fff',cursor:'pointer',color:'#243b4c',font:'inherit'});
+        const field=(label,value)=>h('div',{style:{padding:'13px 0',borderBottom:'1px solid #edf0f2'}},
+          h('div',{style:{fontSize:12,fontWeight:700,color:'#314e63',marginBottom:5}},label),
+          h('p',{style:body},value||'尚未填写')
         );
-        const colorCards = guide && Array.isArray(guide.colors) ? guide.colors.map(item=>h('div',{key:item.name,style:{display:'grid',gridTemplateColumns:'42px minmax(0,1fr) auto',gap:10,alignItems:'center',padding:'10px 0',borderBottom:'1px solid #edf0f2'}},
-          h('div',{style:{width:42,height:38,background:item.hex,border:'1px solid rgba(0,0,0,.12)',borderRadius:6}}),
-          h('div',{style:{minWidth:0}},
-            h('strong',{style:{display:'block',fontSize:13}},item.name),
-            h('div',{style:{fontSize:12,color:'#667583'}},item.hex+' · '+item.role),
-            h('div',{style:{fontSize:12,color:'#667583',lineHeight:1.5,marginTop:3}},item.use)
+        const content=()=>{
+          if(!guide) return h('div',{style:card},error||'正在读取品牌规范…');
+          if(active==='overview') return h('div',{style:{display:'grid',gap:14}},
+            h('section',{style:card},h('h2',{style:title},'品牌定位'),h('p',{style:body},guide.foundation||'尚未填写')),
+            h('section',{style:card},h('h2',{style:title},'品牌原则'),h('p',{style:body},'专业、准确、清晰、可信。所有产品信息、技术参数、客户案例和性能表述必须有可靠资料支持。虚构的客户、认证和性能数据不得作为真实事实。'))
+          );
+          if(active==='logo') return h('section',{style:card},
+            h('h2',{style:title},'Logo 使用规范'),
+            guide.logo?.currentFile?h('img',{src:guide.logo.currentFile,alt:'DEF Company Logo',style:{maxWidth:'100%',maxHeight:110,objectFit:'contain',margin:'4px 0 16px'}}):null,
+            field('当前版本',guide.logo?.currentVersion),
+            field('版本状态',guide.logo?.variants),
+            field('使用规则',guide.logo?.rules)
+          );
+          if(active==='colors') return h('section',{style:card},
+            h('h2',{style:title},'色彩系统'),
+            h('p',{style:{...body,marginBottom:12}},'以下为当前工作版色彩参考。来源与确认状态会一并保留，不把尚未验证的颜色标记为最终标准。'),
+            ...(guide.colors||[]).map((c,i)=>h('div',{key:i,style:{display:'grid',gridTemplateColumns:'48px minmax(0,1fr)',gap:12,alignItems:'center',padding:'12px 0',borderBottom:'1px solid #edf0f2'}},
+              h('div',{style:{height:42,borderRadius:6,background:c.hex,border:'1px solid #d8dde1'}}),
+              h('div',null,h('strong',{style:{fontSize:13,color:'#263d4d'}},c.name+' · '+c.role),h('div',{style:{fontSize:12,color:'#5d6c78',marginTop:3}},c.hex+'  |  '+c.use),h('div',{style:{fontSize:11,color:'#89939b',marginTop:3}},c.source||''))
+            ))
+          );
+          if(active==='typography') return h('section',{style:card},h('h2',{style:title},'字体与排版'),field('字体方案',guide.typography?.family),field('文字层级',guide.typography?.hierarchy));
+          if(active==='imagery') return h('div',{style:{display:'grid',gap:12}},...(guide.imagery||[]).map((item,i)=>h('section',{key:i,style:card},h('h3',{style:{...title,fontSize:15}},item.name),field('使用目的',item.purpose),field('推荐标准',item.good),field('避免情况',item.avoid))));
+          if(active==='layouts') return h('div',{style:{display:'grid',gap:12}},...(guide.layouts||[]).map((item,i)=>h('section',{key:i,style:card},h('h3',{style:{...title,fontSize:15}},item.name),field('适用场景',item.use))));
+          if(active==='channels') return h('div',{style:{display:'grid',gap:12}},...(guide.channels||[]).map((item,i)=>h('section',{key:i,style:card},h('h3',{style:{...title,fontSize:15}},item.name),field('内容方向',item.use),field('常见形式',item.format))));
+          if(active==='video') return h('section',{style:card},h('h2',{style:title},'视频规范'),field('核心原则',guide.video?.principle),field('需要管理的视频资产',guide.video?.assets));
+          if(active==='events') return h('div',{style:{display:'grid',gap:12}},h('section',{style:card},h('h3',{style:{...title,fontSize:15}},'展前'),h('p',{style:body},guide.events?.before)),h('section',{style:card},h('h3',{style:{...title,fontSize:15}},'展中'),h('p',{style:body},guide.events?.onsite)),h('section',{style:card},h('h3',{style:{...title,fontSize:15}},'展后'),h('p',{style:body},guide.events?.after)),h('p',{style:{...body,padding:8}},guide.events?.note));
+          if(active==='verbal') return h('section',{style:card},h('h2',{style:title},'品牌语言'),field('品牌整体表达',guide.verbal?.voice),field('不同场景的语气',guide.verbal?.tones),field('技术术语统一',guide.verbal?.terminology),field('文案规则',guide.verbal?.writing));
+          return null;
+        };
+        return h('main',{style:{maxWidth:1180,margin:'0 auto',padding:'28px 26px 48px',fontFamily:'Inter,system-ui,sans-serif',color:'#24313b'}},
+          h('header',{style:{marginBottom:22}},
+            h('h1',{style:{fontSize:27,margin:'0 0 7px',color:'#203747'}},'Brand Hub'),
+            h('p',{style:{fontSize:13,color:'#667783',margin:0}},'DEF Company 品牌规范。用于内容制作前查阅，确保官网、社媒、视频与展会传播保持一致。')
           ),
-          h('button',{type:'button',onClick:()=>navigator.clipboard?.writeText(item.hex),style:{border:'1px solid #dce3e9',background:'#fff',borderRadius:6,padding:'7px 9px',fontSize:12,cursor:'pointer'}},'复制 HEX')
-        )) : [];
-
-        const startPage = h('div',{style:{display:'grid',gap:14}},
-          h('section',{style:{...panel,background:'#f5f8fa'}},
-            h('div',{style:{fontSize:11,color:'#536d80',fontWeight:700,letterSpacing:'.05em'}},'FIGMA LEARNING PATH'),
-            h('h2',{style:{...heading,fontSize:22,marginTop:6}},'从会操作，到能独立完成营销物料'),
-            h('p',{style:{...muted,margin:'8px 0 14px'}},'学习顺序按实际工作来排：先掌握 Figma 基本操作，再建立品牌视觉基础，最后完成社媒、展会和视频视觉练习。每个模块都有明确操作位置、练习产出和完成勾选。'),
-            h('div',{style:{display:'flex',justifyContent:'space-between',fontSize:12,color:'#536575',marginBottom:6}},h('strong',null,'已完成任务'),h('span',null,doneCount+' / '+allTasks)),
-            h('div',{style:{height:8,background:'#e4ebf0',borderRadius:99,overflow:'hidden'}},h('div',{style:{height:'100%',width:(allTasks?doneCount/allTasks*100:0)+'%',background:'#39718f',borderRadius:99,transition:'width .2s'}}))
-          ),
-          h('section',{style:panel},
-            h('h3',{style:heading},'先按这个顺序学'),
-            h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(210px,1fr))',gap:9,marginTop:12}},
-              ...lessons.map((lesson,index)=>h('button',{key:lesson.id,type:'button',onClick:()=>setSection(lesson.id),style:{border:'1px solid #dce3e9',borderRadius:8,padding:13,background:'#fff',textAlign:'left',cursor:'pointer',minHeight:112}},
-                h('div',{style:{fontSize:11,color:'#71818d',fontWeight:700}},'MODULE '+String(index+1).padStart(2,'0')),
-                h('strong',{style:{display:'block',fontSize:14,color:'#23394a',margin:'6px 0'}},lesson.label),
-                h('span',{style:{display:'block',fontSize:12,color:'#667583',lineHeight:1.5}},lesson.short),
-                h('span',{style:{display:'block',fontSize:11,color:'#39718f',marginTop:9}},lesson.tasks.filter((task,i)=>completed[lesson.id+'-'+i]).length+' / '+lesson.tasks.length+' 项已完成')
-              ))
-            )
-          ),
-          h('section',{style:{...panel,borderColor:'#b9cbd8'}},
-            h('div',{style:{fontSize:11,color:'#536d80',fontWeight:700}},'FIRST PRACTICE PROJECT'),
-            h('h3',{style:{...heading,marginTop:5}},'第一份完整作品：工业相机易拉宝'),
-            h('p',{style:{...muted,margin:'7px 0 12px'}},'它能把 Logo、颜色、字体、产品图片、版式和展会信息组织整合到一个真实任务里。先完成基础模块，再进入展会物料模块制作。'),
-            h('button',{type:'button',onClick:()=>setSection('exhibition'),style:{border:0,borderRadius:7,padding:'10px 14px',background:'#1f4058',color:'#fff',font:'inherit',fontSize:13,fontWeight:650,cursor:'pointer'}},'打开易拉宝练习 →')
-          )
-        );
-
-        const lessonContent = !activeLesson ? startPage : h('div',{style:{display:'grid',gap:14}},
-          h('section',{style:{...panel,background:'#f5f8fa'}},
-            h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',gap:10,flexWrap:'wrap'}},
-              h('div',null,
-                h('div',{style:{fontSize:11,color:'#657989',fontWeight:700}},'MODULE '+String(lessons.indexOf(activeLesson)+1).padStart(2,'0')),
-                h('h2',{style:{...heading,fontSize:22,marginTop:4}},activeLesson.label)
-              ),
-              h('button',{type:'button',onClick:()=>setSection('start'),style:{border:'1px solid #dce3e9',background:'#fff',borderRadius:6,padding:'7px 10px',font:'inherit',fontSize:12,cursor:'pointer'}},'返回学习总览')
-            ),
-            h('p',{style:{...muted,margin:'9px 0 0'}},activeLesson.goal),
-            h('div',{style:{marginTop:12,padding:'10px 12px',background:'#fff',border:'1px solid #dce3e9',borderRadius:7}},
-              h('strong',{style:{fontSize:12,color:'#29475c'}},'本模块完成后，你应该做出：'),
-              h('div',{style:{fontSize:13,color:'#43596b',marginTop:4}},activeLesson.output)
-            )
-          ),
-          activeLesson.id==='logo' && guide ? h('section',{style:panel},
-            h('h3',{style:heading},'DEF 当前 Logo 参考'),
-            h('img',{src:guide.logo.currentFile,alt:'DEF Company current logo',style:{display:'block',maxWidth:'100%',maxHeight:100,objectFit:'contain',margin:'12px 0'}}),
-            h('p',{style:muted},guide.logo.currentVersion),
-            h('p',{style:muted},guide.logo.variants)
-          ) : null,
-          activeLesson.id==='color' && guide ? h('section',{style:panel},
-            h('h3',{style:heading},'DEF 现有颜色参考'),
-            h('p',{style:muted},'以下颜色来自当前网站样式。它们是练习参考，不是已经确认的最终品牌色。点击“复制 HEX”可以复制颜色值。'),
-            ...colorCards
-          ) : null,
-          h('section',{style:panel},
-            h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',gap:10,flexWrap:'wrap'}},
-              h('h3',{style:heading},'按步骤操作'),
-              h('span',{style:{fontSize:12,color:'#667583'}},activeLesson.tasks.filter((task,index)=>completed[activeLesson.id+'-'+index]).length+' / '+activeLesson.tasks.length+' 项完成')
-            ),
-            taskList(activeLesson)
-          ),
-          h('div',{style:{display:'flex',justifyContent:'space-between',gap:10,flexWrap:'wrap'}},
-            h('button',{type:'button',disabled:lessons.indexOf(activeLesson)===0,onClick:()=>setSection(lessons[Math.max(0,lessons.indexOf(activeLesson)-1)].id),style:{border:'1px solid #dce3e9',background:'#fff',borderRadius:7,padding:'9px 12px',font:'inherit',fontSize:12,cursor:'pointer',opacity:lessons.indexOf(activeLesson)===0?.45:1}},'← 上一模块'),
-            h('button',{type:'button',disabled:lessons.indexOf(activeLesson)===lessons.length-1,onClick:()=>setSection(lessons[Math.min(lessons.length-1,lessons.indexOf(activeLesson)+1)].id),style:{border:0,background:'#1f4058',color:'#fff',borderRadius:7,padding:'9px 12px',font:'inherit',fontSize:12,cursor:'pointer',opacity:lessons.indexOf(activeLesson)===lessons.length-1?.45:1}},'下一模块 →')
-          )
-        );
-
-        return h('main',{style:{maxWidth:1320,margin:'0 auto',padding:'22px 22px 48px',fontFamily:'Inter,system-ui,sans-serif',color:'#1b2733'}},
-          h('header',{style:{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12,flexWrap:'wrap',marginBottom:18}},
-            h('div',null,
-              h('h1',{style:{fontSize:27,margin:'0 0 5px',color:'#172a3a'}},'Brand Hub'),
-              h('p',{style:{...muted,margin:0}},'Figma 学习路径 · 每个模块都有操作步骤和练习产出')
-            ),
-            h('a',{href:'#/collections/content-management/entries/brand_guidelines',style:{fontSize:12,color:'#234b68',textDecoration:'underline'}},'查看品牌资料')
-          ),
-          error ? h('p',{role:'alert',style:{color:'#9b3030',fontSize:12}},error) : null,
-          h('div',{className:'def-brandhub-grid',style:{display:'grid',gridTemplateColumns:'minmax(190px,240px) minmax(0,1fr)',gap:16,alignItems:'start'}},
-            h('nav',{style:{...panel,padding:10,position:'sticky',top:12,display:'grid',gap:5}},
-              h('div',{style:{fontSize:11,fontWeight:700,color:'#71818d',padding:'5px 8px 7px'}},'LEARNING MODULES'),
-              ...nav.map(item=>h('button',{key:item.id,type:'button',onClick:()=>setSection(item.id),style:buttonStyle(section===item.id), 'aria-current':section===item.id?'page':undefined},
-                h('span',{style:{display:'block',fontWeight:650}},item.label),
-                h('span',{style:{display:'block',fontSize:11,color:'#72818d',marginTop:3}},item.short)
+          h('div',{style:{display:'grid',gridTemplateColumns:'minmax(205px,250px) minmax(0,1fr)',gap:18,alignItems:'start'}},
+            h('nav',{style:{display:'grid',gap:7}},
+              ...sections.map(item=>h('button',{key:item.id,type:'button',onClick:()=>setActive(item.id),style:sectionButton(item.id)},
+                h('strong',{style:{display:'block',fontSize:13}},item.label),
+                h('span',{style:{display:'block',fontSize:11,color:'#7a8993',marginTop:3}},item.desc)
               ))
             ),
-            h('div',{style:{minWidth:0}},lessonContent)
+            h('div',{style:{minWidth:0}},content())
           ),
-          h('style',null,'.def-brandhub-grid button:focus-visible{outline:2px solid #39718f;outline-offset:2px}@media(max-width:760px){.def-brandhub-grid{grid-template-columns:1fr!important}.def-brandhub-grid nav{position:static!important;grid-template-columns:repeat(2,minmax(0,1fr))!important}}')
+          h('style',null,'@media(max-width:720px){.def-brandhub-main{padding:16px!important}}')
         );
       };
 
