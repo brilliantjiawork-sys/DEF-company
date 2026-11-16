@@ -284,7 +284,7 @@
         const card = (title,desc,children) => h('section',{style:panel},h('h2',{style:heading},title),desc?h('p',{style:{...muted,margin:'0 0 12px'}},desc):null,children);
         const swatch = item => h('div',{key:item.name,style:{border:'1px solid #e2e8ed',borderRadius:9,overflow:'hidden',background:'#fff'}},
           h('div',{style:{height:62,background:item.hex||'#ddd',borderBottom:'1px solid rgba(0,0,0,.06)'}}),
-          h('div',{style:{padding:10}},h('strong',{style:{display:'block,fontSize:13,color:'#263747'}},item.name),
+          h('div',{style:{padding:10}},h('strong',{style:{display:'block',fontSize:13,color:'#263747'}},item.name),
             h('div',{style:{fontSize:12,color:'#667789',marginTop:3}},item.hex),
             h('div',{style:{fontSize:11,color:'#667789',marginTop:4,lineHeight:1.4}},item.role||item.group||'')));
         const renderContent = () => {
@@ -607,13 +607,17 @@
               h('div', { style: { fontSize: 12, color: '#657381', marginBottom: 8 } }, `${typeLabel(item.type)} · ${item.path}`),
               item.usages.length
                 ? h('div', { style: { borderTop: '1px solid #edf0f2', paddingTop: 9 } },
-                    ...item.usages.map((usage, index) => h('div', { key: `${usage.source}|${usage.title}|${index}`, style: { fontSize: 12, lineHeight: 1.5, marginBottom: 8 } },
-                      h('div', { style: { color: '#53697a', fontSize: 11, marginBottom: 2 } }, `${usage.category} · ${usage.label}`),
-                      h('strong', { style: { display: 'block', overflowWrap: 'anywhere' } }, usage.title),
-                      usage.editUrl ? h('a', { href: usage.editUrl, style: { display: 'inline-block', marginTop: 4, color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 2 } }, 'Open related content') : null
-                    ))
+                    ...[...new Map(item.usages.map(usage => [usage.category, item.usages.filter(entry => entry.category === usage.category)])).entries()].map(([category, usages]) =>
+                      h('div', { key: category, style: { fontSize: 12, lineHeight: 1.5, marginBottom: 8 } },
+                        h('div', { style: { color: '#53697a', fontSize: 11, marginBottom: 4, fontWeight: 650 } }, category + ' · ' + usages.length + (usages.length === 1 ? ' item' : ' items')),
+                        ...usages.map((usage, index) => h('div', { key: `${usage.source}|${usage.title}|${index}`, style: { display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: 8, padding: '3px 0' } },
+                          h('span', { style: { minWidth: 0, overflowWrap: 'anywhere', color: '#263747' } }, usage.title),
+                          usage.editUrl ? h('a', { href: usage.editUrl, style: { flex: '0 0 auto', color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 2, fontSize: 11 } }, 'Open') : null
+                        ))
+                      )
+                    )
                   )
-                : h('div', { style: { borderTop: '1px solid #edf0f2', paddingTop: 8, color: '#7b6262', fontSize: 12 } }, 'Not currently referenced by a known CMS entry.'),
+                : h('div', { style: { borderTop: '1px solid #edf0f2', paddingTop: 8, color: '#7b6262', fontSize: 12 } }, 'Not currently used'),
             )
           );
         };
