@@ -679,8 +679,8 @@
       // other compact icon control in the top-left toolbar area, including unlabeled icons.
       const normalized = (value) => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
       const primaryRoutes = new Set(['#/pages/brand-hub', '#/pages/media-library', '#/pages/content-navigator']);
-      const primaryLabels = new Set(['brand hub', 'library', 'content management']);
-      const primaryIconTokens = new Set(['palette', 'library_books', 'dashboard_customize']);
+      // Keep only the three registered custom pages. Native Sveltia toolbar tools
+      // are not CMS sections and must not become extra navigation for this project.
       const resourceRowPattern = /^(?:all resources|global resources|internal content resources\s*\(system\)|全部资源|全局资源|内部内容资源（系统）|内部内容资源 \(系统\))(?:\s*\d+)?$/i;
       const navItemSelector = 'a, button, [role="button"], [role="link"], [role="menuitem"], [role="treeitem"], li';
       const observedRoots = new WeakSet();
@@ -710,12 +710,7 @@
       // that parent also contains Library or Content Management.
       const hasPrimaryIdentity = (node) => {
         if (!node || node.nodeType !== 1) return false;
-        if (primaryRoutes.has(routeOf(node))) return true;
-        const labels = nodeLabels(node);
-        if (labels.some(label => primaryLabels.has(label) || primaryIconTokens.has(label) || [...primaryIconTokens].some(token => label.split(/[\s·|]+/).includes(token)))) return true;
-        const iconNode = node.querySelector ? node.querySelector('.material-symbols-rounded, .material-symbols-outlined, [class*="material-symbols"]') : null;
-        const iconToken = normalized(iconNode && iconNode.textContent);
-        return primaryIconTokens.has(iconToken);
+        return primaryRoutes.has(routeOf(node));
       };
 
       const isPrimaryItem = (node) => {
@@ -1060,7 +1055,7 @@
       };
 
       // Version marker makes it possible to confirm this exact navigation script reached production.
-      document.documentElement.setAttribute('data-def-cms-nav-fix', 'two-primary-pages-v5');
+      document.documentElement.setAttribute('data-def-cms-nav-fix', 'three-primary-sections-v1');
       document.documentElement.setAttribute('data-def-cms-validation-ui', 'hidden-v1');
       observeAndScanRoot(document);
       installEditorPublishButton();
