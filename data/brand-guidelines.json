@@ -1,113 +1,111 @@
 {
-  "status": "工作版规范 · 需要结合 Figma 实操验证",
+  "status": "品牌工作规范",
   "foundation": "DEF Company 是用于作品集展示的虚构 B2B 工业视觉品牌。品牌表达围绕精准、可靠、专业，面向制造企业、自动化集成商和设备制造商。它是内容与设计的工作依据；不得把虚构客户、认证或性能数据写成真实事实。",
   "logo": {
     "currentFile": "/images/logo.jpg",
     "currentVersion": "当前官网使用的组合：左侧图形标志，右侧 DEF Company 字标和标语。当前仓库只有这份 JPG 文件，先作为现有视觉参考，不代表已具备完整的矢量 Logo 套件。",
     "variants": "目前只确认官网正在使用的横向组合版。尚未确认正式的上下组合版、纯图形版、反白版。不要直接裁切 JPG 伪造正式版本；需要原始矢量文件后再制作并验证。",
-    "rules": "保持原始比例，不拉伸、不倾斜、不旋转、不随意改色、不添加阴影或描边、不重新描摹。Logo 周围保留空白，不压在复杂图片上。优先使用原始文件，不使用网页截图。",
-    "figma": "Figma 操作：把 Logo 放进 Frame，保持图片比例；分别放在浅色和深色背景测试。复制一个 Frame，使用 Rectangle 画出保护空间参考线，其他文字和图片不要进入这个范围。逐渐缩小 Logo 检查字标是否仍清晰。不要 Detach 或直接修改 Logo 图形。"
+    "rules": "保持原始比例，不拉伸、不倾斜、不旋转、不随意改色、不添加阴影或描边、不重新描摹。Logo 周围保留空白，不压在复杂图片上。优先使用原始文件，不使用网页截图。"
   },
   "colors": [
     {
       "name": "DEF Blue",
       "hex": "#45B2D3",
-      "role": "主色 Primary",
-      "use": "品牌识别主色： key headings, graphic anchors, links and selected visual blocks. Keep large areas balanced with white/neutral space.",
-      "source": "当前官网 CSS 变量 --blue; 暂定，需与原始 Logo 文件取样核对。"
+      "role": "主色",
+      "use": "用于品牌识别、标题、链接和重点视觉元素。大面积使用时，需搭配白色或中性色留白。",
+      "source": "取自当前官网 CSS 变量 --blue；暂定，待与原始 Logo 文件核对。"
     },
     {
       "name": "DEF Yellow",
       "hex": "#FFE817",
-      "role": "强调色 Accent",
-      "use": "强调色： and small highlights, such as CTA buttons, key figures or a short underline. Avoid using it for long body text.",
-      "source": "当前官网 CSS 变量 --yellow; 暂定，需与原始 Logo 文件取样核对。"
+      "role": "强调色",
+      "use": "用于 CTA、关键数字和少量视觉强调，不用于长段正文。",
+      "source": "取自当前官网 CSS 变量 --yellow；暂定，待与原始 Logo 文件核对。"
     },
     {
       "name": "Deep Charcoal",
       "hex": "#111111",
-      "role": "中性色 Neutral",
-      "use": "正文与高对比文字：, strong contrast and dark backgrounds.",
-      "source": "当前官网 CSS 变量 --dark."
+      "role": "中性色",
+      "use": "用于正文和需要高对比度的文字。",
+      "source": "取自当前官网 CSS 变量 --dark。"
     },
     {
       "name": "Body Gray",
       "hex": "#555555",
-      "role": "中性色 Neutral",
-      "use": "次级文字： and secondary information.",
-      "source": "当前官网 CSS 变量 --gray."
+      "role": "中性色",
+      "use": "用于次级文字和补充信息。",
+      "source": "取自当前官网 CSS 变量 --gray。"
     },
     {
       "name": "Soft Gray",
       "hex": "#F9F9F9",
-      "role": "中性色 Neutral",
-      "use": "页面或卡片背景：.",
-      "source": "当前官网 CSS 变量 --bg."
+      "role": "中性色",
+      "use": "用于浅色页面背景和内容卡片背景。",
+      "source": "取自当前官网 CSS 变量 --bg。"
     },
     {
       "name": "White",
       "hex": "#FFFFFF",
-      "role": "中性色 Neutral",
-      "use": "主要背景： and negative space.",
-      "source": "当前官网 CSS 变量 --white."
+      "role": "中性色",
+      "use": "用于主要背景和留白区域。",
+      "source": "取自当前官网 CSS 变量 --white。"
     },
     {
       "name": "Success",
       "hex": "#2E7D32",
-      "role": "功能色 Functional",
-      "use": "仅用于 CMS 状态反馈：, such as successful save or approved asset. Not automatically a campaign brand color.",
-      "source": "界面状态惯例，不属于已确认的品牌宣传色。"
+      "role": "功能色",
+      "use": "仅用于 CMS 成功状态，例如保存成功；不作为默认品牌宣传色。",
+      "source": "界面状态色，非已确认的品牌色。"
     },
     {
       "name": "Warning",
       "hex": "#B7791F",
-      "role": "功能色 Functional",
-      "use": "仅用于 CMS 警告状态：.",
-      "source": "界面状态惯例，不属于已确认的品牌宣传色。"
+      "role": "功能色",
+      "use": "仅用于 CMS 警告和需要注意的状态。",
+      "source": "界面状态色，非已确认的品牌色。"
     },
     {
       "name": "Error",
       "hex": "#B42318",
-      "role": "功能色 Functional",
-      "use": "仅用于 CMS 错误状态：.",
-      "source": "界面状态惯例，不属于已确认的品牌宣传色。"
+      "role": "功能色",
+      "use": "仅用于 CMS 错误和失败状态。",
+      "source": "界面状态色，非已确认的品牌色。"
     }
   ],
   "typography": {
     "family": "官网目前加载 Inter。先将 Inter 作为工作字体，不把它认定为永久的企业标准字体，后续需结合多语言、可读性和品牌视觉验证。",
-    "hierarchy": "H1 主标题；H2 模块标题；H3 内容小标题；Body 正文；Caption 参数、注释和图片说明。通过字号、字重、行高和间距建立层级，不要为了区分层级不断增加字体家族。",
-    "figma": "Figma 操作：在右侧 Design 面板设置 Font Family 和 Weight；创建 H1 / H2 / H3 / Body / Caption 五个 Text Styles。后续直接套用样式，不要逐个文本手动调格式。技术参数要清晰，单位写法保持一致。"
+    "hierarchy": "H1 主标题；H2 模块标题；H3 内容小标题；Body 正文；Caption 参数、注释和图片说明。通过字号、字重、行高和间距建立层级，不要为了区分层级不断增加字体家族。"
   },
   "imagery": [
     {
       "name": "产品照片 Product Photos",
-      "purpose": "Show the camera or device itself: front, side, 3/4 angle, ports, lens mount and product family.",
-      "good": "Sharp focus, accurate color and geometry, clean background, consistent angle and scale. Preserve product details.",
-      "avoid": "Distorted proportions, unapproved recoloring, low resolution or decorative effects that misrepresent the product."
+      "purpose": "展示相机或设备本身，包括正面、侧面、斜角、接口、镜头卡口和产品系列。",
+      "good": "画面清晰、颜色与结构准确；背景干净，拍摄角度和比例统一，保留真实产品细节。",
+      "avoid": "避免比例变形、未经批准的改色、低分辨率，以及会误导产品外观的装饰效果。"
     },
     {
       "name": "应用场景照片 Application Photos",
-      "purpose": "Show the camera working in a real industrial context: production lines, inspection stations, robotics, packaging or logistics.",
-      "good": "Make the application understandable; show the camera or inspection process where possible; keep the subject clear and the environment credible.",
-      "avoid": "Generic factory stock photos with no visible connection to machine vision or the stated application."
+      "purpose": "展示设备在真实工业环境中的使用场景，例如生产线、检测工位、机器人、包装或物流。",
+      "good": "让应用关系一目了然；尽可能呈现相机或检测过程，环境真实可信。",
+      "avoid": "避免使用与机器视觉无关、看不出具体应用关系的通用工厂图库照片。"
     },
     {
       "name": "技术细节图 Technical Details",
-      "purpose": "Explain a feature, component, imaging result, interface, sensor, inspection area or technical process.",
-      "good": "Use precise close-ups, annotated diagrams or comparison crops; labels must be technically accurate and readable.",
-      "avoid": "Decorative callouts, inaccurate diagrams or claims that engineering has not confirmed."
+      "purpose": "解释产品特征、部件、成像结果、接口、传感器、检测区域或技术流程。",
+      "good": "使用准确的局部特写、标注图或对比图；技术标注必须准确且清晰可读。",
+      "avoid": "避免装饰性标注、错误示意图，以及未经工程确认的技术声明。"
     },
     {
       "name": "展会与活动照片 Trade Show Photos",
-      "purpose": "Document booth, product demos, staff interactions, talks and real event moments.",
-      "good": "Show brand presence, readable booth graphics, real equipment and meaningful interaction; capture both wide and detail shots.",
-      "avoid": "Empty booth shots, cluttered backgrounds, unreadable signage or photos with unclear usage rights."
+      "purpose": "记录展台、产品演示、团队交流、演讲和真实展会现场。",
+      "good": "体现品牌现场形象，展台文字清楚，设备和互动真实；同时拍摄全景与细节。",
+      "avoid": "避免空展台、杂乱背景、无法辨认的展板文字，以及使用权不清晰的照片。"
     },
     {
       "name": "社媒设计图 Social Graphics",
-      "purpose": "Designed communication assets for LinkedIn, Facebook and other channels; these are designed graphics, not a photo category.",
-      "good": "Use approved colors, typography and layouts; keep one clear message per visual.",
-      "avoid": "Treating every social graphic as a separate brand style or duplicating near-identical artwork without a channel reason."
+      "purpose": "用于 LinkedIn、Facebook 等渠道的设计成品，属于宣传设计物料，不属于照片类别。",
+      "good": "使用已确认的颜色、字体和版式；一张图只传达一个核心信息。",
+      "avoid": "避免每个平台都另起一套品牌风格，也避免没有渠道理由的重复设计。"
     }
   ],
   "layouts": [
@@ -156,8 +154,7 @@
   ],
   "video": {
     "principle": "Treat video as a brand application with its own reusable visual system, not as a separate brand. A video may be reused across YouTube, LinkedIn, Facebook, the website and exhibition screens when the format and audience fit.",
-    "assets": "Keep the original master video, clean footage, approved music/voice files, subtitles, thumbnail, logo end card and platform-specific exports. Record usage rights and source project location.",
-    "figma": "Use Figma for storyboard frames, thumbnail concepts, title cards and end cards. Use a video editor for actual editing. Create reusable Components for logo placement, title treatment and lower-thirds; adapt the final export to each channel."
+    "assets": "Keep the original master video, clean footage, approved music/voice files, subtitles, thumbnail, logo end card and platform-specific exports. Record usage rights and source project location."
   },
   "events": {
     "before": "Pre-show: event announcement, invitation/meeting-booking graphic, landing-page hero, email header and social countdown assets.",
