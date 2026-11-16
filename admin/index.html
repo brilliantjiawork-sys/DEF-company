@@ -547,7 +547,7 @@
         };
         return h('main', { style: { maxWidth: 1180, margin: '0 auto', padding: '28px 24px 44px', color: '#1b2733', fontFamily: 'Inter, system-ui, sans-serif' } },
           h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 } },
-            h('div', null, h('h1', { style: { margin: '0 0 5px', fontSize: 28, fontWeight: 700 } }, 'Library'), h('p', { style: { margin: 0, color: '#687887', fontSize: 14 } }, 'Find website files and see where each asset is used.')),
+            h('div', null, h('h1', { style: { margin: '0 0 5px', fontSize: 28, fontWeight: 700 } }, 'Library'), h('p', { style: { margin: 0, color: '#687887', fontSize: 14 } }, 'Find website files and see where each asset is used. Image subcategories are initial filename-based suggestions; unclear files are marked Needs classification.')),
             h('a', { href: '#/assets/-/all', style: { display: 'inline-block', color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 3, fontWeight: 600, fontSize: 13 } }, 'Upload / Manage Assets')
           ),
           h('h2', { style: { margin: '24px 0 12px', fontSize: 17, fontWeight: 700 } }, 'All Assets'),
@@ -581,7 +581,7 @@
           ),
           loading ? h('p', { style: { color: '#657381' } }, 'Loading assets and usage references…') : null,
           error ? h('p', { role: 'alert', style: { padding: 14, border: '1px solid #e4b5b5', color: '#8b2424', borderRadius: 6 } }, error) : null,
-          !loading && !error ? h('p', { style: { color: '#596775', fontSize: 13, margin: '0 0 14px' } }, `${items.length} assets · ${filtered.length} shown`) : null,
+          !loading && !error ? h('p', { style: { color: '#596775', fontSize: 13, margin: '0 0 14px' } }, `${items.length} assets · ${filtered.length} shown · Usage is calculated from content currently on main; draft references may not be included.`) : null,
           !loading && !error && filtered.length ? h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 14 } }, ...filtered.map(card)) : null,
           !loading && !error && !filtered.length ? h('p', { style: { padding: 18, border: '1px solid #e4e9ed', borderRadius: 8, color: '#657381' } }, 'No matching assets. Try another search term or filter.') : null
         );
@@ -630,7 +630,7 @@
             h('strong',{style:{fontSize:13}},'使用规则'),para(guide.logo.rules),
             h('strong',{style:{fontSize:13}},'Figma 操作'),para(guide.logo.figma)
           ),
-          colors: h('section',{style:panelStyle},title('色彩系统 Color System'),para('Primary colors establish recognition. Neutrals support readable layouts. Accent colors draw attention. Functional colors communicate interface status and are not automatically brand campaign colors.'),...guide.colors.map(colorCard)),
+          colors: h('section',{style:panelStyle},title('色彩系统 Color System'),para('主色建立品牌识别；辅助色只有在实际版式需要时再定义，目前没有确认独立的辅助色，不为凑数量而添加。中性色负责背景与可读性；强调色突出 CTA 和重点；功能色只表达系统状态，不自动作为品牌宣传色。'),...guide.colors.map(colorCard)),
           verbal: h('section',{style:panelStyle},title('语言规范 Verbal Identity'),
             h('strong',{style:{fontSize:13}},'品牌整体表达'),para(guide.verbal.voice),
             h('strong',{style:{fontSize:13}},'不同场景的语气'),para(guide.verbal.tones),
