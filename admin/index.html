@@ -247,6 +247,8 @@
         const [typeFilter, setTypeFilter] = CMS.React.useState('all');
         const [useFilter, setUseFilter] = CMS.React.useState('all');
         const [imageGroupFilter, setImageGroupFilter] = CMS.React.useState('all');
+        const [videoGroupFilter, setVideoGroupFilter] = CMS.React.useState('all');
+        const [documentGroupFilter, setDocumentGroupFilter] = CMS.React.useState('all');
         const [expandedAsset, setExpandedAsset] = CMS.React.useState('');
         const [loading, setLoading] = CMS.React.useState(true);
         const [error, setError] = CMS.React.useState('');
@@ -288,6 +290,23 @@
           if (/application|factory|scene/.test(name)) return 'Application photos';
           if (/detail|sensor|closeup|technical/.test(name)) return 'Technical details';
           return 'Needs classification';
+        };
+        const videoGroupFor = path => {
+          const name = path.split('/').pop().toLowerCase();
+          if (/event|trade|booth|show/.test(name)) return 'Trade show videos';
+          if (/product|demo/.test(name)) return 'Product demos';
+          if (/application|factory|process/.test(name)) return 'Application videos';
+          if (/brand|company|culture/.test(name)) return 'Brand videos';
+          return 'Needs classification';
+        };
+        const documentGroupFor = path => {
+          const name = path.split('/').pop().toLowerCase();
+          if (/datasheet|data-sheet|specification|spec-sheet/.test(name)) return 'Product datasheets';
+          if (/catalog|brochure|one-pager|onepager/.test(name)) return 'Product brochures & one-pagers';
+          if (/whitepaper|white-paper|research/.test(name)) return 'Whitepapers';
+          if (/presentation|deck|ppt/.test(name)) return 'Presentations';
+          if (/event|trade|booth|banner|flyer/.test(name)) return 'Trade show print files';
+          return 'Other documents';
         };
         const usageGroup = usage => usage.kind === 'stories' ? 'Stories'
           : (usage.kind === 'tradeArticles' || usage.kind === 'shows') ? 'Trade Shows'
@@ -385,7 +404,7 @@
             try {
               const repoFiles = await fetchIndex();
               const assets = repoFiles.filter(file => assetRoots.some(root => file.path.startsWith(root)) && assetExt.test(file.path))
-                .map(file => ({ ...file, name: file.path.split('/').pop(), type: getType(file.path), imageGroup: getType(file.path) === 'image' ? imageGroupFor(file.path) : '', usages: [], categories: [] }));
+                .map(file => ({ ...file, name: file.path.split('/').pop(), type: getType(file.path), imageGroup: getType(file.path) === 'image' ? imageGroupFor(file.path) : '', videoGroup: getType(file.path) === 'video' ? videoGroupFor(file.path) : '', documentGroup: getType(file.path) === 'pdf' ? documentGroupFor(file.path) : '', usages: [], categories: [] }));
               const hasStoryFiles = repoFiles.some(file => /^data\/stories\/[^/]+\.json$/i.test(file.path));
               const hasTradeArticleFiles = repoFiles.some(file => /^data\/trade-show-articles\/[^/]+\.json$/i.test(file.path));
               const contentSources = [];
@@ -475,9 +494,13 @@
           ['Website & Shared', 'Website & Shared'], ['unused', 'Not currently used']
         ];
         const imageGroups = ['Product photos', 'Application photos', 'Technical details', 'Trade show photos', 'Social graphics', 'Brand identity', 'Needs classification'];
+        const videoGroups = ['Product demos', 'Application videos', 'Trade show videos', 'Brand videos', 'Needs classification'];
+        const documentGroups = ['Product datasheets', 'Product brochures & one-pagers', 'Whitepapers', 'Presentations', 'Trade show print files', 'Other documents'];
         const filtered = items.filter(item => {
           if (typeFilter !== 'all' && item.type !== typeFilter) return false;
           if (typeFilter === 'image' && imageGroupFilter !== 'all' && item.imageGroup !== imageGroupFilter) return false;
+          if (typeFilter === 'video' && videoGroupFilter !== 'all' && item.videoGroup !== videoGroupFilter) return false;
+          if (typeFilter === 'pdf' && documentGroupFilter !== 'all' && item.documentGroup !== documentGroupFilter) return false;
           if (useFilter === 'unused' && item.usages.length) return false;
           if (useFilter !== 'all' && useFilter !== 'unused' && !(item.categories || []).includes(useFilter)) return false;
           const searchText = [item.name, item.path, ...(item.categories || []), ...item.usages.flatMap(usage => [usage.title, usage.label, usage.category, ...(usage.topics || []), ...(usage.industries || [])])].join(' ').toLowerCase();
@@ -489,7 +512,7 @@
           fontWeight: active ? 700 : 500, cursor: 'pointer', font: 'inherit', fontSize: 13
         });
         const typeButton = (id, label) => h('button', { type: 'button', key: id, 'aria-pressed': String(typeFilter === id), onClick: () => setTypeFilter(typeFilter === id ? 'all' : id), style: textFilterStyle(typeFilter === id) }, label);
-        const useButton = (id, label) => h('button', { type: 'button', key: id, 'aria-pressed': String((id === 'all-images' ? imageGroupFilter === 'all' : id === 'all' ? useFilter === 'all' : id === 'unused' || ['Stories','Trade Shows','Website & Shared'].includes(id) ? useFilter === id : imageGroupFilter === id)), onClick: () => { if (id === 'all-images') setImageGroupFilter('all'); else if (['Product photos','Application photos','Technical details','Trade show photos','Social graphics','Brand identity','Needs classification'].includes(id)) setImageGroupFilter(id); else setUseFilter(id); }, style: textFilterStyle((id === 'all-images' ? imageGroupFilter === 'all' : id === 'all' ? useFilter === 'all' : id === 'unused' || ['Stories','Trade Shows','Website & Shared'].includes(id) ? useFilter === id : imageGroupFilter === id)) }, label);
+        const useButton = (id, label) => h('button', { type: 'button', key: id, 'aria-pressed': String(id === 'all-images' ? imageGroupFilter === 'all' : id === 'all-videos' ? videoGroupFilter === 'all' : id === 'all-documents' ? documentGroupFilter === 'all' : id === 'all' ? useFilter === 'all' : id === 'unused' || ['Stories','Trade Shows','Website & Shared'].includes(id) ? useFilter === id : imageGroups.includes(id) ? imageGroupFilter === id : videoGroups.includes(id) ? videoGroupFilter === id : documentGroupFilter === id), onClick: () => { if (id === 'all-images') setImageGroupFilter('all'); else if (id === 'all-videos') setVideoGroupFilter('all'); else if (id === 'all-documents') setDocumentGroupFilter('all'); else if (imageGroups.includes(id)) setImageGroupFilter(id); else if (videoGroups.includes(id)) setVideoGroupFilter(id); else if (documentGroups.includes(id)) setDocumentGroupFilter(id); else setUseFilter(id); }, style: textFilterStyle(id === 'all-images' ? imageGroupFilter === 'all' : id === 'all-videos' ? videoGroupFilter === 'all' : id === 'all-documents' ? documentGroupFilter === 'all' : id === 'all' ? useFilter === 'all' : id === 'unused' || ['Stories','Trade Shows','Website & Shared'].includes(id) ? useFilter === id : imageGroups.includes(id) ? imageGroupFilter === id : videoGroups.includes(id) ? videoGroupFilter === id : documentGroupFilter === id) }, label);
         const card = item => {
           const preview = item.type === 'image'
             ? h('img', { src: item.url, alt: item.name, loading: 'lazy', style: { width: '100%', height: '100%', objectFit: 'contain', display: 'block' }, onError: event => { event.currentTarget.style.display = 'none'; } })
@@ -536,7 +559,19 @@
             h('div', { style: { fontSize: 12, fontWeight: 650, color: '#43596b', marginBottom: 7 } }, 'Image category'),
             h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 12 } },
               useButton('all-images', 'All images'),
-              ...imageGroups.map(group => h('button', { type: 'button', key: group, onClick: () => setImageGroupFilter(group), style: textFilterStyle(imageGroupFilter === group) }, group))
+              ...imageGroups.map(group => useButton(group, group))
+            )
+          ) : typeFilter === 'video' ? h('div', { style: { margin: '0 0 14px', padding: '10px 12px', background: '#f7f9fb', borderRadius: 6 } },
+            h('div', { style: { fontSize: 12, fontWeight: 650, color: '#43596b', marginBottom: 7 } }, 'Video category'),
+            h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 12 } },
+              useButton('all-videos', 'All videos'),
+              ...videoGroups.map(group => useButton(group, group))
+            )
+          ) : typeFilter === 'pdf' ? h('div', { style: { margin: '0 0 14px', padding: '10px 12px', background: '#f7f9fb', borderRadius: 6 } },
+            h('div', { style: { fontSize: 12, fontWeight: 650, color: '#43596b', marginBottom: 7 } }, 'Document category'),
+            h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 12 } },
+              useButton('all-documents', 'All documents'),
+              ...documentGroups.map(group => useButton(group, group))
             )
           ) : null,
           h('input', { value: query, onChange: event => setQuery(event.target.value), placeholder: 'Search file name or content title', 'aria-label': 'Search Library', style: { width: '100%', maxWidth: 680, boxSizing: 'border-box', padding: '11px 12px', border: '1px solid #ccd5dd', borderRadius: 6, font: 'inherit', margin: '4px 0 13px' } }),
