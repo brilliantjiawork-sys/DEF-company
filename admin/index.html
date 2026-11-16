@@ -281,12 +281,12 @@
         const imageGroupFor = path => {
           const name = path.split('/').pop().toLowerCase();
           if (/logo|brand/.test(name)) return 'Brand identity';
-          if (/event|trade|booth|show/.test(name)) return 'Trade show';
-          if (/social|linkedin|facebook|youtube/.test(name)) return 'Social media';
-          if (/story|article/.test(name)) return 'Story';
-          if (/product|camera/.test(name)) return 'Product';
-          if (/application|factory|scene/.test(name)) return 'Application';
-          if (/detail|sensor|closeup|technical/.test(name)) return 'Technical detail';
+          if (/event|trade|booth|show/.test(name)) return 'Trade show photos';
+          if (/social|linkedin|facebook|youtube/.test(name)) return 'Social graphics';
+          
+          if (/product|camera/.test(name)) return 'Product photos';
+          if (/application|factory|scene/.test(name)) return 'Application photos';
+          if (/detail|sensor|closeup|technical/.test(name)) return 'Technical details';
           return 'Needs classification';
         };
         const usageGroup = usage => usage.kind === 'stories' ? 'Stories'
@@ -476,7 +476,7 @@
           ['all', 'All content'], ['Stories', 'Stories'], ['Trade Shows', 'Trade Shows'],
           ['Website & Shared', 'Website & Shared'], ['unused', 'Not currently used']
         ];
-        const imageGroups = ['Product', 'Application', 'Technical detail', 'Trade show', 'Social media', 'Brand identity', 'Story', 'Needs classification'];
+        const imageGroups = ['Product photos', 'Application photos', 'Technical details', 'Trade show photos', 'Social graphics', 'Brand identity', 'Needs classification'];
         const filtered = items.filter(item => {
           if (typeFilter !== 'all' && item.type !== typeFilter) return false;
           if (typeFilter === 'image' && imageGroupFilter !== 'all' && item.imageGroup !== imageGroupFilter) return false;
@@ -567,9 +567,9 @@
           return () => { cancelled = true; };
         }, []);
         const nav = [
-          ['foundation','Brand foundation'],['logo','Logo'],['colors','Color system'],
-          ['type','Typography'],['imagery','Imagery'],['layouts','Layouts'],
-          ['channels','Social & video'],['events','Trade show']
+          ['foundation','品牌基础'],['logo','Logo 使用'],['colors','色彩系统'],
+          ['type','字体与排版'],['imagery','图片规范'],['layouts','常用版式'],
+          ['channels','社媒与视频'],['events','展会应用']
         ];
         const panelStyle = { border:'1px solid #dce3e9', borderRadius:8, padding:18, background:'#fff', marginBottom:12 };
         const muted = { color:'#657381', fontSize:13, lineHeight:1.6 };
@@ -589,24 +589,24 @@
           h('button',{type:'button',onClick:()=>navigator.clipboard?.writeText(item.hex),style:{border:'1px solid #dce3e9',background:'#fff',borderRadius:5,padding:'6px 8px',fontSize:11,cursor:'pointer'}},'Copy HEX')
         );
         const sectionContent = !guide ? para(error || 'Loading brand guidelines…') : ({
-          foundation: h('section',{style:panelStyle},title('Brand foundation'),para(guide.foundation),para(guide.status)),
-          logo: h('section',{style:panelStyle},title('Logo system'),
+          foundation: h('section',{style:panelStyle},title('品牌基础 Brand Foundation'),para(guide.foundation),para(guide.status)),
+          logo: h('section',{style:panelStyle},title('Logo 使用规范'),
             h('img',{src:guide.logo.currentFile,alt:'DEF Company current logo',style:{maxWidth:'100%',maxHeight:110,objectFit:'contain',display:'block',margin:'10px 0 16px'}}),
-            h('strong',{style:{fontSize:13}},'Current approved reference'),para(guide.logo.currentVersion),
-            h('strong',{style:{fontSize:13}},'Logo variations'),para(guide.logo.variants),
-            h('strong',{style:{fontSize:13}},'Usage rules'),para(guide.logo.rules),
-            h('strong',{style:{fontSize:13}},'Figma practice'),para(guide.logo.figma)
+            h('strong',{style:{fontSize:13}},'当前官网使用版本'),para(guide.logo.currentVersion),
+            h('strong',{style:{fontSize:13}},'Logo 组合形式'),para(guide.logo.variants),
+            h('strong',{style:{fontSize:13}},'使用规则'),para(guide.logo.rules),
+            h('strong',{style:{fontSize:13}},'Figma 操作'),para(guide.logo.figma)
           ),
-          colors: h('section',{style:panelStyle},title('Color system'),para('Primary colors establish recognition. Neutrals support readable layouts. Accent colors draw attention. Functional colors communicate interface status and are not automatically brand campaign colors.'),...guide.colors.map(colorCard)),
-          type: h('section',{style:panelStyle},title('Typography'),h('strong',{style:{fontSize:13}},'Working typeface'),para(guide.typography.family),h('strong',{style:{fontSize:13}},'Text hierarchy'),para(guide.typography.hierarchy),h('strong',{style:{fontSize:13}},'Figma practice'),para(guide.typography.figma)),
-          imagery: h('section',{style:panelStyle},title('Image direction'),...guide.imagery.map(item=>h('div',{key:item.name,style:{padding:'12px 0',borderBottom:'1px solid #edf0f2'}},h('strong',{style:{fontSize:14}},item.name),para(item.purpose),h('div',{style:{fontSize:12,color:'#365f48',marginTop:5}},'Use: '+item.good),h('div',{style:{fontSize:12,color:'#8a5555',marginTop:4}},'Avoid: '+item.avoid)))),
-          layouts: h('section',{style:panelStyle},title('Layout system'),...guide.layouts.map(item=>h('div',{key:item.name,style:{padding:'12px 0',borderBottom:'1px solid #edf0f2'}},h('strong',{style:{fontSize:14}},item.name),para(item.use),h('div',{style:{fontSize:12,color:'#53697a'}},'Figma: '+item.figma)))),
-          channels: h('section',{style:panelStyle},title('Social & video'),...guide.channels.map(item=>h('div',{key:item.name,style:{padding:'12px 0',borderBottom:'1px solid #edf0f2'}},h('strong',{style:{fontSize:14}},item.name),para(item.use),h('div',{style:{fontSize:12,color:'#53697a'}},'Formats: '+item.format))),h('div',{style:{marginTop:14}},h('strong',{style:{fontSize:14}},'Video asset reuse'),para(guide.video.principle),para(guide.video.assets),para(guide.video.figma))),
-          events: h('section',{style:panelStyle},title('Trade show applications'),h('strong',{style:{fontSize:13}},'Before the show'),para(guide.events.before),h('strong',{style:{fontSize:13}},'On site'),para(guide.events.onsite),h('strong',{style:{fontSize:13}},'After the show'),para(guide.events.after),para(guide.events.note))
+          colors: h('section',{style:panelStyle},title('色彩系统 Color System'),para('Primary colors establish recognition. Neutrals support readable layouts. Accent colors draw attention. Functional colors communicate interface status and are not automatically brand campaign colors.'),...guide.colors.map(colorCard)),
+          type: h('section',{style:panelStyle},title('字体与排版 Typography'),h('strong',{style:{fontSize:13}},'当前工作字体'),para(guide.typography.family),h('strong',{style:{fontSize:13}},'字体层级'),para(guide.typography.hierarchy),h('strong',{style:{fontSize:13}},'Figma practice'),para(guide.typography.figma)),
+          imagery: h('section',{style:panelStyle},title('图片规范 Imagery'),...guide.imagery.map(item=>h('div',{key:item.name,style:{padding:'12px 0',borderBottom:'1px solid #edf0f2'}},h('strong',{style:{fontSize:14}},item.name),para(item.purpose),h('div',{style:{fontSize:12,color:'#365f48',marginTop:5}},'Use: '+item.good),h('div',{style:{fontSize:12,color:'#8a5555',marginTop:4}},'Avoid: '+item.avoid)))),
+          layouts: h('section',{style:panelStyle},title('常用版式 Layout System'),...guide.layouts.map(item=>h('div',{key:item.name,style:{padding:'12px 0',borderBottom:'1px solid #edf0f2'}},h('strong',{style:{fontSize:14}},item.name),para(item.use),h('div',{style:{fontSize:12,color:'#53697a'}},'Figma: '+item.figma)))),
+          channels: h('section',{style:panelStyle},title('社媒与视频 Channel & Video'),...guide.channels.map(item=>h('div',{key:item.name,style:{padding:'12px 0',borderBottom:'1px solid #edf0f2'}},h('strong',{style:{fontSize:14}},item.name),para(item.use),h('div',{style:{fontSize:12,color:'#53697a'}},'Formats: '+item.format))),h('div',{style:{marginTop:14}},h('strong',{style:{fontSize:14}},'视频资产复用'),para(guide.video.principle),para(guide.video.assets),para(guide.video.figma))),
+          events: h('section',{style:panelStyle},title('展会应用 Trade Show Applications'),h('strong',{style:{fontSize:13}},'Before the show'),para(guide.events.before),h('strong',{style:{fontSize:13}},'On site'),para(guide.events.onsite),h('strong',{style:{fontSize:13}},'After the show'),para(guide.events.after),para(guide.events.note))
         })[section];
         return h('main',{style:{maxWidth:1120,margin:'0 auto',padding:'28px 26px 44px',fontFamily:'Inter,system-ui,sans-serif',color:'#1b2733'}},
           h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'baseline',gap:12,flexWrap:'wrap'}},
-            h('div',null,h('h1',{style:{fontSize:27,margin:'0 0 5px'}},'Brand Hub'),h('p',{style:muted},'The working reference for creating consistent DEF Company content.')),
+            h('div',null,h('h1',{style:{fontSize:27,margin:'0 0 5px'}},'Brand Hub · 品牌规范'),h('p',{style:muted},'制作内容前查阅，确保不同渠道保持一致的品牌表达。')),
             h('a',{href:'#/collections/content-management/entries/brand_guidelines',style:{fontSize:12,color:'#234b68',textDecoration:'underline'}},'Edit guidelines')
           ),
           sectionNav,sectionContent
