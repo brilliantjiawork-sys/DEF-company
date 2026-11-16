@@ -34,6 +34,146 @@ collections:
       - draft
     direct_publish: true
   files:
+  - name: brand_guidelines
+    label: Brand Guidelines（品牌规范）
+    file: data/brand-guidelines.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: 品牌基础 Brand Foundation
+      name: foundation
+      widget: text
+    - label: Logo 现状
+      name: logo
+      widget: object
+      fields:
+      - label: 当前 Logo 文件路径
+        name: currentFile
+        widget: string
+      - label: 当前版本说明
+        name: currentVersion
+        widget: text
+      - label: Logo 版本状态
+        name: variants
+        widget: text
+      - label: 使用规则
+        name: rules
+        widget: text
+      - label: Figma 操作说明
+        name: figma
+        widget: text
+    - label: 色彩系统 Color System
+      name: colors
+      widget: list
+      summary: '{{name}} · {{role}} · {{hex}}'
+      collapsed: true
+      fields:
+      - label: 颜色名称
+        name: name
+        widget: string
+      - label: HEX
+        name: hex
+        widget: string
+      - label: 颜色角色
+        name: role
+        widget: string
+      - label: 使用场景
+        name: use
+        widget: text
+      - label: 来源 / 状态
+        name: source
+        widget: text
+    - label: 字体与排版 Typography
+      name: typography
+      widget: object
+      fields:
+      - label: 字体方案
+        name: family
+        widget: text
+      - label: 字体层级
+        name: hierarchy
+        widget: text
+      - label: Figma 操作说明
+        name: figma
+        widget: text
+    - label: 图片规范 Imagery
+      name: imagery
+      widget: list
+      summary: '{{name}}'
+      collapsed: true
+      fields:
+      - label: 图片类型
+        name: name
+        widget: string
+      - label: 使用目的
+        name: purpose
+        widget: text
+      - label: 推荐标准
+        name: good
+        widget: text
+      - label: 避免情况
+        name: avoid
+        widget: text
+    - label: 常用版式 Layout System
+      name: layouts
+      widget: list
+      summary: '{{name}}'
+      collapsed: true
+      fields:
+      - label: 版式名称
+        name: name
+        widget: string
+      - label: 使用场景
+        name: use
+        widget: text
+      - label: Figma 搭建方法
+        name: figma
+        widget: text
+    - label: 渠道应用 Channel Applications
+      name: channels
+      widget: list
+      summary: '{{name}}'
+      collapsed: true
+      fields:
+      - label: 渠道
+        name: name
+        widget: string
+      - label: 内容方向
+        name: use
+        widget: text
+      - label: 常见形式
+        name: format
+        widget: text
+    - label: 视频规范 Video System
+      name: video
+      widget: object
+      fields:
+      - label: 核心原则
+        name: principle
+        widget: text
+      - label: 需要管理的视频素材
+        name: assets
+        widget: text
+      - label: Figma 操作说明
+        name: figma
+        widget: text
+    - label: 展会应用 Trade Show Applications
+      name: events
+      widget: object
+      fields:
+      - label: 展前
+        name: before
+        widget: text
+      - label: 展中
+        name: onsite
+        widget: text
+      - label: 展后
+        name: after
+        widget: text
+      - label: 选择原则
+        name: note
+        widget: text
   - name: home_intro
     label: Brand Introduction（品牌介绍）
     file: data/home-intro.json
