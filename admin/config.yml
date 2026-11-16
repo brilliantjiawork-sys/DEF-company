@@ -26,7 +26,7 @@ collections:
 - name: content-management
   label: 内部内容资源（系统）
   icon: folder_managed
-  hide: false
+  hide: true
   description: 系统内容存储集合。请从内容管理入口编辑。
   publish_mode:
     type: editorial_workflow
