@@ -1,164 +1,336 @@
 {
-  "status": "品牌工作规范",
-  "foundation": "DEF Company 是用于作品集展示的虚构 B2B 工业视觉品牌。品牌表达围绕精准、可靠、专业，面向制造企业、自动化集成商和设备制造商。它是内容与设计的工作依据；不得把虚构客户、认证或性能数据写成真实事实。",
-  "logo": {
-    "currentFile": "/images/logo.jpg",
-    "currentVersion": "当前官网使用的组合：左侧图形标志，右侧 DEF Company 字标和标语。当前仓库只有这份 JPG 文件，先作为现有视觉参考，不代表已具备完整的矢量 Logo 套件。",
-    "variants": "目前只确认官网正在使用的横向组合版。尚未确认正式的上下组合版、纯图形版、反白版。不要直接裁切 JPG 伪造正式版本；需要原始矢量文件后再制作并验证。",
-    "rules": "保持原始比例，不拉伸、不倾斜、不旋转、不随意改色、不添加阴影或描边、不重新描摹。Logo 周围保留空白，不压在复杂图片上。优先使用原始文件，不使用网页截图。"
+  "version": "1.0",
+  "foundation": {
+    "positioning": "DEF Company 是面向工业自动化与智能制造领域的机器视觉品牌，为 OEM 设备制造商、系统集成商和制造企业提供工业视觉产品与检测方案，帮助客户将图像采集、识别与检测能力整合进自动化流程。",
+    "category": "Industrial Machine Vision",
+    "audience": [
+      {
+        "name": "OEM Equipment Manufacturers",
+        "need": "将视觉功能集成到设备中；关注产品稳定性、接口兼容、生命周期与技术支持。"
+      },
+      {
+        "name": "System Integrators",
+        "need": "为客户设计完整自动化方案；关注选型灵活性、系统集成、调试效率与技术资料。"
+      },
+      {
+        "name": "Manufacturers / End Users",
+        "need": "提升检测、识别和质量控制能力；关注应用效果、部署难度、生产节拍与维护。"
+      }
+    ],
+    "challenges": [
+      "产品外观、尺寸或位置检测",
+      "表面缺陷与质量检查",
+      "高速生产线上的识别与追踪",
+      "视觉系统与现有设备、软件及控制系统集成"
+    ],
+    "value": "将工业视觉产品能力与真实应用场景连接起来，以清晰的产品信息、技术资料和应用指导，帮助客户评估并部署适合的视觉方案。",
+    "differentiators": [
+      "以应用场景组织产品信息，而不是只罗列参数",
+      "技术表达清楚，便于工程、采购和管理角色理解",
+      "围绕集成、部署和持续使用提供可查阅的产品支持内容"
+    ],
+    "personality": [
+      "Precise · 精确",
+      "Reliable · 可靠",
+      "Practical · 务实",
+      "Professional · 专业"
+    ],
+    "principles": [
+      {
+        "name": "Evidence before claims",
+        "rule": "所有性能、精度、速度、认证和客户成果必须有产品资料、测试记录或批准文件支持。"
+      },
+      {
+        "name": "Application before jargon",
+        "rule": "先说明客户场景和问题，再解释技术原理与产品参数；缩写首次出现时给出全称。"
+      },
+      {
+        "name": "One brand, consistent system",
+        "rule": "官网、社媒、视频、展会和销售材料共用同一套 Logo、色彩、字体和图像规则。"
+      },
+      {
+        "name": "Clarity over decoration",
+        "rule": "优先保证信息层级、可读性和技术准确性，不使用影响理解的装饰效果。"
+      }
+    ]
   },
-  "colors": [
-    {
-      "name": "DEF Blue",
-      "hex": "#45B2D3",
-      "role": "主色",
-      "use": "用于品牌识别、标题、链接和重点视觉元素。大面积使用时，需搭配白色或中性色留白。",
-      "source": "当前官网主色变量；暂定，待与原始 Logo 文件核对。"
-    },
-    {
-      "name": "DEF Yellow",
-      "hex": "#FFE817",
-      "role": "强调色",
-      "use": "用于 CTA、关键数字和少量视觉强调，不用于长段正文。",
-      "source": "当前官网强调色变量；暂定，待与原始 Logo 文件核对。"
-    },
-    {
-      "name": "Deep Charcoal",
-      "hex": "#111111",
-      "role": "中性色",
-      "use": "用于正文和需要高对比度的文字。"
-    },
-    {
-      "name": "Body Gray",
-      "hex": "#555555",
-      "role": "中性色",
-      "use": "用于次级文字和补充信息。"
-    },
-    {
-      "name": "Soft Gray",
-      "hex": "#F9F9F9",
-      "role": "中性色",
-      "use": "用于浅色页面背景和内容卡片背景。"
-    },
-    {
-      "name": "White",
-      "hex": "#FFFFFF",
-      "role": "中性色",
-      "use": "用于主要背景和留白区域。"
-    },
-    {
-      "name": "Success",
-      "hex": "#2E7D32",
-      "role": "功能色",
-      "use": "仅用于 CMS 成功状态，例如保存成功；不作为默认品牌宣传色。"
-    },
-    {
-      "name": "Warning",
-      "hex": "#B7791F",
-      "role": "功能色",
-      "use": "仅用于 CMS 警告和需要注意的状态。"
-    },
-    {
-      "name": "Error",
-      "hex": "#B42318",
-      "role": "功能色",
-      "use": "仅用于 CMS 错误和失败状态。"
-    }
-  ],
+  "logo": {
+    "primary": "标准主标志采用图形标志与 DEF Company 字标的组合。默认使用完整组合，不自行重排图形与字标。",
+    "variants": [
+      {
+        "name": "Primary full-color",
+        "detail": "浅色背景上的标准彩色组合，是官网、演示文稿和常规营销材料的首选。"
+      },
+      {
+        "name": "Reverse / white",
+        "detail": "深色纯色背景使用白色反白版本；必须使用品牌资产库中批准的正式文件，不可通过滤镜临时反色。"
+      },
+      {
+        "name": "Monochrome",
+        "detail": "单色印刷或受限工艺使用批准的单色版本。"
+      },
+      {
+        "name": "Symbol only",
+        "detail": "仅在小尺寸头像、视频角标或已建立品牌识别的场景使用；不得擅自从组合 Logo 截图裁切。"
+      }
+    ],
+    "clearSpace": "保护空间以字标中大写字母 D 的字高作为 X。Logo 四周至少保留 1X 空白；不得让文字、图片边缘、裁切线或其他 Logo 进入保护区域。",
+    "minimum": "数字端完整组合建议不小于 140 px 宽；印刷端建议不小于 30 mm 宽。若标语在该尺寸下无法清晰辨认，应使用经批准的不带标语版本，而不是继续缩小。",
+    "background": "优先使用白色或浅色纯背景。深色背景使用正式反白文件。避免在复杂照片、低对比度颜色、渐变或纹理上直接放置 Logo；确需叠加时使用足够面积的纯色承载区。",
+    "misuse": [
+      "不得拉伸、压扁、倾斜或旋转",
+      "不得改变图形与字标的相对位置或比例",
+      "不得自行更改品牌色、添加描边、阴影或渐变",
+      "不得把标语改写、拆分或替换字体",
+      "不得放在对比度不足或细节复杂的背景上",
+      "不得使用截图、低分辨率文件或未经批准的重绘版本"
+    ],
+    "formats": [
+      "SVG / EPS：优先用于网页、放大输出和印刷交付",
+      "PDF：用于向印刷供应商交付的矢量文件（按供应商要求）",
+      "PNG：透明背景数字应用",
+      "JPG：仅用于不需要透明背景的预览或受限场景"
+    ]
+  },
+  "colors": {
+    "primary": [
+      {
+        "name": "DEF Blue",
+        "hex": "#45B2D3",
+        "usage": "品牌识别主色；用于标题、链接、关键图形和主要视觉锚点。大面积使用时保留足够留白。"
+      },
+      {
+        "name": "DEF Yellow",
+        "hex": "#FFE817",
+        "usage": "强调色；用于 CTA、关键数字、短线条和局部提示。避免大面积铺底或用于长段文字。"
+      }
+    ],
+    "neutrals": [
+      {
+        "name": "White",
+        "hex": "#FFFFFF",
+        "usage": "主背景、内容留白和反白 Logo 的承载色。"
+      },
+      {
+        "name": "Deep Charcoal",
+        "hex": "#111111",
+        "usage": "标题、正文和高对比度信息。"
+      },
+      {
+        "name": "Light Gray",
+        "hex": "#F3F5F6",
+        "usage": "分区背景、信息卡片和辅助层次。"
+      }
+    ],
+    "functional": [
+      {
+        "name": "Success",
+        "hex": "#2E7D32",
+        "usage": "仅用于系统成功状态。"
+      },
+      {
+        "name": "Warning",
+        "hex": "#B7791F",
+        "usage": "仅用于提醒和需要注意的系统状态。"
+      },
+      {
+        "name": "Error",
+        "hex": "#B42318",
+        "usage": "仅用于错误、失败或危险状态。"
+      }
+    ],
+    "production": "数字端使用 HEX / RGB；印刷端由设计或供应商根据最终纸张、材质和印刷工艺建立 CMYK / Pantone 对照，并以打样结果为准。不得仅凭屏幕颜色推断印刷效果。"
+  },
   "typography": {
-    "family": "官网目前加载 Inter。先将 Inter 作为工作字体，不把它认定为永久的企业标准字体，后续需结合多语言、可读性和品牌视觉验证。",
-    "hierarchy": "H1 主标题；H2 模块标题；H3 内容小标题；Body 正文；Caption 参数、注释和图片说明。通过字号、字重、行高和间距建立层级，不要为了区分层级不断增加字体家族。"
+    "family": "英文与数字：Inter；中文：Noto Sans SC。缺字或系统不支持时使用 Arial / 思源黑体等兼容字体。品牌内容原则上不超过两套字体家族。",
+    "rules": [
+      "标题优先使用 Semibold / Bold，正文使用 Regular / Medium。",
+      "同一版面最多使用 3 个字重，避免层级过碎。",
+      "正文保持足够行高；长段文字避免全大写和过长行宽。",
+      "产品型号、单位、数字和技术缩写保持统一格式。"
+    ],
+    "scale": [
+      {
+        "name": "Display / H1",
+        "size": "36–48 px",
+        "weight": "Semibold / Bold",
+        "line": "1.15",
+        "use": "页面主标题、活动主视觉"
+      },
+      {
+        "name": "H2",
+        "size": "28–32 px",
+        "weight": "Semibold",
+        "line": "1.25",
+        "use": "主要内容区标题"
+      },
+      {
+        "name": "H3",
+        "size": "20–24 px",
+        "weight": "Semibold",
+        "line": "1.3",
+        "use": "卡片标题、产品模块标题"
+      },
+      {
+        "name": "Body",
+        "size": "16–18 px",
+        "weight": "Regular",
+        "line": "1.5–1.65",
+        "use": "网页正文、说明文案"
+      },
+      {
+        "name": "Caption",
+        "size": "12–14 px",
+        "weight": "Regular / Medium",
+        "line": "1.4",
+        "use": "参数注释、图片说明、来源信息"
+      },
+      {
+        "name": "Button / CTA",
+        "size": "14–16 px",
+        "weight": "Semibold",
+        "line": "1.2",
+        "use": "按钮与行动提示"
+      }
+    ]
   },
   "imagery": [
     {
-      "name": "产品照片 Product Photos",
-      "purpose": "展示相机或设备本身，包括正面、侧面、斜角、接口、镜头卡口和产品系列。",
-      "good": "画面清晰、颜色与结构准确；背景干净，拍摄角度和比例统一，保留真实产品细节。",
-      "avoid": "避免比例变形、未经批准的改色、低分辨率，以及会误导产品外观的装饰效果。"
+      "name": "Product Photography",
+      "subject": "相机、镜头、控制器及配件本体。",
+      "composition": "优先正面、45° 斜角和必要的接口/结构特写；主体完整，边缘不被误裁。系列产品使用一致的视角和比例。",
+      "lighting": "均匀、可控的棚拍光；准确呈现机身颜色、材质、接口和结构。背景以白色或浅中性色为主。",
+      "crop": "产品主图优先 1:1 或 4:3；横向页面可用 16:9。重要结构与接口必须留在安全裁切区。",
+      "avoid": "产品比例变形、过度反光、颜色失真、错误接口、无依据的光效和低清晰度素材。"
     },
     {
-      "name": "应用场景照片 Application Photos",
-      "purpose": "展示设备在真实工业环境中的使用场景，例如生产线、检测工位、机器人、包装或物流。",
-      "good": "让应用关系一目了然；尽可能呈现相机或检测过程，环境真实可信。",
-      "avoid": "避免使用与机器视觉无关、看不出具体应用关系的通用工厂图库照片。"
+      "name": "Application Photography",
+      "subject": "相机在生产线、机器人、检测工位、包装、物流等真实工业场景中的使用。",
+      "composition": "让相机/检测对象/生产流程之间的关系可辨认；广角环境图与局部工作图配合使用。",
+      "lighting": "真实现场光线，优先清楚展示设备与工艺；避免过度调色和不真实的未来感效果。",
+      "crop": "横图用于官网横幅和案例；竖图用于移动端与社媒。主体位置需预留标题或裁切空间。",
+      "avoid": "与机器视觉无关的通用工厂图库、无法辨认设备用途的远景、虚构的应用环境。"
     },
     {
-      "name": "技术细节图 Technical Details",
-      "purpose": "解释产品特征、部件、成像结果、接口、传感器、检测区域或技术流程。",
-      "good": "使用准确的局部特写、标注图或对比图；技术标注必须准确且清晰可读。",
-      "avoid": "避免装饰性标注、错误示意图，以及未经工程确认的技术声明。"
+      "name": "Technical Imagery",
+      "subject": "传感器、镜头接口、连接器、成像效果、检测区域、流程与技术结构。",
+      "composition": "使用局部特写、标注图、流程图或前后对比；每张图聚焦一个技术信息。",
+      "lighting": "保证细节、标注和图例清晰；技术示意图使用统一线宽、箭头和标注体系。",
+      "crop": "技术图可按内容使用横版或方版；文字、尺寸线和关键部件不得被裁切。",
+      "avoid": "未经工程确认的结构示意、错误参数、装饰性标注、无法读清的缩小文字。"
     },
     {
-      "name": "展会与活动照片 Trade Show Photos",
-      "purpose": "记录展台、产品演示、团队交流、演讲和真实展会现场。",
-      "good": "体现品牌现场形象，展台文字清楚，设备和互动真实；同时拍摄全景与细节。",
-      "avoid": "避免空展台、杂乱背景、无法辨认的展板文字，以及使用权不清晰的照片。"
-    },
-    {
-      "name": "社媒设计图 Social Graphics",
-      "purpose": "用于 LinkedIn、Facebook 等渠道的设计成品，属于宣传设计物料，不属于照片类别。",
-      "good": "使用已确认的颜色、字体和版式；一张图只传达一个核心信息。",
-      "avoid": "避免每个平台都另起一套品牌风格，也避免没有渠道理由的重复设计。"
+      "name": "Trade Show Photography",
+      "subject": "展台、产品演示、现场交流、演讲和活动记录。",
+      "composition": "同时拍摄展台全景、产品/屏幕细节和人员互动；优先选择能体现品牌露出与实际交流的照片。",
+      "lighting": "保留现场真实色彩；尽量避免严重偏色、过暗和杂乱背景。",
+      "crop": "全景用于回顾文章；人物和产品细节用于社媒。裁切时保留展会名称、品牌和关键主体。",
+      "avoid": "空展台、模糊照片、未经许可的客户特写、背景杂乱且无法识别品牌的画面。"
     }
   ],
   "layouts": [
     {
-      "name": "社媒单图 Single-image Post",
-      "use": "One main message, one strong image or product visual, concise headline and restrained supporting copy.",
-      "figma": "Create a Frame using the current platform export size; use Auto Layout for text groups; keep a reusable logo and footer component."
+      "name": "Product Feature",
+      "purpose": "介绍单一产品或产品系列。",
+      "structure": [
+        "产品主图",
+        "产品名称与一句价值主张",
+        "3–5 个核心功能/优势",
+        "关键参数或适用场景",
+        "询盘 CTA"
+      ],
+      "rule": "产品图与文字建立明确主次；参数使用对齐表格，不用长段文字堆叠。"
     },
     {
-      "name": "社媒轮播 Carousel",
-      "use": "A consistent cover, one idea per slide, repeatable title and page-number system, clear final CTA.",
-      "figma": "Create one master slide Frame, then duplicate it. Use Components for repeated headers, footers and page numbers; use Auto Layout for text blocks."
+      "name": "Application Story",
+      "purpose": "解释某个工业应用问题及视觉方案。",
+      "structure": [
+        "真实应用场景图",
+        "客户/行业问题",
+        "检测或识别流程",
+        "方案价值与结果（有证据时）",
+        "相关产品与 CTA"
+      ],
+      "rule": "先讲应用问题，再讲方案；未经验证的结果不得使用量化表述。"
     },
     {
-      "name": "产品单页 Product One-pager",
-      "use": "Product name, product image, value proposition, key features/specifications, application fit and enquiry CTA.",
-      "figma": "Use a grid and consistent spacing. Keep technical specs in a readable table; align image, heading and CTA to the same grid."
+      "name": "Technical Explainer",
+      "purpose": "解释技术原理、结构或检测流程。",
+      "structure": [
+        "清晰标题",
+        "主示意图/流程图",
+        "关键步骤或部件说明",
+        "参数与术语注释"
+      ],
+      "rule": "一张图解释一个技术概念；标注、箭头和单位必须准确。"
     },
     {
-      "name": "展会主视觉与展台画面 Trade Show Graphics",
-      "use": "Recognisable brand, one primary message, product/application visual, short proof points and a simple next step. Readable from a distance.",
-      "figma": "Start with the supplier's exact print template and bleed/safe-area specs. Build the design in a Frame matching the final dimensions; do not guess print dimensions."
+      "name": "Social Carousel",
+      "purpose": "分步骤解释一个问题、观点或应用。",
+      "structure": [
+        "封面与核心问题",
+        "背景/挑战",
+        "解决思路",
+        "产品或技术说明",
+        "总结与行动提示"
+      ],
+      "rule": "每页只传达一个重点；标题、页码、边距和页脚保持一致。"
+    },
+    {
+      "name": "Trade Show Graphic",
+      "purpose": "展台背板、易拉宝、产品展示板等远距离传播。",
+      "structure": [
+        "品牌标识",
+        "单一主标题",
+        "产品/应用主视觉",
+        "少量关键卖点",
+        "二维码或下一步行动"
+      ],
+      "rule": "先满足远距离识别和阅读；按搭建商/印刷商模板设置尺寸、出血和安全边距。"
     }
   ],
-  "channels": [
-    {
-      "name": "LinkedIn",
-      "use": "B2B 专业观点与行业洞察, product/application education, case-style stories and trade-show announcements. Prefer informative visuals and a clear professional message.",
-      "format": "Single image, carousel/document post, short native video. Confirm current platform dimensions before export."
+  "applications": {
+    "website": {
+      "rules": [
+        "统一使用 Logo、核心色彩和字体层级。",
+        "Story 封面优先使用清晰、与文章主题直接相关的图片。",
+        "正文图片需保持合适宽度、清晰度和替代文本。",
+        "产品与技术页面中的参数必须与正式产品资料一致。"
+      ]
     },
-    {
-      "name": "Facebook",
-      "use": "可复用同一活动主题 for community updates, event photos and accessible product/application stories. Do not simply shrink a LinkedIn layout if the crop or reading order changes.",
-      "format": "Image, album, short video and event updates."
+    "social": {
+      "rules": [
+        "建立通用视觉母版，LinkedIn 与 Facebook 可复用同一主题，不必另造两套品牌风格。",
+        "根据平台裁切、安全区域和阅读习惯调整画面，不直接机械缩放。",
+        "LinkedIn 优先专业观点、行业洞察、应用解释和展会信息；Facebook 可更多使用现场照片、活动动态和易读的产品故事。",
+        "轮播统一封面、页码、标题位置和结尾行动提示。"
+      ]
     },
-    {
-      "name": "YouTube",
-      "use": "产品演示, application walkthroughs, technical explainers, event highlights and company/brand videos.",
-      "format": "Thumbnail system, channel banner, opening/end cards, subtitles and reusable video lower-thirds."
+    "video": {
+      "rules": [
+        "统一片头/片尾、Logo 露出、字幕字体、颜色、下三分之一信息条和封面系统。",
+        "保留无字幕母版与字幕文件，按渠道导出横版、竖版或方版。",
+        "背景音乐、人物肖像、客户现场和第三方素材必须确认使用权。",
+        "YouTube 缩略图应有明确主体和短标题；视频标题与缩略图承诺保持一致。"
+      ]
     },
-    {
-      "name": "Website / Stories",
-      "use": "沿用统一图片规范 and type hierarchy, but prioritise reading comfort, clear article imagery and accessible alt text.",
-      "format": "Story cover, body images, diagrams and downloadable resources."
+    "tradeShow": {
+      "rules": [
+        "展前：邀请图、预约会面素材、邮件头图、活动落地页和倒计时内容。",
+        "展中：展台背板、易拉宝、产品展示板、演示屏幕、产品单页、目录和二维码。",
+        "展后：回顾文章、精选照片、短视频、社媒轮播和销售跟进资料。",
+        "不是每场展会都需要全部物料；按展位规模、受众、预算和主目标选择。印刷尺寸、出血和安全区必须以供应商模板为准。"
+      ]
     }
-  ],
-  "video": {
-    "principle": "Treat video as a brand application with its own reusable visual system, not as a separate brand. A video may be reused across YouTube, LinkedIn, Facebook, the website and exhibition screens when the format and audience fit.",
-    "assets": "Keep the original master video, clean footage, approved music/voice files, subtitles, thumbnail, logo end card and platform-specific exports. Record usage rights and source project location."
-  },
-  "events": {
-    "before": "Pre-show: event announcement, invitation/meeting-booking graphic, landing-page hero, email header and social countdown assets.",
-    "onsite": "On-site: booth backwall or shell-scheme graphics, roll-up banner where suitable, counter/table graphics, product/demo screen loop, product one-pagers, datasheets, brochures, QR/contact cards and staff briefing visuals.",
-    "after": "Post-show: recap article, photo gallery, highlight video, social recap/carousel and sales follow-up material.",
-    "note": "Not every event needs every item. Select collateral based on booth size, audience, budget, organiser rules and sales objective. Print files must follow the printer or stand contractor's supplied dimensions, bleed and safe-area template."
   },
   "verbal": {
-    "voice": "品牌整体表达保持专业、准确、清晰、可信。避免空泛的夸张词和无法证明的领先性表述。先解释客户问题和应用价值，再说明技术能力。",
-    "tones": "产品介绍：信息准确、技术清楚；行业洞察：客观、有依据；应用案例：讲清楚场景、挑战、方案和结果；展会预告：简洁、明确地点与行动；公司动态：事实优先。",
-    "terminology": "产品型号、接口、传感器、分辨率、帧率、检测精度等术语以产品资料为准。相同产品名称和技术术语在官网、社媒、视频和销售材料中保持一致。",
-    "writing": "英文文案优先使用短句和主动语态；数字、单位、大小写和产品型号保持统一。不得为了营销效果虚构客户、测试数据、认证、性能或应用成果。"
+    "voice": "专业、准确、清楚、务实。以客户应用和技术事实为基础，不用空泛的“领先、颠覆、革命性”等表述替代证据。",
+    "writing": [
+      "先说明应用问题和客户价值，再介绍产品功能与技术参数。",
+      "优先使用短句、主动语态和明确主语。",
+      "避免未经证实的最高级、绝对化承诺和无法追溯的数据。",
+      "产品型号、接口、分辨率、帧率、精度、单位和大小写按正式产品资料统一。"
+    ],
+    "terms": "建立产品名称、系列名称、技术缩写、单位和行业术语表；首次出现的缩写写出英文全称，后续使用统一缩写。"
   }
 }
