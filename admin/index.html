@@ -994,6 +994,27 @@
         hideElement(target);
       };
 
+      // Keep exactly the three custom project sections in the top toolbar.
+      // Sveltia's native toolbar controls have no stable routes/labels in this layout,
+      // so identify the six compact icon controls by position and retain the rightmost three.
+      const normalizeProjectToolbar = () => {
+        const controls = queryAllOpenRoots('a, button, [role="button"], [role="link"], [role="menuitem"], [role="treeitem"]');
+        const items = [...new Set(controls.map(toolbarItemContainer))].filter(item => {
+          if (!item || !item.isConnected) return false;
+          const rect = getRect(item);
+          if (!rect || rect.width < 24 || rect.width > 100 || rect.height < 24 || rect.height > 80) return false;
+          if (rect.top < -4 || rect.top > 100 || rect.left < -4 || rect.left > 520) return false;
+          const style = window.getComputedStyle(item);
+          return style.display !== 'none' && style.visibility !== 'hidden';
+        }).sort((a,b) => getRect(a).left - getRect(b).left);
+        if (items.length < 4) return;
+        const keep = new Set(items.slice(-3));
+        items.forEach(item => {
+          if (keep.has(item)) restoreElement(item);
+          else hideElement(item);
+        });
+      };
+
       const inspectElement = (element) => {
         if (!element || element.nodeType !== 1) return;
         hideValidationUi(element);
@@ -1043,6 +1064,7 @@
               if (target) inspectElement(target);
             }
           });
+          normalizeProjectToolbar();
           installEditorPublishButton();
         });
         observer.observe(root, {
@@ -1058,6 +1080,7 @@
       document.documentElement.setAttribute('data-def-cms-nav-fix', 'three-primary-sections-v1');
       document.documentElement.setAttribute('data-def-cms-validation-ui', 'hidden-v1');
       observeAndScanRoot(document);
+      normalizeProjectToolbar();
       installEditorPublishButton();
       const rootObserver = new MutationObserver((mutations) => {
         mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
@@ -1067,6 +1090,7 @@
             if (node.shadowRoot) observeAndScanRoot(node.shadowRoot);
           }
         }));
+        normalizeProjectToolbar();
         installEditorPublishButton();
       });
       if (document.documentElement) rootObserver.observe(document.documentElement, { childList: true, subtree: true });
