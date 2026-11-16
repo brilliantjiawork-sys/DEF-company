@@ -293,10 +293,8 @@
           : (usage.kind === 'tradeArticles' || usage.kind === 'shows') ? 'Trade Shows'
           : 'Website & Shared';
         const categoryForKind = kind => ({
-          stories: 'Stories', tradeArticles: 'Trade Shows', shows: 'Trade Shows',
-          socialMedia: 'Social Media', socialPage: 'Social Media',
-          mediaContacts: 'Media Contacts', mediaPage: 'Media Contacts', website: 'Website & Brand'
-        }[kind] || 'Website & Brand');
+          stories: 'Stories', tradeArticles: 'Trade Shows', shows: 'Trade Shows'
+        }[kind] || 'Website & Shared');
         const titleForRecord = (record, fallback, kind) => String((kind === 'mediaContacts' ? record?.name : '') || record?.title || record?.name || record?.platform || record?.full_name || record?.contact_name || record?.page_title || fallback || 'Untitled').trim();
         const collectRefs = (value, fieldPath = '', out = []) => {
           if (typeof value === 'string') {
