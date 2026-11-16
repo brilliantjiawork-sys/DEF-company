@@ -238,6 +238,125 @@
       // Article management shortcuts live inside Content Management, not as toolbar icons.
 
 
+
+      // Brand Hub is a standalone reference area. It is intentionally separate
+      // from Library: guidelines define the rules; Library stores the files.
+      const BrandHub = () => {
+        const [active, setActive] = CMS.React.useState('overview');
+        const [guide, setGuide] = CMS.React.useState(null);
+        const [loadingGuide, setLoadingGuide] = CMS.React.useState(true);
+        const [guideError, setGuideError] = CMS.React.useState('');
+        CMS.React.useEffect(() => {
+          let cancelled = false;
+          fetch('/data/brand-guidelines.json?_=' + Date.now(), { cache: 'no-store' })
+            .then(response => { if (!response.ok) throw new Error('Brand guide ' + response.status); return response.json(); })
+            .then(data => { if (!cancelled) setGuide(data); })
+            .catch(error => { if (!cancelled) setGuideError(error.message || 'Unable to load brand guide.'); })
+            .finally(() => { if (!cancelled) setLoadingGuide(false); });
+          return () => { cancelled = true; };
+        }, []);
+        const data = guide || {};
+        const colors = Array.isArray(data.colors) ? data.colors : [];
+        const types = Array.isArray(data.type_styles) ? data.type_styles : [];
+        const imageRules = Array.isArray(data.imagery_categories) ? data.imagery_categories : [];
+        const layouts = Array.isArray(data.layout_patterns) ? data.layout_patterns : [];
+        const applications = Array.isArray(data.applications) ? data.applications : [];
+        const logoDos = Array.isArray(data.logo_dos) ? data.logo_dos : [];
+        const logoDonts = Array.isArray(data.logo_donts) ? data.logo_donts : [];
+        const nav = [
+          ['overview','Brand Foundation','品牌基础'],
+          ['logo','Logo System','标志系统'],
+          ['color','Color System','色彩系统'],
+          ['type','Typography','字体与排版'],
+          ['imagery','Imagery','图片语言'],
+          ['graphic','Graphic Elements','图形元素'],
+          ['layout','Layout System','版式系统'],
+          ['voice','Verbal Identity','语言规范'],
+          ['applications','Applications','品牌应用']
+        ];
+        const panel = { background:'#fff', border:'1px solid #e1e7ec', borderRadius:12, padding:18, minWidth:0 };
+        const muted = { color:'#667789', fontSize:13, lineHeight:1.65 };
+        const heading = { margin:'0 0 8px', color:'#172a3a', fontSize:17, fontWeight:700 };
+        const smallLabel = { color:'#6a7b89', fontSize:11, letterSpacing:'.06em', textTransform:'uppercase', fontWeight:700 };
+        const pill = text => h('span',{style:{display:'inline-block',padding:'4px 8px',borderRadius:99,background:'#edf4f8',color:'#31536c',fontSize:11,fontWeight:650,margin:'0 6px 6px 0'}},text);
+        const bullets = (items) => h('ul',{style:{margin:'8px 0 0',paddingLeft:19,color:'#405365',fontSize:13,lineHeight:1.8}},...(items||[]).map((item,i)=>h('li',{key:i},item)));
+        const info = (label,value) => h('div',{style:{marginBottom:14}},h('div',{style:smallLabel},label),h('div',{style:{color:'#263747',fontSize:14,lineHeight:1.65,marginTop:4}},value||'To be defined'));
+        const card = (title,desc,children) => h('section',{style:panel},h('h2',{style:heading},title),desc?h('p',{style:{...muted,margin:'0 0 12px'}},desc):null,children);
+        const swatch = item => h('div',{key:item.name,style:{border:'1px solid #e2e8ed',borderRadius:9,overflow:'hidden',background:'#fff'}},
+          h('div',{style:{height:62,background:item.hex||'#ddd',borderBottom:'1px solid rgba(0,0,0,.06)'}}),
+          h('div',{style:{padding:10}},h('strong',{style:{display:'block,fontSize:13,color:'#263747'}},item.name),
+            h('div',{style:{fontSize:12,color:'#667789',marginTop:3}},item.hex),
+            h('div',{style:{fontSize:11,color:'#667789',marginTop:4,lineHeight:1.4}},item.role||item.group||'')));
+        const renderContent = () => {
+          if (active === 'overview') return h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:14}},
+            card('Brand Definition','品牌定位是后续内容和视觉决策的依据。',
+              h('div',null,info('Positioning',data.positioning),info('Primary audience',data.audience),info('Brand attributes',data.attributes),info('Brand promise',data.promise))),
+            card('How to use this hub','每次开始制作内容前，先确认对应的品牌规则。',
+              h('ol',{style:{margin:0,paddingLeft:19,color:'#405365',fontSize:13,lineHeight:1.9}},
+                h('li',null,'先确认内容目标、受众和传播场景。'),
+                h('li',null,'查看 Logo、色彩、字体、图片和版式规则。'),
+                h('li',null,'从 Library 选择已存在的品牌素材。'),
+                h('li',null,'按对应应用模板制作并检查一致性。'))),
+            card('Brand status','当前是 DEF 作品集品牌的第一版工作规范，后续会根据 Figma 实操逐步确认。',
+              h('div',null,pill('Working draft'),h('p',{style:muted},'颜色、字体和版式规则是初始建议，不应被当作已经完成的专业品牌定稿。请在 Figma 中验证并迭代。'))));
+          if (active === 'logo') return h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:14}},
+            card('Primary logo','当前网站页头使用的组合式标志。',h('div',null,
+              h('img',{src:'/images/logo.jpg',alt:'DEF Company current logo artwork',style:{width:'100%',maxHeight:150,objectFit:'contain',background:'#f6f8fa',borderRadius:8}}),
+              info('Current source','images/logo.jpg'),
+              info('Working interpretation',data.logo_structure||'图形标志与 DEF Company 字标共同构成当前横向组合。需用原始文件确认图形是否可独立使用。'))),
+            card('Logo variants','不要为了凑齐版本而重新设计 Logo。先确认现有源文件是否包含这些版本。',
+              h('div',null,info('Horizontal lockup','图形在左、字标在右。适合网站页头和横向版面。'),info('Stacked lockup','图形在上、字标在下。仅在确有竖向空间需求时制作。'),info('Symbol only','只使用图形标志。需先确认图形脱离字标后仍清晰、可识别。'))),
+            card('Figma practice','用 Frame 练习不同组合，不要拉伸原始 Logo。',bullets(['将原始 Logo 放入一个 Frame，锁定长宽比。','复制 Frame，尝试左右排列与上下排列。','将图形单独放入 Frame，检查小尺寸识别度。','用浅色和深色背景分别测试对比度。','用矩形画出保护区，确保其他元素不进入。'])),
+            card('Clear space & misuse','最小尺寸和安全空间必须从实际 Logo 比例推导，暂不凭空写固定毫米数。',h('div',null,info('Clear space','Logo 四周保留空白。可在 Figma 中用外层 Frame 和 Layout Grid 表示。'),info('Minimum size','逐步缩小 Logo，找到文字仍清晰、图形仍可辨认的尺寸，再记录数字。'),h('div',{style:smallLabel},'Do not'),bullets(logoDonts.length?logoDonts:['不要拉伸或压扁。','不要随意改变图形与字标的相对位置。','不要擅自改色、旋转或添加效果。']))));
+          if (active === 'color') {
+            const groups = ['Primary','Secondary','Neutral','Accent','Functional'];
+            return h('div',{style:{display:'grid',gap:14}},
+              card('Color palette','每个颜色都要有明确角色。Logo 中的颜色是起点，不等于完整色彩系统。',
+                h('div',null,...groups.map(groupName=>{
+                  const groupColors=colors.filter(c=>c.group===groupName);
+                  return h('div',{key:groupName,style:{marginBottom:16}},
+                    h('h3',{style:{fontSize:13,color:'#405365',margin:'0 0 8px'}},groupName),
+                    groupColors.length?h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(130px,1fr))',gap:9}},...groupColors.map(swatch)):h('p',{style:muted},'No colors defined yet.'));
+                }))),
+              card('Color usage rules','在 Figma 中建议将确认后的颜色保存为 Color Styles 或 Variables，设计时直接调用。',
+                bullets(['Primary：建立品牌识别，常用于品牌核心视觉。','Secondary：辅助主色，区分模块和信息层级。','Neutral：背景、正文、边框和留白。','Accent：突出重点、CTA 或关键信息，少量使用。','Functional：成功、警告、错误等状态反馈，不作为装饰色。'])));
+          }
+          if (active === 'type') return h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:14}},
+            card('Typeface','字体家族可以是一种，也可以是主字体加备用字体。不要假设所有品牌只能使用一种。',
+              h('div',null,info('Primary family',data.typography_family),info('Fallback',data.typography_fallback),info('Figma practice','创建 Text Styles：H1、H2、H3、Body、Caption、CTA。统一字体、字号、字重、行高。'))),
+            card('Type scale','字体层级决定信息的重要程度。',h('div',null,...types.map((item,i)=>h('div',{key:i,style:{padding:'12px 0',borderBottom:'1px solid #edf0f2'}},
+              h('div',{style:smallLabel},item.name+' · '+(item.weight||'')),
+              h('div',{style:{fontSize:Math.min(Number(item.size)||16,32),fontWeight:item.weight||500,color:'#1b2d3d',lineHeight:1.35}},item.sample||item.name),
+              h('div',{style:muted},(item.size||'')+' px · '+(item.usage||''))))));
+          if (active === 'imagery') return h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:14}},
+            ...imageRules.map((item,i)=>card(item.name,item.description,h('div',null,info('Use for',item.use),info('Selection rules',item.rules),info('Avoid',item.avoid)))));
+          if (active === 'graphic') return h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:14}},
+            card('Graphic elements','Logo 之外的辅助视觉元素，用来形成统一的设计语言。',h('div',null,info('Icon style',data.icon_style),info('Shapes & lines',data.graphic_elements),info('Grid & spacing',data.grid_spacing))),
+            card('Figma practice','在 Figma 中建立可复用组件。',bullets(['建立统一的图标尺寸和线宽。','建立常用间距值，例如 8 / 16 / 24 / 32。','用 Auto Layout 保持图标、标题和正文的间距一致。','不要为每一张图临时创造新的装饰元素。'])));
+          if (active === 'layout') return h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:14}},
+            ...layouts.map((item,i)=>card(item.name,item.description,h('div',null,info('Structure',item.structure),info('Best for',item.use),info('Figma setup',item.figma)))));
+          if (active === 'voice') return h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(260px,1fr))',gap:14}},
+            card('Brand voice','品牌长期稳定的表达性格。',h('div',null,info('Voice attributes',data.voice_attributes),info('Writing principles',data.writing_principles),info('Terminology',data.terminology))),
+            card('Tone by context','不同内容场景可以调整语气，但不能偏离品牌性格。',h('div',null,...(data.tone_examples||[]).map((item,i)=>h('div',{key:i,style:{padding:'10px 0',borderBottom:'1px solid #edf0f2'}},h('strong',{style:{fontSize:13}},item.context),h('p',{style:{...muted,margin:'4px 0 0'}},item.tone))))));
+          if (active === 'applications') return h('div',{style:{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(240px,1fr))',gap:14}},
+            ...applications.map((item,i)=>card(item.name,item.description,h('div',null,info('Information hierarchy',item.hierarchy),info('Key components',item.components),info('Template rule',item.template)))));
+          return null;
+        };
+        return h('main',{style:{maxWidth:1240,margin:'0 auto',padding:'26px 24px 44px',fontFamily:'Inter,system-ui,sans-serif',color:'#1b2733'}},
+          h('div',{style:{display:'flex',alignItems:'flex-start',justifyContent:'space-between',gap:16,flexWrap:'wrap',marginBottom:18}},
+            h('div',null,h('div',{style:{fontSize:11,letterSpacing:'.12em',fontWeight:750,color:'#39718f',marginBottom:8}},'DEF COMPANY · BRAND STANDARDS'),
+              h('h1',{style:{fontSize:29,margin:'0 0 6px',fontWeight:750}},'Brand Hub'),
+              h('p',{style:{margin:0,color:'#657789',fontSize:14,lineHeight:1.6}},'The reference point for every brand communication and content asset.')),
+            h('a',{href:'#/collections/content-management/entries/brand_guidelines',style:{padding:'10px 13px',border:'1px solid #cbd7df',borderRadius:8,color:'#234b68',fontWeight:650,fontSize:13,textDecoration:'none',background:'#fff'}},'Edit Brand Guidelines ↗')),
+          loadingGuide?h('p',{style:muted},'Loading brand guidelines…'):null,
+          guideError?h('p',{role:'alert',style:{...muted,color:'#9a3434'}},'Brand guide could not be loaded: '+guideError):null,
+          h('div',{style:{display:'flex',gap:7,overflowX:'auto',padding:'4px 0 13px',marginBottom:16,borderBottom:'1px solid #e1e7ec'}},
+            ...nav.map(([id,label,zh])=>h('button',{key:id,type:'button',onClick:()=>setActive(id),style:{flex:'0 0 auto',padding:'9px 12px',border:active===id?'1px solid #8fb4c9':'1px solid transparent',borderRadius:8,background:active===id?'#edf5f9':'transparent',color:active===id?'#1f4c68':'#526474',fontWeight:active===id?700:550,cursor:'pointer',fontSize:12}},label))),
+          h('div',{style:{fontSize:11,color:'#788895',marginBottom:12}},nav.find(item=>item[0]===active)?.[2]||''),
+          renderContent()
+        );
+      };
+
       // Library indexes assets already in the public repository and relates them back
       // to the CMS records that reference them. Uploading/replacing files remains in
       // Sveltia's native Asset Library, reached from the action at the top of this page.
@@ -265,6 +384,7 @@
           ['data/home-newsletter.json', 'website'],
           ['data/stories-page-settings.json', 'website'],
           ['data/trade-shows-page-settings.json', 'website'],
+          ['data/brand-guidelines.json', 'brandIdentity'],
           ['data/contact-content.json', 'website'],
           ['data/cookie-content.json', 'website']
         ];
@@ -278,8 +398,8 @@
         const typeLabel = type => type === 'pdf' ? 'PDF' : type === 'video' ? 'Video' : 'Image';
         const categoryForKind = kind => ({
           stories: 'Stories', tradeArticles: 'Trade Shows', shows: 'Trade Shows',
-          socialMedia: 'Social Media', socialPage: 'Social Media',
-          mediaContacts: 'Media Contacts', mediaPage: 'Media Contacts', website: 'Website & Brand'
+          socialMedia: 'Website & Shared', socialPage: 'Website & Shared',
+          mediaContacts: 'Website & Shared', mediaPage: 'Website & Shared', website: 'Website & Shared', brandIdentity: 'Brand Identity'
         }[kind] || 'Website & Brand');
         const titleForRecord = (record, fallback, kind) => String((kind === 'mediaContacts' ? record?.name : '') || record?.title || record?.name || record?.platform || record?.full_name || record?.contact_name || record?.page_title || fallback || 'Untitled').trim();
         const collectRefs = (value, fieldPath = '', out = []) => {
@@ -325,6 +445,7 @@
             if (slug === 'home-newsletter') return '#/collections/content-management/entries/home_newsletter';
             if (slug === 'stories-page-settings') return '#/collections/content-management/entries/stories_page_settings';
             if (slug === 'trade-shows-page-settings') return '#/collections/content-management/entries/events_page_settings';
+            if (slug === 'brand-guidelines') return '#/collections/content-management/entries/brand_guidelines';
           }
           return '';
         };
@@ -457,8 +578,7 @@
         }, []);
 
         const useOptions = [
-          ['all', 'All scenarios'], ['Stories', 'Stories'], ['Trade Shows', 'Trade Shows'],
-          ['Social Media', 'Social Media'], ['Media Contacts', 'Media Contacts'], ['Website & Brand', 'Website & Brand'], ['unused', 'Not currently used']
+          ['all', 'All files'], ['Brand Identity', 'Brand Identity'], ['Stories', 'Stories'], ['Trade Shows', 'Trade Shows'], ['Website & Shared', 'Website & Shared'], ['unused', 'Not currently used']
         ];
         const filtered = items.filter(item => {
           if (typeFilter !== 'all' && item.type !== typeFilter) return false;
@@ -490,8 +610,6 @@
                     ...item.usages.map((usage, index) => h('div', { key: `${usage.source}|${usage.title}|${index}`, style: { fontSize: 12, lineHeight: 1.5, marginBottom: 8 } },
                       h('div', { style: { color: '#53697a', fontSize: 11, marginBottom: 2 } }, `${usage.category} · ${usage.label}`),
                       h('strong', { style: { display: 'block', overflowWrap: 'anywhere' } }, usage.title),
-                      h('div', { style: { color: '#657381', fontSize: 11, marginTop: 3, overflowWrap: 'anywhere' } }, 'Location · ' + (usage.location || usage.label)),
-                      (usage.topics.length || usage.industries.length) ? h('div', { style: { color: '#657381', marginTop: 3 } }, [...usage.industries, ...usage.topics].join(' · ')) : null,
                       usage.editUrl ? h('a', { href: usage.editUrl, style: { display: 'inline-block', marginTop: 4, color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 2 } }, 'Open related content') : null
                     ))
                   )
@@ -501,7 +619,7 @@
         };
         return h('main', { style: { maxWidth: 1180, margin: '0 auto', padding: '28px 24px 44px', color: '#1b2733', fontFamily: 'Inter, system-ui, sans-serif' } },
           h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 } },
-            h('div', null, h('h1', { style: { margin: '0 0 5px', fontSize: 28, fontWeight: 700 } }, 'Library'), h('p', { style: { margin: 0, color: '#687887', fontSize: 14 } }, 'Find website files and see where each asset is used.')),
+            h('div', null, h('h1', { style: { margin: '0 0 5px', fontSize: 28, fontWeight: 700 } }, 'Library'), h('p', { style: { margin: 0, color: '#687887', fontSize: 14 } }, 'Find brand and website files, then see where each asset is used.')),
             h('a', { href: '#/assets/-/all', style: { display: 'inline-block', color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 3, fontWeight: 600, fontSize: 13 } }, 'Upload / Manage Assets')
           ),
           h('h2', { style: { margin: '24px 0 12px', fontSize: 17, fontWeight: 700 } }, 'All Assets'),
@@ -521,6 +639,7 @@
           !loading && !error && !filtered.length ? h('p', { style: { padding: 18, border: '1px solid #e4e9ed', borderRadius: 8, color: '#657381' } }, 'No matching assets. Try another search term or filter.') : null
         );
       };
+      CMS.registerCustomPage({ id: 'brand-hub', label: 'Brand Hub', icon: 'palette', component: BrandHub });
       CMS.registerCustomPage({ id: 'media-library', label: 'Library', icon: 'library_books', component: MediaLibrary });
       CMS.registerCustomPage({ id: 'content-navigator', label: 'Content Management', icon: 'dashboard_customize', component: ContentManagement });
 
@@ -530,9 +649,9 @@
       // This version keeps the two named custom pages by route/label and hides every
       // other compact icon control in the top-left toolbar area, including unlabeled icons.
       const normalized = (value) => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
-      const primaryRoutes = new Set(['#/pages/media-library', '#/pages/content-navigator']);
-      const primaryLabels = new Set(['library', 'content management']);
-      const primaryIconTokens = new Set(['library_books', 'dashboard_customize']);
+      const primaryRoutes = new Set(['#/pages/brand-hub', '#/pages/media-library', '#/pages/content-navigator']);
+      const primaryLabels = new Set(['brand hub', 'library', 'content management']);
+      const primaryIconTokens = new Set(['palette', 'library_books', 'dashboard_customize']);
       const resourceRowPattern = /^(?:all resources|global resources|internal content resources\s*\(system\)|全部资源|全局资源|内部内容资源（系统）|内部内容资源 \(系统\))(?:\s*\d+)?$/i;
       const navItemSelector = 'a, button, [role="button"], [role="link"], [role="menuitem"], [role="treeitem"], li';
       const observedRoots = new WeakSet();
