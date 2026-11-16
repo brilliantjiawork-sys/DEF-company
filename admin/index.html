@@ -716,9 +716,11 @@
       // Only evaluate the actionable item itself (or its own compact list-item wrapper).
       // Never let a shared toolbar/nav parent preserve every sibling icon just because
       // that parent also contains Library or Content Management.
+      const primaryLabels = new Set(['brand hub', 'library', 'content management']);
       const hasPrimaryIdentity = (node) => {
         if (!node || node.nodeType !== 1) return false;
-        return primaryRoutes.has(routeOf(node));
+        if (primaryRoutes.has(routeOf(node))) return true;
+        return nodeLabels(node).some(label => primaryLabels.has(label));
       };
 
       const isPrimaryItem = (node) => {
@@ -1005,23 +1007,9 @@
       // Keep exactly the three custom project sections in the top toolbar.
       // Sveltia's native toolbar controls have no stable routes/labels in this layout,
       // so identify the six compact icon controls by position and retain the rightmost three.
-      const normalizeProjectToolbar = () => {
-        const controls = queryAllOpenRoots('a, button, [role="button"], [role="link"], [role="menuitem"], [role="treeitem"]');
-        const items = [...new Set(controls.map(toolbarItemContainer))].filter(item => {
-          if (!item || !item.isConnected) return false;
-          const rect = getRect(item);
-          if (!rect || rect.width < 24 || rect.width > 100 || rect.height < 24 || rect.height > 80) return false;
-          if (rect.top < -4 || rect.top > 100 || rect.left < -4 || rect.left > 520) return false;
-          const style = window.getComputedStyle(item);
-          return style.display !== 'none' && style.visibility !== 'hidden';
-        }).sort((a,b) => getRect(a).left - getRect(b).left);
-        if (items.length < 4) return;
-        const keep = new Set(items.slice(-3));
-        items.forEach(item => {
-          if (keep.has(item)) restoreElement(item);
-          else hideElement(item);
-        });
-      };
+      // Do not infer project navigation from icon position. Sveltia can change
+      // toolbar ordering between versions; route/label identity is the stable signal.
+      const normalizeProjectToolbar = () => {};
 
       const inspectElement = (element) => {
         if (!element || element.nodeType !== 1) return;
