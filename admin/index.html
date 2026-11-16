@@ -589,83 +589,67 @@
 
       const BrandHub = () => {
         const [guide, setGuide] = CMS.React.useState(null);
-        const [active, setActive] = CMS.React.useState('overview');
+        const [active, setActive] = CMS.React.useState('foundation');
         const [error, setError] = CMS.React.useState('');
         CMS.React.useEffect(() => {
           let cancelled = false;
           fetch('/data/brand-guidelines.json', { cache: 'no-store' })
-            .then(response => { if (!response.ok) throw new Error('品牌规范暂时无法读取'); return response.json(); })
+            .then(r => { if (!r.ok) throw new Error('Brand Guidelines could not be loaded.'); return r.json(); })
             .then(data => { if (!cancelled) setGuide(data); })
             .catch(err => { if (!cancelled) setError(err.message); });
           return () => { cancelled = true; };
         }, []);
-
         const sections = [
-          {id:'overview',label:'品牌概览',desc:'品牌定位与核心表达'},
-          {id:'logo',label:'Logo 使用规范',desc:'现有版本与使用边界'},
-          {id:'colors',label:'色彩系统',desc:'主色、强调色、中性色与功能色'},
-          {id:'typography',label:'字体与排版',desc:'字体方案与文字层级'},
-          {id:'imagery',label:'图片规范',desc:'产品、应用、技术与展会图片'},
-          {id:'layouts',label:'版式规范',desc:'常用内容布局与信息组织'},
-          {id:'channels',label:'渠道规范',desc:'官网、LinkedIn、Facebook、YouTube'},
-          {id:'video',label:'视频规范',desc:'视频内容与视觉资产'},
-          {id:'events',label:'展会应用',desc:'展前、展中与展后物料'},
-          {id:'verbal',label:'品牌语言',desc:'语气、术语与文案规则'}
+          {id:'foundation',label:'Brand Foundation',sub:'品牌基础'},
+          {id:'identity',label:'Visual Identity',sub:'Logo · Color · Typography'},
+          {id:'imagery',label:'Photography & Imagery',sub:'图片与摄影'},
+          {id:'layouts',label:'Layout System',sub:'版式与内容模板'},
+          {id:'applications',label:'Brand Applications',sub:'官网 · 社媒 · 视频 · 展会'}
         ];
-        const card={border:'1px solid #dfe5e9',borderRadius:9,background:'#fff',padding:18};
-        const title={fontSize:18,fontWeight:700,color:'#203747',margin:'0 0 10px'};
-        const body={fontSize:13,lineHeight:1.75,color:'#526372',whiteSpace:'pre-wrap',margin:0};
-        const sectionButton=id=>({textAlign:'left',padding:'12px 14px',borderRadius:8,border:'1px solid '+(active===id?'#8daec2':'#e0e6ea'),background:active===id?'#f0f6f9':'#fff',cursor:'pointer',color:'#243b4c',font:'inherit'});
-        const field=(label,value)=>h('div',{style:{padding:'13px 0',borderBottom:'1px solid #edf0f2'}},
-          h('div',{style:{fontSize:12,fontWeight:700,color:'#314e63',marginBottom:5}},label),
-          h('p',{style:body},value||'尚未填写')
-        );
-        const content=()=>{
-          if(!guide) return h('div',{style:card},error||'正在读取品牌规范…');
-          if(active==='overview') return h('div',{style:{display:'grid',gap:14}},
-            h('section',{style:card},h('h2',{style:title},'品牌定位'),h('p',{style:body},guide.foundation||'尚未填写')),
-            h('section',{style:card},h('h2',{style:title},'品牌原则'),h('p',{style:body},'专业、准确、清晰、可信。所有产品信息、技术参数、客户案例和性能表述必须有可靠资料支持。虚构的客户、认证和性能数据不得作为真实事实。'))
+        const css = ".bh{max-width:1320px;margin:0 auto;padding:28px 30px 56px;color:#263946;font-family:Inter,Arial,sans-serif}.bh *{box-sizing:border-box}.bh-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;padding-bottom:20px;border-bottom:1px solid #dfe6eb;margin-bottom:22px}.bh-kicker{font-size:11px;font-weight:700;letter-spacing:.13em;color:#648092;text-transform:uppercase;margin-bottom:8px}.bh h1{font-size:27px;line-height:1.2;margin:0;color:#1e3546}.bh-sub{font-size:13px;color:#71818d;margin:8px 0 0;line-height:1.5}.bh-layout{display:grid;grid-template-columns:238px minmax(0,1fr);gap:22px;align-items:start}.bh-nav{display:grid;gap:5px;position:sticky;top:14px}.bh-nav button{border:1px solid transparent;background:transparent;text-align:left;padding:12px 13px;border-radius:8px;cursor:pointer;color:#405564;font:inherit}.bh-nav button:hover{background:#f5f8fa}.bh-nav button.active{background:#edf5f8;border-color:#d4e4eb;color:#1f4d64}.bh-nav strong{display:block;font-size:13px;font-weight:700}.bh-nav small{display:block;color:#84929c;font-size:11px;margin-top:4px}.bh-panel{min-width:0}.bh-intro{padding:2px 0 18px}.bh-eyebrow{font-size:11px;color:#7290a1;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}.bh-panel h2{font-size:22px;line-height:1.3;margin:0 0 7px;color:#203a4c}.bh-lead{font-size:14px;line-height:1.7;color:#627583;margin:0;max-width:850px}.bh-section{background:#fff;border:1px solid #e0e7eb;border-radius:10px;padding:20px 21px;margin:0 0 14px}.bh-section h3{font-size:15px;color:#263f50;margin:0 0 13px}.bh-section h4{font-size:13px;color:#2b4658;margin:0 0 6px}.bh-text{font-size:13px;line-height:1.7;color:#5d707d;margin:0}.bh-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.bh-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.bh-mini{border:1px solid #e7ecef;border-radius:8px;padding:13px;background:#fff}.bh-mini p{font-size:12px;line-height:1.65;color:#667985;margin:5px 0 0}.bh-tag{display:inline-block;font-size:10px;font-weight:700;letter-spacing:.04em;color:#527286;background:#eef4f7;border-radius:4px;padding:4px 6px;margin-bottom:7px}.bh-list{margin:0;padding-left:18px;color:#5d707d;font-size:13px;line-height:1.8}.bh-list li{padding-left:2px;margin:2px 0}.bh-rule{display:grid;grid-template-columns:180px minmax(0,1fr);gap:16px;padding:12px 0;border-bottom:1px solid #edf0f2}.bh-rule:last-child{border-bottom:0;padding-bottom:0}.bh-rule strong{font-size:12px;color:#304b5d}.bh-rule span{font-size:12px;line-height:1.65;color:#687b87}.bh-swatch{height:58px;border:1px solid #dfe5e9;border-radius:7px;margin-bottom:9px}.bh-color strong{display:block;font-size:13px;color:#2c4658}.bh-color code{font-size:11px;color:#71818d}.bh-color p{font-size:11px;line-height:1.5;color:#74838d;margin:6px 0 0}.bh-sample{border:1px solid #e5eaed;border-radius:8px;padding:15px;background:#fff}.bh-sample .spec{font-size:10px;color:#84939c;margin-bottom:8px}.bh-sample .preview{color:#263f50;margin:0}.bh-logo-stage{display:grid;grid-template-columns:1fr 1fr;gap:12px}.bh-logo-bg{min-height:150px;border:1px solid #e3e8eb;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:18px;background:#fff}.bh-logo-bg.dark{background:#203746}.bh-logo-bg img{max-width:100%;max-height:78px;object-fit:contain}.bh-steps{display:flex;flex-wrap:wrap;gap:7px;align-items:center}.bh-step{background:#f1f5f7;border:1px solid #e1e8ec;border-radius:6px;padding:8px 10px;font-size:11px;color:#506775}.bh-step-arrow{font-size:12px;color:#9aabb5}.bh-note{background:#f5f8f9;border-left:3px solid #8fb7c9;padding:11px 13px;border-radius:0 6px 6px 0;color:#637782;font-size:12px;line-height:1.65}.bh-table{width:100%;border-collapse:collapse;font-size:12px}.bh-table th{text-align:left;background:#f5f7f8;color:#536a79;font-weight:700}.bh-table th,.bh-table td{padding:10px 11px;border-bottom:1px solid #e8edef;vertical-align:top}.bh-table td{color:#627582;line-height:1.55}.bh-table td:first-child{font-weight:700;color:#334e60;white-space:nowrap}@media(max-width:800px){.bh{padding:18px 14px 36px}.bh-layout{grid-template-columns:1fr;gap:14px}.bh-nav{position:static;display:flex;overflow-x:auto;padding-bottom:5px}.bh-nav button{min-width:150px}.bh-grid3{grid-template-columns:repeat(2,minmax(0,1fr))}.bh-rule{grid-template-columns:1fr;gap:4px}}@media(max-width:520px){.bh-head{display:block}.bh-grid,.bh-grid3,.bh-logo-stage{grid-template-columns:1fr}.bh-section{padding:15px}.bh-table{display:block;overflow-x:auto}}";
+        const card=(title,children)=>h('section',{className:'bh-section'},title?h('h3',null,title):null,children);
+        const para=(text)=>h('p',{className:'bh-text'},text);
+        const list=(items)=>h('ul',{className:'bh-list'},...(items||[]).map((item,i)=>h('li',{key:i},typeof item==='string'?item:item.rule||item.name)));
+        const mini=(title,desc,tag)=>h('div',{className:'bh-mini'},tag?h('span',{className:'bh-tag'},tag):null,h('h4',null,title),h('p',null,desc));
+        const sectionHead=(eyebrow,title,lead)=>h('div',{className:'bh-intro'},h('div',{className:'bh-eyebrow'},eyebrow),h('h2',null,title),h('p',{className:'bh-lead'},lead));
+        const swatches=(items)=>h('div',{className:'bh-grid3'},...items.map((c,i)=>h('div',{className:'bh-color',key:i},h('div',{className:'bh-swatch',style:{background:c.hex}}),h('strong',null,c.name),h('code',null,c.hex),h('p',null,c.usage))));
+        const renderFoundation=()=> {
+          const f=guide.foundation;
+          return h('div',null,
+            sectionHead('01 / Strategy','Brand Foundation','品牌基础帮助市场团队判断对谁说、说什么、凭什么说。'),
+            card('Brand Positioning',h('div',null,h('p',{style:{fontSize:17,lineHeight:1.65,color:'#29475a',fontWeight:600,margin:'0 0 16px'}},f.positioning),h('div',{className:'bh-grid'},mini('Category',f.category,'品牌类别'),mini('Value Proposition',f.value,'核心价值')))),
+            card('Target Audience',h('div',{className:'bh-grid'},...f.audience.map((a,i)=>mini(a.name,a.need,'受众 '+String(i+1).padStart(2,'0'))))),
+            card('Customer Challenges',list(f.challenges)),
+            card('Differentiators',h('div',{className:'bh-grid'},...f.differentiators.map((x,i)=>mini('0'+(i+1),x)))),
+            card('Brand Personality',h('div',{className:'bh-grid3'},...f.personality.map((x,i)=>mini(x.split(' · ')[0],x.split(' · ')[1],'品牌个性')))),
+            card('Brand Principles',h('div',null,...f.principles.map((p,i)=>h('div',{className:'bh-rule',key:i},h('strong',null,p.name),h('span',null,p.rule))))
           );
-          if(active==='logo') return h('section',{style:card},
-            h('h2',{style:title},'Logo 使用规范'),
-            guide.logo?.currentFile?h('img',{src:guide.logo.currentFile,alt:'DEF Company Logo',style:{maxWidth:'100%',maxHeight:110,objectFit:'contain',margin:'4px 0 16px'}}):null,
-            field('当前版本',guide.logo?.currentVersion),
-            field('版本状态',guide.logo?.variants),
-            field('使用规则',guide.logo?.rules)
-          );
-          if(active==='colors') return h('section',{style:card},
-            h('h2',{style:title},'色彩系统'),
-            h('p',{style:{...body,marginBottom:12}},'以下为当前工作版色彩参考。来源与确认状态会一并保留，不把尚未验证的颜色标记为最终标准。'),
-            ...(guide.colors||[]).map((c,i)=>h('div',{key:i,style:{display:'grid',gridTemplateColumns:'48px minmax(0,1fr)',gap:12,alignItems:'center',padding:'12px 0',borderBottom:'1px solid #edf0f2'}},
-              h('div',{style:{height:42,borderRadius:6,background:c.hex,border:'1px solid #d8dde1'}}),
-              h('div',null,h('strong',{style:{fontSize:13,color:'#263d4d'}},c.name+' · '+c.role),h('div',{style:{fontSize:12,color:'#5d6c78',marginTop:3}},c.hex+'  |  '+c.use),h('div',{style:{fontSize:11,color:'#89939b',marginTop:3}},c.source||''))
+        };
+        const renderIdentity=()=> {
+          const l=guide.logo,c=guide.colors,t=guide.typography;
+          return h('div',null,
+            sectionHead('02 / Visual Identity','Visual Identity','统一视觉识别系统，供内容、设计和外部供应商共同执行。'),
+            card('Logo System',h('div',null,
+              h('p',{className:'bh-text',style:{marginBottom:13}},l.primary),
+              h('div',{className:'bh-logo-stage'},h('div',{className:'bh-logo-bg'},h('img',{src:'/images/logo.jpg',alt:'DEF Company logo'})),h('div',{className:'bh-logo-bg dark'},h('img',{src:'/images/logo.jpg',alt:'DEF Company logo preview'}))),
+              h('p',{className:'bh-text',style:{fontSize:11,marginTop:8}},'深色背景仅用于检查对比度；正式反白版必须使用批准的白色 Logo 文件。'),
+              ...l.variants.map((v,i)=>h('div',{className:'bh-rule',key:i},h('strong',null,v.name),h('span',null,v.detail))),
+              h('div',{className:'bh-grid',style:{marginTop:14}},mini('Clear Space',l.clearSpace),mini('Minimum Size',l.minimum),mini('Background Usage',l.background),mini('File Formats',l.formats.join(' · ')))
+            )),
+            card('Incorrect Logo Usage',h('div',{className:'bh-grid'},...l.misuse.map((x,i)=>mini('Do not · '+String(i+1).padStart(2,'0'),x,'禁止操作')))),
+            card('Color System',h('div',null,h('h4',null,'Core Brand Colors'),swatches(c.primary),h('h4',{style:{marginTop:20}},'Neutral Colors'),swatches(c.neutrals),h('h4',{style:{marginTop:20}},'Functional Colors · UI only'),swatches(c.functional),h('div',{className:'bh-note',style:{marginTop:15}},c.production))),
+            card('Typography System',h('div',null,
+              h('p',{className:'bh-text',style:{marginBottom:14}},t.family),
+              ...t.scale.map((s,i)=>h('div',{className:'bh-sample',style:{marginBottom:9},key:i},h('div',{className:'spec'},s.name+' · '+s.size+' · '+s.weight+' · Line height '+s.line),h('p',{className:'preview',style:{fontSize:s.name==='Display / H1'?32:s.name==='H2'?26:s.name==='H3'?20:s.name==='Body'?16:s.name==='Caption'?13:15,fontWeight:s.weight.includes('Bold')?700:s.weight.includes('Semibold')?600:400,lineHeight:s.line}},s.use+' — Industrial Vision, Precisely Applied'))),
+              list(t.rules)
             ))
           );
-          if(active==='typography') return h('section',{style:card},h('h2',{style:title},'字体与排版'),field('字体方案',guide.typography?.family),field('文字层级',guide.typography?.hierarchy));
-          if(active==='imagery') return h('div',{style:{display:'grid',gap:12}},...(guide.imagery||[]).map((item,i)=>h('section',{key:i,style:card},h('h3',{style:{...title,fontSize:15}},item.name),field('使用目的',item.purpose),field('推荐标准',item.good),field('避免情况',item.avoid))));
-          if(active==='layouts') return h('div',{style:{display:'grid',gap:12}},...(guide.layouts||[]).map((item,i)=>h('section',{key:i,style:card},h('h3',{style:{...title,fontSize:15}},item.name),field('适用场景',item.use))));
-          if(active==='channels') return h('div',{style:{display:'grid',gap:12}},...(guide.channels||[]).map((item,i)=>h('section',{key:i,style:card},h('h3',{style:{...title,fontSize:15}},item.name),field('内容方向',item.use),field('常见形式',item.format))));
-          if(active==='video') return h('section',{style:card},h('h2',{style:title},'视频规范'),field('核心原则',guide.video?.principle),field('需要管理的视频资产',guide.video?.assets));
-          if(active==='events') return h('div',{style:{display:'grid',gap:12}},h('section',{style:card},h('h3',{style:{...title,fontSize:15}},'展前'),h('p',{style:body},guide.events?.before)),h('section',{style:card},h('h3',{style:{...title,fontSize:15}},'展中'),h('p',{style:body},guide.events?.onsite)),h('section',{style:card},h('h3',{style:{...title,fontSize:15}},'展后'),h('p',{style:body},guide.events?.after)),h('p',{style:{...body,padding:8}},guide.events?.note));
-          if(active==='verbal') return h('section',{style:card},h('h2',{style:title},'品牌语言'),field('品牌整体表达',guide.verbal?.voice),field('不同场景的语气',guide.verbal?.tones),field('技术术语统一',guide.verbal?.terminology),field('文案规则',guide.verbal?.writing));
-          return null;
         };
-        return h('main',{style:{maxWidth:1180,margin:'0 auto',padding:'28px 26px 48px',fontFamily:'Inter,system-ui,sans-serif',color:'#24313b'}},
-          h('header',{style:{marginBottom:22}},
-            h('h1',{style:{fontSize:27,margin:'0 0 7px',color:'#203747'}},'Brand Hub'),
-            h('p',{style:{fontSize:13,color:'#667783',margin:0}},'DEF Company 品牌规范。用于内容制作前查阅，确保官网、社媒、视频与展会传播保持一致。')
-          ),
-          h('div',{style:{display:'grid',gridTemplateColumns:'minmax(205px,250px) minmax(0,1fr)',gap:18,alignItems:'start'}},
-            h('nav',{style:{display:'grid',gap:7}},
-              ...sections.map(item=>h('button',{key:item.id,type:'button',onClick:()=>setActive(item.id),style:sectionButton(item.id)},
-                h('strong',{style:{display:'block',fontSize:13}},item.label),
-                h('span',{style:{display:'block',fontSize:11,color:'#7a8993',marginTop:3}},item.desc)
-              ))
-            ),
-            h('div',{style:{minWidth:0}},content())
-          ),
-          h('style',null,'@media(max-width:720px){.def-brandhub-main{padding:16px!important}}')
-        );
+        const renderImagery=()=>h('div',null,sectionHead('03 / Photography','Photography & Imagery','让拍摄人员、设计师和内容团队对拍什么、怎么拍、怎么裁、什么不能用形成一致判断。'),...guide.imagery.map(item=>card(item.name,h('div',{className:'bh-grid'},mini('Subject',item.subject),mini('Composition',item.composition),mini('Lighting & Background',item.lighting),mini('Crop & Ratio',item.crop),h('div',{className:'bh-note',style:{gridColumn:'1 / -1'}},h('strong',null,'Avoid: '),item.avoid)))));
+        const renderLayouts=()=>h('div',null,sectionHead('04 / Layout System','Layout & Content Templates','版式规范将品牌视觉转化为可重复使用的内容结构。模板统一信息顺序和视觉层级，但不限制具体创意。'),...guide.layouts.map(item=>card(item.name,h('div',null,para(item.purpose),h('div',{className:'bh-steps',style:{margin:'13px 0'}},...item.structure.map((s,j)=>h('span',{className:'bh-step',key:j},s,j<item.structure.length-1?h('span',{className:'bh-step-arrow'},' → '):null)),h('div',{className:'bh-note'},h('strong',null,'Layout Rule: '),item.rule)))));
+        const renderApplications=()=>{const a=guide.applications;return h('div',null,sectionHead('05 / Applications','Brand Applications','同一套视觉系统延伸到官网、社媒、视频和线下展会；渠道可以调整格式，但不能各自形成一套品牌。'),card('Website',list(a.website.rules)),card('Social Media',list(a.social.rules)),card('Video System',list(a.video.rules)),card('Trade Show & Marketing Collateral',list(a.tradeShow.rules)));};
+        const render=()=>!guide?h('div',{className:'bh-section'},error||'Loading Brand Guidelines…'):active==='foundation'?renderFoundation():active==='identity'?renderIdentity():active==='imagery'?renderImagery():active==='layouts'?renderLayouts():renderApplications();
+        return h('main',{className:'bh'},h('style',null,css),h('header',{className:'bh-head'},h('div',null,h('div',{className:'bh-kicker'},'DEF COMPANY / BRAND STANDARDS'),h('h1',null,'Brand Hub'),h('p',{className:'bh-sub'},'Brand guidelines for consistent marketing and communication.')),h('div',{style:{fontSize:11,color:'#81909a',whiteSpace:'nowrap'}},'INTERNAL BRAND REFERENCE')),h('div',{className:'bh-layout'},h('nav',{className:'bh-nav','aria-label':'Brand guideline sections'},...sections.map(item=>h('button',{type:'button',key:item.id,className:active===item.id?'active':'',onClick:()=>setActive(item.id)},h('strong',null,item.label),h('small',null,item.sub)))),h('div',{className:'bh-panel'},render())));
       };
 
       CMS.registerCustomPage({ id: 'brand-hub', label: 'Brand Hub', icon: 'palette', component: BrandHub });
