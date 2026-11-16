@@ -631,7 +631,7 @@
             sectionHead('02 / Visual Identity','Visual Identity','统一视觉识别系统，供内容、设计和外部供应商共同执行。'),
             card('Logo System',h('div',null,
               h('p',{className:'bh-text',style:{marginBottom:13}},l.primary),
-              h('div',{className:'bh-logo-stage'},h('div',{className:'bh-logo-bg'},h('img',{src:'/images/logo.jpg',alt:'DEF Company logo'})),h('div',{className:'bh-logo-bg dark'},h('img',{src:'/images/logo.jpg',alt:'DEF Company logo preview'}))),
+              h('div',{className:'bh-logo-stage'},h('div',{className:'bh-logo-bg'},h('img',{src:'/images/logo.jpg',alt:'DEF Company primary logo'})),h('div',{className:'bh-logo-bg dark'},h('span',{style:{color:'#fff',fontSize:12,textAlign:'center',lineHeight:1.6}},'Reverse / White Logo\nApproved asset required'))),
               h('p',{className:'bh-text',style:{fontSize:11,marginTop:8}},'深色背景仅用于检查对比度；正式反白版必须使用批准的白色 Logo 文件。'),
               ...l.variants.map((v,i)=>h('div',{className:'bh-rule',key:i},h('strong',null,v.name),h('span',null,v.detail))),
               h('div',{className:'bh-grid',style:{marginTop:14}},mini('Clear Space',l.clearSpace),mini('Minimum Size',l.minimum),mini('Background Usage',l.background),mini('File Formats',l.formats.join(' · ')))
