@@ -84,6 +84,22 @@ collections:
       - label: 来源 / 状态
         name: source
         widget: text
+    - label: 品牌语言 Verbal Identity
+      name: verbal
+      widget: object
+      fields:
+      - label: 品牌整体表达
+        name: voice
+        widget: text
+      - label: 不同场景的语气
+        name: tones
+        widget: text
+      - label: 技术术语统一
+        name: terminology
+        widget: text
+      - label: 文案写作规则
+        name: writing
+        widget: text
     - label: 字体与排版 Typography
       name: typography
       widget: object
