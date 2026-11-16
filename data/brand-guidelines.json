@@ -1,110 +1,110 @@
 {
-  "status": "Working draft · confirm through Figma practice",
-  "foundation": "DEF Company is a fictional B2B industrial-vision brand for portfolio demonstration. It communicates precision, reliability and practical machine-vision expertise to manufacturers, automation integrators and equipment builders. Use this as the content and design reference; do not present fictional customers, certifications or performance claims as real.",
+  "status": "工作版规范 · 需要结合 Figma 实操验证",
+  "foundation": "DEF Company 是用于作品集展示的虚构 B2B 工业视觉品牌。品牌表达围绕精准、可靠、专业，面向制造企业、自动化集成商和设备制造商。它是内容与设计的工作依据；不得把虚构客户、认证或性能数据写成真实事实。",
   "logo": {
     "currentFile": "/images/logo.jpg",
-    "currentVersion": "Current website lockup: symbol on the left, DEF Company wordmark and tagline on the right.",
-    "variants": "Only the current horizontal lockup is confirmed in the supplied website asset. A stacked version and symbol-only version are not yet approved. Do not crop the existing JPG to invent official variants; create them only from an original vector/source file and review them at real sizes.",
-    "rules": "Keep the original proportions. Do not stretch, skew, rotate, recolor, add effects, redraw, or place on a busy background. Preserve clear space around the complete lockup. Use the original file rather than screenshots. A white/reversed version is not confirmed yet.",
-    "figma": "In Figma: place the supplied logo inside a Frame; set image constraints to Scale and preserve aspect ratio. Make a separate test Frame for light and dark backgrounds. To study clear space, duplicate the logo, add a Rectangle around it as a measurement guide, and keep other text/images outside that area. Reduce the Frame width gradually to test legibility. Do not detach or edit the logo artwork."
+    "currentVersion": "当前官网使用的组合：左侧图形标志，右侧 DEF Company 字标和标语。当前仓库只有这份 JPG 文件，先作为现有视觉参考，不代表已具备完整的矢量 Logo 套件。",
+    "variants": "目前只确认官网正在使用的横向组合版。尚未确认正式的上下组合版、纯图形版、反白版。不要直接裁切 JPG 伪造正式版本；需要原始矢量文件后再制作并验证。",
+    "rules": "保持原始比例，不拉伸、不倾斜、不旋转、不随意改色、不添加阴影或描边、不重新描摹。Logo 周围保留空白，不压在复杂图片上。优先使用原始文件，不使用网页截图。",
+    "figma": "Figma 操作：把 Logo 放进 Frame，保持图片比例；分别放在浅色和深色背景测试。复制一个 Frame，使用 Rectangle 画出保护空间参考线，其他文字和图片不要进入这个范围。逐渐缩小 Logo 检查字标是否仍清晰。不要 Detach 或直接修改 Logo 图形。"
   },
   "colors": [
     {
       "name": "DEF Blue",
       "hex": "#45B2D3",
-      "role": "Primary",
-      "use": "Main brand recognition: key headings, graphic anchors, links and selected visual blocks. Keep large areas balanced with white/neutral space.",
-      "source": "Current website CSS token --blue; provisional until checked against the original logo."
+      "role": "主色 Primary",
+      "use": "品牌识别主色： key headings, graphic anchors, links and selected visual blocks. Keep large areas balanced with white/neutral space.",
+      "source": "当前官网 CSS 变量 --blue; 暂定，需与原始 Logo 文件取样核对。"
     },
     {
       "name": "DEF Yellow",
       "hex": "#FFE817",
-      "role": "Primary accent",
-      "use": "High-attention actions and small highlights, such as CTA buttons, key figures or a short underline. Avoid using it for long body text.",
-      "source": "Current website CSS token --yellow; provisional until checked against the original logo."
+      "role": "强调色 Accent",
+      "use": "强调色： and small highlights, such as CTA buttons, key figures or a short underline. Avoid using it for long body text.",
+      "source": "当前官网 CSS 变量 --yellow; 暂定，需与原始 Logo 文件取样核对。"
     },
     {
       "name": "Deep Charcoal",
       "hex": "#111111",
-      "role": "Neutral",
-      "use": "Main text, strong contrast and dark backgrounds.",
-      "source": "Current website CSS token --dark."
+      "role": "中性色 Neutral",
+      "use": "正文与高对比文字：, strong contrast and dark backgrounds.",
+      "source": "当前官网 CSS 变量 --dark."
     },
     {
       "name": "Body Gray",
       "hex": "#555555",
-      "role": "Neutral",
-      "use": "Supporting text and secondary information.",
-      "source": "Current website CSS token --gray."
+      "role": "中性色 Neutral",
+      "use": "次级文字： and secondary information.",
+      "source": "当前官网 CSS 变量 --gray."
     },
     {
       "name": "Soft Gray",
       "hex": "#F9F9F9",
-      "role": "Neutral",
-      "use": "Quiet page or card backgrounds.",
-      "source": "Current website CSS token --bg."
+      "role": "中性色 Neutral",
+      "use": "页面或卡片背景：.",
+      "source": "当前官网 CSS 变量 --bg."
     },
     {
       "name": "White",
       "hex": "#FFFFFF",
-      "role": "Neutral",
-      "use": "Main background and negative space.",
-      "source": "Current website CSS token --white."
+      "role": "中性色 Neutral",
+      "use": "主要背景： and negative space.",
+      "source": "当前官网 CSS 变量 --white."
     },
     {
       "name": "Success",
       "hex": "#2E7D32",
-      "role": "Functional UI",
-      "use": "CMS status feedback only, such as successful save or approved asset. Not automatically a campaign brand color.",
-      "source": "Interface convention; not part of the confirmed brand palette."
+      "role": "功能色 Functional",
+      "use": "仅用于 CMS 状态反馈：, such as successful save or approved asset. Not automatically a campaign brand color.",
+      "source": "界面状态惯例，不属于已确认的品牌宣传色。"
     },
     {
       "name": "Warning",
       "hex": "#B7791F",
-      "role": "Functional UI",
-      "use": "CMS warning states only.",
-      "source": "Interface convention; not part of the confirmed brand palette."
+      "role": "功能色 Functional",
+      "use": "仅用于 CMS 警告状态：.",
+      "source": "界面状态惯例，不属于已确认的品牌宣传色。"
     },
     {
       "name": "Error",
       "hex": "#B42318",
-      "role": "Functional UI",
-      "use": "CMS error states only.",
-      "source": "Interface convention; not part of the confirmed brand palette."
+      "role": "功能色 Functional",
+      "use": "仅用于 CMS 错误状态：.",
+      "source": "界面状态惯例，不属于已确认的品牌宣传色。"
     }
   ],
   "typography": {
-    "family": "Inter is currently used by the website. Treat it as the working typeface, not a permanently approved corporate font until verified.",
-    "hierarchy": "Use a consistent scale: H1 for the main message; H2 for section titles; H3 for feature headings; Body for explanation; Caption for specs, notes and image credits. Establish hierarchy with size, weight, line-height and spacing before adding extra fonts.",
-    "figma": "In Figma: create Text Styles named H1 / H2 / H3 / Body / Caption. Set the font family and weight in the right Design panel. Apply styles rather than manually formatting every text layer. Keep product specifications readable and use consistent units."
+    "family": "官网目前加载 Inter。先将 Inter 作为工作字体，不把它认定为永久的企业标准字体，后续需结合多语言、可读性和品牌视觉验证。",
+    "hierarchy": "H1 主标题；H2 模块标题；H3 内容小标题；Body 正文；Caption 参数、注释和图片说明。通过字号、字重、行高和间距建立层级，不要为了区分层级不断增加字体家族。",
+    "figma": "Figma 操作：在右侧 Design 面板设置 Font Family 和 Weight；创建 H1 / H2 / H3 / Body / Caption 五个 Text Styles。后续直接套用样式，不要逐个文本手动调格式。技术参数要清晰，单位写法保持一致。"
   },
   "imagery": [
     {
-      "name": "Product photos",
+      "name": "产品照片 Product Photos",
       "purpose": "Show the camera or device itself: front, side, 3/4 angle, ports, lens mount and product family.",
       "good": "Sharp focus, accurate color and geometry, clean background, consistent angle and scale. Preserve product details.",
       "avoid": "Distorted proportions, unapproved recoloring, low resolution or decorative effects that misrepresent the product."
     },
     {
-      "name": "Application / scene photos",
+      "name": "应用场景照片 Application Photos",
       "purpose": "Show the camera working in a real industrial context: production lines, inspection stations, robotics, packaging or logistics.",
       "good": "Make the application understandable; show the camera or inspection process where possible; keep the subject clear and the environment credible.",
       "avoid": "Generic factory stock photos with no visible connection to machine vision or the stated application."
     },
     {
-      "name": "Technical detail images",
+      "name": "技术细节图 Technical Details",
       "purpose": "Explain a feature, component, imaging result, interface, sensor, inspection area or technical process.",
       "good": "Use precise close-ups, annotated diagrams or comparison crops; labels must be technically accurate and readable.",
       "avoid": "Decorative callouts, inaccurate diagrams or claims that engineering has not confirmed."
     },
     {
-      "name": "Trade show / event photos",
+      "name": "展会与活动照片 Trade Show Photos",
       "purpose": "Document booth, product demos, staff interactions, talks and real event moments.",
       "good": "Show brand presence, readable booth graphics, real equipment and meaningful interaction; capture both wide and detail shots.",
       "avoid": "Empty booth shots, cluttered backgrounds, unreadable signage or photos with unclear usage rights."
     },
     {
-      "name": "Social graphics",
+      "name": "社媒设计图 Social Graphics",
       "purpose": "Designed communication assets for LinkedIn, Facebook and other channels; these are designed graphics, not a photo category.",
       "good": "Use approved colors, typography and layouts; keep one clear message per visual.",
       "avoid": "Treating every social graphic as a separate brand style or duplicating near-identical artwork without a channel reason."
@@ -112,22 +112,22 @@
   ],
   "layouts": [
     {
-      "name": "Single-image social post",
+      "name": "社媒单图 Single-image Post",
       "use": "One main message, one strong image or product visual, concise headline and restrained supporting copy.",
       "figma": "Create a Frame using the current platform export size; use Auto Layout for text groups; keep a reusable logo and footer component."
     },
     {
-      "name": "Carousel / document post",
+      "name": "社媒轮播 Carousel",
       "use": "A consistent cover, one idea per slide, repeatable title and page-number system, clear final CTA.",
       "figma": "Create one master slide Frame, then duplicate it. Use Components for repeated headers, footers and page numbers; use Auto Layout for text blocks."
     },
     {
-      "name": "Product one-pager",
+      "name": "产品单页 Product One-pager",
       "use": "Product name, product image, value proposition, key features/specifications, application fit and enquiry CTA.",
       "figma": "Use a grid and consistent spacing. Keep technical specs in a readable table; align image, heading and CTA to the same grid."
     },
     {
-      "name": "Trade show banner / booth graphic",
+      "name": "展会主视觉与展台画面 Trade Show Graphics",
       "use": "Recognisable brand, one primary message, product/application visual, short proof points and a simple next step. Readable from a distance.",
       "figma": "Start with the supplier's exact print template and bleed/safe-area specs. Build the design in a Frame matching the final dimensions; do not guess print dimensions."
     }
@@ -135,22 +135,22 @@
   "channels": [
     {
       "name": "LinkedIn",
-      "use": "B2B thought leadership, product/application education, case-style stories and trade-show announcements. Prefer informative visuals and a clear professional message.",
+      "use": "B2B 专业观点与行业洞察, product/application education, case-style stories and trade-show announcements. Prefer informative visuals and a clear professional message.",
       "format": "Single image, carousel/document post, short native video. Confirm current platform dimensions before export."
     },
     {
       "name": "Facebook",
-      "use": "Adapt the same campaign idea for community updates, event photos and accessible product/application stories. Do not simply shrink a LinkedIn layout if the crop or reading order changes.",
+      "use": "可复用同一活动主题 for community updates, event photos and accessible product/application stories. Do not simply shrink a LinkedIn layout if the crop or reading order changes.",
       "format": "Image, album, short video and event updates."
     },
     {
       "name": "YouTube",
-      "use": "Product demonstrations, application walkthroughs, technical explainers, event highlights and company/brand videos.",
+      "use": "产品演示, application walkthroughs, technical explainers, event highlights and company/brand videos.",
       "format": "Thumbnail system, channel banner, opening/end cards, subtitles and reusable video lower-thirds."
     },
     {
       "name": "Website / Stories",
-      "use": "Use the same approved image language and type hierarchy, but prioritise reading comfort, clear article imagery and accessible alt text.",
+      "use": "沿用统一图片规范 and type hierarchy, but prioritise reading comfort, clear article imagery and accessible alt text.",
       "format": "Story cover, body images, diagrams and downloadable resources."
     }
   ],
