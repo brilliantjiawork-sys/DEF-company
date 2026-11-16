@@ -246,6 +246,8 @@
         const [query, setQuery] = CMS.React.useState('');
         const [typeFilter, setTypeFilter] = CMS.React.useState('all');
         const [useFilter, setUseFilter] = CMS.React.useState('all');
+        const [imageGroupFilter, setImageGroupFilter] = CMS.React.useState('all');
+        const [expandedAsset, setExpandedAsset] = CMS.React.useState('');
         const [loading, setLoading] = CMS.React.useState(true);
         const [error, setError] = CMS.React.useState('');
         const repo = 'brilliantjiawork-sys/DEF-company';
@@ -275,7 +277,21 @@
         };
         const baseName = value => cleanPath(value).split('/').pop().toLowerCase();
         const getType = path => pdfExt.test(path) ? 'pdf' : videoExt.test(path) ? 'video' : 'image';
-        const typeLabel = type => type === 'pdf' ? 'PDF' : type === 'video' ? 'Video' : 'Image';
+        const typeLabel = type => type === 'pdf' ? 'Document' : type === 'video' ? 'Video' : 'Image';
+        const imageGroupFor = path => {
+          const name = path.split('/').pop().toLowerCase();
+          if (/logo|brand/.test(name)) return 'Brand identity';
+          if (/event|trade|booth|show/.test(name)) return 'Trade show';
+          if (/social|linkedin|facebook|youtube/.test(name)) return 'Social media';
+          if (/story|article/.test(name)) return 'Story';
+          if (/product|camera/.test(name)) return 'Product';
+          if (/application|factory|scene/.test(name)) return 'Application';
+          if (/detail|sensor|closeup|technical/.test(name)) return 'Technical detail';
+          return 'Needs classification';
+        };
+        const usageGroup = usage => usage.kind === 'stories' ? 'Stories'
+          : (usage.kind === 'tradeArticles' || usage.kind === 'shows') ? 'Trade Shows'
+          : 'Website & Shared';
         const categoryForKind = kind => ({
           stories: 'Stories', tradeArticles: 'Trade Shows', shows: 'Trade Shows',
           socialMedia: 'Social Media', socialPage: 'Social Media',
@@ -371,7 +387,7 @@
             try {
               const repoFiles = await fetchIndex();
               const assets = repoFiles.filter(file => assetRoots.some(root => file.path.startsWith(root)) && assetExt.test(file.path))
-                .map(file => ({ ...file, name: file.path.split('/').pop(), type: getType(file.path), usages: [], categories: [] }));
+                .map(file => ({ ...file, name: file.path.split('/').pop(), type: getType(file.path), imageGroup: getType(file.path) === 'image' ? imageGroupFor(file.path) : '', usages: [], categories: [] }));
               const hasStoryFiles = repoFiles.some(file => /^data\/stories\/[^/]+\.json$/i.test(file.path));
               const hasTradeArticleFiles = repoFiles.some(file => /^data\/trade-show-articles\/[^/]+\.json$/i.test(file.path));
               const contentSources = [];
@@ -457,11 +473,13 @@
         }, []);
 
         const useOptions = [
-          ['all', 'All scenarios'], ['Stories', 'Stories'], ['Trade Shows', 'Trade Shows'],
-          ['Social Media', 'Social Media'], ['Media Contacts', 'Media Contacts'], ['Website & Brand', 'Website & Brand'], ['unused', 'Not currently used']
+          ['all', 'All content'], ['Stories', 'Stories'], ['Trade Shows', 'Trade Shows'],
+          ['Website & Shared', 'Website & Shared'], ['unused', 'Not currently used']
         ];
+        const imageGroups = ['Product', 'Application', 'Technical detail', 'Trade show', 'Social media', 'Brand identity', 'Story', 'Needs classification'];
         const filtered = items.filter(item => {
           if (typeFilter !== 'all' && item.type !== typeFilter) return false;
+          if (typeFilter === 'image' && imageGroupFilter !== 'all' && item.imageGroup !== imageGroupFilter) return false;
           if (useFilter === 'unused' && item.usages.length) return false;
           if (useFilter !== 'all' && useFilter !== 'unused' && !(item.categories || []).includes(useFilter)) return false;
           const searchText = [item.name, item.path, ...(item.categories || []), ...item.usages.flatMap(usage => [usage.title, usage.label, usage.category, ...(usage.topics || []), ...(usage.industries || [])])].join(' ').toLowerCase();
@@ -473,29 +491,36 @@
           fontWeight: active ? 700 : 500, cursor: 'pointer', font: 'inherit', fontSize: 13
         });
         const typeButton = (id, label) => h('button', { type: 'button', key: id, 'aria-pressed': String(typeFilter === id), onClick: () => setTypeFilter(typeFilter === id ? 'all' : id), style: textFilterStyle(typeFilter === id) }, label);
-        const useButton = (id, label) => h('button', { type: 'button', key: id, 'aria-pressed': String(useFilter === id), onClick: () => setUseFilter(id), style: textFilterStyle(useFilter === id) }, label);
+        const useButton = (id, label) => h('button', { type: 'button', key: id, 'aria-pressed': String((id === 'all-images' ? imageGroupFilter === 'all' : id === 'all' ? useFilter === 'all' : id === 'unused' || ['Stories','Trade Shows','Website & Shared'].includes(id) ? useFilter === id : imageGroupFilter === id)), onClick: () => { if (id === 'all-images') setImageGroupFilter('all'); else if (['Product','Application','Technical detail','Trade show','Social media','Brand identity','Story','Needs classification'].includes(id)) setImageGroupFilter(id); else setUseFilter(id); }, style: textFilterStyle((id === 'all-images' ? imageGroupFilter === 'all' : id === 'all' ? useFilter === 'all' : id === 'unused' || ['Stories','Trade Shows','Website & Shared'].includes(id) ? useFilter === id : imageGroupFilter === id)) }, label);
         const card = item => {
           const preview = item.type === 'image'
             ? h('img', { src: item.url, alt: item.name, loading: 'lazy', style: { width: '100%', height: '100%', objectFit: 'contain', display: 'block' }, onError: event => { event.currentTarget.style.display = 'none'; } })
             : item.type === 'video'
               ? h('video', { controls: true, muted: true, preload: 'metadata', style: { maxWidth: '100%', maxHeight: '100%' } }, h('source', { src: item.url }))
-              : h('a', { href: item.url, target: '_blank', rel: 'noreferrer', style: { color: '#234b68', fontSize: 13, textDecoration: 'underline' } }, 'Open PDF');
+              : h('a', { href: item.url, target: '_blank', rel: 'noreferrer', style: { color: '#234b68', fontSize: 13, textDecoration: 'underline' } }, 'Open document');
+          const isExpanded = expandedAsset === item.path;
+          const usageCounts = item.usages.reduce((acc, usage) => {
+            const group = usageGroup(usage); acc[group] = (acc[group] || 0) + 1; return acc;
+          }, {});
+          const usageSummary = Object.entries(usageCounts).map(([name, count]) => `${name} ${count}`).join(' · ');
           return h('article', { key: item.path, style: { border: '1px solid #dce3e9', borderRadius: 8, overflow: 'hidden', background: '#fff', minWidth: 0 } },
             h('div', { style: { aspectRatio: '16/9', background: '#f3f5f7', display: 'grid', placeItems: 'center', overflow: 'hidden', padding: item.type === 'pdf' ? 10 : 0, boxSizing: 'border-box' } }, preview),
             h('div', { style: { padding: 12 } },
-              h('strong', { style: { display: 'block', overflowWrap: 'anywhere', marginBottom: 4 } }, item.name),
-              h('div', { style: { fontSize: 12, color: '#657381', marginBottom: 8 } }, `${typeLabel(item.type)} · ${item.path}`),
-              item.usages.length
-                ? h('div', { style: { borderTop: '1px solid #edf0f2', paddingTop: 9 } },
-                    ...item.usages.map((usage, index) => h('div', { key: `${usage.source}|${usage.title}|${index}`, style: { fontSize: 12, lineHeight: 1.5, marginBottom: 8 } },
-                      h('div', { style: { color: '#53697a', fontSize: 11, marginBottom: 2 } }, `${usage.category} · ${usage.label}`),
-                      h('strong', { style: { display: 'block', overflowWrap: 'anywhere' } }, usage.title),
-                      h('div', { style: { color: '#657381', fontSize: 11, marginTop: 3, overflowWrap: 'anywhere' } }, 'Location · ' + (usage.location || usage.label)),
-                      (usage.topics.length || usage.industries.length) ? h('div', { style: { color: '#657381', marginTop: 3 } }, [...usage.industries, ...usage.topics].join(' · ')) : null,
-                      usage.editUrl ? h('a', { href: usage.editUrl, style: { display: 'inline-block', marginTop: 4, color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 2 } }, 'Open related content') : null
-                    ))
-                  )
-                : h('div', { style: { borderTop: '1px solid #edf0f2', paddingTop: 8, color: '#7b6262', fontSize: 12 } }, 'Not currently referenced by a known CMS entry.'),
+              h('strong', { style: { display: 'block', overflowWrap: 'anywhere', marginBottom: 4, fontSize: 13 } }, item.name),
+              h('div', { style: { fontSize: 11, color: '#657381' } }, `${typeLabel(item.type)} · ${item.type === 'image' ? item.imageGroup : item.path.split('/').pop().split('.').pop().toUpperCase()}`),
+              h('div', { style: { display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 8, marginTop: 10, paddingTop: 9, borderTop: '1px solid #edf0f2' } },
+                h('span', { style: { fontSize: 12, color: item.usages.length ? '#365f48' : '#7b6262' } }, item.usages.length ? `${item.usages.length} usage(s) · ${usageSummary}` : 'Not currently used'),
+                h('button', { type: 'button', onClick: () => setExpandedAsset(isExpanded ? '' : item.path), style: { border: 0, background: 'transparent', color: '#234b68', cursor: 'pointer', font: 'inherit', fontSize: 12, fontWeight: 650, whiteSpace: 'nowrap' } }, isExpanded ? 'Hide details' : 'View usage')
+              ),
+              isExpanded ? h('div', { style: { marginTop: 10, paddingTop: 9, borderTop: '1px solid #edf0f2' } },
+                item.usages.length ? h('div', null, ...item.usages.map((usage, index) => h('div', { key: `${usage.source}|${usage.title}|${index}`, style: { padding: '7px 0', borderBottom: '1px solid #f0f2f4', fontSize: 12 } },
+                  h('div', { style: { color: '#53697a', fontSize: 11, marginBottom: 2 } }, `${usageGroup(usage)} · ${usage.label}`),
+                  h('strong', { style: { display: 'block', overflowWrap: 'anywhere' } }, usage.title),
+                  h('div', { style: { color: '#657381', fontSize: 11, marginTop: 2 } }, usage.location || usage.label),
+                  usage.editUrl ? h('a', { href: usage.editUrl, style: { display: 'inline-block', marginTop: 5, color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 2 } }, 'Open content to replace asset →') : null
+                ))) : h('p', { style: { color: '#7b6262', fontSize: 12, margin: 0 } }, 'No current content references.'),
+                h('a', { href: item.url, target: '_blank', rel: 'noreferrer', style: { display: 'inline-block', marginTop: 9, color: '#234b68', fontSize: 12, textDecoration: 'underline' } }, 'Open original file')
+              ) : null
             )
           );
         };
@@ -505,13 +530,20 @@
             h('a', { href: '#/assets/-/all', style: { display: 'inline-block', color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 3, fontWeight: 600, fontSize: 13 } }, 'Upload / Manage Assets')
           ),
           h('h2', { style: { margin: '24px 0 12px', fontSize: 17, fontWeight: 700 } }, 'All Assets'),
-          h('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, marginBottom: 10 } },
-            h('strong', { style: { fontSize: 13, fontWeight: 650, marginRight: 3 } }, 'All types:'),
-            typeButton('image', 'Images'), typeButton('pdf', 'PDF'), typeButton('video', 'Videos')
+          h('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14, marginBottom: 12 } },
+            h('strong', { style: { fontSize: 13, fontWeight: 650 } }, 'File type'),
+            typeButton('all', 'All'), typeButton('image', 'Images'), typeButton('video', 'Videos'), typeButton('pdf', 'Documents')
           ),
-          h('input', { value: query, onChange: event => setQuery(event.target.value), placeholder: 'Search file name, Story title, or Trade Show title', 'aria-label': 'Search Library', style: { width: '100%', maxWidth: 680, boxSizing: 'border-box', padding: '11px 12px', border: '1px solid #ccd5dd', borderRadius: 6, font: 'inherit', margin: '4px 0 16px' } }),
-          h('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 8, margin: '0 0 18px' } },
-            h('strong', { style: { fontSize: 13, fontWeight: 650, marginRight: 3 } }, 'Used in:'),
+          typeFilter === 'image' ? h('div', { style: { margin: '0 0 14px', padding: '10px 12px', background: '#f7f9fb', borderRadius: 6 } },
+            h('div', { style: { fontSize: 12, fontWeight: 650, color: '#43596b', marginBottom: 7 } }, 'Image category'),
+            h('div', { style: { display: 'flex', flexWrap: 'wrap', gap: 12 } },
+              useButton('all-images', 'All images'),
+              ...imageGroups.map(group => h('button', { type: 'button', key: group, onClick: () => setImageGroupFilter(group), style: textFilterStyle(imageGroupFilter === group) }, group))
+            )
+          ) : null,
+          h('input', { value: query, onChange: event => setQuery(event.target.value), placeholder: 'Search file name or content title', 'aria-label': 'Search Library', style: { width: '100%', maxWidth: 680, boxSizing: 'border-box', padding: '11px 12px', border: '1px solid #ccd5dd', borderRadius: 6, font: 'inherit', margin: '4px 0 13px' } }),
+          h('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, margin: '0 0 18px' } },
+            h('strong', { style: { fontSize: 13, fontWeight: 650 } }, 'Used in'),
             ...useOptions.map(([id, label]) => useButton(id, label))
           ),
           loading ? h('p', { style: { color: '#657381' } }, 'Loading assets and usage references…') : null,
@@ -521,18 +553,79 @@
           !loading && !error && !filtered.length ? h('p', { style: { padding: 18, border: '1px solid #e4e9ed', borderRadius: 8, color: '#657381' } }, 'No matching assets. Try another search term or filter.') : null
         );
       };
+
+      const BrandHub = () => {
+        const [guide, setGuide] = CMS.React.useState(null);
+        const [section, setSection] = CMS.React.useState('foundation');
+        const [error, setError] = CMS.React.useState('');
+        CMS.React.useEffect(() => {
+          let cancelled = false;
+          fetch('https://raw.githubusercontent.com/brilliantjiawork-sys/DEF-company/main/data/brand-guidelines.json', { cache: 'no-store' })
+            .then(response => { if (!response.ok) throw new Error('Brand guidelines unavailable'); return response.json(); })
+            .then(data => { if (!cancelled) setGuide(data); })
+            .catch(err => { if (!cancelled) setError(err.message); });
+          return () => { cancelled = true; };
+        }, []);
+        const nav = [
+          ['foundation','Brand foundation'],['logo','Logo'],['colors','Color system'],
+          ['type','Typography'],['imagery','Imagery'],['layouts','Layouts'],
+          ['channels','Social & video'],['events','Trade show']
+        ];
+        const panelStyle = { border:'1px solid #dce3e9', borderRadius:8, padding:18, background:'#fff', marginBottom:12 };
+        const muted = { color:'#657381', fontSize:13, lineHeight:1.6 };
+        const title = text => h('h2',{style:{fontSize:18,margin:'0 0 12px',color:'#1b2733'}},text);
+        const para = text => h('p',{style:{...muted,margin:'7px 0'}},text);
+        const sectionNav = h('nav',{style:{display:'flex',flexWrap:'wrap',gap:7,margin:'0 0 18px'}},
+          ...nav.map(([id,label])=>h('button',{key:id,type:'button',onClick:()=>setSection(id),style:{border:section===id?'1px solid #8eafc6':'1px solid #dce3e9',background:section===id?'#eef5f9':'#fff',color:'#263b4c',borderRadius:6,padding:'8px 11px',font:'inherit',fontSize:13,fontWeight:section===id?650:500,cursor:'pointer'}},label))
+        );
+        const colorCard = item => h('div',{key:item.name,style:{display:'flex',gap:12,alignItems:'center',padding:'10px 0',borderBottom:'1px solid #edf0f2'}},
+          h('div',{style:{width:48,height:42,borderRadius:6,background:item.hex,border:'1px solid rgba(0,0,0,.12)',flex:'0 0 auto'}}),
+          h('div',{style:{minWidth:0,flex:1}},
+            h('strong',{style:{display:'block',fontSize:13}},item.name),
+            h('div',{style:{fontSize:12,color:'#657381'}},item.hex+' · '+item.role),
+            para(item.use),
+            h('div',{style:{fontSize:11,color:'#8a6a31'}},item.source)
+          ),
+          h('button',{type:'button',onClick:()=>navigator.clipboard?.writeText(item.hex),style:{border:'1px solid #dce3e9',background:'#fff',borderRadius:5,padding:'6px 8px',fontSize:11,cursor:'pointer'}},'Copy HEX')
+        );
+        const sectionContent = !guide ? para(error || 'Loading brand guidelines…') : ({
+          foundation: h('section',{style:panelStyle},title('Brand foundation'),para(guide.foundation),para(guide.status)),
+          logo: h('section',{style:panelStyle},title('Logo system'),
+            h('img',{src:guide.logo.currentFile,alt:'DEF Company current logo',style:{maxWidth:'100%',maxHeight:110,objectFit:'contain',display:'block',margin:'10px 0 16px'}}),
+            h('strong',{style:{fontSize:13}},'Current approved reference'),para(guide.logo.currentVersion),
+            h('strong',{style:{fontSize:13}},'Logo variations'),para(guide.logo.variants),
+            h('strong',{style:{fontSize:13}},'Usage rules'),para(guide.logo.rules),
+            h('strong',{style:{fontSize:13}},'Figma practice'),para(guide.logo.figma)
+          ),
+          colors: h('section',{style:panelStyle},title('Color system'),para('Primary colors establish recognition. Neutrals support readable layouts. Accent colors draw attention. Functional colors communicate interface status and are not automatically brand campaign colors.'),...guide.colors.map(colorCard)),
+          type: h('section',{style:panelStyle},title('Typography'),h('strong',{style:{fontSize:13}},'Working typeface'),para(guide.typography.family),h('strong',{style:{fontSize:13}},'Text hierarchy'),para(guide.typography.hierarchy),h('strong',{style:{fontSize:13}},'Figma practice'),para(guide.typography.figma)),
+          imagery: h('section',{style:panelStyle},title('Image direction'),...guide.imagery.map(item=>h('div',{key:item.name,style:{padding:'12px 0',borderBottom:'1px solid #edf0f2'}},h('strong',{style:{fontSize:14}},item.name),para(item.purpose),h('div',{style:{fontSize:12,color:'#365f48',marginTop:5}},'Use: '+item.good),h('div',{style:{fontSize:12,color:'#8a5555',marginTop:4}},'Avoid: '+item.avoid)))),
+          layouts: h('section',{style:panelStyle},title('Layout system'),...guide.layouts.map(item=>h('div',{key:item.name,style:{padding:'12px 0',borderBottom:'1px solid #edf0f2'}},h('strong',{style:{fontSize:14}},item.name),para(item.use),h('div',{style:{fontSize:12,color:'#53697a'}},'Figma: '+item.figma))),
+          channels: h('section',{style:panelStyle},title('Social & video'),...guide.channels.map(item=>h('div',{key:item.name,style:{padding:'12px 0',borderBottom:'1px solid #edf0f2'}},h('strong',{style:{fontSize:14}},item.name),para(item.use),h('div',{style:{fontSize:12,color:'#53697a'}},'Formats: '+item.format))),h('div',{style:{marginTop:14}},h('strong',{style:{fontSize:14}},'Video asset reuse'),para(guide.video.principle),para(guide.video.assets),para(guide.video.figma))),
+          events: h('section',{style:panelStyle},title('Trade show applications'),h('strong',{style:{fontSize:13}},'Before the show'),para(guide.events.before),h('strong',{style:{fontSize:13}},'On site'),para(guide.events.onsite),h('strong',{style:{fontSize:13}},'After the show'),para(guide.events.after),para(guide.events.note))
+        })[section];
+        return h('main',{style:{maxWidth:1120,margin:'0 auto',padding:'28px 26px 44px',fontFamily:'Inter,system-ui,sans-serif',color:'#1b2733'}},
+          h('div',{style:{display:'flex',justifyContent:'space-between',alignItems:'baseline',gap:12,flexWrap:'wrap'}},
+            h('div',null,h('h1',{style:{fontSize:27,margin:'0 0 5px'}},'Brand Hub'),h('p',{style:muted},'The working reference for creating consistent DEF Company content.')),
+            h('a',{href:'#/collections/content-management/entries/brand_guidelines',style:{fontSize:12,color:'#234b68',textDecoration:'underline'}},'Edit guidelines')
+          ),
+          sectionNav,sectionContent
+        );
+      };
+
+      CMS.registerCustomPage({ id: 'brand-hub', label: 'Brand Hub', icon: 'palette', component: BrandHub });
       CMS.registerCustomPage({ id: 'media-library', label: 'Library', icon: 'library_books', component: MediaLibrary });
       CMS.registerCustomPage({ id: 'content-navigator', label: 'Content Management', icon: 'dashboard_customize', component: ContentManagement });
 
-      // Reduce Sveltia's global page toolbar to the two custom entry points only.
+      // Reduce Sveltia's global page toolbar to the three custom entry points only.
       // Previous versions relied on tooltip text or exact routes for native controls;
       // several native icons have neither, so those selectors could not hide them.
       // This version keeps the two named custom pages by route/label and hides every
       // other compact icon control in the top-left toolbar area, including unlabeled icons.
       const normalized = (value) => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
-      const primaryRoutes = new Set(['#/pages/media-library', '#/pages/content-navigator']);
-      const primaryLabels = new Set(['library', 'content management']);
-      const primaryIconTokens = new Set(['library_books', 'dashboard_customize']);
+      const primaryRoutes = new Set(['#/pages/brand-hub', '#/pages/media-library', '#/pages/content-navigator']);
+      const primaryLabels = new Set(['brand hub', 'library', 'content management']);
+      const primaryIconTokens = new Set(['palette', 'library_books', 'dashboard_customize']);
       const resourceRowPattern = /^(?:all resources|global resources|internal content resources\s*\(system\)|全部资源|全局资源|内部内容资源（系统）|内部内容资源 \(系统\))(?:\s*\d+)?$/i;
       const navItemSelector = 'a, button, [role="button"], [role="link"], [role="menuitem"], [role="treeitem"], li';
       const observedRoots = new WeakSet();
