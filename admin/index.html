@@ -668,9 +668,9 @@
               h('p',{className:'bh-text',style:{marginTop:7}},'辅助蓝色阶由主蓝延展：浅蓝用于浅色信息承载，深蓝用于深色区块与反白内容；它们不是额外的品牌核心色。'),
               h('h4',{style:{marginTop:18}},'Neutral Colors · 中性色'),swatches(c.neutral),
               h('h4',{style:{marginTop:18}},'Background & Text · 背景与文字搭配'),
-              h('div',{className:'bh-grid'},...c.backgroundText.map((x,i)=>mini(x.background+' · '+x.backgroundHex,'标题 / 正文：'+x.title+' / '+x.body+'；强调：'+x.accent,'固定搭配')),
+              h('div',{className:'bh-grid'},...c.backgroundText.map((x,i)=>mini(x.background+' · '+x.backgroundHex,'标题 / 正文：'+x.title+' / '+x.body+'；强调：'+x.accent,'固定搭配'))),
               h('h4',{style:{marginTop:18}},'Graphic Elements · 图形元素'),
-              h('div',{className:'bh-grid'},...c.graphicElements.map((x,i)=>mini(x.element,x.color+' · '+x.hex,'默认用色')),
+              h('div',{className:'bh-grid'},...c.graphicElements.map((x,i)=>mini(x.element,x.color+' · '+x.hex,'默认用色'))),
               h('div',{className:'bh-note',style:{marginTop:14}},...c.rules.map((x,i)=>h('p',{key:i,style:{margin:'0 0 6px'}},'• '+x))),
               h('p',{className:'bh-text',style:{marginTop:10}},c.production)
             )),
