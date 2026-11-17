@@ -99,7 +99,7 @@
           const api = (path, params = {}) => {
             const url = new URL(`https://api.github.com/repos/${repo}/${path}`);
             Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
-            return fetch(url.toString(), { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
+            return fetch(url.toString(), { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-cache' });
           };
           const jsonFromResponse = async response => {
             if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
@@ -114,10 +114,9 @@
             // had succeeded. The sync-content-index workflow updates this file
             // after a Story is merged into main, then Pages deploys the new version.
             const manifestUrl = new URL('/data/database.json', window.location.origin);
-            manifestUrl.searchParams.set('_', String(Date.now()));
             const response = await fetch(manifestUrl.toString(), {
               headers: { 'Cache-Control': 'no-cache' },
-              cache: 'no-store'
+              cache: 'no-cache'
             });
             if (!response.ok) throw new Error(`Story manifest ${response.status}`);
             const manifest = await response.json();
