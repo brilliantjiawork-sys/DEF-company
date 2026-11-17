@@ -98,14 +98,14 @@
       {
         "name": "Light Blue",
         "hex": "#D9EEF4",
-        "role": "Supporting · Light",
-        "usage": "信息卡片和浅色辅助图形。"
+        "role": "Supporting Blue · Tint",
+        "usage": "主蓝的浅色色阶，用于浅色信息卡片和辅助图形；不替代白色或浅灰作为页面底色。"
       },
       {
         "name": "Deep Blue",
         "hex": "#24677C",
-        "role": "Supporting · Dark",
-        "usage": "深色背景和深色图形区域。"
+        "role": "Supporting Blue · Shade",
+        "usage": "主蓝体系中的深色色阶，用于深色区块、深色图形和白色文字的承载背景；不是独立品牌核心色。"
       }
     ],
     "neutral": [
@@ -208,9 +208,9 @@
       }
     ],
     "rules": [
-      "浅色背景默认使用 White #FFFFFF 或 Light Gray #F2F5F6；标题和正文统一使用 Charcoal #222B32。",
-      "深色背景默认使用 Deep Blue #24677C 或 Charcoal #222B32；标题和正文统一使用 White #FFFFFF。",
-      "Light Blue #D9EEF4 主要用于信息卡片和辅助图形，不将浅色背景限定为浅蓝色。",
+      "品牌核心色为 Primary Blue #45B2D3 与 Accent Yellow #FFE817；辅助蓝色阶用于扩展层次，不另立为核心品牌色。",
+      "浅色页面背景优先使用 White #FFFFFF 或 Light Gray #F2F5F6，标题和正文使用 Charcoal #222B32。",
+      "Light Blue #D9EEF4 用于信息卡片和浅色辅助图形；Deep Blue #24677C 用于深色区块，搭配 White #FFFFFF 文字。",
       "Accent Yellow #FFE817 用于 CTA、关键数字和小面积重点标记，不用于浅色背景上的小字号文字。"
     ],
     "production": "以上为 DEF 作品集品牌规范建议值；正式印刷色值须按材质与工艺打样确认。"
@@ -257,6 +257,23 @@
     "rules": [
       "官网、社媒图片和展会物料共用这五类文字角色；按实际版面选择，不要求每张图全部使用。",
       "产品型号、数字、单位和技术缩写按正式产品资料原样书写。"
+    ],
+    "articleHeadingLevels": [
+      {
+        "level": "H1",
+        "name": "Article Title",
+        "usage": "每篇文章只使用一个，作为文章主标题。"
+      },
+      {
+        "level": "H2",
+        "name": "Section Heading",
+        "usage": "用于划分主要内容章节，是长文章最常用的内部标题。"
+      },
+      {
+        "level": "H3",
+        "name": "Subsection Heading",
+        "usage": "仅在 H2 章节下确实需要拆分多个小主题时使用，不必为了凑层级而添加。"
+      }
     ]
   },
   "imagery": [
