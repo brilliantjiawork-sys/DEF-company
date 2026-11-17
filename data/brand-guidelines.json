@@ -295,7 +295,9 @@
         "sample": "CTA",
         "textColor": "#222B32",
         "contrast": "11.51:1",
-        "usage": "黄色按钮背景搭配深炭灰按钮文字。"
+        "usage": "黄色按钮背景搭配深炭灰按钮文字。",
+        "sampleBackground": "#FFE817",
+        "sampleTextColor": "#222B32"
       },
       {
         "element": "Secondary Button",
@@ -304,7 +306,9 @@
         "sample": "CTA",
         "textColor": "#222B32",
         "contrast": "5.87:1",
-        "usage": "主蓝按钮背景搭配深炭灰按钮文字。"
+        "usage": "主蓝按钮背景搭配深炭灰按钮文字。",
+        "sampleBackground": "#45B2D3",
+        "sampleTextColor": "#222B32"
       },
       {
         "element": "Functional Icon / Divider",
@@ -313,7 +317,9 @@
         "sample": "◆",
         "textColor": "#FFFFFF",
         "contrast": "≥5.29:1",
-        "usage": "浅色背景上的功能图标、重点数字和结构性分隔线。"
+        "usage": "浅色背景上的功能图标、重点数字和结构性分隔线。",
+        "sampleBackground": "#FFFFFF",
+        "sampleTextColor": "#24677C"
       },
       {
         "element": "Key Information · Dark",
@@ -322,7 +328,9 @@
         "sample": "01",
         "textColor": "#222B32",
         "contrast": "≥5.08:1",
-        "usage": "深蓝或深炭灰背景上的重点数字与短信息。"
+        "usage": "深蓝或深炭灰背景上的重点数字与短信息。",
+        "sampleBackground": "#24677C",
+        "sampleTextColor": "#FFE817"
       },
       {
         "element": "Icon / Text · Dark",
@@ -331,17 +339,19 @@
         "sample": "Aa",
         "textColor": "#222B32",
         "contrast": "≥6.35:1",
-        "usage": "深色背景上的主要文字与功能图标。"
+        "usage": "深色背景上的主要文字与功能图标。",
+        "sampleBackground": "#24677C",
+        "sampleTextColor": "#FFFFFF"
       }
     ],
     "contrastStandards": {
       "standard": {
         "ratio": "4.5:1",
-        "definition": "普通文字：不符合下方“大字号文字”条件的所有文字。包括 12–18px 正文、说明文字、图片注释和按钮文字。"
+        "definition": "普通文字：不符合下方“大字号文字”条件的所有文字。例如 12–23px 常规文字，以及小于 18.7px 的粗体文字；正文、说明、图片注释和按钮文字均适用。"
       },
       "large": {
         "ratio": "3:1",
-        "definition": "大字号文字：字号至少 24px（常规字重 400–600）；或字号至少 18.7px 且字重至少 700（粗体）。两项满足其中一项即可。"
+        "definition": "大字号文字：字号至少 24px（不限制字重）；或字号至少 18.7px 且字重至少 700（粗体）。两项满足其中一项即可。"
       },
       "nonText": {
         "ratio": "3:1",
