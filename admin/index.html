@@ -711,9 +711,13 @@
           const social = groups.find(g=>g.id==='social');
           const trade = groups.find(g=>g.id==='trade-show');
           const renderTemplate = item => card(item.name,h('div',null,
-            para(item.purpose),
-            h('div',{className:'bh-steps',style:{margin:'12px 0'}},...item.structure.map((step,index)=>h('span',{className:'bh-step',key:index},step))),
-            h('div',{className:'bh-note'},h('strong',null,'执行要求：'),item.rule)
+            item.purpose ? para(item.purpose) : null,
+            h('div',{className:'bh-grid',style:{marginTop:10}},
+              item.assetType ? mini('Asset Type · 资产类型',item.assetType) : null,
+              item.status ? mini('Status · 当前状态',item.status) : null
+            ),
+            Array.isArray(item.structure) && item.structure.length ? h('div',{className:'bh-steps',style:{margin:'12px 0'}},...item.structure.map((step,index)=>h('span',{className:'bh-step',key:index},step))) : null,
+            item.rule ? h('div',{className:'bh-note'},h('strong',null,'执行要求：'),item.rule) : null
           ));
           const socialBlock = social ? h('section',{className:'bh-template-group'},
             h('div',{className:'bh-template-group-head'},h('h3',null,'01 · '+social.name),h('p',null,social.purpose)),
