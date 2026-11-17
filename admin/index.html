@@ -352,9 +352,9 @@
         const recordsFrom = (data, kind, path, explicitSlug = '') => {
           if (!data) return [];
           const toRecord = (record, slug, fallback) => ({
-            record, kind, source: path, slug: slug || String(record?.slug || ''),
+            record, kind, source: path, slug: String(record?.slug || slug || '').trim(),
             title: titleForRecord(record, fallback, kind), category: categoryForKind(kind),
-            editUrl: getEditUrl(kind, slug || String(record?.slug || ''), path)
+            editUrl: getEditUrl(kind, String(record?.slug || slug || '').trim(), path)
           });
           if (kind === 'stories' && Array.isArray(data.articles)) return data.articles.map(record => toRecord(record, String(record.slug || ''), 'Story'));
           if (kind === 'tradeArticles' && Array.isArray(data.articles)) return data.articles.map(record => toRecord(record, String(record.slug || ''), 'Trade Show Article'));
@@ -421,8 +421,11 @@
                 // Add the real per-file slug to folder-based content so the edit link points at the exact entry.
                 if ((kind === 'stories' || kind === 'tradeArticles') && source.path.match(/^data\/(?:stories|trade-show-articles)\/[^/]+\.json$/i) && records.length) {
                   const last = records[records.length - 1];
-                  last.slug = source.slug;
-                  last.editUrl = getEditUrl(kind, source.slug);
+                  // CMS entry identity follows the explicit slug stored in the record.
+                  // The filename is only a fallback when the record has no slug.
+                  const resolvedSlug = String(last.record?.slug || last.slug || source.slug || '').trim();
+                  last.slug = resolvedSlug;
+                  last.editUrl = getEditUrl(kind, resolvedSlug);
                 }
               });
 
