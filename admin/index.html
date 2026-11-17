@@ -216,7 +216,7 @@
         if (view !== 'dashboard') return h(ContentEntryListing, { key: view, view, onBack: openView('dashboard') });
         return h('div', { className: 'def-cms-dashboard' },
           h('h1', null, 'Content Management'),
-          h('p', { className: 'intro' }, 'Edit website content and publishing settings. Assets are managed separately in Library.'),
+          h('p', { className: 'intro' }, 'Edit website content and publishing settings. Assets are managed separately in Brand Assets.'),
           group('Stories', [
             link('New Story', '#/collections/stories/new', 'plus'),
             link('Draft Stories', '#/pages/content-navigator?view=draft-stories', 'draft'),
@@ -247,13 +247,15 @@
         );
       };
 
-      // Only Library and Content Management are registered as custom pages.
+      // Only Brand Hub, Brand Assets and Content Management are registered as custom pages.
       // Article management shortcuts live inside Content Management, not as toolbar icons.
 
 
-      // Library indexes assets already in the public repository and relates them back
+      // Brand Assets indexes files already in the public repository and relates them back
       // to the CMS records that reference them. Uploading/replacing files remains in
       // Sveltia's native Asset Library, reached from the action at the top of this page.
+      let brandAssetsCache = null;
+      let brandAssetsCacheAt = 0;
       const MediaLibrary = () => {
         const [items, setItems] = CMS.React.useState([]);
         const [query, setQuery] = CMS.React.useState('');
@@ -392,14 +394,17 @@
 
         CMS.React.useEffect(() => {
           let cancelled = false;
+          const cacheIsFresh = brandAssetsCache && (Date.now() - brandAssetsCacheAt < 30000);
+          if (brandAssetsCache) setItems(brandAssetsCache);
+          if (cacheIsFresh) { setLoading(false); return () => { cancelled = true; }; }
           const fetchIndex = async () => {
             try {
-              const response = await fetch(`https://data.jsdelivr.com/v1/package/gh/${repo}@${branch}/flat`, { cache: 'no-store' });
+              const response = await fetch(`https://data.jsdelivr.com/v1/package/gh/${repo}@${branch}/flat`, { cache: 'default' });
               if (!response.ok) throw new Error(`CDN ${response.status}`);
               const data = await response.json();
               return (data.files || []).map(file => ({ path: cleanPath(file.name), size: file.size || 0, url: `https://cdn.jsdelivr.net/gh/${repo}@${branch}/${cleanPath(file.name)}` }));
             } catch (cdnError) {
-              const response = await fetch(`https://api.github.com/repos/${repo}/git/trees/${branch}?recursive=1`, { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-store' });
+              const response = await fetch(`https://api.github.com/repos/${repo}/git/trees/${branch}?recursive=1`, { headers: { Accept: 'application/vnd.github+json' }, cache: 'default' });
               if (!response.ok) throw new Error(`素材索引暂时不可用（GitHub ${response.status}）。请刷新后重试。`);
               const data = await response.json();
               if (data.truncated) throw new Error('仓库文件列表超过单次索引范围，无法保证素材完整。');
@@ -408,9 +413,13 @@
           };
           const fetchJson = async path => {
             try {
-              const response = await fetch(`https://raw.githubusercontent.com/${repo}/${branch}/${path}`, { cache: 'no-store' });
-              if (!response.ok) return null;
-              return await response.json();
+              const local = await fetch('/' + path, { cache: 'default' });
+              if (local.ok) return await local.json();
+            } catch (_) { /* Use the public repository fallback below. */ }
+            try {
+              const remote = await fetch(`https://raw.githubusercontent.com/${repo}/${branch}/${path}`, { cache: 'default' });
+              if (!remote.ok) return null;
+              return await remote.json();
             } catch (_) { return null; }
           };
           const load = async () => {
@@ -418,16 +427,11 @@
               const repoFiles = await fetchIndex();
               const assets = repoFiles.filter(file => assetRoots.some(root => file.path.startsWith(root)) && assetExt.test(file.path))
                 .map(file => ({ ...file, name: file.path.split('/').pop(), type: getType(file.path), imageGroup: getType(file.path) === 'image' ? imageGroupFor(file.path) : '', videoGroup: getType(file.path) === 'video' ? videoGroupFor(file.path) : '', documentGroup: getType(file.path) === 'pdf' ? documentGroupFor(file.path) : '', usages: [], categories: [] }));
-              const hasStoryFiles = repoFiles.some(file => /^data\/stories\/[^/]+\.json$/i.test(file.path));
-              const hasTradeArticleFiles = repoFiles.some(file => /^data\/trade-show-articles\/[^/]+\.json$/i.test(file.path));
-              const contentSources = [];
-              if (hasStoryFiles) {
-                repoFiles.filter(file => /^data\/stories\/[^/]+\.json$/i.test(file.path)).forEach(file => contentSources.push({ path: file.path, kind: 'stories', slug: file.path.split('/').pop().replace(/\.json$/i, '') }));
-              } else contentSources.push({ path: 'data/database.json', kind: 'stories-index' });
-              if (hasTradeArticleFiles) {
-                repoFiles.filter(file => /^data\/trade-show-articles\/[^/]+\.json$/i.test(file.path)).forEach(file => contentSources.push({ path: file.path, kind: 'tradeArticles', slug: file.path.split('/').pop().replace(/\.json$/i, '') }));
-              } else contentSources.push({ path: 'data/event-coverage.json', kind: 'tradeArticles-index' });
-              staticData.forEach(([path, kind]) => contentSources.push({ path, kind, slug: path.split('/').pop().replace(/\.json$/i, '') }));
+              const contentSources = [
+                { path: 'data/database.json', kind: 'stories-index', slug: 'database' },
+                { path: 'data/event-coverage.json', kind: 'tradeArticles-index', slug: 'event-coverage' },
+                ...staticData.map(([path, kind]) => ({ path, kind, slug: path.split('/').pop().replace(/\.json$/i, '') }))
+              ];
               const loadedSources = await Promise.all(contentSources.map(async source => ({ ...source, data: await fetchJson(source.path) })));
               const records = [];
               loadedSources.forEach(source => {
@@ -493,7 +497,10 @@
                 const categories = [...new Set(unique.map(usage => usage.category))];
                 return { ...asset, usages: unique, categories, category: categories[0] || 'unused' };
               });
-              if (!cancelled) { setItems(mapped.sort((a, b) => a.name.localeCompare(b.name))); setError(''); }
+              const sortedAssets = mapped.sort((a, b) => a.name.localeCompare(b.name));
+              brandAssetsCache = sortedAssets;
+              brandAssetsCacheAt = Date.now();
+              if (!cancelled) { setItems(sortedAssets); setError(''); }
             } catch (err) {
               if (!cancelled) setError(err?.message || '读取素材失败。');
             } finally { if (!cancelled) setLoading(false); }
@@ -560,7 +567,7 @@
         };
         return h('main', { className: 'def-library', style: { maxWidth: 1180, margin: '0 auto', padding: '28px 24px 44px', color: '#1b2733', fontFamily: 'Inter, system-ui, sans-serif' } },
           h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 } },
-            h('div', null, h('h1', { style: { margin: '0 0 5px', fontSize: 28, fontWeight: 700 } }, 'Library'), h('p', { style: { margin: 0, color: '#687887', fontSize: 14 } }, 'Find website files and see where each asset is used. Image subcategories are initial filename-based suggestions; unclear files are marked Needs classification.')),
+            h('div', null, h('h1', { style: { margin: '0 0 5px', fontSize: 28, fontWeight: 700 } }, 'Brand Assets'), h('p', { style: { margin: 0, color: '#687887', fontSize: 14 } }, 'Find website files and see where each asset is used. Image subcategories are initial filename-based suggestions; unclear files are marked Needs classification.')),
             h('a', { href: '#/assets/-/all', style: { display: 'inline-block', color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 3, fontWeight: 600, fontSize: 13 } }, 'Upload / Manage Assets')
           ),
           h('h2', { style: { margin: '24px 0 12px', fontSize: 17, fontWeight: 700 } }, 'All Assets'),
@@ -587,15 +594,15 @@
               ...documentGroups.map(group => useButton(group, group))
             )
           ) : null,
-          h('input', { value: query, onChange: event => setQuery(event.target.value), placeholder: 'Search file name or content title', 'aria-label': 'Search Library', style: { width: '100%', maxWidth: 680, boxSizing: 'border-box', padding: '11px 12px', border: '1px solid #ccd5dd', borderRadius: 6, font: 'inherit', margin: '4px 0 13px' } }),
+          h('input', { value: query, onChange: event => setQuery(event.target.value), placeholder: 'Search file name or content title', 'aria-label': 'Search Brand Assets', style: { width: '100%', maxWidth: 680, boxSizing: 'border-box', padding: '11px 12px', border: '1px solid #ccd5dd', borderRadius: 6, font: 'inherit', margin: '4px 0 13px' } }),
           h('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, margin: '0 0 18px' } },
             h('strong', { style: { fontSize: 13, fontWeight: 650 } }, 'Used in'),
             ...useOptions.map(([id, label]) => useButton(id, label))
           ),
-          loading ? h('p', { style: { color: '#657381' } }, 'Loading assets and usage references…') : null,
+          loading && !items.length ? h('p', { style: { color: '#657381' } }, 'Loading Brand Assets…') : loading ? h('p', { style: { color: '#657381', fontSize: 12 } }, 'Refreshing asset index; existing files remain visible.') : null,
           error ? h('p', { role: 'alert', style: { padding: 14, border: '1px solid #e4b5b5', color: '#8b2424', borderRadius: 6 } }, error) : null,
-          !loading && !error ? h('p', { style: { color: '#596775', fontSize: 13, margin: '0 0 14px' } }, `${items.length} assets · ${filtered.length} shown · Usage is calculated from content currently on main; draft references may not be included.`) : null,
-          !loading && !error && filtered.length ? h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 14 } }, ...filtered.map(card)) : null,
+          items.length ? h('p', { style: { color: '#596775', fontSize: 13, margin: '0 0 14px' } }, `${items.length} assets · ${filtered.length} shown · Usage is calculated from published content on main; draft references may not be included.`) : null,
+          items.length && filtered.length ? h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 14 } }, ...filtered.map(card)) : null,
           !loading && !error && !filtered.length ? h('p', { style: { padding: 18, border: '1px solid #e4e9ed', borderRadius: 8, color: '#657381' } }, 'No matching assets. Try another search term or filter.') : null
         );
       };
@@ -607,7 +614,7 @@
         const [loading, setLoading] = CMS.React.useState(true);
         CMS.React.useEffect(() => {
           let cancelled = false;
-          fetch('/data/brand-guidelines.json', { cache: 'no-store' })
+          fetch('/data/brand-guidelines.json', { cache: 'default' })
             .then(r => { if (!r.ok) throw new Error('Brand Guidelines could not be loaded.'); return r.json(); })
             .then(data => {
               const required = data && data.foundation && data.logo && data.colors && data.typography && Array.isArray(data.imagery) && Array.isArray(data.layouts) && data.applications;
@@ -626,6 +633,7 @@
           {id:'applications',label:'Applications',sub:'官网 · 社媒 · 展会'}
         ];
         const css = ".bh{width:100%;max-width:1180px;min-width:0;margin:0 auto;padding:24px 24px 48px;color:#263946;font-family:Inter,\"Noto Sans SC\",Arial,sans-serif;font-size:16px;line-height:1.65}\n.bh *{box-sizing:border-box;min-width:0;overflow-wrap:anywhere}\n.bh-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;padding-bottom:16px;border-bottom:1px solid #dfe6eb;margin-bottom:20px}\n.bh-kicker{font-size:11px;font-weight:700;letter-spacing:.1em;color:#648092;text-transform:uppercase;margin-bottom:6px}\n.bh h1{font-size:28px;line-height:1.3;font-weight:700;margin:0;color:#1e3546}\n.bh-sub{font-size:15px;color:#71818d;margin:6px 0 0;line-height:1.55}\n.bh-layout{display:grid;grid-template-columns:196px minmax(0,1fr);gap:20px;align-items:start;width:100%}\n.bh-nav{display:grid;gap:5px;position:sticky;top:14px;min-width:0}\n.bh-nav button{border:1px solid transparent;background:transparent;text-align:left;padding:10px 11px;border-radius:7px;cursor:pointer;color:#405564;font:inherit;width:100%}\n.bh-nav button:hover{background:#f5f8fa}\n.bh-nav button.active{background:#edf5f8;border-color:#d4e4eb;color:#1f4d64}\n.bh-nav strong{display:block;font-size:15px;font-weight:650;line-height:1.4}\n.bh-nav small{display:block;color:#84929c;font-size:13px;margin-top:3px;line-height:1.4}\n.bh-panel{min-width:0;width:100%}\n.bh-intro{padding:0 0 15px}\n.bh-eyebrow{font-size:12px;color:#7290a1;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}\n.bh-panel h2{font-size:23px;line-height:1.35;font-weight:700;margin:0 0 5px;color:#203a4c}\n.bh-lead{font-size:15px;line-height:1.6;color:#627583;margin:0;max-width:760px}\n.bh-section{background:#fff;border:1px solid #e0e7eb;border-radius:8px;padding:18px 19px;margin:0 0 12px;min-width:0;width:100%}\n.bh-section h3{font-size:18px;line-height:1.4;font-weight:650;color:#263f50;margin:0 0 11px}\n.bh-section h4{font-size:16px;line-height:1.4;font-weight:650;color:#2b4658;margin:0 0 5px}\n.bh-text{font-size:16px;line-height:1.65;color:#5d707d;margin:0}\n.bh-positioning{font-size:16px!important;line-height:1.65!important;font-weight:400!important;color:#425968!important;margin:0 0 12px!important;max-width:78ch}\n.bh-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}\n.bh-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%}\n.bh-mini{border:1px solid #e7ecef;border-radius:7px;padding:12px;background:#fff;min-width:0}\n.bh-mini p{font-size:15px;line-height:1.6;color:#667985;margin:4px 0 0}\n.bh-tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.03em;color:#527286;background:#eef4f7;border-radius:4px;padding:3px 6px;margin-bottom:6px}\n.bh-list{margin:0;padding-left:18px;color:#5d707d}\n.bh-list li{font-size:15px;line-height:1.65;margin:0 0 7px;padding-left:2px}\n.bh-swatch-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0}\n.bh-swatch{display:grid;grid-template-columns:48px minmax(0,1fr);gap:9px;align-items:start;border:1px solid #e7ecef;border-radius:7px;padding:9px;min-width:0}\n.bh-swatch-chip{width:48px;height:48px;border:1px solid #dce3e8;border-radius:5px}\n.bh-swatch strong{display:block;font-size:15px;color:#294456}\n.bh-swatch code{display:block;font-size:13px;color:#647987;margin:2px 0}\n.bh-swatch small{display:block;font-size:13px;color:#82919b}\n.bh-swatch p{font-size:14px;line-height:1.5;color:#657985;margin:4px 0 0}\n.bh-color strong{display:block;font-size:16px;color:#2c4658}\n.bh-color code{font-size:14px;color:#71818d}\n.bh-color p{font-size:14px;line-height:1.5;color:#74838d;margin:5px 0 0}\n.bh-sample{border:1px solid #e5eaed;border-radius:7px;padding:12px;background:#fff}\n.bh-sample .spec{font-size:13px;color:#84939c;margin-bottom:6px}\n.bh-sample .preview{font-size:14px!important;line-height:1.55!important;color:#263f50;margin:0}\n.bh-logo-stage{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}\n.bh-logo-bg{min-height:112px;border:1px solid #e3e8eb;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:12px;background:#fff}\n.bh-logo-bg.dark{background:#203746}\n.bh-logo-bg img{max-width:100%;max-height:78px;object-fit:contain}\n.bh-steps{display:flex;flex-wrap:wrap;gap:6px;align-items:center}\n.bh-step{background:#f1f5f7;border:1px solid #e1e8ec;border-radius:5px;padding:8px 10px;font-size:14px;color:#506775}\n.bh-step-arrow{font-size:11px;color:#9aabb5}\n.bh-note{background:#f5f8f9;border-left:3px solid #8fb7c9;padding:12px 14px;border-radius:0 5px 5px 0;color:#637782;font-size:14px;line-height:1.6}\n.bh-table{width:100%;border-collapse:collapse;font-size:15px}\n.bh-table th{text-align:left;background:#f5f7f8;color:#536a79;font-weight:650}\n.bh-table th,.bh-table td{padding:9px 10px;border-bottom:1px solid #e8edef;vertical-align:top}\n.bh-table td{color:#627582;line-height:1.55}\n.bh-table td:first-child{font-weight:650;color:#334e60;white-space:nowrap}\n@media(max-width:1050px){.bh{padding:20px 16px 36px}.bh-layout{grid-template-columns:170px minmax(0,1fr);gap:14px}.bh-grid3{grid-template-columns:repeat(2,minmax(0,1fr))}}\n@media(max-width:760px){.bh-layout{grid-template-columns:1fr;gap:12px}.bh-nav{position:static;display:flex;overflow-x:auto;padding-bottom:5px}.bh-nav button{min-width:145px;width:auto}.bh-grid{grid-template-columns:1fr}.bh-logo-stage{grid-template-columns:1fr}.bh-grid3,.bh-swatch-grid{grid-template-columns:1fr}.bh-section{padding:15px}.bh-head{display:block}.bh-table{display:block;overflow-x:auto}}\n\n.bh-overview{background:#edf4f7;border:1px solid #c9dce5;border-left:4px solid #6f9fb5;border-radius:9px;padding:20px 21px;margin:0 0 16px}\n.bh-overview-head{display:flex;align-items:center;gap:10px;margin:0 0 6px}\n.bh-overview-kicker{font-size:12px;font-weight:750;letter-spacing:.08em;color:#547b90}\n.bh-overview-title{font-size:20px;font-weight:700;color:#213f52;line-height:1.35}\n.bh-overview-desc{font-size:15px;color:#5e7482;line-height:1.6;margin:0 0 13px}\n.bh-overview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}\n.bh-overview-item{background:#fff;border:1px solid #d8e4e9;border-radius:7px;padding:12px 14px}\n.bh-overview-item strong{display:block;font-size:16px;color:#2b4b5e;line-height:1.45}\n.bh-overview-item p{font-size:14px;color:#667c89;line-height:1.55;margin:5px 0 0}\n.bh-template-group{border:1px solid #dce6eb;border-radius:9px;padding:18px;margin:0 0 16px;background:#fff}\n.bh-template-group-head{padding:0 0 12px;margin:0 0 13px;border-bottom:1px solid #e5edf1}\n.bh-template-group-head h3{font-size:20px!important;margin:0 0 4px!important;color:#24475b!important}\n.bh-template-group-head p{font-size:15px;color:#687d89;line-height:1.6;margin:0}\n.bh-phase{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;padding:14px 0;border-bottom:1px solid #edf1f3}\n.bh-phase:last-child{border-bottom:0}\n.bh-phase-label{font-size:16px;font-weight:700;color:#31556a}\n.bh-phase-goal{font-size:14px;color:#6a7e89;margin-top:4px;line-height:1.5}\n.bh-phase-content{min-width:0}\n.bh-phase-content p{font-size:15px;line-height:1.6;color:#536b79;margin:0 0 8px}\n.bh-phase-content .bh-list li{font-size:14px}\n.bh-funnel{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:12px 0}\n.bh-funnel-step{background:#edf4f7;border:1px solid #d5e3e9;border-radius:7px;padding:11px;min-width:0}\n.bh-funnel-step strong{display:block;font-size:14px;color:#2d5064;margin-bottom:5px}\n.bh-funnel-step p{font-size:13px;color:#627987;line-height:1.5;margin:0}\n.bh-subsection{margin-top:15px;padding:14px;background:#f7f9fa;border:1px solid #e5ecef;border-radius:7px}\n.bh-subsection h4{font-size:16px;margin:0 0 6px;color:#2b4b5e}\n.bh-subsection p{font-size:14px;line-height:1.6;color:#637783;margin:0 0 8px}\n@media(max-width:900px){.bh-funnel{grid-template-columns:repeat(2,minmax(0,1fr))}}\n@media(max-width:760px){.bh-overview-grid{grid-template-columns:1fr}.bh-phase{grid-template-columns:1fr;gap:6px}.bh-funnel{grid-template-columns:1fr}}\n\n.bh-color-system{display:grid;gap:26px}.bh-color-group{padding:22px 0 4px;border-top:1px solid #e4ebef}.bh-color-group:first-child{padding-top:0;border-top:0}.bh-color-group-head{margin:0 0 15px}.bh-color-group-head h4{font-size:18px!important;margin:0 0 5px!important;color:#24475b!important}.bh-color-group-head p{font-size:14px;color:#687d89;line-height:1.6;margin:0}.bh-palette{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.bh-palette-item{border:1px solid #e1e8ec;border-radius:8px;overflow:hidden;background:#fff}.bh-palette-chip{height:76px;border-bottom:1px solid #e5eaed}.bh-palette-meta{padding:11px 13px}.bh-palette-meta strong{display:block;font-size:15px;color:#294456}.bh-palette-meta code,.bh-inline-swatch code,.bh-functional-item code{display:block;font-size:13px;color:#647987;margin-top:2px}.bh-palette-meta small{display:block;color:#7a8b95;font-size:12px;margin-top:3px}.bh-palette-meta p{font-size:13px;color:#687d89;line-height:1.5;margin:6px 0 0}.bh-color-subhead{font-size:15px;color:#38586b;margin:18px 0 10px}.bh-inline-palette{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 12px}.bh-inline-swatch{display:grid;grid-template-columns:34px auto;column-gap:8px;align-items:center;border:1px solid #e2e8eb;border-radius:7px;padding:7px 10px;min-width:145px}.bh-inline-swatch i{grid-row:span 2;width:34px;height:34px;border:1px solid #dce3e8;border-radius:4px}.bh-inline-swatch span{font-size:13px;font-weight:650;color:#3d5665}.bh-inline-swatch code{margin:0}.bh-combo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px;margin:12px 0 18px}.bh-combo{border:1px solid #e0e7eb;border-radius:8px;overflow:hidden}.bh-combo-preview{min-height:132px;padding:18px;display:flex;flex-direction:column;justify-content:center;gap:7px}.bh-combo-preview strong{font-size:16px}.bh-combo-preview p{font-size:14px;margin:0}.bh-combo-preview span{align-self:flex-start;border:1px solid;border-radius:4px;padding:3px 7px;font-size:12px;font-weight:650}.bh-combo-meta{padding:10px 12px;background:#fff}.bh-combo-meta strong{font-size:14px;color:#334f60}.bh-combo-meta p{font-size:12px;color:#71818d;margin:3px 0 0}.bh-functional-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.bh-functional-item{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #e4eaed;border-radius:7px}.bh-functional-item>i{width:38px;height:38px;flex:0 0 38px;border:1px solid #dce3e8;border-radius:5px}.bh-functional-item strong{font-size:14px;color:#385466}.bh-functional-item p{font-size:12px;color:#71818d;margin:1px 0}.bh-functional-item code{margin:0}.bh-color-rules{margin-top:18px;padding:16px 18px;background:#f3f7f9;border-left:3px solid #75a8bd;border-radius:0 7px 7px 0}.bh-color-rules h4{margin:0 0 8px!important}.bh-color-rules p{font-size:14px;line-height:1.6;color:#5f7481;margin:0 0 6px}.bh-logo-rules{display:grid;gap:10px;margin-top:18px}.bh-logo-rules .bh-rule{padding:12px 14px;border:1px solid #e5ebee;border-radius:7px}.bh-logo-rules .bh-rule strong{display:block;color:#345366;margin-bottom:4px}.bh-logo-rules .bh-rule p{font-size:14px;color:#687d89;margin:0;line-height:1.6}.bh-logo-rules .bh-note{margin-top:2px}@media(max-width:760px){.bh-palette,.bh-combo-grid,.bh-functional-list{grid-template-columns:1fr}.bh-inline-swatch{flex:1 1 140px}}";
+        const cssEnhancements = ".bh-intro{padding:17px 19px 18px;margin:0 0 20px;background:#F2F5F6;border-left:5px solid #24677C;border-radius:0 8px 8px 0}\\n.bh-intro .bh-eyebrow{color:#24677C;margin-bottom:7px}\\n.bh-section{border:1px solid #DCE3E8;border-left:4px solid #24677C;border-radius:8px;padding:20px 21px;margin:0 0 20px;box-shadow:0 1px 2px rgba(20,45,60,.03)}\\n.bh-section h3{padding:0 0 13px;margin:0 0 19px;border-bottom:2px solid #D9EEF4}\\n.bh-logo-stage{gap:16px;align-items:stretch}\\n.bh-logo-bg{min-height:148px;padding:20px}\\n.bh-logo-bg small{display:block;margin-top:18px!important;font-size:13px;line-height:1.6;letter-spacing:.01em}\\n.bh-logo-rules{gap:14px;margin-top:26px}\\n.bh-logo-rules .bh-rule{padding:16px 18px}\\n.bh-logo-rules .bh-rule strong{margin-bottom:8px}\\n.bh-logo-rules .bh-rule p{margin:0;line-height:1.75}\\n.bh-logo-rules .bh-note{margin-top:7px;padding:15px 17px;line-height:1.75}\\n.bh-color-system{gap:20px}\\n.bh-color-group{padding:21px 0 3px;border-top:2px solid #24677C}\\n.bh-color-group:first-child{padding-top:0;border-top:0}\\n.bh-priority-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}\\n.bh-priority-item{display:grid;grid-template-columns:54px minmax(0,1fr);gap:11px;align-items:center;padding:11px;border:1px solid #DCE3E8;border-radius:7px;background:#fff}\\n.bh-priority-chip{display:block;width:54px;height:48px;border:1px solid #DCE3E8;border-radius:5px}\\n.bh-priority-item strong{display:block;font-size:14px;line-height:1.4;color:#294456}\\n.bh-priority-item code{display:block;font-size:13px;color:#40515B;margin-top:2px}\\n.bh-priority-item p{font-size:13px;line-height:1.55;color:#40515B;margin:5px 0 0}\\n.bh-combo-grid{gap:14px;margin:14px 0 20px}\\n.bh-combo-preview{min-height:148px;padding:20px;gap:9px}\\n.bh-combo-preview span{padding:6px 10px;border:0;border-radius:4px;font-size:13px}\\n.bh-combo-meta{padding:13px 14px}\\n.bh-combo-meta p{font-size:13px;line-height:1.5;color:#40515B;margin:5px 0 0}\\n.bh-functional-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}\\n.bh-functional-item{padding:12px;align-items:center}\\n.bh-functional-chip{display:grid;place-items:center;width:48px;height:44px;flex:0 0 48px;border:1px solid #DCE3E8;border-radius:5px;font-size:13px;font-weight:750}\\n.bh-functional-item strong{display:block;font-size:14px;color:#294456}\\n.bh-functional-item p{font-size:12px;color:#40515B;margin:2px 0}\\n.bh-functional-item code{font-size:12px;color:#40515B}\\n.bh-functional-item small{display:block;font-size:12px;line-height:1.5;color:#40515B;margin-top:4px}\\n.bh-contrast-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}\\n.bh-contrast-item{padding:14px;border:1px solid #DCE3E8;border-radius:7px;background:#F8FAFB}\\n.bh-contrast-item strong{display:block;font-size:15px;line-height:1.45;color:#24677C}\\n.bh-contrast-item p{font-size:13px;line-height:1.6;color:#40515B;margin:7px 0 0}\\n.bh-contrast-foot{font-size:13px;line-height:1.65;color:#40515B;margin:12px 0 0}\\n.bh-color-rules{border-left-color:#24677C}\\n@media(max-width:760px){.bh-priority-list,.bh-functional-list,.bh-contrast-grid{grid-template-columns:1fr}.bh-logo-stage{grid-template-columns:1fr}.bh-section{padding:17px}}";
         const card=(title,children)=>h('section',{className:'bh-section'},title?h('h3',null,title):null,children);
         const para=(text)=>h('p',{className:'bh-text'},text);
         const list=(items)=>h('ul',{className:'bh-list'},...(items||[]).map((item,i)=>h('li',{key:i},typeof item==='string'?item:item.rule||item.name)));
@@ -646,64 +654,53 @@
           );
         };
         const renderIdentity=()=> {
-          const l=guide.logo,c=guide.colors,t=guide.typography;
-          const palette=(title,desc,items)=>h('section',{className:'bh-color-group'},
-            h('div',{className:'bh-color-group-head'},h('h4',null,title),h('p',null,desc)),
-            h('div',{className:'bh-palette'},...items.map((x,i)=>h('div',{className:'bh-palette-item',key:i},
-              h('div',{className:'bh-palette-chip',style:{background:x.hex}}),
-              h('div',{className:'bh-palette-meta'},h('strong',null,x.name),h('code',null,x.hex),x.role?h('small',null,x.role):null,h('p',null,x.usage))
-            )))
-          );
-          const combo=(x)=>h('div',{className:'bh-combo',key:x.background},
-            h('div',{className:'bh-combo-preview',style:{background:x.backgroundHex}},
-              h('strong',{style:{color:x.title}},'DEF Company · '+x.background),
-              h('p',{style:{color:x.body}},'Industrial Vision, Precisely Applied'),
-              h('span',{style:{color:x.accent,borderColor:x.accent}},'重点信息 / CTA')
-            ),
-            h('div',{className:'bh-combo-meta'},h('strong',null,x.background+' · '+x.backgroundHex),
-              h('p',null,'标题与正文：'+x.title),h('p',null,'强调色：'+x.accent))
-          );
+          const l=guide.logo,c=guide.colors,t=guide.typography,contrast=c.contrastStandards;
+          const palette=(title,desc,items)=>h('section',{className:'bh-color-group'},h('div',{className:'bh-color-group-head'},h('h4',null,title),h('p',null,desc)),h('div',{className:'bh-palette'},...items.map((x,i)=>h('div',{className:'bh-palette-item',key:i},h('div',{className:'bh-palette-chip',style:{background:x.hex}}),h('div',{className:'bh-palette-meta'},h('strong',null,x.name),h('code',null,x.hex),x.role?h('small',null,x.role):null,h('p',null,x.usage)))));
+          const combo=x=>h('div',{className:'bh-combo',key:x.background},h('div',{className:'bh-combo-preview',style:{background:x.backgroundHex}},h('strong',{style:{color:x.title}},'DEF Company · '+x.background),h('p',{style:{color:x.body}},'Industrial Vision, Precisely Applied'),h('span',{style:{background:x.accent,color:x.accentText,borderColor:x.accent}},'CTA / 重点信息')),h('div',{className:'bh-combo-meta'},h('strong',null,x.background+' Background · '+x.backgroundHex),h('p',null,'标题 '+x.title+' · '+x.titleContrast),h('p',null,'正文 '+x.body+' · '+x.bodyContrast),h('p',null,'CTA 背景 '+x.accent+' / 文字 '+x.accentText+' · '+x.accentContrast)));
+          const priorityItem=x=>h('div',{className:'bh-priority-item',key:x.name},h('i',{className:'bh-priority-chip',style:{background:x.hex}}),h('div',null,h('strong',null,x.priority+' · '+x.name),h('code',null,x.hex),h('p',null,x.usage)));
+          const functionalItem=x=>h('div',{className:'bh-functional-item',key:x.element},h('div',{className:'bh-functional-chip',style:{background:x.hex,color:x.textColor||'#FFFFFF'}},x.sample||''),h('div',null,h('strong',null,x.element),h('p',null,x.color),h('code',null,x.hex+' · '+x.contrast),h('small',null,x.usage)));
           return h('div',null,
             sectionHead('02 / Visual Identity','Visual Identity','品牌视觉规范：Logo、颜色和字体。每个主题独立分区，直接展示视觉样例与使用规则。'),
             card('01 · Logo System｜Logo 系统',h('div',null,
-              h('p',{className:'bh-text',style:{marginBottom:16}},l.primary),
+              h('p',{className:'bh-text',style:{marginBottom:18}},l.primary),
               h('div',{className:'bh-logo-stage'},
-                h('div',{className:'bh-logo-bg'},h('div',{style:{textAlign:'center'}},h('div',{style:{fontSize:25,fontWeight:750,letterSpacing:'.04em',color:'#222B32'}},h('span',{style:{color:'#45B2D3'}},'DEF'),' COMPANY'),h('small',{style:{display:'block',marginTop:12,color:'#667985'}},'彩色标准版 · Full-color'))),
-                h('div',{className:'bh-logo-bg dark'},h('div',{style:{textAlign:'center'}},h('div',{style:{fontSize:25,fontWeight:750,letterSpacing:'.04em',color:'#FFFFFF'}},'DEF COMPANY'),h('small',{style:{display:'block',marginTop:12,color:'#DCE7EC'}},'白色反白版 · Reverse White'))),
-                h('div',{className:'bh-logo-bg',style:{gridColumn:'1 / -1',background:'#F2F5F6'}},h('div',{style:{textAlign:'center'}},h('div',{style:{fontSize:25,fontWeight:750,letterSpacing:'.04em',color:'#222222'}},'DEF COMPANY'),h('small',{style:{display:'block',marginTop:12,color:'#667985'}},'黑色单色版 · Monochrome'))
+                h('div',{className:'bh-logo-bg'},h('div',{style:{textAlign:'center'}},h('div',{style:{fontSize:25,fontWeight:750,letterSpacing:'.04em',color:'#222B32'}},h('span',{style:{color:'#45B2D3'}},'DEF'),' COMPANY'),h('small',null,'彩色标准版 · Full-color'))),
+                h('div',{className:'bh-logo-bg dark'},h('div',{style:{textAlign:'center'}},h('div',{style:{fontSize:25,fontWeight:750,letterSpacing:'.04em',color:'#FFFFFF'}},'DEF COMPANY'),h('small',null,'白色反白版 · Reverse White'))),
+                h('div',{className:'bh-logo-bg',style:{background:'#F2F5F6'}},h('div',{style:{textAlign:'center'}},h('div',{style:{fontSize:25,fontWeight:750,letterSpacing:'.04em',color:'#222222'}},'DEF COMPANY'),h('small',null,'黑色单色版 · Monochrome')))
               ),
-              h('div',{className:'bh-logo-rules'},...l.variants.map((v,i)=>h('div',{className:'bh-rule',key:i},h('strong',null,v.name),h('p',null,v.detail))),
-                h('div',{className:'bh-note'},l.displayNote),h('div',{className:'bh-note'},l.printNote)),
-              h('div',{className:'bh-grid',style:{marginTop:18}},mini('Clear Space',l.clearSpace),mini('Minimum Size',l.minimum),mini('Background Usage',l.background),mini('File Formats',l.formats.join(' · ')))
+              h('div',{className:'bh-logo-rules'},...l.variants.map((v,i)=>h('div',{className:'bh-rule',key:i},h('strong',null,v.name),h('p',null,v.detail))),h('div',{className:'bh-note'},l.displayNote),h('div',{className:'bh-note'},l.printNote)),
+              h('div',{className:'bh-grid',style:{marginTop:22}},mini('Clear Space',l.clearSpace),mini('Minimum Size',l.minimum),mini('Background Usage',l.background),mini('File Formats',l.formats.join(' · ')))
             )),
             card('02 · Color System｜色彩系统',h('div',{className:'bh-color-system'},
               palette('Brand Colors｜品牌核心色','品牌识别的核心颜色：主蓝与强调黄。',c.brand),
               palette('Supporting Blue｜辅助蓝色阶','由主蓝延展，只保留浅蓝与深蓝两个层级；它们不是额外的品牌核心色。',c.supporting),
-              palette('Neutral Colors｜中性色','用于页面背景、标题、正文、辅助说明和边框。',c.neutral),
+              palette('Neutral Colors｜中性色','页面底色、内容分区和正文基础颜色。',c.neutral),
+              h('section',{className:'bh-color-group'},h('div',{className:'bh-color-group-head'},h('h4',null,'Color Usage Priority｜颜色使用优先级'),h('p',null,'按以下顺序选择颜色；每个色块都对应明确的品牌用途。')),h('div',{className:'bh-priority-list'},...c.usagePriority.map(priorityItem))),
               h('section',{className:'bh-color-group'},
-                h('div',{className:'bh-color-group-head'},h('h4',null,'Background & Text｜背景与文字搭配'),h('p',null,'先看背景色，再看文字颜色。每一种组合都提供实际预览。')),
-                h('h5',{className:'bh-color-subhead'},'浅色背景 · Background Palette'),
-                h('div',{className:'bh-inline-palette'},...c.neutral.filter(x=>['White','Light Gray'].includes(x.name)).map((x,i)=>h('div',{className:'bh-inline-swatch',key:i},h('i',{style:{background:x.hex}}),h('span',null,x.name),h('code',null,x.hex))),
-                  ...c.supporting.filter(x=>x.name==='Light Blue').map((x,i)=>h('div',{className:'bh-inline-swatch',key:'lb'+i},h('i',{style:{background:x.hex}}),h('span',null,x.name),h('code',null,x.hex)))),
-                h('h5',{className:'bh-color-subhead'},'浅色背景文字 · Text Palette'),
-                h('div',{className:'bh-inline-palette'},...['#222B32','#40515B'].map((hex,i)=>h('div',{className:'bh-inline-swatch',key:i},h('i',{style:{background:hex}}),h('span',null,i===0?'Primary Text':'Secondary Text'),h('code',null,hex)))),
-                h('div',{className:'bh-combo-grid'},...c.backgroundText.filter(x=>['White','Light Gray'].includes(x.background)).map(combo)),
-                h('h5',{className:'bh-color-subhead'},'深色背景 · Background Palette'),
+                h('div',{className:'bh-color-group-head'},h('h4',null,'Background & Text｜背景与文字搭配'),h('p',null,'先选择背景色，再按对应色值选择标题、正文和 CTA 文字。以下组合均已核算对比度。')),
+                h('h5',{className:'bh-color-subhead'},'浅色背景 · Light Backgrounds'),
+                h('div',{className:'bh-inline-palette'},...c.backgroundText.filter(x=>['White','Light Gray','Light Blue'].includes(x.background)).map((x,i)=>h('div',{className:'bh-inline-swatch',key:i},h('i',{style:{background:x.backgroundHex}}),h('span',null,x.background),h('code',null,x.backgroundHex)))),
+                h('h5',{className:'bh-color-subhead'},'浅色背景文字 · Text Colors'),
+                h('div',{className:'bh-inline-palette'},h('div',{className:'bh-inline-swatch'},h('i',{style:{background:'#222B32'}}),h('span',null,'Primary Text'),h('code',null,'#222B32')),h('div',{className:'bh-inline-swatch'},h('i',{style:{background:'#40515B'}}),h('span',null,'Secondary Text'),h('code',null,'#40515B'))),
+                h('div',{className:'bh-combo-grid'},...c.backgroundText.filter(x=>['White','Light Gray','Light Blue'].includes(x.background)).map(combo)),
+                h('h5',{className:'bh-color-subhead'},'深色背景 · Dark Backgrounds'),
                 h('div',{className:'bh-inline-palette'},...c.backgroundText.filter(x=>['Deep Blue','Charcoal'].includes(x.background)).map((x,i)=>h('div',{className:'bh-inline-swatch',key:i},h('i',{style:{background:x.backgroundHex}}),h('span',null,x.background),h('code',null,x.backgroundHex)))),
-                h('h5',{className:'bh-color-subhead'},'深色背景文字 · Text Palette'),
-                h('div',{className:'bh-inline-palette'},...['#FFFFFF','#D9EEF4'].map((hex,i)=>h('div',{className:'bh-inline-swatch',key:i},h('i',{style:{background:hex,border:'1px solid #dce3e8'}}),h('span',null,i===0?'Primary Text':'Secondary Text'),h('code',null,hex)))),
+                h('h5',{className:'bh-color-subhead'},'深色背景文字 · Text Colors'),
+                h('div',{className:'bh-inline-palette'},h('div',{className:'bh-inline-swatch'},h('i',{style:{background:'#FFFFFF',border:'1px solid #DCE3E8'}}),h('span',null,'Primary Text'),h('code',null,'#FFFFFF')),h('div',{className:'bh-inline-swatch'},h('i',{style:{background:'#D9EEF4'}}),h('span',null,'Secondary Text'),h('code',null,'#D9EEF4'))),
                 h('div',{className:'bh-combo-grid'},...c.backgroundText.filter(x=>['Deep Blue','Charcoal'].includes(x.background)).map(combo))
               ),
+              h('section',{className:'bh-color-group'},h('div',{className:'bh-color-group-head'},h('h4',null,'Functional Colors｜功能性颜色'),h('p',null,'只规定最常用的按钮、图标、重点信息和分隔线颜色。')),h('div',{className:'bh-functional-list'},...c.functionalColors.map(functionalItem))),
               h('section',{className:'bh-color-group'},
-                h('div',{className:'bh-color-group-head'},h('h4',null,'Functional Colors｜功能性颜色'),h('p',null,'按钮、图标、重点数字、卡片与边框的默认用色。')),
-                h('div',{className:'bh-functional-list'},...c.graphicElements.map((x,i)=>h('div',{className:'bh-functional-item',key:i},h('i',{style:{background:x.hex.split(' / ')[0]}}),h('div',null,h('strong',null,x.element),h('p',null,x.color),h('code',null,x.hex)))))
+                h('div',{className:'bh-color-group-head'},h('h4',null,'Contrast Standards｜文字与图形对比度'),h('p',null,'采用 WCAG 2.2 AA 标准。对比度是前景色与背景色的亮度差，不是色相差。')),
+                h('div',{className:'bh-contrast-grid'},h('div',{className:'bh-contrast-item'},h('strong',null,'普通文字 · '+contrast.standard.ratio),h('p',null,contrast.standard.definition)),h('div',{className:'bh-contrast-item'},h('strong',null,'大字号文字 · '+contrast.large.ratio),h('p',null,contrast.large.definition)),h('div',{className:'bh-contrast-item'},h('strong',null,'信息图标与控件 · '+contrast.nonText.ratio),h('p',null,contrast.nonText.definition))),
+                h('p',{className:'bh-contrast-foot'},'字号单位为 CSS px；字重按字体实际粗细判断。按钮文字即使使用 14–16px Semibold，也仍按普通文字执行 4.5:1。')
               ),
               h('div',{className:'bh-color-rules'},h('h4',null,'Color Usage Rules｜使用规则'),...c.rules.map((x,i)=>h('p',{key:i},x)),h('p',null,c.production))
             )),
             card('03 · Typography｜字体系统',h('div',null,
-              h('p',{className:'bh-text',style:{marginBottom:16}},t.family),
-              ...t.styles.map((x,i)=>h('div',{className:'bh-sample',style:{marginBottom:12},key:i},h('div',{className:'spec'},x.name+' · '+x.size+' · '+x.weight+' · Line height '+x.line),h('p',{className:'preview',style:{fontSize:x.name.includes('Page Title')?32:x.name.includes('Section Title')?25:x.name==='Body'?16:x.name==='Caption'?13:15,fontWeight:x.weight.includes('Bold')?700:x.weight.includes('Semibold')?600:400,lineHeight:x.line}},x.use+' — Industrial Vision, Precisely Applied'))),
-              h('div',{className:'bh-note',style:{marginTop:16}},h('strong',null,'Long-form Article Headings｜官网长文章标题层级'),...t.articleHeadingLevels.map((x,i)=>h('p',{key:i},x.level+' · '+x.name+'：'+x.usage))),
+              h('p',{className:'bh-text',style:{marginBottom:18}},t.family),
+              ...t.styles.map((x,i)=>h('div',{className:'bh-sample',style:{marginBottom:14},key:i},h('div',{className:'spec'},x.name+' · '+x.size+' · '+x.weight+' · Line height '+x.line),h('p',{className:'preview',style:{fontSize:x.name.includes('Page Title')?32:x.name.includes('Section Title')?25:x.name==='Body'?16:x.name==='Caption'?13:15,fontWeight:x.weight.includes('Bold')?700:x.weight.includes('Semibold')?600:400,lineHeight:x.line}},x.use+' — Industrial Vision, Precisely Applied'))),
+              h('div',{className:'bh-note',style:{marginTop:18}},h('strong',null,'Long-form Article Headings｜官网长文章标题层级'),...t.articleHeadingLevels.map((x,i)=>h('p',{key:i},x.level+' · '+x.name+'：'+x.usage))),
               list(t.rules)
             ))
           );
@@ -774,11 +771,11 @@
           );
         };
                 const render=()=>!guide?h('div',{className:'bh-section'},h('h3',null,loading?'正在加载品牌规范':'品牌规范暂时无法加载'),h('p',{className:'bh-text'},loading?'正在读取品牌规范数据，请稍候。':(error||'请检查品牌规范数据文件后重试。')),!loading?h('button',{type:'button',onClick:()=>{setLoading(true);setError('');fetch('/data/brand-guidelines.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(data=>setGuide(data)).catch(err=>setError(err.message)).finally(()=>setLoading(false));},style:{marginTop:12,padding:'8px 12px',border:'1px solid #cbd9e0',borderRadius:6,background:'#fff',color:'#294b60',font:'inherit',cursor:'pointer'}},'重新加载'):null):active==='foundation'?renderFoundation():active==='identity'?renderIdentity():active==='imagery'?renderImagery():active==='layouts'?renderLayouts():renderApplications();
-        return h('main',{className:'bh'},h('style',null,css),h('header',{className:'bh-head'},h('div',null,h('div',{className:'bh-kicker'},'DEF COMPANY / BRAND STANDARDS'),h('h1',null,'Brand Hub'),h('p',{className:'bh-sub'},'Brand guidelines for consistent marketing and communication.')),h('div',{style:{fontSize:11,color:'#81909a',whiteSpace:'nowrap'}},'INTERNAL BRAND REFERENCE')),h('div',{className:'bh-layout'},h('nav',{className:'bh-nav','aria-label':'Brand guideline sections'},...sections.map(item=>h('button',{type:'button',key:item.id,className:active===item.id?'active':'',onClick:()=>setActive(item.id)},h('strong',null,item.label),h('small',null,item.sub)))),h('div',{className:'bh-panel'},render())));
+        return h('main',{className:'bh'},h('style',null,css+cssEnhancements),h('header',{className:'bh-head'},h('div',null,h('div',{className:'bh-kicker'},'DEF COMPANY / BRAND STANDARDS'),h('h1',null,'Brand Hub'),h('p',{className:'bh-sub'},'Brand guidelines for consistent marketing and communication.')),h('div',{style:{fontSize:11,color:'#81909a',whiteSpace:'nowrap'}},'INTERNAL BRAND REFERENCE')),h('div',{className:'bh-layout'},h('nav',{className:'bh-nav','aria-label':'Brand guideline sections'},...sections.map(item=>h('button',{type:'button',key:item.id,className:active===item.id?'active':'',onClick:()=>setActive(item.id)},h('strong',null,item.label),h('small',null,item.sub)))),h('div',{className:'bh-panel'},render())));
       };
 
       CMS.registerCustomPage({ id: 'brand-hub', label: 'Brand Hub', icon: 'palette', component: BrandHub });
-      CMS.registerCustomPage({ id: 'media-library', label: 'Library', icon: 'library_books', component: MediaLibrary });
+      CMS.registerCustomPage({ id: 'media-library', label: 'Brand Assets', icon: 'library_books', component: MediaLibrary });
       CMS.registerCustomPage({ id: 'content-navigator', label: 'Content Management', icon: 'dashboard_customize', component: ContentManagement });
 
       // Reduce Sveltia's global page toolbar to the three custom entry points only.
@@ -817,7 +814,7 @@
       // Only evaluate the actionable item itself (or its own compact list-item wrapper).
       // Never let a shared toolbar/nav parent preserve every sibling icon just because
       // that parent also contains Library or Content Management.
-      const primaryLabels = new Set(['brand hub', 'library', 'content management']);
+      const primaryLabels = new Set(['brand hub', 'brand assets', 'library', 'content management']);
       const hasPrimaryIdentity = (node) => {
         if (!node || node.nodeType !== 1) return false;
         if (primaryRoutes.has(routeOf(node))) return true;
