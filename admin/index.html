@@ -1143,18 +1143,9 @@
       observeAndScanRoot(document);
       normalizeProjectToolbar();
       installEditorPublishButton();
-      const rootObserver = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => mutation.addedNodes.forEach((node) => {
-          if (node.nodeType === 1) {
-            inspectElement(node);
-            scanTree(node);
-            if (node.shadowRoot) observeAndScanRoot(node.shadowRoot);
-          }
-        }));
-        normalizeProjectToolbar();
-        installEditorPublishButton();
-      });
-      if (document.documentElement) rootObserver.observe(document.documentElement, { childList: true, subtree: true });
+      // The document-level observer above already watches this subtree.
+      // A second observer here duplicated every mutation and repeatedly rescanned the same DOM.
+
 
       if (!window.location.hash || /^#\/collections\/content-management\/?$/.test(window.location.hash)) window.location.hash = '#/pages/content-navigator';
     })();
