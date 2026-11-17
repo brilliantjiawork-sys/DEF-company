@@ -600,13 +600,13 @@
           return () => { cancelled = true; };
         }, []);
         const sections = [
-          {id:'foundation',label:'Brand Foundation',sub:'品牌基础'},
+          {id:'foundation',label:'Brand Foundation',sub:'定位 · 客户 · 沟通'},
           {id:'identity',label:'Visual Identity',sub:'Logo · Color · Typography'},
-          {id:'imagery',label:'Photography & Imagery',sub:'图片与摄影'},
-          {id:'layouts',label:'Layout System',sub:'版式与内容模板'},
-          {id:'applications',label:'Brand Applications',sub:'官网 · 社媒 · 视频 · 展会'}
+          {id:'imagery',label:'Photography',sub:'产品 · 应用 · 技术 · 展会'},
+          {id:'layouts',label:'Layout Templates',sub:'社媒单图 · 轮播 · 展会'},
+          {id:'applications',label:'Applications',sub:'官网 · 社媒 · 展会'}
         ];
-        const css = ".bh{max-width:1320px;margin:0 auto;padding:30px 32px 60px;color:#263946;font-family:Inter,Arial,sans-serif}.bh *{box-sizing:border-box}.bh-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;padding-bottom:20px;border-bottom:1px solid #dfe6eb;margin-bottom:22px}.bh-kicker{font-size:12px;font-weight:700;letter-spacing:.13em;color:#648092;text-transform:uppercase;margin-bottom:8px}.bh h1{font-size:30px;line-height:1.2;margin:0;color:#1e3546}.bh-sub{font-size:14px;color:#71818d;margin:8px 0 0;line-height:1.5}.bh-layout{display:grid;grid-template-columns:238px minmax(0,1fr);gap:22px;align-items:start}.bh-nav{display:grid;gap:5px;position:sticky;top:14px}.bh-nav button{border:1px solid transparent;background:transparent;text-align:left;padding:12px 13px;border-radius:8px;cursor:pointer;color:#405564;font:inherit}.bh-nav button:hover{background:#f5f8fa}.bh-nav button.active{background:#edf5f8;border-color:#d4e4eb;color:#1f4d64}.bh-nav strong{display:block;font-size:15px;font-weight:700}.bh-nav small{display:block;color:#84929c;font-size:12px;margin-top:4px}.bh-panel{min-width:0}.bh-intro{padding:2px 0 18px}.bh-eyebrow{font-size:12px;color:#7290a1;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}.bh-panel h2{font-size:25px;line-height:1.3;margin:0 0 7px;color:#203a4c}.bh-lead{font-size:16px;line-height:1.7;color:#627583;margin:0;max-width:850px}.bh-section{background:#fff;border:1px solid #e0e7eb;border-radius:10px;padding:23px 24px;margin:0 0 14px}.bh-section h3{font-size:18px;color:#263f50;margin:0 0 13px}.bh-section h4{font-size:15px;color:#2b4658;margin:0 0 6px}.bh-text{font-size:15px;line-height:1.7;color:#5d707d;margin:0}.bh-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.bh-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.bh-mini{border:1px solid #e7ecef;border-radius:8px;padding:13px;background:#fff}.bh-mini p{font-size:14px;line-height:1.65;color:#667985;margin:5px 0 0}.bh-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;color:#527286;background:#eef4f7;border-radius:4px;padding:4px 6px;margin-bottom:7px}.bh-list{margin:0;padding-left:18px;color:#5d707d;font-size:13px;line-height:1.8}.bh-list li{padding-left:2px;margin:2px 0}.bh-rule{display:grid;grid-template-columns:180px minmax(0,1fr);gap:16px;padding:12px 0;border-bottom:1px solid #edf0f2}.bh-rule:last-child{border-bottom:0;padding-bottom:0}.bh-rule strong{font-size:14px;color:#304b5d}.bh-rule span{font-size:14px;line-height:1.65;color:#687b87}.bh-swatch{height:58px;border:1px solid #dfe5e9;border-radius:7px;margin-bottom:9px}.bh-color strong{display:block;font-size:15px;color:#2c4658}.bh-color code{font-size:13px;color:#71818d}.bh-color p{font-size:13px;line-height:1.5;color:#74838d;margin:6px 0 0}.bh-sample{border:1px solid #e5eaed;border-radius:8px;padding:15px;background:#fff}.bh-sample .spec{font-size:12px;color:#84939c;margin-bottom:8px}.bh-sample .preview{color:#263f50;margin:0}.bh-logo-stage{display:grid;grid-template-columns:1fr 1fr;gap:12px}.bh-logo-bg{min-height:150px;border:1px solid #e3e8eb;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:18px;background:#fff}.bh-logo-bg.dark{background:#203746}.bh-logo-bg img{max-width:100%;max-height:78px;object-fit:contain}.bh-steps{display:flex;flex-wrap:wrap;gap:7px;align-items:center}.bh-step{background:#f1f5f7;border:1px solid #e1e8ec;border-radius:6px;padding:9px 11px;font-size:13px;color:#506775}.bh-step-arrow{font-size:12px;color:#9aabb5}.bh-note{background:#f5f8f9;border-left:3px solid #8fb7c9;padding:13px 15px;border-radius:0 6px 6px 0;color:#637782;font-size:14px;line-height:1.65}.bh-table{width:100%;border-collapse:collapse;font-size:14px}.bh-table th{text-align:left;background:#f5f7f8;color:#536a79;font-weight:700}.bh-table th,.bh-table td{padding:10px 11px;border-bottom:1px solid #e8edef;vertical-align:top}.bh-table td{color:#627582;line-height:1.55}.bh-table td:first-child{font-weight:700;color:#334e60;white-space:nowrap}@media(max-width:800px){.bh{padding:18px 14px 36px}.bh-layout{grid-template-columns:1fr;gap:14px}.bh-nav{position:static;display:flex;overflow-x:auto;padding-bottom:5px}.bh-nav button{min-width:150px}.bh-grid3{grid-template-columns:repeat(2,minmax(0,1fr))}.bh-rule{grid-template-columns:1fr;gap:4px}}@media(max-width:520px){.bh-head{display:block}.bh-grid,.bh-grid3,.bh-logo-stage{grid-template-columns:1fr}.bh-section{padding:15px}.bh-table{display:block;overflow-x:auto}}";
+        const css = ".bh{max-width:1320px;margin:0 auto;padding:30px 32px 60px;color:#263946;font-family:Inter,Arial,sans-serif}.bh *{box-sizing:border-box}.bh-head{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;padding-bottom:20px;border-bottom:1px solid #dfe6eb;margin-bottom:22px}.bh-kicker{font-size:12px;font-weight:700;letter-spacing:.13em;color:#648092;text-transform:uppercase;margin-bottom:8px}.bh h1{font-size:30px;line-height:1.2;margin:0;color:#1e3546}.bh-sub{font-size:14px;color:#71818d;margin:8px 0 0;line-height:1.5}.bh-layout{display:grid;grid-template-columns:238px minmax(0,1fr);gap:22px;align-items:start}.bh-nav{display:grid;gap:5px;position:sticky;top:14px}.bh-nav button{border:1px solid transparent;background:transparent;text-align:left;padding:12px 13px;border-radius:8px;cursor:pointer;color:#405564;font:inherit}.bh-nav button:hover{background:#f5f8fa}.bh-nav button.active{background:#edf5f8;border-color:#d4e4eb;color:#1f4d64}.bh-nav strong{display:block;font-size:15px;font-weight:700}.bh-nav small{display:block;color:#84929c;font-size:12px;margin-top:4px}.bh-panel{min-width:0}.bh-intro{padding:2px 0 18px}.bh-eyebrow{font-size:12px;color:#7290a1;font-weight:700;letter-spacing:.1em;text-transform:uppercase;margin-bottom:7px}.bh-panel h2{font-size:25px;line-height:1.3;margin:0 0 7px;color:#203a4c}.bh-lead{font-size:16px;line-height:1.7;color:#627583;margin:0;max-width:850px}.bh-section{background:#fff;border:1px solid #e0e7eb;border-radius:10px;padding:23px 24px;margin:0 0 14px}.bh-section h3{font-size:18px;color:#263f50;margin:0 0 13px}.bh-section h4{font-size:15px;color:#2b4658;margin:0 0 6px}.bh-text{font-size:15px;line-height:1.7;color:#5d707d;margin:0}.bh-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.bh-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.bh-mini{border:1px solid #e7ecef;border-radius:8px;padding:13px;background:#fff}.bh-mini p{font-size:14px;line-height:1.65;color:#667985;margin:5px 0 0}.bh-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.04em;color:#527286;background:#eef4f7;border-radius:4px;padding:4px 6px;margin-bottom:7px}.bh-list{margin:0;padding-left:18px;color:#5d707d;font-size:13px;line-height:1.8}.bh-list li{padding-left:2px;margin:2px 0}.bh-rule{display:grid;grid-template-columns:180px minmax(0,1fr);gap:16px;padding:12px 0;border-bottom:1px solid #edf0f2}.bh-rule:last-child{border-bottom:0;padding-bottom:0}.bh-rule strong{font-size:14px;color:#304b5d}.bh-rule span{font-size:14px;line-height:1.65;color:#687b87}.bh-swatch{height:58px;border:1px solid #dfe5e9;border-radius:7px;margin-bottom:9px}.bh-swatch-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px;margin:10px 0 4px}.bh-swatch{display:grid;grid-template-columns:58px 1fr;gap:10px;align-items:start;border:1px solid #e7ecef;border-radius:8px;padding:10px}.bh-swatch-chip{width:58px;height:58px;border:1px solid #dce3e8;border-radius:6px}.bh-swatch strong{display:block;font-size:14px;color:#294456}.bh-swatch code{display:block;font-size:12px;color:#647987;margin:3px 0}.bh-swatch small{display:block;font-size:11px;color:#82919b}.bh-swatch p{font-size:13px;line-height:1.5;color:#657985;margin:5px 0 0}.bh-color strong{display:block;font-size:15px;color:#2c4658}.bh-color code{font-size:13px;color:#71818d}.bh-color p{font-size:13px;line-height:1.5;color:#74838d;margin:6px 0 0}.bh-sample{border:1px solid #e5eaed;border-radius:8px;padding:15px;background:#fff}.bh-sample .spec{font-size:12px;color:#84939c;margin-bottom:8px}.bh-sample .preview{color:#263f50;margin:0}.bh-logo-stage{display:grid;grid-template-columns:1fr 1fr;gap:12px}.bh-logo-bg{min-height:150px;border:1px solid #e3e8eb;border-radius:8px;display:flex;align-items:center;justify-content:center;padding:18px;background:#fff}.bh-logo-bg.dark{background:#203746}.bh-logo-bg img{max-width:100%;max-height:78px;object-fit:contain}.bh-steps{display:flex;flex-wrap:wrap;gap:7px;align-items:center}.bh-step{background:#f1f5f7;border:1px solid #e1e8ec;border-radius:6px;padding:9px 11px;font-size:13px;color:#506775}.bh-step-arrow{font-size:12px;color:#9aabb5}.bh-note{background:#f5f8f9;border-left:3px solid #8fb7c9;padding:13px 15px;border-radius:0 6px 6px 0;color:#637782;font-size:14px;line-height:1.65}.bh-table{width:100%;border-collapse:collapse;font-size:14px}.bh-table th{text-align:left;background:#f5f7f8;color:#536a79;font-weight:700}.bh-table th,.bh-table td{padding:10px 11px;border-bottom:1px solid #e8edef;vertical-align:top}.bh-table td{color:#627582;line-height:1.55}.bh-table td:first-child{font-weight:700;color:#334e60;white-space:nowrap}@media(max-width:800px){.bh{padding:18px 14px 36px}.bh-layout{grid-template-columns:1fr;gap:14px}.bh-nav{position:static;display:flex;overflow-x:auto;padding-bottom:5px}.bh-nav button{min-width:150px}.bh-grid3{grid-template-columns:repeat(2,minmax(0,1fr))}.bh-rule{grid-template-columns:1fr;gap:4px}}@media(max-width:520px){.bh-head{display:block}.bh-grid,.bh-grid3,.bh-logo-stage{grid-template-columns:1fr}.bh-section{padding:15px}.bh-table{display:block;overflow-x:auto}}";
         const card=(title,children)=>h('section',{className:'bh-section'},title?h('h3',null,title):null,children);
         const para=(text)=>h('p',{className:'bh-text'},text);
         const list=(items)=>h('ul',{className:'bh-list'},...(items||[]).map((item,i)=>h('li',{key:i},typeof item==='string'?item:item.rule||item.name)));
@@ -627,52 +627,66 @@
         };
         const renderIdentity=()=> {
           const l=guide.logo,c=guide.colors,t=guide.typography;
+          const swatches=(items)=>h('div',{className:'bh-swatch-grid'},...items.map((x,i)=>h('div',{className:'bh-swatch',key:i},h('div',{className:'bh-swatch-chip',style:{background:x.hex}}),h('div',null,h('strong',null,x.name),h('code',null,x.hex),x.role?h('small',null,x.role):null,h('p',null,x.usage)))));
           return h('div',null,
-            sectionHead('02 / Visual Identity','Visual Identity','统一视觉识别系统，供内容、设计和外部供应商共同执行。'),
-            card('Logo System',h('div',null,
+            sectionHead('02 / Visual Identity','Visual Identity','规定 Logo、颜色和字体在官网、社媒及展会物料中的具体用法。'),
+            card('Logo Assets · 三个必备版本',h('div',null,
               h('p',{className:'bh-text',style:{marginBottom:13}},l.primary),
-              h('div',{className:'bh-logo-stage'},h('div',{className:'bh-logo-bg'},h('img',{src:'/images/logo.jpg',alt:'DEF Company primary logo'})),h('div',{className:'bh-logo-bg dark'},h('span',{style:{color:'#fff',fontSize:12,textAlign:'center',lineHeight:1.6}},'Reverse / White Logo\nApproved asset required'))),
-              h('p',{className:'bh-text',style:{fontSize:15,marginTop:10}},'深色背景示例用于检查白色 Logo 是否清楚、对比是否足够。正式使用时，请从 Library 选用品牌批准的白色版 Logo 文件；不要直接给彩色 Logo 加滤镜或自行改色。'),
+              h('div',{className:'bh-logo-stage'},h('div',{className:'bh-logo-bg'},h('img',{src:'/images/logo.jpg',alt:'DEF Company 彩色标准 Logo'})),h('div',{className:'bh-logo-bg dark'},h('span',{style:{color:'#fff',fontSize:13,textAlign:'center'}},'WHITE / REVERSE LOGO'))),
               ...l.variants.map((v,i)=>h('div',{className:'bh-rule',key:i},h('strong',null,v.name),h('span',null,v.detail))),
+              h('div',{className:'bh-grid',style:{marginTop:14}},...l.assetChecklist.map((x,i)=>mini(x.name,x.status,'Library 资产状态'))),
+              h('div',{className:'bh-note',style:{marginTop:12}},l.printNote),
               h('div',{className:'bh-grid',style:{marginTop:14}},mini('Clear Space',l.clearSpace),mini('Minimum Size',l.minimum),mini('Background Usage',l.background),mini('File Formats',l.formats.join(' · ')))
             )),
-            card('Incorrect Logo Usage',h('div',{className:'bh-grid'},...l.misuse.map((x,i)=>mini('Do not · '+String(i+1).padStart(2,'0'),x,'禁止操作')))),
-            card('Color System',h('div',null,h('h4',null,'Core Brand Colors'),swatches(c.primary),h('h4',{style:{marginTop:20}},'Neutral Colors'),swatches(c.neutrals),h('h4',{style:{marginTop:20}},'Functional Colors · UI only'),swatches(c.functional),h('div',{className:'bh-note',style:{marginTop:15}},c.production))),
-            card('Typography System',h('div',null,
-              h('p',{className:'bh-text',style:{marginBottom:14}},t.family),
-              ...t.scale.map((s,i)=>h('div',{className:'bh-sample',style:{marginBottom:9},key:i},h('div',{className:'spec'},s.name+' · '+s.size+' · '+s.weight+' · Line height '+s.line),h('p',{className:'preview',style:{fontSize:s.name==='Display / H1'?32:s.name==='H2'?26:s.name==='H3'?20:s.name==='Body'?16:s.name==='Caption'?13:15,fontWeight:s.weight.includes('Bold')?700:s.weight.includes('Semibold')?600:400,lineHeight:s.line}},s.use+' — Industrial Vision, Precisely Applied'))),
+            card('Incorrect Logo Usage · 禁止操作',h('div',{className:'bh-grid'},...l.misuse.map((x,i)=>mini('Do not · '+String(i+1).padStart(2,'0'),x,'禁止操作')))),
+            card('Brand Colors · 2 个品牌色 + 3 个中性色',h('div',null,
+              h('h4',null,'Brand Colors · 品牌色'),swatches(c.brand),
+              h('h4',{style:{marginTop:18}},'Neutral Colors · 中性色'),swatches(c.neutral),
+              h('div',{className:'bh-note',style:{marginTop:14}},...c.rules.map((x,i)=>h('p',{key:i,style:{margin:'0 0 6px'}},'• '+x))),
+              h('p',{className:'bh-text',style:{marginTop:10}},c.production)
+            )),
+            card('Typography · 字体执行规范',h('div',null,
+              h('p',{className:'bh-text',style:{marginBottom:12}},t.family),
+              ...t.styles.map((s,i)=>h('div',{className:'bh-sample',style:{marginBottom:9},key:i},h('div',{className:'spec'},s.name+' · '+s.size+' · '+s.weight+' · Line height '+s.line),h('p',{className:'preview',style:{fontSize:s.name==='Display / H1'?32:s.name==='Section / H2'?25:s.name==='Body'?16:s.name==='Caption'?13:15,fontWeight:s.weight.includes('Bold')?700:s.weight.includes('Semibold')?600:400,lineHeight:s.line}},s.use+' — Industrial Vision, Precisely Applied'))),
               list(t.rules)
             ))
           );
         };
-        const renderImagery = () => h('div', null,
-          sectionHead('03 / Photography', 'Photography & Imagery', '让拍摄人员、设计师和内容团队对拍什么、怎么拍、怎么裁、什么不能用形成一致判断。'),
+                const renderImagery = () => h('div', null,
+          sectionHead('03 / Photography', 'Photography & Imagery', '工业机器视觉品牌的四类核心图片。先看分类，再按拍摄要求执行。'),
+          card('Photography Overview · 摄影分类总览',h('div',{className:'bh-grid'},...guide.imageryOverview.map((item,i)=>mini(String(i+1).padStart(2,'0')+' · '+item.name,item.purpose,'拍摄类别')))),
           ...guide.imagery.map(item => {
-            const details = [mini('Subject', item.subject), mini('Composition', item.composition), mini('Lighting & Background', item.lighting), mini('Crop & Ratio', item.crop)];
-            details.push(h('div', { className: 'bh-note', style: { gridColumn: '1 / -1' } }, h('strong', null, 'Avoid: '), item.avoid));
+            const details = [mini('Subject · 拍什么', item.subject), mini('Composition · 怎么构图', item.composition), mini('Lighting & Background · 光线背景', item.lighting), mini('Crop & Ratio · 裁切比例', item.crop), mini('Capture Checklist · 拍摄执行',item.captureRule), mini('Delivery · 文件交付',item.delivery)];
+            details.push(h('div', { className: 'bh-note', style: { gridColumn: '1 / -1' } }, h('strong', null, 'Avoid · 不要这样拍：'), item.avoid));
             return card(item.name, h('div', { className: 'bh-grid' }, ...details));
           })
         );
-        const renderLayouts = () => h('div', null,
-          sectionHead('04 / Layout System', 'Layout & Content Templates', '版式规范将品牌视觉转化为可重复使用的内容结构。模板统一信息顺序和视觉层级，但不限制具体创意。'),
+                const renderLayouts = () => h('div', null,
+          sectionHead('04 / Layout Templates', 'Layout & Content Templates', '版式按发布形式分类，不按每个选题重复造模板。内容主题决定放什么信息，渠道形式决定怎么排版。'),
+          card('Template Overview · 模板总览',h('div',{className:'bh-grid'},...guide.layouts.map((item,i)=>mini(String(i+1).padStart(2,'0')+' · '+item.name,item.purpose,'模板用途')))),
           ...guide.layouts.map(item => {
             const steps = item.structure.map((step, index) => h('span', { className: 'bh-step', key: index }, step));
             const flow = h('div', { className: 'bh-steps', style: { margin: '13px 0' } }, ...steps);
-            const rule = h('div', { className: 'bh-note' }, h('strong', null, 'Layout Rule: '), item.rule);
+            const rule = h('div', { className: 'bh-note' }, h('strong', null, 'Execution Rule · 执行要求：'), item.rule);
             return card(item.name, h('div', null, para(item.purpose), flow, rule));
           })
         );
-        const renderApplications = () => {
+                const renderApplications = () => {
           const a = guide.applications;
+          const group=(title,summary,sections)=>card(title,h('div',null,
+            para(summary),
+            ...sections.map((s,i)=>h('div',{style:{marginTop:13},key:i},h('h4',null,s.title),list(s.items)))
+          ));
           return h('div', null,
-            sectionHead('05 / Applications', 'Brand Applications', '同一套视觉系统延伸到官网、社媒、视频和线下展会；渠道可以调整格式，但不能各自形成一套品牌。'),
-            card('Website', list(a.website.rules)),
-            card('Social Media', list(a.social.rules)),
-            card('Video System', list(a.video.rules)),
-            card('Trade Show & Marketing Collateral', list(a.tradeShow.rules))
+            sectionHead('05 / Applications', 'Brand Applications', '按实际使用场景管理：官网、社媒、展会。视频归入社媒内容，不再单独占一个一级板块。'),
+            card('Application Overview · 应用总览',h('div',{className:'bh-grid'},mini('01 · Website 官网','长期品牌资产与内容中心，重点是导航、阅读、产品信息和询盘体验。'),mini('02 · Social Media 社媒','包含静态单图、轮播和视频，围绕内容传播与互动。'),mini('03 · Trade Shows 展会','独立的线下事件营销项目，按展前、展中、展后管理。'))),
+            group('01 · Website / 官网',a.website.summary,[{title:'必须遵守',items:a.website.rules}]),
+            group('02 · Social Media / 社媒',a.social.summary,[{title:'Single Image · 单图',items:a.social.singleImage},{title:'Carousel · 轮播',items:a.social.carousel},{title:'Video · 视频（静音优先）',items:a.social.video}]),
+            group('03 · Trade Shows / 展会',a.tradeShow.summary,[{title:'Pre-show · 展前',items:a.tradeShow.pre},{title:'On-site · 展中',items:a.tradeShow.onsite},{title:'Post-show · 展后',items:a.tradeShow.post},{title:'Reusable System · 可复用模板',items:a.tradeShow.reusableSystem}]),
+            card('Reference Notes · 规范依据',list(a.evidenceNotes))
           );
         };
-        const render=()=>!guide?h('div',{className:'bh-section'},error||'Loading Brand Guidelines…'):active==='foundation'?renderFoundation():active==='identity'?renderIdentity():active==='imagery'?renderImagery():active==='layouts'?renderLayouts():renderApplications();
+                const render=()=>!guide?h('div',{className:'bh-section'},error||'Loading Brand Guidelines…'):active==='foundation'?renderFoundation():active==='identity'?renderIdentity():active==='imagery'?renderImagery():active==='layouts'?renderLayouts():renderApplications();
         return h('main',{className:'bh'},h('style',null,css),h('header',{className:'bh-head'},h('div',null,h('div',{className:'bh-kicker'},'DEF COMPANY / BRAND STANDARDS'),h('h1',null,'Brand Hub'),h('p',{className:'bh-sub'},'Brand guidelines for consistent marketing and communication.')),h('div',{style:{fontSize:11,color:'#81909a',whiteSpace:'nowrap'}},'INTERNAL BRAND REFERENCE')),h('div',{className:'bh-layout'},h('nav',{className:'bh-nav','aria-label':'Brand guideline sections'},...sections.map(item=>h('button',{type:'button',key:item.id,className:active===item.id?'active':'',onClick:()=>setActive(item.id)},h('strong',null,item.label),h('small',null,item.sub)))),h('div',{className:'bh-panel'},render())));
       };
 
@@ -1074,6 +1088,7 @@
 
       // Version marker makes it possible to confirm this exact navigation script reached production.
       document.documentElement.setAttribute('data-def-cms-nav-fix', 'three-primary-sections-v1');
+      document.documentElement.setAttribute('data-def-brand-hub', 'brand-guidelines-v2');
       document.documentElement.setAttribute('data-def-cms-validation-ui', 'hidden-v1');
       observeAndScanRoot(document);
       normalizeProjectToolbar();
