@@ -182,67 +182,6 @@
         "accentContrast": "11.51:1"
       }
     ],
-    "graphicElements": [
-      {
-        "element": "常规 Icon",
-        "color": "Primary Blue",
-        "hex": "#45B2D3"
-      },
-      {
-        "element": "深色背景 Icon",
-        "color": "White",
-        "hex": "#FFFFFF"
-      },
-      {
-        "element": "重点 Icon / 关键数字",
-        "color": "Accent Yellow",
-        "hex": "#FFE817"
-      },
-      {
-        "element": "信息卡片背景",
-        "color": "Light Blue / Light Gray",
-        "hex": "#D9EEF4 / #F2F5F6"
-      },
-      {
-        "element": "卡片标题 / 正文",
-        "color": "Charcoal",
-        "hex": "#222B32"
-      },
-      {
-        "element": "边框 / 分隔线",
-        "color": "Neutral Border",
-        "hex": "#DCE3E8"
-      },
-      {
-        "element": "浅色背景轮播箭头",
-        "color": "Primary Blue",
-        "hex": "#45B2D3"
-      },
-      {
-        "element": "深色背景轮播箭头",
-        "color": "Accent Yellow",
-        "hex": "#FFE817"
-      },
-      {
-        "element": "CTA 按钮",
-        "color": "Accent Yellow background + Charcoal text",
-        "hex": "#FFE817 / #222B32"
-      },
-      {
-        "element": "次级按钮",
-        "color": "Primary Blue background + Charcoal text",
-        "hex": "#45B2D3 / #222B32"
-      }
-    ],
-    "rules": [
-      "颜色使用优先级：Primary Blue 建立品牌识别；Accent Yellow 用于少量重点强调；Deep Blue 承担功能性对比与结构分隔；Light Blue 和中性色负责背景与阅读层次。",
-      "浅色背景使用 White #FFFFFF、Light Gray #F2F5F6 或 Light Blue #D9EEF4；标题使用 Charcoal #222B32，正文可使用 Secondary Text #40515B。",
-      "深色背景使用 Deep Blue #24677C 或 Charcoal #222B32；标题使用 White #FFFFFF，辅助正文使用 Light Blue #D9EEF4。",
-      "Primary CTA 使用 Accent Yellow #FFE817 背景与 Charcoal #222B32 文字；次级按钮使用 Primary Blue #45B2D3 背景与 Charcoal #222B32 文字。",
-      "浅色背景上的功能图标、关键数字和结构性分隔线使用 Deep Blue #24677C；深色背景上的图标使用 White，重点数字可使用 Accent Yellow。",
-      "Primary Blue #45B2D3 与白色背景的对比度不足，不得用于白底小字号文字或需要满足 3:1 的信息图标。"
-    ],
-    "production": "对比度按 WCAG 2.2 AA 的相对亮度计算；印刷色值仍需按材质与工艺打样确认。",
     "usagePriority": [
       {
         "name": "Primary Blue",
@@ -289,92 +228,74 @@
     ],
     "functionalColors": [
       {
-        "element": "Primary CTA",
+        "element": "Primary CTA｜主要行动按钮",
         "color": "Accent Yellow",
         "hex": "#FFE817",
         "sample": "CTA",
-        "textColor": "#222B32",
         "contrast": "11.51:1",
-        "usage": "黄色按钮背景搭配深炭灰按钮文字。",
+        "usage": "黄色按钮背景搭配深炭灰文字；所有主要行动按钮统一使用这一组合。",
         "sampleBackground": "#FFE817",
         "sampleTextColor": "#222B32"
       },
       {
-        "element": "Secondary Button",
-        "color": "Primary Blue",
-        "hex": "#45B2D3",
-        "sample": "CTA",
-        "textColor": "#222B32",
-        "contrast": "5.87:1",
-        "usage": "主蓝按钮背景搭配深炭灰按钮文字。",
-        "sampleBackground": "#45B2D3",
-        "sampleTextColor": "#222B32"
-      },
-      {
-        "element": "Functional Icon / Divider",
-        "color": "Deep Blue",
-        "hex": "#24677C",
-        "sample": "◆",
-        "textColor": "#FFFFFF",
-        "contrast": "≥5.29:1",
-        "usage": "浅色背景上的功能图标、重点数字和结构性分隔线。",
+        "element": "Key Information｜重点信息",
+        "color": "Deep Blue（浅色背景）/ Accent Yellow（深色背景）",
+        "hex": "#24677C / #FFE817",
+        "sample": "01",
+        "contrast": "6.35:1 / 5.08:1",
+        "usage": "浅色背景使用深蓝；深色背景使用强调黄。用于关键数字和少量重点信息。",
         "sampleBackground": "#FFFFFF",
         "sampleTextColor": "#24677C"
       },
       {
-        "element": "Key Information · Dark",
-        "color": "Accent Yellow",
-        "hex": "#FFE817",
-        "sample": "01",
-        "textColor": "#222B32",
-        "contrast": "≥5.08:1",
-        "usage": "深蓝或深炭灰背景上的重点数字与短信息。",
-        "sampleBackground": "#24677C",
-        "sampleTextColor": "#FFE817"
-      },
-      {
-        "element": "Icon / Text · Dark",
-        "color": "White",
-        "hex": "#FFFFFF",
-        "sample": "Aa",
-        "textColor": "#222B32",
-        "contrast": "≥6.35:1",
-        "usage": "深色背景上的主要文字与功能图标。",
-        "sampleBackground": "#24677C",
-        "sampleTextColor": "#FFFFFF"
+        "element": "Icons｜图标",
+        "color": "Deep Blue（浅色背景）/ White（深色背景）",
+        "hex": "#24677C / #FFFFFF",
+        "sample": "◇",
+        "contrast": "≥5.29:1",
+        "usage": "浅色背景使用深蓝；深色背景使用白色。图标颜色随背景切换，不另设颜色。",
+        "sampleBackground": "#FFFFFF",
+        "sampleTextColor": "#24677C"
       }
     ],
     "contrastStandards": {
       "standard": {
         "ratio": "4.5:1",
-        "definition": "普通文字：不符合下方“大字号文字”条件的所有文字。例如 12–23px 常规文字，以及小于 18.7px 的粗体文字；正文、说明、图片注释和按钮文字均适用。"
+        "definition": "未达到大字号门槛的文字（例如 16px 正文、14–16px 按钮文字）。"
       },
       "large": {
         "ratio": "3:1",
-        "definition": "大字号文字：字号至少 24px（不限制字重）；或字号至少 18.7px 且字重至少 700（粗体）。两项满足其中一项即可。"
+        "definition": "字号至少 24px（任意字重）；或至少 18.66px 且字重至少 700（Bold）。满足其中一项即可。"
       },
       "nonText": {
         "ratio": "3:1",
-        "definition": "承载信息或需要识别的图标、控件边界及图形元素，与相邻背景之间的最低对比度。"
+        "definition": "需要识别的信息图标、控件边界和图形，与相邻背景的最低对比度。"
       }
     }
   },
   "typography": {
-    "family": "英文与数字统一使用 Inter；中文统一使用 Noto Sans SC。缺字时英文使用 Arial，中文使用思源黑体。",
+    "family": "英文与数字：Inter；中文：Noto Sans SC。备用字体：Arial、思源黑体。",
     "styles": [
       {
-        "name": "Page Title｜页面主标题",
+        "name": "Page Title｜页面主标题（H1）",
         "size": "32–40 px",
         "weight": "Semibold / Bold",
         "line": "1.15–1.25",
-        "use": "官网页面标题、社媒主视觉标题、展会主标题。"
+        "use": "官网页面主标题、社媒主视觉标题、展会主标题。"
       },
       {
-        "name": "Section Title｜分区标题",
+        "name": "Section Title｜分区标题（H2）",
         "size": "22–28 px",
         "weight": "Semibold",
         "line": "1.25–1.35",
-        "use": "官网内容分区、社媒轮播页标题、产品信息模块。"
+        "use": "官网主要内容分区、社媒轮播页标题、产品信息模块。"
+      },
+      {
+        "name": "Subsection Title｜小节标题（H3）",
+        "size": "18–20 px",
+        "weight": "Semibold",
+        "line": "1.3–1.4",
+        "use": "H2 章节内部的小主题标题。"
       },
       {
         "name": "Body｜正文",
@@ -406,17 +327,23 @@
       {
         "level": "H1",
         "name": "Article Title",
+        "size": "32–40 px",
+        "weight": "Semibold / Bold",
         "usage": "每篇文章只使用一个，作为文章主标题。"
       },
       {
         "level": "H2",
         "name": "Section Heading",
-        "usage": "用于划分主要内容章节，是长文章最常用的内部标题。"
+        "size": "22–28 px",
+        "weight": "Semibold",
+        "usage": "用于划分主要内容章节。"
       },
       {
         "level": "H3",
         "name": "Subsection Heading",
-        "usage": "仅在 H2 章节下确实需要拆分多个小主题时使用，不必为了凑层级而添加。"
+        "size": "18–20 px",
+        "weight": "Semibold",
+        "usage": "仅在 H2 章节下确实需要拆分多个小主题时使用。"
       }
     ]
   },
