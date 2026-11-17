@@ -619,29 +619,13 @@
           return () => { cancelled = true; };
         }, []);
         const sections = [
-          {id:'foundation',label:'Brand Foundation',sub:'品牌定位 · 受众 · 个性'},
+          {id:'foundation',label:'Brand Foundation',sub:'定位 · 客户 · 沟通'},
           {id:'identity',label:'Visual Identity',sub:'Logo · Color · Typography'},
           {id:'imagery',label:'Photography',sub:'产品 · 应用 · 技术 · 展会'},
-          {id:'layouts',label:'Template Library',sub:'社媒 · 展会 · 印刷物料'},
+          {id:'layouts',label:'Layout Templates',sub:'社媒单图 · 轮播 · 展会'},
           {id:'applications',label:'Applications',sub:'官网 · 社媒 · 展会'}
         ];
-        const css = ".bh{width:100%;max-width:1180px;min-width:0;margin:0 auto;padding:24px 24px 48px;color:#263946;font-family:Inter,\"Noto Sans SC\",Arial,sans-serif;font-size:16px;line-height:1.65}\n.bh *{box-sizing:border-box;min-width:0;overflow-wrap:anywhere}\n.bh-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;padding-bottom:16px;border-bottom:1px solid #dfe6eb;margin-bottom:20px}\n.bh-kicker{font-size:11px;font-weight:700;letter-spacing:.1em;color:#648092;text-transform:uppercase;margin-bottom:6px}\n.bh h1{font-size:28px;line-height:1.3;font-weight:700;margin:0;color:#1e3546}\n.bh-sub{font-size:15px;color:#71818d;margin:6px 0 0;line-height:1.55}\n.bh-layout{display:grid;grid-template-columns:196px minmax(0,1fr);gap:20px;align-items:start;width:100%}\n.bh-nav{display:grid;gap:5px;position:sticky;top:14px;min-width:0}\n.bh-nav button{border:1px solid transparent;background:transparent;text-align:left;padding:10px 11px;border-radius:7px;cursor:pointer;color:#405564;font:inherit;width:100%}\n.bh-nav button:hover{background:#f5f8fa}\n.bh-nav button.active{background:#edf5f8;border-color:#d4e4eb;color:#1f4d64}\n.bh-nav strong{display:block;font-size:15px;font-weight:650;line-height:1.4}\n.bh-nav small{display:block;color:#84929c;font-size:13px;margin-top:3px;line-height:1.4}\n.bh-panel{min-width:0;width:100%}\n.bh-intro{padding:0 0 15px}\n.bh-eyebrow{font-size:12px;color:#7290a1;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}\n.bh-panel h2{font-size:23px;line-height:1.35;font-weight:700;margin:0 0 5px;color:#203a4c}\n.bh-lead{font-size:15px;line-height:1.6;color:#627583;margin:0;max-width:760px}\n.bh-section{background:#fff;border:1px solid #e0e7eb;border-radius:8px;padding:18px 19px;margin:0 0 12px;min-width:0;width:100%}\n.bh-section h3{font-size:18px;line-height:1.4;font-weight:650;color:#263f50;margin:0 0 11px}\n.bh-section h4{font-size:16px;line-height:1.4;font-weight:650;color:#2b4658;margin:0 0 5px}\n.bh-text{font-size:16px;line-height:1.65;color:#5d707d;margin:0}\n.bh-positioning{font-size:16px!important;line-height:1.65!important;font-weight:400!important;color:#425968!important;margin:0 0 12px!important;max-width:78ch}\n.bh-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}\n.bh-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%}\n.bh-mini{border:1px solid #e7ecef;border-radius:7px;padding:12px;background:#fff;min-width:0}\n.bh-mini p{font-size:15px;line-height:1.6;color:#667985;margin:4px 0 0}\n.bh-tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.03em;color:#527286;background:#eef4f7;border-radius:4px;padding:3px 6px;margin-bottom:6px}\n.bh-list{margin:0;padding-left:18px;color:#5d707d}\n.bh-list li{font-size:15px;line-height:1.65;margin:0 0 7px;padding-left:2px}\n.bh-swatch-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0}\n.bh-swatch{display:grid;grid-template-columns:48px minmax(0,1fr);gap:9px;align-items:start;border:1px solid #e7ecef;border-radius:7px;padding:9px;min-width:0}\n.bh-swatch-chip{width:48px;height:48px;border:1px solid #dce3e8;border-radius:5px}\n.bh-swatch strong{display:block;font-size:15px;color:#294456}\n.bh-swatch code{display:block;font-size:13px;color:#647987;margin:2px 0}\n.bh-swatch small{display:block;font-size:13px;color:#82919b}\n.bh-swatch p{font-size:14px;line-height:1.5;color:#657985;margin:4px 0 0}\n.bh-color strong{display:block;font-size:16px;color:#2c4658}\n.bh-color code{font-size:14px;color:#71818d}\n.bh-color p{font-size:14px;line-height:1.5;color:#74838d;margin:5px 0 0}\n.bh-sample{border:1px solid #e5eaed;border-radius:7px;padding:12px;background:#fff}\n.bh-sample .spec{font-size:13px;color:#84939c;margin-bottom:6px}\n.bh-sample .preview{font-size:14px!important;line-height:1.55!important;color:#263f50;margin:0}\n.bh-logo-stage{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}\n.bh-logo-bg{min-height:112px;border:1px solid #e3e8eb;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:12px;background:#fff}\n.bh-logo-bg.dark{background:#203746}\n.bh-logo-bg img{max-width:100%;max-height:78px;object-fit:contain}\n.bh-steps{display:flex;flex-wrap:wrap;gap:6px;align-items:center}\n.bh-step{background:#f1f5f7;border:1px solid #e1e8ec;border-radius:5px;padding:8px 10px;font-size:14px;color:#506775}\n.bh-step-arrow{font-size:11px;color:#9aabb5}\n.bh-note{background:#f5f8f9;border-left:3px solid #8fb7c9;padding:12px 14px;border-radius:0 5px 5px 0;color:#637782;font-size:14px;line-height:1.6}\n.bh-table{width:100%;border-collapse:collapse;font-size:15px}\n.bh-table th{text-align:left;background:#f5f7f8;color:#536a79;font-weight:650}\n.bh-table th,.bh-table td{padding:9px 10px;border-bottom:1px solid #e8edef;vertical-align:top}\n.bh-table td{color:#627582;line-height:1.55}\n.bh-table td:first-child{font-weight:650;color:#334e60;white-space:nowrap}\n@media(max-width:1050px){.bh{padding:20px 16px 36px}.bh-layout{grid-template-columns:170px minmax(0,1fr);gap:14px}.bh-grid3{grid-template-columns:repeat(2,minmax(0,1fr))}}\n@media(max-width:760px){.bh-layout{grid-template-columns:1fr;gap:12px}.bh-nav{position:static;display:flex;overflow-x:auto;padding-bottom:5px}.bh-nav button{min-width:145px;width:auto}.bh-grid{grid-template-columns:1fr}.bh-logo-stage{grid-template-columns:1fr}.bh-grid3,.bh-swatch-grid{grid-template-columns:1fr}.bh-section{padding:15px}.bh-head{display:block}.bh-table{display:block;overflow-x:auto}}\n\n
-.bh-category-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:0 0 16px}
-.bh-category-tile{background:var(--tile-accent,#edf4f7);border:1px solid #dce6eb;border-left:5px solid #8aaebe;border-radius:8px;padding:16px}
-.bh-category-index{display:block;font-size:12px;font-weight:750;letter-spacing:.08em;color:#607f90;margin-bottom:7px}
-.bh-category-tile strong{display:block;font-size:16px;color:#2c4a5d;line-height:1.45}
-.bh-category-tile p{font-size:14px;color:#607582;line-height:1.55;margin:5px 0 0}
-.bh-asset-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
-.bh-asset-card{border:1px solid #dce5e9;border-radius:8px;overflow:hidden;background:#fff}
-.bh-asset-preview{height:132px;background:linear-gradient(135deg,#edf3f6,#f8fafb);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#6d8796}
-.bh-asset-preview span{font-size:10px;font-weight:750;letter-spacing:.12em}
-.bh-asset-preview strong{font-size:15px;color:#527487}
-.bh-asset-info{padding:12px}
-.bh-asset-info>strong{font-size:16px;color:#2b4b5e}
-.bh-asset-info p{font-size:14px;line-height:1.55;color:#657985;margin:5px 0 8px}
-.bh-asset-info small{font-size:12px;color:#87959e}
-@media(max-width:760px){.bh-category-grid,.bh-asset-grid{grid-template-columns:1fr}}
-.bh-overview{background:#edf4f7;border:1px solid #c9dce5;border-left:4px solid #6f9fb5;border-radius:9px;padding:20px 21px;margin:0 0 16px}\n.bh-overview-head{display:flex;align-items:center;gap:10px;margin:0 0 6px}\n.bh-overview-kicker{font-size:12px;font-weight:750;letter-spacing:.08em;color:#547b90}\n.bh-overview-title{font-size:20px;font-weight:700;color:#213f52;line-height:1.35}\n.bh-overview-desc{font-size:15px;color:#5e7482;line-height:1.6;margin:0 0 13px}\n.bh-overview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}\n.bh-overview-item{background:#fff;border:1px solid #d8e4e9;border-radius:7px;padding:12px 14px}\n.bh-overview-item strong{display:block;font-size:16px;color:#2b4b5e;line-height:1.45}\n.bh-overview-item p{font-size:14px;color:#667c89;line-height:1.55;margin:5px 0 0}\n.bh-template-group{border:1px solid #dce6eb;border-radius:9px;padding:18px;margin:0 0 16px;background:#fff}\n.bh-template-group-head{padding:0 0 12px;margin:0 0 13px;border-bottom:1px solid #e5edf1}\n.bh-template-group-head h3{font-size:20px!important;margin:0 0 4px!important;color:#24475b!important}\n.bh-template-group-head p{font-size:15px;color:#687d89;line-height:1.6;margin:0}\n.bh-phase{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;padding:14px 0;border-bottom:1px solid #edf1f3}\n.bh-phase:last-child{border-bottom:0}\n.bh-phase-label{font-size:16px;font-weight:700;color:#31556a}\n.bh-phase-goal{font-size:14px;color:#6a7e89;margin-top:4px;line-height:1.5}\n.bh-phase-content{min-width:0}\n.bh-phase-content p{font-size:15px;line-height:1.6;color:#536b79;margin:0 0 8px}\n.bh-phase-content .bh-list li{font-size:14px}\n.bh-funnel{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:12px 0}\n.bh-funnel-step{background:#edf4f7;border:1px solid #d5e3e9;border-radius:7px;padding:11px;min-width:0}\n.bh-funnel-step strong{display:block;font-size:14px;color:#2d5064;margin-bottom:5px}\n.bh-funnel-step p{font-size:13px;color:#627987;line-height:1.5;margin:0}\n.bh-subsection{margin-top:15px;padding:14px;background:#f7f9fa;border:1px solid #e5ecef;border-radius:7px}\n.bh-subsection h4{font-size:16px;margin:0 0 6px;color:#2b4b5e}\n.bh-subsection p{font-size:14px;line-height:1.6;color:#637783;margin:0 0 8px}\n@media(max-width:900px){.bh-funnel{grid-template-columns:repeat(2,minmax(0,1fr))}}\n@media(max-width:760px){.bh-overview-grid{grid-template-columns:1fr}.bh-phase{grid-template-columns:1fr;gap:6px}.bh-funnel{grid-template-columns:1fr}}\n";
+        const css = ".bh{width:100%;max-width:1180px;min-width:0;margin:0 auto;padding:24px 24px 48px;color:#263946;font-family:Inter,\"Noto Sans SC\",Arial,sans-serif;font-size:16px;line-height:1.65}\n.bh *{box-sizing:border-box;min-width:0;overflow-wrap:anywhere}\n.bh-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;padding-bottom:16px;border-bottom:1px solid #dfe6eb;margin-bottom:20px}\n.bh-kicker{font-size:11px;font-weight:700;letter-spacing:.1em;color:#648092;text-transform:uppercase;margin-bottom:6px}\n.bh h1{font-size:28px;line-height:1.3;font-weight:700;margin:0;color:#1e3546}\n.bh-sub{font-size:15px;color:#71818d;margin:6px 0 0;line-height:1.55}\n.bh-layout{display:grid;grid-template-columns:196px minmax(0,1fr);gap:20px;align-items:start;width:100%}\n.bh-nav{display:grid;gap:5px;position:sticky;top:14px;min-width:0}\n.bh-nav button{border:1px solid transparent;background:transparent;text-align:left;padding:10px 11px;border-radius:7px;cursor:pointer;color:#405564;font:inherit;width:100%}\n.bh-nav button:hover{background:#f5f8fa}\n.bh-nav button.active{background:#edf5f8;border-color:#d4e4eb;color:#1f4d64}\n.bh-nav strong{display:block;font-size:15px;font-weight:650;line-height:1.4}\n.bh-nav small{display:block;color:#84929c;font-size:13px;margin-top:3px;line-height:1.4}\n.bh-panel{min-width:0;width:100%}\n.bh-intro{padding:0 0 15px}\n.bh-eyebrow{font-size:12px;color:#7290a1;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}\n.bh-panel h2{font-size:23px;line-height:1.35;font-weight:700;margin:0 0 5px;color:#203a4c}\n.bh-lead{font-size:15px;line-height:1.6;color:#627583;margin:0;max-width:760px}\n.bh-section{background:#fff;border:1px solid #e0e7eb;border-radius:8px;padding:18px 19px;margin:0 0 12px;min-width:0;width:100%}\n.bh-section h3{font-size:18px;line-height:1.4;font-weight:650;color:#263f50;margin:0 0 11px}\n.bh-section h4{font-size:16px;line-height:1.4;font-weight:650;color:#2b4658;margin:0 0 5px}\n.bh-text{font-size:16px;line-height:1.65;color:#5d707d;margin:0}\n.bh-positioning{font-size:16px!important;line-height:1.65!important;font-weight:400!important;color:#425968!important;margin:0 0 12px!important;max-width:78ch}\n.bh-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}\n.bh-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%}\n.bh-mini{border:1px solid #e7ecef;border-radius:7px;padding:12px;background:#fff;min-width:0}\n.bh-mini p{font-size:15px;line-height:1.6;color:#667985;margin:4px 0 0}\n.bh-tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.03em;color:#527286;background:#eef4f7;border-radius:4px;padding:3px 6px;margin-bottom:6px}\n.bh-list{margin:0;padding-left:18px;color:#5d707d}\n.bh-list li{font-size:15px;line-height:1.65;margin:0 0 7px;padding-left:2px}\n.bh-swatch-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0}\n.bh-swatch{display:grid;grid-template-columns:48px minmax(0,1fr);gap:9px;align-items:start;border:1px solid #e7ecef;border-radius:7px;padding:9px;min-width:0}\n.bh-swatch-chip{width:48px;height:48px;border:1px solid #dce3e8;border-radius:5px}\n.bh-swatch strong{display:block;font-size:15px;color:#294456}\n.bh-swatch code{display:block;font-size:13px;color:#647987;margin:2px 0}\n.bh-swatch small{display:block;font-size:13px;color:#82919b}\n.bh-swatch p{font-size:14px;line-height:1.5;color:#657985;margin:4px 0 0}\n.bh-color strong{display:block;font-size:16px;color:#2c4658}\n.bh-color code{font-size:14px;color:#71818d}\n.bh-color p{font-size:14px;line-height:1.5;color:#74838d;margin:5px 0 0}\n.bh-sample{border:1px solid #e5eaed;border-radius:7px;padding:12px;background:#fff}\n.bh-sample .spec{font-size:13px;color:#84939c;margin-bottom:6px}\n.bh-sample .preview{font-size:14px!important;line-height:1.55!important;color:#263f50;margin:0}\n.bh-logo-stage{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}\n.bh-logo-bg{min-height:112px;border:1px solid #e3e8eb;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:12px;background:#fff}\n.bh-logo-bg.dark{background:#203746}\n.bh-logo-bg img{max-width:100%;max-height:78px;object-fit:contain}\n.bh-steps{display:flex;flex-wrap:wrap;gap:6px;align-items:center}\n.bh-step{background:#f1f5f7;border:1px solid #e1e8ec;border-radius:5px;padding:8px 10px;font-size:14px;color:#506775}\n.bh-step-arrow{font-size:11px;color:#9aabb5}\n.bh-note{background:#f5f8f9;border-left:3px solid #8fb7c9;padding:12px 14px;border-radius:0 5px 5px 0;color:#637782;font-size:14px;line-height:1.6}\n.bh-table{width:100%;border-collapse:collapse;font-size:15px}\n.bh-table th{text-align:left;background:#f5f7f8;color:#536a79;font-weight:650}\n.bh-table th,.bh-table td{padding:9px 10px;border-bottom:1px solid #e8edef;vertical-align:top}\n.bh-table td{color:#627582;line-height:1.55}\n.bh-table td:first-child{font-weight:650;color:#334e60;white-space:nowrap}\n@media(max-width:1050px){.bh{padding:20px 16px 36px}.bh-layout{grid-template-columns:170px minmax(0,1fr);gap:14px}.bh-grid3{grid-template-columns:repeat(2,minmax(0,1fr))}}\n@media(max-width:760px){.bh-layout{grid-template-columns:1fr;gap:12px}.bh-nav{position:static;display:flex;overflow-x:auto;padding-bottom:5px}.bh-nav button{min-width:145px;width:auto}.bh-grid{grid-template-columns:1fr}.bh-logo-stage{grid-template-columns:1fr}.bh-grid3,.bh-swatch-grid{grid-template-columns:1fr}.bh-section{padding:15px}.bh-head{display:block}.bh-table{display:block;overflow-x:auto}}\n\n.bh-overview{background:#edf4f7;border:1px solid #c9dce5;border-left:4px solid #6f9fb5;border-radius:9px;padding:20px 21px;margin:0 0 16px}\n.bh-overview-head{display:flex;align-items:center;gap:10px;margin:0 0 6px}\n.bh-overview-kicker{font-size:12px;font-weight:750;letter-spacing:.08em;color:#547b90}\n.bh-overview-title{font-size:20px;font-weight:700;color:#213f52;line-height:1.35}\n.bh-overview-desc{font-size:15px;color:#5e7482;line-height:1.6;margin:0 0 13px}\n.bh-overview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}\n.bh-overview-item{background:#fff;border:1px solid #d8e4e9;border-radius:7px;padding:12px 14px}\n.bh-overview-item strong{display:block;font-size:16px;color:#2b4b5e;line-height:1.45}\n.bh-overview-item p{font-size:14px;color:#667c89;line-height:1.55;margin:5px 0 0}\n.bh-template-group{border:1px solid #dce6eb;border-radius:9px;padding:18px;margin:0 0 16px;background:#fff}\n.bh-template-group-head{padding:0 0 12px;margin:0 0 13px;border-bottom:1px solid #e5edf1}\n.bh-template-group-head h3{font-size:20px!important;margin:0 0 4px!important;color:#24475b!important}\n.bh-template-group-head p{font-size:15px;color:#687d89;line-height:1.6;margin:0}\n.bh-phase{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;padding:14px 0;border-bottom:1px solid #edf1f3}\n.bh-phase:last-child{border-bottom:0}\n.bh-phase-label{font-size:16px;font-weight:700;color:#31556a}\n.bh-phase-goal{font-size:14px;color:#6a7e89;margin-top:4px;line-height:1.5}\n.bh-phase-content{min-width:0}\n.bh-phase-content p{font-size:15px;line-height:1.6;color:#536b79;margin:0 0 8px}\n.bh-phase-content .bh-list li{font-size:14px}\n.bh-funnel{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:12px 0}\n.bh-funnel-step{background:#edf4f7;border:1px solid #d5e3e9;border-radius:7px;padding:11px;min-width:0}\n.bh-funnel-step strong{display:block;font-size:14px;color:#2d5064;margin-bottom:5px}\n.bh-funnel-step p{font-size:13px;color:#627987;line-height:1.5;margin:0}\n.bh-subsection{margin-top:15px;padding:14px;background:#f7f9fa;border:1px solid #e5ecef;border-radius:7px}\n.bh-subsection h4{font-size:16px;margin:0 0 6px;color:#2b4b5e}\n.bh-subsection p{font-size:14px;line-height:1.6;color:#637783;margin:0 0 8px}\n@media(max-width:900px){.bh-funnel{grid-template-columns:repeat(2,minmax(0,1fr))}}\n@media(max-width:760px){.bh-overview-grid{grid-template-columns:1fr}.bh-phase{grid-template-columns:1fr;gap:6px}.bh-funnel{grid-template-columns:1fr}}\n";
         const card=(title,children)=>h('section',{className:'bh-section'},title?h('h3',null,title):null,children);
         const para=(text)=>h('p',{className:'bh-text'},text);
         const list=(items)=>h('ul',{className:'bh-list'},...(items||[]).map((item,i)=>h('li',{key:i},typeof item==='string'?item:item.rule||item.name)));
@@ -651,10 +635,12 @@
         const renderFoundation=()=> {
           const f=guide.foundation;
           return h('div',null,
-            sectionHead('01 / BRAND FOUNDATION','Brand Foundation','品牌定位、目标受众与品牌个性。'),
+            sectionHead('01 / Strategy','Brand Foundation','品牌基础帮助市场团队判断对谁说、说什么、凭什么说。'),
             card('Brand Positioning',h('div',null,h('p',{className:'bh-positioning'},f.positioning),h('div',{className:'bh-grid'},mini('Category',f.category,'品牌类别'),mini('Value Proposition',f.value,'核心价值')))),
             card('Target Audience',h('div',{className:'bh-grid'},...f.audience.map((a,i)=>mini(a.name,a.need,'受众 '+String(i+1).padStart(2,'0'))))),
-            card('Brand Personality · 品牌个性',h('div',{className:'bh-grid3'},...f.personality.map((x,i)=>mini(x.split(' · ')[0],x.split(' · ').slice(1).join(' · '))))),
+            card('Customer Needs & Priorities',h('div',{className:'bh-grid'},...f.needsPriorities.map((a,i)=>mini(a.name,a.priority,'典型客户角色 · 工作假设')))),
+            card('Messaging Focus · 内容沟通重点',list(f.messagingFocus)),
+            card('Recommended Brand Voice · 建议表达风格',h('div',{className:'bh-grid3'},...f.personality.map((x,i)=>mini(x.split(' · ')[0],x.split(' · ').slice(1).join(' · '),'建议品牌表达')))),
             card('Brand & Communication Rules · 品牌与传播规范',list(f.principles)),
           );
         };
@@ -662,7 +648,7 @@
           const l=guide.logo,c=guide.colors,t=guide.typography;
           const swatches=(items)=>h('div',{className:'bh-swatch-grid'},...items.map((x,i)=>h('div',{className:'bh-swatch',key:i},h('div',{className:'bh-swatch-chip',style:{background:x.hex}}),h('div',null,h('strong',null,x.name),h('code',null,x.hex),x.role?h('small',null,x.role):null,h('p',null,x.usage)))));
           return h('div',null,
-            sectionHead('02 / VISUAL IDENTITY','Visual Identity','Logo、品牌色与字体。'),
+            sectionHead('02 / Visual Identity','Visual Identity','规定 Logo、颜色和字体在官网、社媒及展会物料中的具体用法。'),
             card('Logo Assets · 三个必备版本',h('div',null,
               h('p',{className:'bh-text',style:{marginBottom:13}},l.primary),
               h('div',{className:'bh-logo-stage'},
@@ -689,63 +675,68 @@
           );
         };
                 const renderImagery = () => h('div', null,
-          sectionHead('03 / PHOTOGRAPHY','Photography & Imagery','按图片用途查看品牌视觉素材。'),
-          h('div',{className:'bh-category-grid'},...guide.imageryOverview.map((item,i)=>h('div',{className:'bh-category-tile',key:i,style:{'--tile-accent':item.accent}},h('span',{className:'bh-category-index'},String(i+1).padStart(2,'0')),h('strong',null,item.name),h('p',null,item.purpose)))),
-          ...guide.imagery.map(item => card(item.name,h('div',{className:'bh-grid'},mini('拍摄对象',item.subject),mini('画面重点',item.composition),mini('文件交付',item.delivery))))
+          sectionHead('03 / Photography', 'Photography & Imagery', '工业机器视觉品牌的四类核心图片。先看分类，再按拍摄要求执行。'),
+          card('Photography Overview · 摄影分类总览',h('div',{className:'bh-grid'},...guide.imageryOverview.map((item,i)=>mini(String(i+1).padStart(2,'0')+' · '+item.name,item.purpose,'拍摄类别')))),
+          ...guide.imagery.map(item => {
+            const details = [mini('Subject · 拍什么', item.subject), mini('Composition · 怎么构图', item.composition), mini('Lighting & Background · 光线背景', item.lighting), mini('Crop & Ratio · 裁切比例', item.crop), mini('Capture Checklist · 拍摄执行',item.captureRule), mini('Delivery · 文件交付',item.delivery)];
+            details.push(h('div', { className: 'bh-note', style: { gridColumn: '1 / -1' } }, h('strong', null, 'Avoid · 不要这样拍：'), item.avoid));
+            return card(item.name, h('div', { className: 'bh-grid' }, ...details));
+          })
         );
                 const renderLayouts = () => {
-          const groups=guide.layoutGroups||[];
-          const overview=h('section',{className:'bh-overview'},
-            h('div',{className:'bh-overview-head'},h('span',{className:'bh-overview-kicker'},'BRAND ASSETS'),h('span',{className:'bh-overview-title'},'模板资产总览')),
-            h('p',{className:'bh-overview-desc'},'按使用渠道和场景归档可重复使用的设计文件。内容主题由每次传播计划决定，不在模板库中预设。'),
-            h('div',{className:'bh-overview-grid'},...groups.map((g,i)=>h('div',{className:'bh-overview-item',key:g.id},h('strong',null,String(i+1).padStart(2,'0')+' · '+g.name),h('p',null,g.purpose))))
+          const groups = guide.layoutGroups || [];
+          const overview = h('section',{className:'bh-overview'},
+            h('div',{className:'bh-overview-head'},h('span',{className:'bh-overview-kicker'},'OVERVIEW / 01'),h('span',{className:'bh-overview-title'},'模板体系总览')),
+            h('p',{className:'bh-overview-desc'},'先按传播渠道与营销项目分类，再在各类别下选择具体内容形式或执行阶段。'),
+            h('div',{className:'bh-overview-grid'},...groups.map((g,i)=>h('div',{className:'bh-overview-item',key:g.id},
+              h('strong',null,String(i+1).padStart(2,'0')+' · '+g.name),
+              h('p',null,g.purpose),
+              h('p',null,(g.items||g.phases||[]).map(x=>x.name).join(' / ')+(g.collateral?' / '+g.collateral.name:'' ))
+            )))
           );
-          const assetCard=item=>h('div',{className:'bh-asset-card',key:item.name},
-            h('div',{className:'bh-asset-preview'},h('span',null,'DESIGN ASSET'),h('strong',null,item.status||'待设计')),
-            h('div',{className:'bh-asset-info'},h('strong',null,item.name),h('p',null,item.purpose),h('small',null,item.assetType||'可复用设计模板'))
-          );
-          const social=groups.find(g=>g.id==='social');
-          const trade=groups.find(g=>g.id==='trade-show');
-          const socialSection=social?h('section',{className:'bh-template-group'},
-            h('div',{className:'bh-template-group-head'},h('h3',null,social.name),h('p',null,social.purpose)),
-            h('div',{className:'bh-asset-grid'},...social.items.map(assetCard))
+          const social = groups.find(g=>g.id==='social');
+          const trade = groups.find(g=>g.id==='trade-show');
+          const renderTemplate = item => card(item.name,h('div',null,
+            para(item.purpose),
+            h('div',{className:'bh-steps',style:{margin:'12px 0'}},...item.structure.map((step,index)=>h('span',{className:'bh-step',key:index},step))),
+            h('div',{className:'bh-note'},h('strong',null,'执行要求：'),item.rule)
+          ));
+          const socialBlock = social ? h('section',{className:'bh-template-group'},
+            h('div',{className:'bh-template-group-head'},h('h3',null,'01 · '+social.name),h('p',null,social.purpose)),
+            ...social.items.map((item,index)=>h('div',{key:item.name,style:{marginBottom:index===social.items.length-1?0:12}},renderTemplate(item)))
           ):null;
-          const tradeSection=trade?h('section',{className:'bh-template-group'},
-            h('div',{className:'bh-template-group-head'},h('h3',null,trade.name),h('p',null,trade.purpose)),
-            ...trade.phases.map((phase,i)=>h('div',{className:'bh-phase',key:phase.name},
+          const tradeBlock = trade ? h('section',{className:'bh-template-group'},
+            h('div',{className:'bh-template-group-head'},h('h3',null,'02 · '+trade.name),h('p',null,trade.purpose)),
+            ...trade.phases.map((phase,index)=>h('div',{className:'bh-phase',key:phase.name},
               h('div',null,h('div',{className:'bh-phase-label'},phase.name),h('div',{className:'bh-phase-goal'},phase.goal)),
-              h('div',{className:'bh-phase-content'},h('p',null,phase.items.join(' · ')),h('p',null,h('strong',null,'模板用途： '),phase.rule))
+              h('div',{className:'bh-phase-content'},h('p',null,'传播内容'),list(phase.items),h('p',null,h('strong',null,'建议行动入口： '),phase.cta),h('div',{className:'bh-note'},h('strong',null,'执行要求：'),phase.rule))
             )),
-            h('div',{className:'bh-subsection'},h('h4',null,trade.collateral.name),h('p',null,trade.collateral.items.join(' · ')),h('p',null,trade.collateral.rule))
+            h('div',{className:'bh-subsection'},h('h4',null,trade.collateral.name),h('p',null,trade.collateral.purpose),list(trade.collateral.items),h('div',{className:'bh-note',style:{marginTop:8}},h('strong',null,'制作要求：'),trade.collateral.rule))
           ):null;
-          return h('div',null,sectionHead('04 / TEMPLATE LIBRARY','Template Library','可复用的社媒与展会设计资产。'),overview,socialSection,tradeSection);
+          return h('div',null,sectionHead('04 / Layout Templates','Layout & Content Templates','按渠道与项目组织模板。内容主题决定讲什么，传播形式决定如何呈现。'),overview,socialBlock,tradeBlock);
         };
                 const renderApplications = () => {
-          const a=guide.applications;
-          const overview=h('section',{className:'bh-overview'},
-            h('div',{className:'bh-overview-head'},h('span',{className:'bh-overview-kicker'},'APPLICATIONS'),h('span',{className:'bh-overview-title'},'品牌应用总览')),
-            h('div',{className:'bh-overview-grid'},
-              h('div',{className:'bh-overview-item'},h('strong',null,'Website｜官网'),h('p',null,a.website.summary)),
-              h('div',{className:'bh-overview-item'},h('strong',null,'Social Media｜社媒'),h('p',null,a.social.summary)),
-              h('div',{className:'bh-overview-item'},h('strong',null,'Trade Show｜展会'),h('p',null,a.tradeShow.summary))
-            )
-          );
-          const simple=(title,items)=>card(title,list(items));
-          return h('div',null,
-            sectionHead('05 / BRAND APPLICATIONS','Brand Applications','同一套品牌资产在不同渠道中的实际使用。'),
-            overview,
-            simple('Website｜官网',a.website.rules),
-            card('Social Media｜社媒',h('div',null,h('p',{className:'bh-text'},a.social.summary),h('div',{className:'bh-grid'},mini('Single Image｜单图',a.social.singleImage.join(' ')),mini('Carousel｜轮播',a.social.carousel.join(' ')),mini('Video｜视频',a.social.video.join(' '))))),
-            card('Trade Show｜展会',h('div',null,h('p',{className:'bh-text'},a.tradeShow.summary),h('div',{className:'bh-grid'},mini('Pre-show｜展前',a.tradeShow.pre.join(' ')),mini('On-site｜展中',a.tradeShow.onsite.join(' ')),mini('Post-show｜展后',a.tradeShow.post.join(' ')),mini('Reusable System｜复用系统',a.tradeShow.reusableSystem.join(' '))))),
-            card('Trade Show Lead Journey｜展会获客闭环',h('div',null,
-              para(a.tradeShow.funnel.title),
-              h('div',{className:'bh-funnel'},...a.tradeShow.funnel.steps.map((step,i)=>h('div',{className:'bh-funnel-step',key:i},h('strong',null,String(i+1).padStart(2,'0')+' · '+step.name),h('p',null,step.detail))),
-              list(a.tradeShow.funnel.rules)
-            ))
+          const a = guide.applications;
+          const group=(title,summary,sections)=>card(title,h('div',null,
+            para(summary),
+            ...sections.map((s,i)=>h('div',{style:{marginTop:13},key:i},h('h4',null,s.title),list(s.items)))
+          ));
+          return h('div', null,
+            sectionHead('05 / Applications', 'Brand Applications', '按实际使用场景管理：官网、社媒、展会。视频归入社媒内容，不再单独占一个一级板块。'),
+            card('Application Overview · 应用总览',h('div',{className:'bh-grid'},mini('01 · Website 官网','长期品牌资产与内容中心，重点是导航、阅读、产品信息和询盘体验。'),mini('02 · Social Media 社媒','包含静态单图、轮播和视频，围绕内容传播与互动。'),mini('03 · Trade Shows 展会','独立的线下事件营销项目，按展前、展中、展后管理。'))),
+            group('01 · Website / 官网',a.website.summary,[{title:'必须遵守',items:a.website.rules}]),
+            group('02 · Social Media / 社媒',a.social.summary,[{title:'Single Image · 单图',items:a.social.singleImage},{title:'Carousel · 轮播',items:a.social.carousel},{title:'Video · 视频（静音优先）',items:a.social.video}]),
+            group('03 · Trade Shows / 展会',a.tradeShow.summary,[{title:'Pre-show · 展前',items:a.tradeShow.pre},{title:'On-site · 展中',items:a.tradeShow.onsite},{title:'Post-show · 展后',items:a.tradeShow.post},{title:'Reusable System · 可复用模板',items:a.tradeShow.reusableSystem}]),
+            card('Trade Show Lead Journey · 展会获客闭环',h('div',null,
+              para(a.tradeShow.funnel.title+'：把线上传播、预约登记、现场互动和销售跟进连成可追踪的流程。'),
+              h('div',{className:'bh-funnel'},...a.tradeShow.funnel.steps.map((step,i)=>h('div',{className:'bh-funnel-step',key:i},h('strong',null,String(i+1).padStart(2,'0')+' · '+step.name),h('p',null,step.detail)))),
+              h('h4',null,'执行要求'),list(a.tradeShow.funnel.rules)
+            )),
+            card('Reference Notes · 规范依据',list(a.evidenceNotes))
           );
         };
                 const render=()=>!guide?h('div',{className:'bh-section'},h('h3',null,loading?'正在加载品牌规范':'品牌规范暂时无法加载'),h('p',{className:'bh-text'},loading?'正在读取品牌规范数据，请稍候。':(error||'请检查品牌规范数据文件后重试。')),!loading?h('button',{type:'button',onClick:()=>{setLoading(true);setError('');fetch('/data/brand-guidelines.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(data=>setGuide(data)).catch(err=>setError(err.message)).finally(()=>setLoading(false));},style:{marginTop:12,padding:'8px 12px',border:'1px solid #cbd9e0',borderRadius:6,background:'#fff',color:'#294b60',font:'inherit',cursor:'pointer'}},'重新加载'):null):active==='foundation'?renderFoundation():active==='identity'?renderIdentity():active==='imagery'?renderImagery():active==='layouts'?renderLayouts():renderApplications();
-        return h('main',{className:'bh'},h('style',null,css),h('header',{className:'bh-head'},h('div',null,h('div',{className:'bh-kicker'},'DEF COMPANY / BRAND STANDARDS'),h('h1',null,'Brand Hub'),h('p',{className:'bh-sub'},'品牌资产与视觉模板管理')),h('div',{style:{fontSize:11,color:'#81909a',whiteSpace:'nowrap'}},'INTERNAL BRAND REFERENCE')),h('div',{className:'bh-layout'},h('nav',{className:'bh-nav','aria-label':'Brand guideline sections'},...sections.map(item=>h('button',{type:'button',key:item.id,className:active===item.id?'active':'',onClick:()=>setActive(item.id)},h('strong',null,item.label),h('small',null,item.sub)))),h('div',{className:'bh-panel'},render())));
+        return h('main',{className:'bh'},h('style',null,css),h('header',{className:'bh-head'},h('div',null,h('div',{className:'bh-kicker'},'DEF COMPANY / BRAND STANDARDS'),h('h1',null,'Brand Hub'),h('p',{className:'bh-sub'},'Brand guidelines for consistent marketing and communication.')),h('div',{style:{fontSize:11,color:'#81909a',whiteSpace:'nowrap'}},'INTERNAL BRAND REFERENCE')),h('div',{className:'bh-layout'},h('nav',{className:'bh-nav','aria-label':'Brand guideline sections'},...sections.map(item=>h('button',{type:'button',key:item.id,className:active===item.id?'active':'',onClick:()=>setActive(item.id)},h('strong',null,item.label),h('small',null,item.sub)))),h('div',{className:'bh-panel'},render())));
       };
 
       CMS.registerCustomPage({ id: 'brand-hub', label: 'Brand Hub', icon: 'palette', component: BrandHub });
