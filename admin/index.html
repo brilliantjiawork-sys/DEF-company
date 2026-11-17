@@ -635,13 +635,14 @@
         const renderFoundation=()=> {
           const f=guide.foundation;
           return h('div',null,
-            sectionHead('01 / Strategy','Brand Foundation','品牌基础帮助市场团队判断对谁说、说什么、凭什么说。'),
-            card('Brand Positioning',h('div',null,h('p',{className:'bh-positioning'},f.positioning),h('div',{className:'bh-grid'},mini('Category',f.category,'品牌类别'),mini('Value Proposition',f.value,'核心价值')))),
+            sectionHead('01 / Strategy','Brand Foundation','品牌基础：明确品牌定位、服务对象、核心价值与统一表达原则。'),
+            card('Brand Positioning',h('div',null,
+              h('p',{className:'bh-positioning'},f.positioning),
+              h('div',{className:'bh-grid'},mini('Category',f.category,'品牌类别'),mini('Value Proposition',f.value,'核心价值'))
+            )),
             card('Target Audience',h('div',{className:'bh-grid'},...f.audience.map((a,i)=>mini(a.name,a.need,'受众 '+String(i+1).padStart(2,'0'))))),
-            card('Customer Needs & Priorities',h('div',{className:'bh-grid'},...f.needsPriorities.map((a,i)=>mini(a.name,a.priority,'典型客户角色 · 工作假设')))),
-            card('Messaging Focus · 内容沟通重点',list(f.messagingFocus)),
-            card('Recommended Brand Voice · 建议表达风格',h('div',{className:'bh-grid3'},...f.personality.map((x,i)=>mini(x.split(' · ')[0],x.split(' · ').slice(1).join(' · '),'建议品牌表达')))),
-            card('Brand & Communication Rules · 品牌与传播规范',list(f.principles)),
+            card('Brand Personality',h('div',{className:'bh-grid3'},...f.personality.map((x,i)=>mini(x.split(' · ')[0],x.split(' · ').slice(1).join(' · '),'品牌个性')))),
+            card('Brand Principles',h('div',{className:'bh-grid'},...f.principles.map((item,i)=>mini(item.name,item.rule,'执行原则 '+String(i+1).padStart(2,'0')))))
           );
         };
         const renderIdentity=()=> {
