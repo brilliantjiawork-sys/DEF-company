@@ -82,42 +82,138 @@
   "colors": {
     "brand": [
       {
-        "name": "DEF Blue",
+        "name": "Primary Blue",
         "hex": "#45B2D3",
-        "role": "主品牌色",
-        "usage": "用于品牌识别、标题重点和关键图形。"
+        "role": "Primary · 主色",
+        "usage": "品牌识别、常规品牌图形与视觉元素。"
       },
       {
-        "name": "DEF Yellow",
+        "name": "Accent Yellow",
         "hex": "#FFE817",
-        "role": "强调色",
-        "usage": "用于少量重点提示、关键数字和 CTA，不用于长段文字。"
+        "role": "Accent · 强调色",
+        "usage": "CTA、关键数字和少量重点标记。"
+      }
+    ],
+    "supporting": [
+      {
+        "name": "Light Blue",
+        "hex": "#D9EEF4",
+        "role": "Supporting · Light",
+        "usage": "信息卡片和浅色辅助图形。"
+      },
+      {
+        "name": "Deep Blue",
+        "hex": "#24677C",
+        "role": "Supporting · Dark",
+        "usage": "深色背景和深色图形区域。"
       }
     ],
     "neutral": [
       {
         "name": "White",
         "hex": "#FFFFFF",
-        "usage": "主背景。"
-      },
-      {
-        "name": "Charcoal",
-        "hex": "#222B32",
-        "usage": "标题、正文和深色背景。"
+        "usage": "浅色背景和深色背景上的反白文字。"
       },
       {
         "name": "Light Gray",
         "hex": "#F2F5F6",
-        "usage": "卡片和分区背景。"
+        "usage": "浅色背景、卡片和内容分区。"
+      },
+      {
+        "name": "Charcoal",
+        "hex": "#222B32",
+        "usage": "浅色背景上的标题、正文，以及深色背景选项。"
+      }
+    ],
+    "backgroundText": [
+      {
+        "background": "White",
+        "backgroundHex": "#FFFFFF",
+        "title": "#222B32",
+        "body": "#222B32",
+        "accent": "#45B2D3"
+      },
+      {
+        "background": "Light Gray",
+        "backgroundHex": "#F2F5F6",
+        "title": "#222B32",
+        "body": "#222B32",
+        "accent": "#45B2D3"
+      },
+      {
+        "background": "Deep Blue",
+        "backgroundHex": "#24677C",
+        "title": "#FFFFFF",
+        "body": "#FFFFFF",
+        "accent": "#FFE817"
+      },
+      {
+        "background": "Charcoal",
+        "backgroundHex": "#222B32",
+        "title": "#FFFFFF",
+        "body": "#FFFFFF",
+        "accent": "#FFE817"
+      }
+    ],
+    "graphicElements": [
+      {
+        "element": "常规 Icon",
+        "color": "Primary Blue",
+        "hex": "#45B2D3"
+      },
+      {
+        "element": "深色背景 Icon",
+        "color": "White",
+        "hex": "#FFFFFF"
+      },
+      {
+        "element": "重点 Icon / 关键数字",
+        "color": "Accent Yellow",
+        "hex": "#FFE817"
+      },
+      {
+        "element": "信息卡片背景",
+        "color": "Light Blue / Light Gray",
+        "hex": "#D9EEF4 / #F2F5F6"
+      },
+      {
+        "element": "卡片标题 / 正文",
+        "color": "Charcoal",
+        "hex": "#222B32"
+      },
+      {
+        "element": "边框 / 分隔线",
+        "color": "Neutral Border",
+        "hex": "#DCE3E8"
+      },
+      {
+        "element": "浅色背景轮播箭头",
+        "color": "Primary Blue",
+        "hex": "#45B2D3"
+      },
+      {
+        "element": "深色背景轮播箭头",
+        "color": "Accent Yellow",
+        "hex": "#FFE817"
+      },
+      {
+        "element": "CTA 按钮",
+        "color": "Accent Yellow background + Charcoal text",
+        "hex": "#FFE817 / #222B32"
+      },
+      {
+        "element": "次级按钮",
+        "color": "Primary Blue background + Charcoal text",
+        "hex": "#45B2D3 / #222B32"
       }
     ],
     "rules": [
-      "常规画面以白色或浅灰为主，蓝色负责品牌识别，黄色只做少量强调。",
-      "蓝色与黄色同时出现时，蓝色为主、黄色点亮一个重点，不做等面积拼色。",
-      "照片本身颜色复杂时，不再叠加大面积彩色装饰。",
-      "成功、警告、错误状态色只用于界面反馈，不属于品牌营销色。"
+      "浅色背景默认使用 White #FFFFFF 或 Light Gray #F2F5F6；标题和正文统一使用 Charcoal #222B32。",
+      "深色背景默认使用 Deep Blue #24677C 或 Charcoal #222B32；标题和正文统一使用 White #FFFFFF。",
+      "Light Blue #D9EEF4 主要用于信息卡片和辅助图形，不将浅色背景限定为浅蓝色。",
+      "Accent Yellow #FFE817 用于 CTA、关键数字和小面积重点标记，不用于浅色背景上的小字号文字。"
     ],
-    "production": "印刷色值由供应商按具体材质和工艺建立 CMYK/专色对照，并以实体打样确认。"
+    "production": "以上为 DEF 作品集品牌规范建议值；正式印刷色值须按材质与工艺打样确认。"
   },
   "typography": {
     "family": "英文与数字统一使用 Inter；中文统一使用 Noto Sans SC。缺字时英文使用 Arial，中文使用思源黑体。",
