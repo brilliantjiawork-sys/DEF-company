@@ -662,15 +662,28 @@
               h('div',{className:'bh-grid',style:{marginTop:14}},mini('Clear Space',l.clearSpace),mini('Minimum Size',l.minimum),mini('Background Usage',l.background),mini('File Formats',l.formats.join(' · ')))
             )),
             card('Incorrect Logo Usage · 禁止操作',h('div',{className:'bh-grid'},...l.misuse.map((x,i)=>mini('Do not · '+String(i+1).padStart(2,'0'),x,'禁止操作')))),
-            card('Brand Colors · 2 个品牌色 + 3 个中性色',h('div',null,
+            card('Color System · 色彩系统',h('div',null,
               h('h4',null,'Brand Colors · 品牌色'),swatches(c.brand),
+              h('h4',{style:{marginTop:18}},'Supporting Blue · 辅助蓝色阶'),swatches(c.supporting),
+              h('p',{className:'bh-text',style:{marginTop:7}},'辅助蓝色阶由主蓝延展：浅蓝用于浅色信息承载，深蓝用于深色区块与反白内容；它们不是额外的品牌核心色。'),
               h('h4',{style:{marginTop:18}},'Neutral Colors · 中性色'),swatches(c.neutral),
+              h('h4',{style:{marginTop:18}},'Background & Text · 背景与文字搭配'),
+              h('div',{className:'bh-grid'},...c.backgroundText.map((x,i)=>mini(x.background+' · '+x.backgroundHex,'标题 / 正文：'+x.title+' / '+x.body+'；强调：'+x.accent,'固定搭配')),
+              h('h4',{style:{marginTop:18}},'Graphic Elements · 图形元素'),
+              h('div',{className:'bh-grid'},...c.graphicElements.map((x,i)=>mini(x.element,x.color+' · '+x.hex,'默认用色')),
               h('div',{className:'bh-note',style:{marginTop:14}},...c.rules.map((x,i)=>h('p',{key:i,style:{margin:'0 0 6px'}},'• '+x))),
               h('p',{className:'bh-text',style:{marginTop:10}},c.production)
             )),
             card('Typography · 字体执行规范',h('div',null,
               h('p',{className:'bh-text',style:{marginBottom:12}},t.family),
               ...t.styles.map((s,i)=>h('div',{className:'bh-sample',style:{marginBottom:9},key:i},h('div',{className:'spec'},s.name+' · '+s.size+' · '+s.weight+' · Line height '+s.line),h('p',{className:'preview',style:{fontSize:s.name==='Display / H1'?32:s.name==='Section / H2'?25:s.name==='Body'?16:s.name==='Caption'?13:15,fontWeight:s.weight.includes('Bold')?700:s.weight.includes('Semibold')?600:400,lineHeight:s.line}},s.use+' — Industrial Vision, Precisely Applied'))),
+              h('div',{className:'bh-note',style:{marginTop:14}},
+                h('strong',null,'Long-form Article Headings · 官网长文章标题层级'),
+                h('p',null,'H1：整篇文章只使用一个，作为文章主标题。'),
+                h('p',null,'H2：用于划分主要内容章节，是长文章最常用的内部标题。'),
+                h('p',null,'H3：仅在某个 H2 章节下确实需要拆分多个小主题时使用；不需要为了凑层级而添加。'),
+                h('p',null,'正文段落直接使用 Body，不必每几段就插入标题。')
+              ),
               list(t.rules)
             ))
           );
