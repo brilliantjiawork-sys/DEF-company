@@ -130,29 +130,56 @@
         "background": "White",
         "backgroundHex": "#FFFFFF",
         "title": "#222B32",
-        "body": "#222B32",
-        "accent": "#45B2D3"
+        "body": "#40515B",
+        "accent": "#FFE817",
+        "accentText": "#222B32",
+        "titleContrast": "14.39:1",
+        "bodyContrast": "8.25:1",
+        "accentContrast": "11.51:1"
       },
       {
         "background": "Light Gray",
         "backgroundHex": "#F2F5F6",
         "title": "#222B32",
-        "body": "#222B32",
-        "accent": "#45B2D3"
+        "body": "#40515B",
+        "accent": "#FFE817",
+        "accentText": "#222B32",
+        "titleContrast": "13.13:1",
+        "bodyContrast": "7.53:1",
+        "accentContrast": "11.51:1"
+      },
+      {
+        "background": "Light Blue",
+        "backgroundHex": "#D9EEF4",
+        "title": "#222B32",
+        "body": "#40515B",
+        "accent": "#FFE817",
+        "accentText": "#222B32",
+        "titleContrast": "11.98:1",
+        "bodyContrast": "6.87:1",
+        "accentContrast": "11.51:1"
       },
       {
         "background": "Deep Blue",
         "backgroundHex": "#24677C",
         "title": "#FFFFFF",
-        "body": "#FFFFFF",
-        "accent": "#FFE817"
+        "body": "#D9EEF4",
+        "accent": "#FFE817",
+        "accentText": "#222B32",
+        "titleContrast": "6.35:1",
+        "bodyContrast": "5.29:1",
+        "accentContrast": "11.51:1"
       },
       {
         "background": "Charcoal",
         "backgroundHex": "#222B32",
         "title": "#FFFFFF",
-        "body": "#FFFFFF",
-        "accent": "#FFE817"
+        "body": "#D9EEF4",
+        "accent": "#FFE817",
+        "accentText": "#222B32",
+        "titleContrast": "14.39:1",
+        "bodyContrast": "11.98:1",
+        "accentContrast": "11.51:1"
       }
     ],
     "graphicElements": [
@@ -208,12 +235,119 @@
       }
     ],
     "rules": [
-      "品牌核心色为 Primary Blue #45B2D3 与 Accent Yellow #FFE817；辅助蓝色阶用于扩展层次，不另立为核心品牌色。",
-      "浅色页面背景优先使用 White #FFFFFF 或 Light Gray #F2F5F6，标题和正文使用 Charcoal #222B32。",
-      "Light Blue #D9EEF4 用于信息卡片和浅色辅助图形；Deep Blue #24677C 用于深色区块，搭配 White #FFFFFF 文字。",
-      "Accent Yellow #FFE817 用于 CTA、关键数字和小面积重点标记，不用于浅色背景上的小字号文字。"
+      "颜色使用优先级：Primary Blue 建立品牌识别；Accent Yellow 用于少量重点强调；Deep Blue 承担功能性对比与结构分隔；Light Blue 和中性色负责背景与阅读层次。",
+      "浅色背景使用 White #FFFFFF、Light Gray #F2F5F6 或 Light Blue #D9EEF4；标题使用 Charcoal #222B32，正文可使用 Secondary Text #40515B。",
+      "深色背景使用 Deep Blue #24677C 或 Charcoal #222B32；标题使用 White #FFFFFF，辅助正文使用 Light Blue #D9EEF4。",
+      "Primary CTA 使用 Accent Yellow #FFE817 背景与 Charcoal #222B32 文字；次级按钮使用 Primary Blue #45B2D3 背景与 Charcoal #222B32 文字。",
+      "浅色背景上的功能图标、关键数字和结构性分隔线使用 Deep Blue #24677C；深色背景上的图标使用 White，重点数字可使用 Accent Yellow。",
+      "Primary Blue #45B2D3 与白色背景的对比度不足，不得用于白底小字号文字或需要满足 3:1 的信息图标。"
     ],
-    "production": "以上为 DEF 作品集品牌规范建议值；正式印刷色值须按材质与工艺打样确认。"
+    "production": "对比度按 WCAG 2.2 AA 的相对亮度计算；印刷色值仍需按材质与工艺打样确认。",
+    "usagePriority": [
+      {
+        "name": "Primary Blue",
+        "hex": "#45B2D3",
+        "priority": "01 · Brand identity",
+        "usage": "品牌识别、主视觉图形和主要品牌元素；不用于白底小字号文字或需要高辨识度的功能图标。"
+      },
+      {
+        "name": "Accent Yellow",
+        "hex": "#FFE817",
+        "priority": "02 · Key emphasis",
+        "usage": "CTA 按钮背景、关键数字和少量重点标记；搭配 Charcoal 文字，不作为浅色背景上的小字号文字。"
+      },
+      {
+        "name": "Deep Blue",
+        "hex": "#24677C",
+        "priority": "03 · Functional contrast",
+        "usage": "浅色背景上的功能图标、关键数字和结构性分隔线；也是深色背景选项。"
+      },
+      {
+        "name": "Light Blue",
+        "hex": "#D9EEF4",
+        "priority": "04 · Supporting surface",
+        "usage": "浅色背景、信息卡片，以及深色背景上的辅助文字。"
+      },
+      {
+        "name": "Charcoal",
+        "hex": "#222B32",
+        "priority": "05 · Primary text",
+        "usage": "浅色背景上的标题、正文，以及按钮文字。"
+      },
+      {
+        "name": "White",
+        "hex": "#FFFFFF",
+        "priority": "06 · Neutral",
+        "usage": "浅色页面背景，以及深色背景上的主要文字。"
+      },
+      {
+        "name": "Light Gray",
+        "hex": "#F2F5F6",
+        "priority": "07 · Neutral",
+        "usage": "浅色页面背景和内容分区。"
+      }
+    ],
+    "functionalColors": [
+      {
+        "element": "Primary CTA",
+        "color": "Accent Yellow",
+        "hex": "#FFE817",
+        "sample": "CTA",
+        "textColor": "#222B32",
+        "contrast": "11.51:1",
+        "usage": "黄色按钮背景搭配深炭灰按钮文字。"
+      },
+      {
+        "element": "Secondary Button",
+        "color": "Primary Blue",
+        "hex": "#45B2D3",
+        "sample": "CTA",
+        "textColor": "#222B32",
+        "contrast": "5.87:1",
+        "usage": "主蓝按钮背景搭配深炭灰按钮文字。"
+      },
+      {
+        "element": "Functional Icon / Divider",
+        "color": "Deep Blue",
+        "hex": "#24677C",
+        "sample": "◆",
+        "textColor": "#FFFFFF",
+        "contrast": "≥5.29:1",
+        "usage": "浅色背景上的功能图标、重点数字和结构性分隔线。"
+      },
+      {
+        "element": "Key Information · Dark",
+        "color": "Accent Yellow",
+        "hex": "#FFE817",
+        "sample": "01",
+        "textColor": "#222B32",
+        "contrast": "≥5.08:1",
+        "usage": "深蓝或深炭灰背景上的重点数字与短信息。"
+      },
+      {
+        "element": "Icon / Text · Dark",
+        "color": "White",
+        "hex": "#FFFFFF",
+        "sample": "Aa",
+        "textColor": "#222B32",
+        "contrast": "≥6.35:1",
+        "usage": "深色背景上的主要文字与功能图标。"
+      }
+    ],
+    "contrastStandards": {
+      "standard": {
+        "ratio": "4.5:1",
+        "definition": "普通文字：不符合下方“大字号文字”条件的所有文字。包括 12–18px 正文、说明文字、图片注释和按钮文字。"
+      },
+      "large": {
+        "ratio": "3:1",
+        "definition": "大字号文字：字号至少 24px（常规字重 400–600）；或字号至少 18.7px 且字重至少 700（粗体）。两项满足其中一项即可。"
+      },
+      "nonText": {
+        "ratio": "3:1",
+        "definition": "承载信息或需要识别的图标、控件边界及图形元素，与相邻背景之间的最低对比度。"
+      }
+    }
   },
   "typography": {
     "family": "英文与数字统一使用 Inter；中文统一使用 Noto Sans SC。缺字时英文使用 Arial，中文使用思源黑体。",
