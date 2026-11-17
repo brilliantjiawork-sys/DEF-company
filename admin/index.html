@@ -260,9 +260,6 @@
         const [query, setQuery] = CMS.React.useState('');
         const [typeFilter, setTypeFilter] = CMS.React.useState('all');
         const [useFilter, setUseFilter] = CMS.React.useState('all');
-        const [imageGroupFilter, setImageGroupFilter] = CMS.React.useState('all');
-        const [videoGroupFilter, setVideoGroupFilter] = CMS.React.useState('all');
-        const [documentGroupFilter, setDocumentGroupFilter] = CMS.React.useState('all');
         const [expandedAsset, setExpandedAsset] = CMS.React.useState('');
         const [loading, setLoading] = CMS.React.useState(true);
         const [error, setError] = CMS.React.useState('');
@@ -489,9 +486,6 @@
           ['all', 'All content'], ['Stories', 'Stories'], ['Trade Shows', 'Trade Shows'],
           ['Website & Shared', 'Website & Shared'], ['unused', 'Not currently used']
         ];
-        const imageGroups = ['Product photos', 'Application photos', 'Technical details', 'Trade show photos', 'Social graphics', 'Brand identity', 'Needs classification'];
-        const videoGroups = ['Product demos', 'Application videos', 'Trade show videos', 'Brand videos', 'Needs classification'];
-        const documentGroups = ['Product datasheets', 'Product brochures & one-pagers', 'Whitepapers', 'Presentations', 'Trade show print files', 'Other documents'];
         const filtered = items.filter(item => {
           if (typeFilter !== 'all' && item.type !== typeFilter) return false;
           if (useFilter === 'unused' && item.usages.length) return false;
@@ -505,7 +499,7 @@
           fontWeight: active ? 700 : 500, cursor: 'pointer', font: 'inherit', fontSize: 13
         });
         const typeButton = (id, label) => h('button', { type: 'button', key: id, 'aria-pressed': String(typeFilter === id), onClick: () => setTypeFilter(typeFilter === id ? 'all' : id), style: textFilterStyle(typeFilter === id) }, label);
-        const useButton = (id, label) => h('button', { type: 'button', key: id, 'aria-pressed': String(id === 'all-images' ? imageGroupFilter === 'all' : id === 'all-videos' ? videoGroupFilter === 'all' : id === 'all-documents' ? documentGroupFilter === 'all' : id === 'all' ? useFilter === 'all' : id === 'unused' || ['Stories','Trade Shows','Website & Shared'].includes(id) ? useFilter === id : imageGroups.includes(id) ? imageGroupFilter === id : videoGroups.includes(id) ? videoGroupFilter === id : documentGroupFilter === id), onClick: () => { if (id === 'all-images') setImageGroupFilter('all'); else if (id === 'all-videos') setVideoGroupFilter('all'); else if (id === 'all-documents') setDocumentGroupFilter('all'); else if (imageGroups.includes(id)) setImageGroupFilter(id); else if (videoGroups.includes(id)) setVideoGroupFilter(id); else if (documentGroups.includes(id)) setDocumentGroupFilter(id); else setUseFilter(id); }, style: textFilterStyle(id === 'all-images' ? imageGroupFilter === 'all' : id === 'all-videos' ? videoGroupFilter === 'all' : id === 'all-documents' ? documentGroupFilter === 'all' : id === 'all' ? useFilter === 'all' : id === 'unused' || ['Stories','Trade Shows','Website & Shared'].includes(id) ? useFilter === id : imageGroups.includes(id) ? imageGroupFilter === id : videoGroups.includes(id) ? videoGroupFilter === id : documentGroupFilter === id) }, label);
+        const useButton = (id, label) => h('button', { type: 'button', key: id, 'aria-pressed': String(useFilter === id), onClick: () => setUseFilter(id), style: textFilterStyle(useFilter === id) }, label);
         const card = item => {
           const preview = item.type === 'image'
             ? h('img', { src: item.url, alt: item.name, loading: 'lazy', style: { width: '100%', height: '100%', objectFit: 'contain', display: 'block' }, onError: event => { event.currentTarget.style.display = 'none'; } })
