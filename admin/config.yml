@@ -337,7 +337,7 @@ collections:
       name: exhibitions
       widget: list
       label_singular: 新增一场展会
-      collapsed: true
+      collapsed: false
       minimize_collapsed: false
       add_to_top: true
       summary: '{{title}} · {{start_date}}'
