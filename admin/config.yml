@@ -278,7 +278,89 @@ collections:
       name: newsletter_success_description
       widget: text
       required: true
-  - name: stories_page_settings
+    - name: upcoming_shows
+    label: Upcoming Shows｜展会资料
+    file: data/events.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: 展会活动（只编辑官网卡片内容）
+      name: exhibitions
+      widget: list
+      label_singular: 新增一场展会
+      collapsed: false
+      minimize_collapsed: false
+      add_to_top: true
+      summary: '{{title}} · {{start_date}}'
+      thumbnail: cover
+      fields:
+      - label: 展会名称
+        name: title
+        widget: string
+        required: true
+      - label: 展会封面图（卡片顶部图片）
+        name: cover
+        widget: image
+        required: true
+        choose_url: false
+        hint: 上传后官网卡片会按原图比例完整显示，不裁剪、不拉伸。
+      - label: 展位号
+        name: booth
+        widget: string
+        required: true
+        hint: 尚未确认时填写 TBC。
+      - label: 开始日期
+        name: start_date
+        widget: datetime
+        required: true
+        date_format: YYYY-MM-DD
+        time_format: false
+        format: YYYY-MM-DD
+      - label: 结束日期
+        name: end_date
+        widget: datetime
+        required: true
+        date_format: YYYY-MM-DD
+        time_format: false
+        format: YYYY-MM-DD
+      - label: 地点（城市、地区和国家）
+        name: loc
+        widget: string
+        required: true
+      - label: 卡片话题标签
+        name: tags
+        widget: select
+        multiple: true
+        options:
+        - Machine Vision
+        - AI & Deep Learning
+        - Defect Detection
+        - Quality Control
+        - AOI
+        - 3D Vision
+        - Robotics & Automation
+        - Positioning & Measurement
+        - Electronics & Semiconductors
+        - Food & Beverage Inspection
+        - Packaging Inspection
+        - Warehouse & Logistics
+        - Innovation
+        - Sustainability
+      - label: 显示预约按钮
+        name: cta_enabled
+        widget: boolean
+        default: true
+      - label: 预约按钮文案
+        name: cta_label
+        widget: select
+        default: Book a Meeting at This Show
+        options:
+        - Book a Meeting at This Show
+        - Talk to Our Team
+        - Contact Sales
+        - Book a Demo
+- name: stories_page_settings
     label: Stories 页面设置
     file: data/stories-page-settings.json
     format: json
@@ -570,91 +652,6 @@ collections:
     - label: 重新打开设置按钮
       name: reopen_button
       widget: string
-- name: upcoming-shows
-  label: Upcoming Shows｜展会资料
-  files:
-  - name: upcoming_shows
-    label: Upcoming Shows｜展会资料
-    file: data/events.json
-    format: json
-    editor:
-      preview: false
-    fields:
-    - label: 展会活动（只编辑官网卡片内容）
-      name: exhibitions
-      widget: list
-      label_singular: 新增一场展会
-      collapsed: false
-      minimize_collapsed: false
-      add_to_top: true
-      summary: '{{title}} · {{start_date}}'
-      thumbnail: cover
-      fields:
-      - label: 展会名称
-        name: title
-        widget: string
-        required: true
-      - label: 展会封面图（卡片顶部图片）
-        name: cover
-        widget: image
-        required: true
-        choose_url: false
-        hint: 上传后官网卡片会按原图比例完整显示，不裁剪、不拉伸。
-      - label: 展位号
-        name: booth
-        widget: string
-        required: true
-        hint: 尚未确认时填写 TBC。
-      - label: 开始日期
-        name: start_date
-        widget: datetime
-        required: true
-        date_format: YYYY-MM-DD
-        time_format: false
-        format: YYYY-MM-DD
-      - label: 结束日期
-        name: end_date
-        widget: datetime
-        required: true
-        date_format: YYYY-MM-DD
-        time_format: false
-        format: YYYY-MM-DD
-      - label: 地点（城市、地区和国家）
-        name: loc
-        widget: string
-        required: true
-      - label: 卡片话题标签
-        name: tags
-        widget: select
-        multiple: true
-        options:
-        - Machine Vision
-        - AI & Deep Learning
-        - Defect Detection
-        - Quality Control
-        - AOI
-        - 3D Vision
-        - Robotics & Automation
-        - Positioning & Measurement
-        - Electronics & Semiconductors
-        - Food & Beverage Inspection
-        - Packaging Inspection
-        - Warehouse & Logistics
-        - Innovation
-        - Sustainability
-      - label: 显示预约按钮
-        name: cta_enabled
-        widget: boolean
-        default: true
-      - label: 预约按钮文案
-        name: cta_label
-        widget: select
-        default: Book a Meeting at This Show
-        options:
-        - Book a Meeting at This Show
-        - Talk to Our Team
-        - Contact Sales
-        - Book a Demo
 - name: stories
   label: Stories
   icon: article
