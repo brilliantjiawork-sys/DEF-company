@@ -1,0 +1,925 @@
+backend:
+  name: test-repo
+# A Save operation creates/updates an unpublished draft. Only Publish merges it into main.
+media_folder: images
+public_folder: /images
+media_libraries:
+  default:
+    config:
+      slugify_filename: true
+      transformations:
+        raster_image:
+          format: webp
+          quality: 88
+        svg:
+          optimize: true
+  stock_assets:
+    providers: []
+collections:
+- name: content-management
+  label: 内部内容资源（系统）
+  icon: folder_managed
+  hide: true
+  description: 系统内容存储集合。请从内容管理入口编辑。
+  files:
+  - name: brand_guidelines
+    label: Brand Guidelines（品牌规范）
+    file: data/brand-guidelines.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: 品牌基础 Brand Foundation
+      name: foundation
+      widget: text
+    - label: Logo 现状
+      name: logo
+      widget: object
+      fields:
+      - label: 当前 Logo 文件路径
+        name: currentFile
+        widget: string
+      - label: 当前版本说明
+        name: currentVersion
+        widget: text
+      - label: Logo 版本状态
+        name: variants
+        widget: text
+      - label: 使用规则
+        name: rules
+        widget: text
+    - label: 色彩系统 Color System
+      name: colors
+      widget: list
+      summary: '{{name}} · {{role}} · {{hex}}'
+      collapsed: true
+      fields:
+      - label: 颜色名称
+        name: name
+        widget: string
+      - label: HEX
+        name: hex
+        widget: string
+      - label: 颜色角色
+        name: role
+        widget: string
+      - label: 使用场景
+        name: use
+        widget: text
+      - label: 来源 / 状态
+        name: source
+        widget: text
+    - label: 品牌语言 Verbal Identity
+      name: verbal
+      widget: object
+      fields:
+      - label: 品牌整体表达
+        name: voice
+        widget: text
+      - label: 不同场景的语气
+        name: tones
+        widget: text
+      - label: 技术术语统一
+        name: terminology
+        widget: text
+      - label: 文案写作规则
+        name: writing
+        widget: text
+    - label: 字体与排版 Typography
+      name: typography
+      widget: object
+      fields:
+      - label: 字体方案
+        name: family
+        widget: text
+      - label: 字体层级
+        name: hierarchy
+        widget: text
+    - label: 图片规范 Imagery
+      name: imagery
+      widget: list
+      summary: '{{name}}'
+      collapsed: true
+      fields:
+      - label: 图片类型
+        name: name
+        widget: string
+      - label: 使用目的
+        name: purpose
+        widget: text
+      - label: 推荐标准
+        name: good
+        widget: text
+      - label: 避免情况
+        name: avoid
+        widget: text
+    - label: 常用版式 Layout System
+      name: layouts
+      widget: list
+      summary: '{{name}}'
+      collapsed: true
+      fields:
+      - label: 版式名称
+        name: name
+        widget: string
+      - label: 使用场景
+        name: use
+        widget: text
+    - label: 渠道应用 Channel Applications
+      name: channels
+      widget: list
+      summary: '{{name}}'
+      collapsed: true
+      fields:
+      - label: 渠道
+        name: name
+        widget: string
+      - label: 内容方向
+        name: use
+        widget: text
+      - label: 常见形式
+        name: format
+        widget: text
+    - label: 视频规范 Video System
+      name: video
+      widget: object
+      fields:
+      - label: 核心原则
+        name: principle
+        widget: text
+      - label: 需要管理的视频素材
+        name: assets
+        widget: text
+    - label: 展会应用 Trade Show Applications
+      name: events
+      widget: object
+      fields:
+      - label: 展前
+        name: before
+        widget: text
+      - label: 展中
+        name: onsite
+        widget: text
+      - label: 展后
+        name: after
+        widget: text
+      - label: 选择原则
+        name: note
+        widget: text
+  - name: home_intro
+    label: Brand Introduction（品牌介绍）
+    file: data/home-intro.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: 浏览器页面标题
+      name: page_title
+      widget: string
+      required: true
+    - label: 品牌名称
+      name: name
+      widget: string
+      required: true
+    - label: 品牌标语
+      name: tagline
+      widget: string
+    - label: Logo 图片
+      name: logo
+      widget: image
+      required: false
+      choose_url: false
+    - label: Logo 替代文本
+      name: logo_alt
+      widget: string
+    - label: 首页导航文字 Home
+      name: nav_home
+      widget: string
+      required: true
+    - label: 首页导航文字 Newsroom
+      name: nav_newsroom
+      widget: string
+      required: true
+    - label: 全局按钮 Contact Sales
+      name: nav_contact_sales
+      widget: string
+      required: true
+    - label: 首页主标题
+      name: hero_title
+      widget: string
+      required: true
+    - label: 首页品牌介绍文案
+      name: hero_description
+      widget: text
+      required: true
+    - label: 首页按钮文字
+      name: hero_button
+      widget: string
+      required: true
+    - label: 首页主视觉图片
+      name: hero_image
+      widget: image
+      required: true
+      choose_url: false
+    - label: 主视觉图片替代文本
+      name: hero_image_alt
+      widget: string
+  - name: home_newsletter
+    label: Newsletter（邮件订阅）
+    file: data/home-newsletter.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: 订阅区图片
+      name: newsletter_image
+      widget: image
+      required: true
+      choose_url: false
+    - label: 图片替代文本
+      name: newsletter_image_alt
+      widget: string
+    - label: 图片说明
+      name: newsletter_image_caption
+      widget: text
+    - label: 订阅区标题
+      name: newsletter_title
+      widget: string
+      required: true
+    - label: 订阅区介绍
+      name: newsletter_description
+      widget: text
+      required: true
+    - label: 工作邮箱输入提示
+      name: newsletter_email_placeholder
+      widget: string
+      required: true
+    - label: 订阅按钮文字
+      name: newsletter_button
+      widget: string
+      required: true
+    - label: 提交成功标题
+      name: newsletter_success_title
+      widget: string
+      required: true
+    - label: 提交成功说明
+      name: newsletter_success_description
+      widget: text
+      required: true
+  - name: upcoming_shows
+    label: Upcoming Shows｜展会资料
+    file: data/events.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: 展会活动（只编辑官网卡片内容）
+      name: exhibitions
+      widget: list
+      label_singular: 新增一场展会
+      collapsed: false
+      minimize_collapsed: false
+      add_to_top: true
+      summary: '{{title}} · {{start_date}}'
+      thumbnail: cover
+      fields:
+      - label: 展会名称
+        name: title
+        widget: string
+        required: true
+      - label: 展会封面图（卡片顶部图片）
+        name: cover
+        widget: image
+        required: true
+        choose_url: false
+        hint: 上传后官网卡片会按原图比例完整显示，不裁剪、不拉伸。
+      - label: 展位号
+        name: booth
+        widget: string
+        required: true
+        hint: 尚未确认时填写 TBC。
+      - label: 开始日期
+        name: start_date
+        widget: datetime
+        required: true
+        date_format: YYYY-MM-DD
+        time_format: false
+        format: YYYY-MM-DD
+      - label: 结束日期
+        name: end_date
+        widget: datetime
+        required: true
+        date_format: YYYY-MM-DD
+        time_format: false
+        format: YYYY-MM-DD
+      - label: 地点（城市、地区和国家）
+        name: loc
+        widget: string
+        required: true
+      - label: 卡片话题标签
+        name: tags
+        widget: select
+        multiple: true
+        options:
+        - Machine Vision
+        - AI & Deep Learning
+        - Defect Detection
+        - Quality Control
+        - AOI
+        - 3D Vision
+        - Robotics & Automation
+        - Positioning & Measurement
+        - Electronics & Semiconductors
+        - Food & Beverage Inspection
+        - Packaging Inspection
+        - Warehouse & Logistics
+        - Innovation
+        - Sustainability
+      - label: 显示预约按钮
+        name: cta_enabled
+        widget: boolean
+        default: true
+      - label: 预约按钮文案
+        name: cta_label
+        widget: select
+        default: Book a Meeting at This Show
+        options:
+        - Book a Meeting at This Show
+        - Talk to Our Team
+        - Contact Sales
+        - Book a Demo
+  - name: stories_page_settings
+    label: Stories 页面设置
+    file: data/stories-page-settings.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: Stories 页面标题
+      name: page_title
+      widget: string
+      required: true
+    - label: Stories 页面简介
+      name: page_intro
+      widget: text
+      required: true
+    - label: 文章详情页返回 Stories 的按钮文字
+      name: back_button
+      widget: string
+      required: true
+  - name: events_page_settings
+    label: Trade Shows 页面设置
+    file: data/trade-shows-page-settings.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: Trade Shows 页面标题
+      name: page_title
+      widget: string
+      required: true
+    - label: Trade Shows 页面简介
+      name: page_intro
+      widget: text
+      required: true
+    - label: Trade Show Articles 切换按钮文字
+      name: articles_tab_label
+      widget: string
+      required: true
+    - label: 展会文章区域说明
+      name: articles_intro
+      widget: text
+      required: true
+    - label: 展会详情页返回按钮文字
+      name: back_button
+      widget: string
+      required: true
+  # Shared option sets used by Stories and Trade Show Articles.
+  # Keep anchors in this same config file so Sveltia CMS can resolve aliases.
+  - name: social_page
+    label: Social Media 页面文案
+    file: data/newsroom-social-media.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: 页面标题
+      name: social_title
+      widget: string
+      required: true
+    - label: 免责声明开头
+      name: social_disclaimer_lead
+      widget: string
+    - label: 免责声明正文
+      name: social_disclaimer_text
+      widget: text
+    - label: 图片来源名称
+      name: image_source_label
+      widget: string
+    - label: 图片来源网址
+      name: image_source_url
+      widget: string
+  - name: social_media
+    label: 社交媒体渠道卡片
+    file: data/social-media.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: 渠道卡片（点开单张卡片进行编辑）
+      name: channels
+      widget: list
+      label_singular: 添加一个渠道
+      collapsed: true
+      minimize_collapsed: true
+      add_to_top: false
+      summary: '{{platform}}'
+      thumbnail: image
+      fields:
+      - label: 平台名称
+        name: platform
+        widget: select
+        required: true
+        options:
+        - LinkedIn
+        - YouTube
+        - Facebook
+        - Instagram
+        - X
+        - Other
+      - label: 平台简介
+        name: description
+        widget: text
+        required: true
+      - label: 平台主页链接（https://）
+        name: url
+        widget: string
+        required: true
+      - label: 按钮文字
+        name: button_text
+        widget: string
+        required: true
+      - label: 图片
+        name: image
+        widget: image
+        required: true
+        choose_url: false
+      - label: 图片替代文本
+        name: image_alt
+        widget: string
+      - label: 在网站显示
+        name: active
+        widget: boolean
+        default: true
+  - name: media_page
+    label: Media 页面文案
+    file: data/newsroom-media.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: 页面标题
+      name: media_title
+      widget: string
+      required: true
+    - label: 页面简介
+      name: media_intro
+      widget: text
+      required: true
+    - label: 免责声明开头
+      name: media_disclaimer_lead
+      widget: string
+    - label: 免责声明正文
+      name: media_disclaimer_text
+      widget: text
+  - name: media_contacts
+    label: 媒体联系人列表
+    file: data/media-contacts.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: 媒体联系人（点开单个人进行编辑）
+      name: contacts
+      widget: list
+      label_singular: 添加媒体联系人
+      collapsed: true
+      minimize_collapsed: true
+      add_to_top: true
+      summary: '{{name}} · {{title}}'
+      thumbnail: portrait
+      fields:
+      - label: 姓名
+        name: name
+        widget: string
+        required: true
+      - label: 职位
+        name: title
+        widget: string
+        required: true
+      - label: 联系邮箱
+        name: email
+        widget: string
+        required: true
+      - label: 头像（可选）
+        name: portrait
+        widget: image
+        required: false
+        choose_url: false
+      - label: 头像替代文本
+        name: portrait_alt
+        widget: string
+      - label: 在网站显示
+        name: active
+        widget: boolean
+        default: true
+  - name: contact_content
+    label: Contact Sales 表单文案
+    file: data/contact-content.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: 表单标题
+      name: title
+      widget: string
+    - label: 表单说明
+      name: description
+      widget: text
+    - label: Work Email 标签
+      name: email_label
+      widget: string
+    - label: First Name 标签
+      name: first_name_label
+      widget: string
+    - label: Last Name 标签
+      name: last_name_label
+      widget: string
+    - label: Company 标签
+      name: company_label
+      widget: string
+    - label: Phone 标签
+      name: phone_label
+      widget: string
+    - label: Country/Region 标签
+      name: country_label
+      widget: string
+    - label: Zip Code 标签
+      name: zip_code_label
+      widget: string
+    - label: Industry 标签
+      name: industry_label
+      widget: string
+    - label: Additional Comments 标签
+      name: message_label
+      widget: string
+    - label: 国家下拉提示
+      name: country_placeholder
+      widget: string
+    - label: 行业下拉提示
+      name: industry_placeholder
+      widget: string
+    - label: 留言输入提示
+      name: message_placeholder
+      widget: string
+    - label: 提交按钮文字
+      name: submit_button
+      widget: string
+    - label: 提交成功标题
+      name: success_title
+      widget: string
+    - label: 提交成功说明
+      name: success_description
+      widget: text
+    - label: 返回首页按钮文字
+      name: return_button
+      widget: string
+  - name: cookie_content
+    label: Cookie & Privacy 文案
+    file: data/cookie-content.json
+    format: json
+    editor:
+      preview: false
+    fields:
+    - label: 标题
+      name: title
+      widget: string
+    - label: 说明
+      name: description
+      widget: text
+    - label: Reject all 按钮
+      name: reject_button
+      widget: string
+    - label: Customize 按钮
+      name: customize_button
+      widget: string
+    - label: Accept all 按钮
+      name: accept_button
+      widget: string
+    - label: 必要 Cookie 标题
+      name: necessary_title
+      widget: string
+    - label: 必要 Cookie 说明
+      name: necessary_description
+      widget: text
+    - label: Analytics 标题
+      name: analytics_title
+      widget: string
+    - label: Analytics 说明
+      name: analytics_description
+      widget: text
+    - label: Marketing 标题
+      name: marketing_title
+      widget: string
+    - label: Marketing 说明
+      name: marketing_description
+      widget: text
+    - label: 保存设置按钮
+      name: save_button
+      widget: string
+    - label: 重新打开设置按钮
+      name: reopen_button
+      widget: string
+- name: stories
+  label: Stories
+  icon: article
+  folder: data/stories
+  create: true
+  extension: json
+  format: json
+  slug: '{{slug}}'
+  editor:
+    preview: false
+  fields:
+  - label: 文章标题
+    name: title
+    widget: string
+    required: true
+  - label: 标题字号（px）
+    name: detail_title_font_size
+    hint: 控制官网详情页最上方的文章标题，不影响正文。
+    widget: number
+    value_type: int
+    default: 34
+    min: 28
+    max: 42
+    step: 1
+    required: false
+  - label: 发布日期
+    name: date
+    widget: datetime
+    required: true
+    date_format: YYYY-MM-DD
+    time_format: false
+    format: YYYY-MM-DD
+  - label: Content Category｜内容类别
+    name: category
+    widget: select
+    required: true
+    default: Product & Technology
+    options:
+    - Product & Technology
+    - Industry Applications
+    - Industry Insights
+    - Company & Culture
+    - Brand News & Updates
+  - label: Industry｜行业
+    name: industries
+    widget: select
+    multiple: true
+    options:
+        - Automotive
+        - Electronics
+        - Food & Beverage
+        - Packaging
+        - Semiconductors
+        - Logistics
+        - Pharmaceuticals
+  - label: Content Topic｜内容话题（与 Upcoming Shows、Trade Show Articles 共用同一套选项）
+    name: tags
+    widget: select
+    multiple: true
+    options:
+        - Machine Vision
+        - AI & Deep Learning
+        - Defect Detection
+        - Quality Control
+        - AOI
+        - 3D Vision
+        - Robotics & Automation
+        - Positioning & Measurement
+        - Electronics & Semiconductors
+        - Food & Beverage Inspection
+        - Packaging Inspection
+        - Warehouse & Logistics
+        - Innovation
+        - Sustainability
+  - label: 卡片摘要（可调整官网字号）
+    name: summary
+    widget: text
+    required: true
+  - label: 摘要字号（px）
+    name: summary_font_size
+    hint: 控制列表和推荐卡片里的摘要文字大小，不控制详情页标题。
+    widget: number
+    value_type: int
+    default: 16
+    min: 14
+    max: 18
+    step: 1
+    required: false
+  - label: 封面图片
+    name: image
+    widget: image
+    required: false
+    choose_url: false
+  - label: 图片替代文本
+    name: image_alt
+    widget: string
+    required: false
+  - label: 虚构应用示例
+    name: illustrative_example
+    widget: boolean
+    default: false
+  - label: 正文
+    name: body
+    widget: richtext
+    format: markdown
+    modes:
+    - rich_text
+    - raw
+    buttons:
+    - heading-two
+    - heading-three
+    - bold
+    - italic
+    - bulleted-list
+    - numbered-list
+    - link
+    - quote
+    required: true
+  - label: 正文默认字号（px）
+    name: body_font_size
+    hint: 控制官网详情页正文段落的基础字号，不影响文章标题。
+    widget: number
+    value_type: int
+    default: 17
+    min: 14
+    max: 20
+    step: 1
+    required: false
+  - label: 显示销售 CTA
+    name: cta_enabled
+    widget: boolean
+    default: false
+  - label: CTA 文案
+    name: cta_label
+    widget: select
+    default: Talk to Our Team
+    options:
+    - Talk to Our Team
+    - Contact Sales
+    - Book a Demo
+- name: trade-show-articles
+  label: Trade Show Articles
+  icon: event_note
+  folder: data/trade-show-articles
+  create: true
+  extension: json
+  format: json
+  slug: '{{slug}}'
+  editor:
+    preview: false
+  fields:
+  - label: 文章标题
+    name: title
+    widget: string
+    required: true
+  - label: 标题字号（px）
+    name: detail_title_font_size
+    hint: 控制官网详情页最上方的文章标题，不影响正文。
+    widget: number
+    value_type: int
+    default: 34
+    min: 28
+    max: 42
+    step: 1
+    required: false
+  - label: 文章阶段标签（官网卡片显示）
+    name: content_stage
+    hint: 选择文章所处的展会阶段。官网文章卡片会按“阶段标签 → 发布日期 → 标题 → 摘要”的顺序展示。
+    widget: select
+    required: true
+    default: Pre-show Preview
+    options:
+    - Pre-show Preview
+    - During-show Update
+    - Post-show Recap
+  - label: 对应展会名称（可选）
+    name: related_show
+    widget: string
+    required: false
+  - label: 发布日期
+    name: date
+    widget: datetime
+    required: true
+    date_format: YYYY-MM-DD
+    time_format: false
+    format: YYYY-MM-DD
+  - label: Industry｜行业
+    name: industries
+    widget: select
+    multiple: true
+    options:
+        - Automotive
+        - Electronics
+        - Food & Beverage
+        - Packaging
+        - Semiconductors
+        - Logistics
+        - Pharmaceuticals
+  - label: Content Topic｜内容话题（与 Upcoming Shows、Stories 共用同一套选项）
+    name: tags
+    widget: select
+    multiple: true
+    options:
+        - Machine Vision
+        - AI & Deep Learning
+        - Defect Detection
+        - Quality Control
+        - AOI
+        - 3D Vision
+        - Robotics & Automation
+        - Positioning & Measurement
+        - Electronics & Semiconductors
+        - Food & Beverage Inspection
+        - Packaging Inspection
+        - Warehouse & Logistics
+        - Innovation
+        - Sustainability
+  - label: 卡片摘要（可调整官网字号）
+    name: summary
+    widget: text
+    required: true
+  - label: 摘要字号（px）
+    name: summary_font_size
+    hint: 控制列表和推荐卡片里的摘要文字大小，不控制详情页标题。
+    widget: number
+    value_type: int
+    default: 16
+    min: 14
+    max: 18
+    step: 1
+    required: false
+  - label: 封面图片
+    name: image
+    widget: image
+    required: false
+    choose_url: false
+  - label: 图片替代文本
+    name: image_alt
+    widget: string
+    required: false
+  - label: 虚构示例标记
+    name: illustrative_example
+    widget: boolean
+    default: true
+  - label: 正文
+    name: body
+    widget: richtext
+    format: markdown
+    modes:
+    - rich_text
+    - raw
+    buttons:
+    - heading-two
+    - heading-three
+    - bold
+    - italic
+    - bulleted-list
+    - numbered-list
+    - link
+    - quote
+    required: true
+  - label: 正文默认字号（px）
+    name: body_font_size
+    hint: 控制官网详情页正文段落的基础字号，不影响文章标题。
+    widget: number
+    value_type: int
+    default: 17
+    min: 14
+    max: 20
+    step: 1
+    required: false
+  - label: 显示销售 CTA
+    name: cta_enabled
+    widget: boolean
+    default: false
+  - label: CTA 文案
+    name: cta_label
+    widget: select
+    default: Talk to Our Team
+    options:
+    - Talk to Our Team
+    - Contact Sales
+    - Book a Demo
