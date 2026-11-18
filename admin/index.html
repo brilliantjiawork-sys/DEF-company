@@ -532,7 +532,7 @@
             h('strong', { style: { fontSize: 13, fontWeight: 650 } }, 'File type'),
             typeButton('all', 'All'), typeButton('image', 'Images'), typeButton('video', 'Videos'), typeButton('pdf', 'Documents')
           ),
-          h('input', { value: query, onChange: event => setQuery(event.target.value), placeholder: 'Search filename, title, category or description', 'aria-label': 'Search Brand Assets', style: { width: '100%', maxWidth: 680, boxSizing: 'border-box', padding: '11px 12px', border: '1px solid #ccd5dd', borderRadius: 6, font: 'inherit', margin: '4px 0 13px' } }),
+          h('input', { value: query, onChange: event => setQuery(event.target.value), placeholder: 'Search filename, path, content title or category', 'aria-label': 'Search Brand Assets', style: { width: '100%', maxWidth: 680, boxSizing: 'border-box', padding: '11px 12px', border: '1px solid #ccd5dd', borderRadius: 6, font: 'inherit', margin: '4px 0 13px' } }),
           h('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, margin: '0 0 6px' } },
             h('strong', { style: { fontSize: 13, fontWeight: 650 } }, 'Content'),
             ...useOptions.map(([id, label]) => useButton(id, id === 'unused' ? 'Not currently used' : label))
