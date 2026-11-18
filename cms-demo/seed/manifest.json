@@ -1,0 +1,25 @@
+{
+  "files": [
+    "data/brand-guidelines.json",
+    "data/contact-content.json",
+    "data/cookie-content.json",
+    "data/database.json",
+    "data/event-coverage.json",
+    "data/events.json",
+    "data/global_settings.json",
+    "data/home-intro.json",
+    "data/home-newsletter.json",
+    "data/home_images.json",
+    "data/media-contacts.json",
+    "data/newsroom-media.json",
+    "data/newsroom-social-media.json",
+    "data/social-media.json",
+    "data/stories-page-settings.json",
+    "data/stories/how-ai-powered-vision-is-revolutionizing-automotive-quality-control.md",
+    "data/stories/how-machine-vision-guides-industrial-robots-to-handle-variable-parts-20261029.json",
+    "data/stories/why-reliable-machine-vision-starts-with-a-consistent-image.json",
+    "data/trade-show-articles/connecting-machine-vision-with-production-quality.json",
+    "data/trade-show-articles/industrial-vision-application-showcase-2025-product-demonstrations-and-quality-control-applications-20251120.json",
+    "data/trade-shows-page-settings.json"
+  ]
+}
