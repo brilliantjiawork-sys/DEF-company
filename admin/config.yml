@@ -59,6 +59,9 @@ collections:
       - label: 使用规则
         name: rules
         widget: text
+      - label: 图片 Logo 固定定位规则
+        name: imagePlacement
+        widget: text
     - label: 色彩系统 Color System
       name: colors
       widget: list
