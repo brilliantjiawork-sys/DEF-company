@@ -707,23 +707,35 @@
           const a = guide.applications;
           const group=(title,summary,sections)=>card(title,h('div',null,
             para(summary),
-            ...sections.map((s,i)=>h('div',{style:{marginTop:13},key:i},h('h4',null,s.title),list(s.items)))
+            ...sections.map((section,i)=>h('div',{style:{marginTop:13},key:i},h('h4',null,section.title),list(section.items)))
           ));
+          const trade = a.tradeShow;
           return h('div', null,
-            sectionHead('05 / Applications', 'Brand Applications', '按实际使用场景管理：官网、社媒、展会。视频归入社媒内容，不再单独占一个一级板块。'),
-            card('Application Overview · 应用总览',h('div',{className:'bh-grid'},mini('01 · Website 官网','长期品牌资产与内容中心，重点是导航、阅读、产品信息和询盘体验。'),mini('02 · Social Media 社媒','包含静态单图、轮播和视频，围绕内容传播与互动。'),mini('03 · Trade Shows 展会','独立的线下事件营销项目，按展前、展中、展后管理。'))),
+            sectionHead('05 / Applications', 'Brand Applications', '按实际营销场景管理规范与执行：官网、社媒、展会。展会设计必须服务于目标客户邀约、现场获客、销售跟进与效果测量。'),
+            card('Application Overview · 应用总览',h('div',{className:'bh-grid'},mini('01 · Website 官网','长期品牌资产与内容中心，重点是导航、阅读、产品信息和询盘体验。'),mini('02 · Social Media 社媒','包含静态单图、轮播和视频；母版提供可复用视觉组件。'),mini('03 · Trade Shows 展会','营销项目闭环：目标与邀约、预约、现场线索、销售跟进、ROI。'))),
             group('01 · Website / 官网',a.website.summary,[{title:'必须遵守',items:a.website.rules}]),
-            group('02 · Social Media / 社媒',a.social.summary,[{title:'Single Image · 单图',items:a.social.singleImage},{title:'Carousel · 轮播',items:a.social.carousel},{title:'Video · 视频（静音优先）',items:a.social.video}]),
-            group('03 · Trade Shows / 展会',a.tradeShow.summary,[{title:'Pre-show · 展前',items:a.tradeShow.pre},{title:'On-site · 展中',items:a.tradeShow.onsite},{title:'Post-show · 展后',items:a.tradeShow.post},{title:'Reusable System · 可复用模板',items:a.tradeShow.reusableSystem}]),
+            group('02 · Social Media / 社媒',a.social.summary,[{title:'Single Image · 单图',items:a.social.singleImage},{title:'Carousel · 轮播',items:a.social.carousel},{title:'Video · 视频',items:a.social.video}]),
+            group('03 · Trade Shows / 展会',trade.summary,[{title:'Pre-show · 展前',items:trade.pre},{title:'On-site · 展中',items:trade.onsite},{title:'Post-show · 展后',items:trade.post},{title:'Reusable System · 母版系统',items:trade.reusableSystem}]),
             card('Trade Show Lead Journey · 展会获客闭环',h('div',null,
-              para(a.tradeShow.funnel.title+'：把线上传播、预约登记、现场互动和销售跟进连成可追踪的流程。'),
-              h('div',{className:'bh-funnel'},...a.tradeShow.funnel.steps.map((step,i)=>h('div',{className:'bh-funnel-step',key:i},h('strong',null,String(i+1).padStart(2,'0')+' · '+step.name),h('p',null,step.detail)))),
-              h('h4',null,'执行要求'),list(a.tradeShow.funnel.rules)
+              para(trade.funnel.title),
+              h('div',{className:'bh-funnel'},...trade.funnel.steps.map((step,i)=>h('div',{className:'bh-funnel-step',key:i},h('strong',null,String(i+1).padStart(2,'0')+' · '+step.name),h('p',null,step.detail)))),
+              h('h4',null,'执行规则'),list(trade.funnel.rules)
+            )),
+            card('Three Tracking Sheets｜三张执行表',h('div',null,
+              para('三张表分别解决展前邀约、展中线索采集、展后销售跟进。建议用共享表格或 CRM 表单串联，并使用统一 Event ID。'),
+              ...trade.trackingSheets.map((sheet,i)=>h('div',{className:'bh-mini',key:i,style:{marginTop:12}},
+                h('h4',null,sheet.name),h('p',null,sheet.purpose),
+                h('div',{className:'bh-note'},h('strong',null,'字段建议：'),sheet.fields.join(' · '))
+              ))
+            )),
+            card('Event Measurement｜展会衡量指标',h('div',null,
+              para('指标从活动目标倒推，不能把曝光或扫码量直接当作有效线索、商机或 ROI。'),
+              list(trade.kpis)
             )),
             card('Reference Notes · 规范依据',list(a.evidenceNotes))
           );
         };
-                const render=()=>!guide?h('div',{className:'bh-section'},h('h3',null,loading?'正在加载品牌规范':'品牌规范暂时无法加载'),h('p',{className:'bh-text'},loading?'正在读取品牌规范数据，请稍候。':(error||'请检查品牌规范数据文件后重试。')),!loading?h('button',{type:'button',onClick:()=>{setLoading(true);setError('');fetch('/data/brand-guidelines.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(data=>setGuide(data)).catch(err=>setError(err.message)).finally(()=>setLoading(false));},style:{marginTop:12,padding:'8px 12px',border:'1px solid #cbd9e0',borderRadius:6,background:'#fff',color:'#294b60',font:'inherit',cursor:'pointer'}},'重新加载'):null):active==='foundation'?renderFoundation():active==='identity'?renderIdentity():active==='imagery'?renderImagery():active==='layouts'?renderLayouts():renderApplications();
+                        const render=()=>!guide?h('div',{className:'bh-section'},h('h3',null,loading?'正在加载品牌规范':'品牌规范暂时无法加载'),h('p',{className:'bh-text'},loading?'正在读取品牌规范数据，请稍候。':(error||'请检查品牌规范数据文件后重试。')),!loading?h('button',{type:'button',onClick:()=>{setLoading(true);setError('');fetch('/data/brand-guidelines.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(data=>setGuide(data)).catch(err=>setError(err.message)).finally(()=>setLoading(false));},style:{marginTop:12,padding:'8px 12px',border:'1px solid #cbd9e0',borderRadius:6,background:'#fff',color:'#294b60',font:'inherit',cursor:'pointer'}},'重新加载'):null):active==='foundation'?renderFoundation():active==='identity'?renderIdentity():active==='imagery'?renderImagery():active==='layouts'?renderLayouts():renderApplications();
         return h('main',{className:'bh'},h('style',null,css+cssEnhancements),h('header',{className:'bh-head'},h('div',null,h('div',{className:'bh-kicker'},'DEF COMPANY / BRAND STANDARDS'),h('h1',null,'Brand Hub'),h('p',{className:'bh-sub'},'Brand guidelines for consistent marketing and communication.')),h('div',{style:{fontSize:11,color:'#81909a',whiteSpace:'nowrap'}},'INTERNAL BRAND REFERENCE')),h('div',{className:'bh-layout'},h('nav',{className:'bh-nav','aria-label':'Brand guideline sections'},...sections.map(item=>h('button',{type:'button',key:item.id,className:active===item.id?'active':'',onClick:()=>setActive(item.id)},h('strong',null,item.label),h('small',null,item.sub)))),h('div',{className:'bh-panel'},render())));
       };
 
