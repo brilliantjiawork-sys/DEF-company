@@ -798,7 +798,7 @@
         if (!rect || rect.width <= 0 || rect.height <= 0) return false;
         // The icon row in this site sits before the search input; the input itself is not a nav item.
         return rect.top >= -4 && rect.top <= 62 && rect.bottom <= 72 &&
-          rect.left >= -4 && rect.left <= 470 && rect.width <= 92 && rect.height <= 72;
+          rect.left >= -4 && rect.left <= 470 && rect.width <= 150 && rect.height <= 100;
       };
 
       const toolbarItemContainer = (control) => {
@@ -1063,7 +1063,20 @@
       // so identify the six compact icon controls by position and retain the rightmost three.
       // Do not infer project navigation from icon position. Sveltia can change
       // toolbar ordering between versions; route/label identity is the stable signal.
-      const normalizeProjectToolbar = () => {};
+      const normalizeProjectToolbar = () => {
+  // Reconcile compact toolbar controls after each CMS render.
+  // Preserve the three project pages by route/label; hide native extras.
+  document.querySelectorAll(navItemSelector).forEach((control) => {
+    if (!isTopLeftToolbarIcon(control)) return;
+    const target = toolbarItemContainer(control);
+    if (isPrimaryItem(control) || isPrimaryItem(target)) {
+      restoreElement(control);
+      if (target !== control) restoreElement(target);
+    } else {
+      hideElement(target);
+    }
+  });
+};
 
       const inspectElement = (element) => {
         if (!element || element.nodeType !== 1) return;
