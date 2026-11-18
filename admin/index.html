@@ -512,13 +512,20 @@
             ? h('img', { src: item.url, alt: item.name, loading: 'lazy', style: { width: '100%', height: '100%', objectFit: 'contain', display: 'block' }, onError: event => { event.currentTarget.style.display = 'none'; } })
             : item.type === 'video'
               ? h('video', { controls: true, muted: true, preload: 'metadata', style: { maxWidth: '100%', maxHeight: '100%' } }, h('source', { src: item.url }))
-              : h('a', { href: item.url, target: '_blank', rel: 'noreferrer', style: { color: '#234b68', fontSize: 13, textDecoration: 'underline' } }, 'Open document');
+              : h('a', { href: item.url, target: '_blank', rel: 'noreferrer' }, 'Open document');
+          const usageRows = (item.usages || []).map((usage, index) => h('li', { key: index, style: { fontSize: 12, lineHeight: 1.45, marginBottom: 5 } },
+            usage.editUrl ? h('a', { href: usage.editUrl, style: { color: '#234b68', textDecoration: 'underline', fontWeight: 600 } }, usage.title || usage.category || 'Content entry') : h('strong', null, usage.title || usage.category || 'Content entry'),
+            h('span', { style: { color: '#71818d' } }, ' · ' + (usage.category || 'Content') + ' · ' + (usage.label || usage.location || 'Asset'))
+          ));
+          const usageList = usageRows.length ? h('ul', { style: { paddingLeft: 17, margin: '7px 0 0' } }, ...usageRows) : h('p', { style: { fontSize: 12, color: '#71818d', margin: '7px 0 0' } }, '当前未检测到内容引用。');
           return h('article', { key: item.path, style: { border: '1px solid #dce3e9', borderRadius: 8, overflow: 'hidden', background: '#fff', minWidth: 0 } },
             h('div', { style: { aspectRatio: '16/9', background: '#f3f5f7', display: 'grid', placeItems: 'center', overflow: 'hidden', padding: item.type === 'pdf' ? 10 : 0, boxSizing: 'border-box' } }, preview),
             h('div', { style: { padding: 12 } },
               h('strong', { style: { display: 'block', overflowWrap: 'anywhere', marginBottom: 4, fontSize: 13 } }, item.name),
               h('div', { style: { fontSize: 11, color: '#657381' } }, typeLabel(item.type)),
-              h('a', { href: item.url, target: '_blank', rel: 'noreferrer', style: { display: 'inline-block', marginTop: 9, color: '#234b68', fontSize: 12, textDecoration: 'underline' } }, 'Open original file')
+              h('div', { style: { marginTop: 10, borderTop: '1px solid #e7edf1', paddingTop: 8 } }, h('strong', { style: { fontSize: 12 } }, '使用位置'), usageList),
+              h('a', { href: '#/assets/images', style: { display: 'inline-block', marginTop: 10, color: '#234b68', fontSize: 12, textDecoration: 'underline', fontWeight: 650 } }, 'Replace / Manage in Asset Library'),
+              h('p', { style: { margin: '4px 0 0', fontSize: 11, color: '#71818d', lineHeight: 1.45 } }, '在 Asset Library 搜索文件名，选择该文件并使用 Replace。替换同一路径文件可保留现有内容引用。')
             )
           );
         };
@@ -537,10 +544,10 @@
             h('strong', { style: { fontSize: 13, fontWeight: 650 } }, 'Content'),
             ...useOptions.map(([id, label]) => useButton(id, id === 'unused' ? 'Not currently used' : label))
           ),
-          h('p', { style: { margin: '0 0 18px', color: '#71818d', fontSize: 11, lineHeight: 1.5 } }, 'Website & Shared includes assets referenced by shared website sections and settings. Not currently used shows files with no detected content references.'),
+          h('p', { style: { margin: '0 0 18px', color: '#71818d', fontSize: 11, lineHeight: 1.5 } }, '点击使用位置可直接进入对应内容编辑；替换图片请打开 Asset Library，搜索文件名并选择 Replace。网站共享区域的引用会归入 Website & Shared。'),
           loading && !items.length ? h('p', { style: { color: '#657381' } }, 'Loading Brand Assets…') : loading ? h('p', { style: { color: '#657381', fontSize: 12 } }, 'Refreshing asset index; existing files remain visible.') : null,
           error ? h('p', { role: 'alert', style: { padding: 14, border: '1px solid #e4b5b5', color: '#8b2424', borderRadius: 6 } }, error) : null,
-          items.length ? h('p', { style: { color: '#596775', fontSize: 13, margin: '0 0 14px' } }, `${items.length} assets · ${filtered.length} shown · Usage is calculated from published content on main; draft references may not be included.`) : null,
+          items.length ? h('p', { style: { color: '#596775', fontSize: 13, margin: '0 0 14px' } }, `${items.length} assets · ${filtered.length} shown · 使用位置由 CMS 内容中的文件引用自动识别；正文 Markdown 内嵌图片及未同步的草稿引用可能无法完整识别。`) : null,
           items.length && filtered.length ? h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 14 } }, ...filtered.map(card)) : null,
           !loading && !error && !filtered.length ? h('p', { style: { padding: 18, border: '1px solid #e4e9ed', borderRadius: 8, color: '#657381' } }, 'No matching assets. Try another search term or filter.') : null
         );
@@ -588,7 +595,9 @@
               mini('Value Proposition｜核心价值',f.value)
             )),
             card('Target Audience｜目标客户',h('div',{className:'bh-grid'},...f.audience.map((a,i)=>mini(a.name,a.need,'Audience '+String(i+1).padStart(2,'0'))))),
-            card('Brand Attributes｜品牌属性',h('div',{className:'bh-grid3'},...f.personality.map((x,i)=>mini(x.split('｜')[0],x.split('｜').slice(1).join('｜')))))
+            card('Brand Values｜品牌价值观',h('div',{className:'bh-grid'},...f.values.map((v,i)=>mini(v.title,v.description,v.behaviors.join(' / '))))),
+            card('Brand Personality｜品牌个性',h('div',{className:'bh-grid'},...f.personality.map((x,i)=>mini(x.split('｜')[0],x.split('｜').slice(1).join('｜'))))),
+            card('Tagline / Slogan｜品牌口号',h('div',null,h('p',{className:'bh-positioning'},f.tagline),para('口号是简短的品牌表达；它不是品牌价值观或个性。官网首页的实际口号字段位于 Brand Introduction（Home Intro）内容设置中。')))
           );
         };
                 const renderIdentity=()=> {
@@ -705,7 +714,7 @@
               h('h4',null,'执行规则'),list(trade.funnel.rules)
             )),
             card('Three Tracking Sheets｜三张执行表',h('div',null,
-              para('三张表分别解决展前邀约、展中线索采集、展后销售跟进。建议用共享表格或 CRM 表单串联，并使用统一 Event ID。'),
+              para('三张表分别记录展前邀约、展中交流、展后销售跟进；按单场展会使用即可，无需额外设置 Event ID。'),
               ...trade.trackingSheets.map((sheet,i)=>h('div',{className:'bh-mini',key:i,style:{marginTop:12}},
                 h('h4',null,sheet.name),h('p',null,sheet.purpose),
                 h('div',{className:'bh-note'},h('strong',null,'字段建议：'),sheet.fields.join(' · '))
