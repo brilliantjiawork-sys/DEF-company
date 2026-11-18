@@ -278,7 +278,7 @@ collections:
       name: newsletter_success_description
       widget: text
       required: true
-    - name: upcoming_shows
+  - name: upcoming_shows
     label: Upcoming Shows｜展会资料
     file: data/events.json
     format: json
@@ -360,7 +360,7 @@ collections:
         - Talk to Our Team
         - Contact Sales
         - Book a Demo
-- name: stories_page_settings
+  - name: stories_page_settings
     label: Stories 页面设置
     file: data/stories-page-settings.json
     format: json
