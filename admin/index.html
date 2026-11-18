@@ -354,7 +354,7 @@
           }
           return '';
         };
-                const recordsFrom = (data, kind, path, explicitSlug = '') => {
+        const recordsFrom = (data, kind, path, explicitSlug = '') => {
           if (!data) return [];
           const toRecord = (record, slug, fallback) => ({
             record, kind, source: path, slug: String(record?.slug || slug || '').trim(),
