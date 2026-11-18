@@ -70,7 +70,8 @@
       "Raster preview：JPG 用于无透明背景预览，不作为 Logo 主文件。"
     ],
     "displayNote": "作品集模拟品牌，CMS 以字标文字展示彩色、反白和单色版本。",
-    "printNote": "单色版：所有元素同一颜色；灰度版：可包含不同灰阶。印刷前按供应商材料和工艺打样。"
+    "printNote": "单色版：所有元素同一颜色；灰度版：可包含不同灰阶。印刷前按供应商材料和工艺打样。",
+    "imagePlacement": "产品设备图及其他包含 Logo 的图片，统一使用固定 Logo 定位模板。Logo 相对于画布的位置保持一致：上边距与左边距采用统一比例/数值，不随图片、产品或场景改变；每次制作先套用模板，再替换主体图片。模板应明确 Logo 锚点、上边距、左边距及 Logo 尺寸，导出前检查位置一致性。"
   },
   "colors": {
     "brand": [
@@ -173,50 +174,6 @@
         "titleContrast": "14.39:1",
         "bodyContrast": "11.98:1",
         "accentContrast": "11.51:1"
-      }
-    ],
-    "usagePriority": [
-      {
-        "name": "White",
-        "hex": "#FFFFFF",
-        "priority": "01",
-        "usage": "主背景、留白。"
-      },
-      {
-        "name": "Charcoal",
-        "hex": "#222B32",
-        "priority": "02",
-        "usage": "标题与正文。"
-      },
-      {
-        "name": "Light Gray",
-        "hex": "#E8EDF0",
-        "priority": "03",
-        "usage": "卡片和内容分区背景。"
-      },
-      {
-        "name": "Primary Blue",
-        "hex": "#45B2D3",
-        "priority": "04",
-        "usage": "Logo 与品牌识别。"
-      },
-      {
-        "name": "Accent Yellow",
-        "hex": "#FFE817",
-        "priority": "05",
-        "usage": "主要 CTA 与少量重点强调。"
-      },
-      {
-        "name": "Deep Blue",
-        "hex": "#24677C",
-        "priority": "06",
-        "usage": "功能强调与深色背景。"
-      },
-      {
-        "name": "Light Blue",
-        "hex": "#D9EEF4",
-        "priority": "07",
-        "usage": "辅助背景与图形。"
       }
     ],
     "functionalColors": [
