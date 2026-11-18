@@ -1,0 +1,17 @@
+{
+  "files": [
+    "data/database.json",
+    "data/brand-guidelines.json",
+    "data/home-intro.json",
+    "data/home-newsletter.json",
+    "data/events.json",
+    "data/stories-page-settings.json",
+    "data/trade-shows-page-settings.json",
+    "data/newsroom-social-media.json",
+    "data/social-media.json",
+    "data/newsroom-media.json",
+    "data/media-contacts.json",
+    "data/contact-content.json",
+    "data/cookie-content.json"
+  ]
+}
