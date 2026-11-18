@@ -421,11 +421,12 @@
                 // Add the real per-file slug to folder-based content so the edit link points at the exact entry.
                 if ((kind === 'stories' || kind === 'tradeArticles') && source.path.match(/^data\/(?:stories|trade-show-articles)\/[^/]+\.json$/i) && records.length) {
                   const last = records[records.length - 1];
-                  // CMS entry identity follows the explicit slug stored in the record.
-                  // The filename is only a fallback when the record has no slug.
-                  const resolvedSlug = String(last.record?.slug || last.slug || source.slug || '').trim();
-                  last.slug = resolvedSlug;
-                  last.editUrl = getEditUrl(kind, resolvedSlug);
+                  // Sveltia CMS identifies folder entries by their file path within the
+                  // collection folder (without the extension), not by a website-facing
+                  // "slug" field stored inside the JSON record.
+                  const entryId = String(source.path.split('/').pop().replace(/\.[^.]+$/, '') || '').trim();
+                  last.slug = entryId;
+                  last.editUrl = getEditUrl(kind, entryId);
                 }
               });
 
@@ -532,7 +533,7 @@
                   h('div', { style: { color: '#53697a', fontSize: 11, marginBottom: 2 } }, `${usageGroup(usage)} · ${usage.label}`),
                   h('strong', { style: { display: 'block', overflowWrap: 'anywhere' } }, usage.title),
                   h('div', { style: { color: '#657381', fontSize: 11, marginTop: 2 } }, usage.location || usage.label),
-                  usage.editUrl ? h('a', { href: usage.editUrl, onClick: event => { event.preventDefault(); window.location.hash = usage.editUrl.slice(1); }, style: { display: 'inline-block', marginTop: 5, color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 2, cursor: 'pointer' } }, 'Open content to replace asset →') : h('span', { style: { display: 'block', marginTop: 5, color: '#8a6d45', fontSize: 11 } }, 'This source is not directly editable in CMS.')
+                  usage.editUrl ? h('a', { href: usage.editUrl, style: { display: 'inline-block', marginTop: 5, color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 2, cursor: 'pointer' } }, 'Open content to replace asset →') : h('span', { style: { display: 'block', marginTop: 5, color: '#8a6d45', fontSize: 11 } }, 'This source is not directly editable in CMS.')
                 ))) : h('p', { style: { color: '#7b6262', fontSize: 12, margin: 0 } }, 'No current content references.'),
                 h('a', { href: item.url, target: '_blank', rel: 'noreferrer', style: { display: 'inline-block', marginTop: 9, color: '#234b68', fontSize: 12, textDecoration: 'underline' } }, 'Open original file')
               ) : null
