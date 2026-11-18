@@ -17,44 +17,22 @@
       }
     ],
     "value": "通过工业机器视觉产品与应用支持，帮助设备制造商、系统集成商及制造企业更有效地完成检测、识别、测量与定位任务。具体产品能力和客户收益需由正式技术资料或实际项目验证。",
-    "personality": [
-      "Knowledgeable｜专业：掌握产品与应用知识，表达有内容、有依据。",
-      "Precise｜严谨：信息准确、结构清楚，避免夸张与模糊承诺。",
-      "Pragmatic｜务实：聚焦可落地的工业问题、集成和应用价值。",
-      "Collaborative｜协作：愿意与客户、OEM、集成商及合作伙伴共同解决问题。"
-    ],
     "values": [
       {
         "title": "Customer Focus｜客户导向",
-        "description": "从客户实际应用、生产任务与问题出发，而不是只推产品规格。",
-        "behaviors": [
-          "先理解应用与需求，再推荐产品或方案。",
-          "信息和支持围绕客户实际使用场景。"
-        ]
+        "description": "从客户实际应用、生产任务与问题出发，而不是只推产品规格。"
       },
       {
         "title": "Quality｜质量",
-        "description": "重视产品质量、验证、兼容性与技术信息准确性。",
-        "behaviors": [
-          "产品和技术声明有依据。",
-          "发布前核对型号、参数、接口和适用条件。"
-        ]
+        "description": "重视产品质量、验证、兼容性与技术信息准确性。"
       },
       {
         "title": "Reliability｜可靠",
-        "description": "在产品表现、供货沟通和技术支持中建立可持续信任。",
-        "behaviors": [
-          "沟通承诺明确、可兑现。",
-          "不夸大未经验证的性能或结果。"
-        ]
+        "description": "在产品表现、供货沟通和技术支持中建立可持续信任。"
       },
       {
         "title": "Innovation｜创新",
-        "description": "持续探索机器视觉技术与应用，但创新要回应真实工业问题。",
-        "behaviors": [
-          "展示新技术时解释它解决的具体任务。",
-          "以实际应用价值而非空泛科技词汇表达。"
-        ]
+        "description": "持续探索机器视觉技术与应用，但创新要回应真实工业问题。"
       }
     ],
     "tagline": "DEFINE THE STANDARD OF SIGHT."
@@ -436,14 +414,10 @@
     "tradeShow": {
       "summary": "工业展会是有目标、预算、展位体验、传播、客户交流和商业结果衡量的营销项目。市场负责项目策划、受众研究、展会传播、邀约执行、现场品牌/内容及数据整理；销售提供重点客户和关系信息、参与会面并负责展后客户跟进。",
       "pre": [
-        "市场制定 Event Brief：展会目标（客户拓展、客户维护、产品/应用Demo、渠道合作、品牌认知或商机推进）、目标受众、KPI、预算、展位与Demo计划、负责人、时间表及复盘方式。",
-        "市场研究展会受众、主题、展商/竞品、行业议题与渠道，明确为什么目标客户值得到场；建立市场可触达联系人名单，并注明来源和合规依据。",
-        "销售主管/销售团队提供适合邀请的重点客户、目标账户及联系人，补充客户关系、当前项目和邀约背景。市场与销售共同核对名单、去重、确定邀约方式和分工。",
-        "展前邀约：销售针对重点客户进行关系沟通；市场负责展会宣传及邮件/社媒/官网/合作渠道邀约，也可使用自身合法可触达的联系人资源。邀约内容明确展会日期、地点、展位、演示亮点和邀请客户到场的理由。",
-        "跟踪邀请、回复、预约、确认、到访与会面时间；对已预约客户在展前再次确认，并准备销售/技术接待安排。",
-        "市场统筹展位搭建、物流、样机/设备、Demo内容、人员安排、印刷/数字物料、供应商、费用和交付节点；确认展馆/主办方及供应商的规定。",
-        "按目标准备传播素材：参展公告、应用/产品亮点、Demo预告、邀约图、展位地图、预约 CTA、现场内容计划。不是每场活动都必须制作所有素材。",
-        "如需要预约、报名、Demo或资料领取转化，建立自有 Landing Page/表单并测试移动端、确认页、通知、隐私说明与追踪。普通参展宣传可直接使用主办方页面、社媒帖子、官网信息和邮件，不强制搭建活动页。"
+        "确定展会目标、目标受众、预算、展位/Demo、传播资源和执行时间表。",
+        "市场研究并建立自有邀约名单；销售提供重点客户及关系信息。市场统筹渠道宣传与邀约，销售配合重点客户沟通。",
+        "邮件、社媒、官网及合作渠道邀约，记录回复、预约和确认。",
+        "落实展位、设备、Demo、人员、物料、供应商与传播安排；按需建立预约/报名页。"
       ],
       "onsite": [
         "现场接待既包括展前预约客户，也包括自然到访者。预约客户按时间安排会面/Demo；其他访客由展位团队接待和判断，不只等待随机客流。",
@@ -471,28 +445,28 @@
         "title": "展会目标与预算 → 研究/邀约 → 预约与现场体验 → 线索记录 → 展后分配/跟进 → 商业结果复盘",
         "steps": [
           {
-            "name": "01 · Plan｜目标、预算与执行计划",
-            "detail": "市场制定 Event Brief、目标受众、KPI、预算、展位/Demo、传播、资源和时间表；销售提供客户与商机信息参与目标讨论。"
+            "name": "01 · Plan｜目标与计划",
+            "detail": "明确目标、预算、受众、展位/Demo、传播资源与时间表。"
           },
           {
-            "name": "02 · Invite｜宣传与客户邀约",
-            "detail": "销售主管/团队提供适合邀请的重点客户名单。市场研究、补充自有联系人和渠道，执行邮件/社媒/官网/伙伴传播；销售进行重点客户关系邀约。记录回复、预约和确认。"
+            "name": "02 · Invite｜宣传与邀约",
+            "detail": "市场研究、名单整合及渠道邀约；销售提供客户关系信息并配合重点沟通。"
           },
           {
-            "name": "03 · Prepare｜预约、接待和物料准备",
-            "detail": "确认预约会面/Demo，接待安排；完成展位、样机、供应商、素材、人员和数据采集方式准备。按转化需要选择 Landing Page/报名表/二维码。"
+            "name": "03 · Prepare｜准备",
+            "detail": "确认预约、展位、设备/Demo、人员、物料及现场采集方式。"
           },
           {
-            "name": "04 · On-site｜现场交流与线索记录",
-            "detail": "接待预约客户和自然访客，进行产品/应用演示和需求交流。记录关注产品、应用、痛点、项目阶段、时间线、下一步与来源；每日检查数据。"
+            "name": "04 · On-site｜现场",
+            "detail": "接待、演示、交流；详细记录见现场表。"
           },
           {
-            "name": "05 · Handoff｜清洗、分级与销售分配",
-            "detail": "市场展后去重、补齐信息、按约定等级和规则整理；与销售主管分配。建议 24–72 小时内交接，并记录负责人、交接时间、首次触达截止时间。"
+            "name": "05 · Handoff｜交接",
+            "detail": "清洗分级、销售分配并交接，按团队 SLA 尽快完成。"
           },
           {
-            "name": "06 · Follow-up & Review｜销售跟进与结果复盘",
-            "detail": "销售首次联系、预约下一步、更新 CRM/Tracker；市场跟踪 SLA、会议、商机、归因 Pipeline/Revenue、费用与活动复盘。"
+            "name": "06 · Follow-up｜跟进复盘",
+            "detail": "销售联系客户并更新进展；市场复盘目标、费用与转化。"
           }
         ],
         "rules": [
@@ -509,77 +483,56 @@
       "trackingSheets": [
         {
           "name": "01 · Pre-show Invite Tracker｜展前邀约表",
-          "purpose": "整合销售主管/销售提供的客户名单与市场可合法触达的联系人，去重并记录邀约及预约确认。此表跟踪邀约，不在这里重复展会目标与预算。",
+          "purpose": "记录邀约对象、来源、渠道和预约状态。",
           "fields": [
-            "Company / Account",
-            "Contact Name",
+            "Company",
+            "Contact",
             "Job Title",
-            "Business Email / LinkedIn",
-            "Industry / Account Type",
-            "List Source (Sales / Marketing / Partner / Other)",
+            "Email / LinkedIn",
+            "List Source",
             "Invitation Channel",
-            "Invite Sent Date",
+            "Invite Date",
             "Response",
-            "Meeting Requested / Booked",
-            "Meeting Date & Time",
-            "Confirmation / Reminder Date",
+            "Meeting Status / Time",
             "Notes"
           ]
         },
         {
           "name": "02 · On-site Lead Capture｜展中交流记录",
-          "purpose": "记录实际交流和客户需求，帮助展后销售联系。能通过主办方 Badge Scan/Lead Retrieval 自动获取的字段无需重复手填；现场关键问题优先简短选项。",
+          "purpose": "现场快速记录身份、需求、项目状态和下一步；已有 Badge Scan 信息不重复手填。",
           "fields": [
-            "Contact Name",
-            "Company",
-            "Job Title",
-            "Business Email / Phone (as appropriate)",
-            "Country",
-            "Industry / Account Type",
-            "Product / Solution Interest",
-            "Application / Use Case",
-            "Need / Challenge / Technical Requirements",
-            "Project Stage",
-            "Expected Timeline",
-            "Role in Buying Process (if known)",
-            "Demo / Meeting Requested",
-            "Agreed Next Step / Requested Material",
-            "Source (Pre-booked / Badge Scan / Walk-in / Other)",
-            "Consent / Contact Preference (as applicable)",
-            "Staff Contact / Captured By",
+            "Contact / Company",
+            "Email / Phone",
+            "Product / Application Interest",
+            "Need / Project Stage",
+            "Timeline",
+            "Agreed Next Step",
+            "Source",
+            "Captured By",
             "Notes"
           ]
         },
         {
           "name": "03 · Post-show Sales Follow-up Tracker｜展后销售跟进表",
-          "purpose": "市场整理并与销售主管确认分配；销售负责首次触达和更新结果。重点追踪交接、最晚联系时间、实际首次联系及后续转化。",
+          "purpose": "追踪交接、首次联系和后续结果。",
           "fields": [
             "Contact / Company",
-            "Source",
-            "Lead Tier & Rationale",
+            "Lead Tier",
             "Assigned Sales",
-            "Handoff Date / Time",
-            "Sales Accepted",
-            "First Contact Due (Deadline)",
-            "First Contact Date / Time",
-            "Channel",
-            "Contact Outcome",
-            "Meeting Date",
-            "SQL / Opportunity Status",
-            "Pipeline Value (if applicable)",
-            "Next Action / Due Date",
-            "Follow-up Status / Reason Delayed",
+            "Handoff Date",
+            "First Contact Due",
+            "First Contact Date",
+            "Outcome / Next Step",
+            "Meeting / Opportunity",
             "Notes"
           ]
         }
       ],
       "kpis": [
-        "展前：目标客户名单覆盖、邀请发送、回复率、预约会面、预约确认、实际到访/会面率。",
-        "展中：访客/Badge Scan/名片等原始接触（单独统计）、Qualified Leads、产品/应用兴趣、Demo/Meeting请求、现场预约。",
-        "交接：数据完整率/去重率、销售分配完成率、Sales Accepted、交接用时、首次触达及时率、未联系原因。",
-        "销售转化：Meeting、MQL/SQL（按双方定义）、Opportunity、Pipeline、Revenue及转化率。",
-        "活动投入：预算与实际费用、Cost per Qualified Lead、Cost per Meeting、归因 Pipeline/Revenue、ROI（注明归因窗口及计算口径）。",
-        "品牌/内容（如有目标）：活动页访问/转化、社媒覆盖与互动、内容观看/资料下载；不要与销售线索混合计算。"
+        "目标达成：目标客户会面、预约与实际到访。",
+        "线索质量：有效线索、Demo/会议请求、销售接受。",
+        "转化：会议、Opportunity、Pipeline/Revenue（按约定归因口径）。",
+        "投入产出：预算与实际费用、Cost per Qualified Lead/Meeting、ROI（口径明确时）。"
       ],
       "leadTierDefinitions": [
         {
@@ -606,17 +559,7 @@
         "items": [
           "第三方行业展会：展会主办方页面负责展会官方信息；参展品牌可用官网/活动 Landing Page、LinkedIn公司页和员工账号、邮件及合作渠道宣传展位、产品Demo和预约。无需默认建LinkedIn Event。",
           "品牌主办的 Webinar、Workshop、产品Demo、技术讲座、圆桌或线上/混合活动，LinkedIn Event适合集中邀请、报名、提醒和活动传播。",
-          "展会期间品牌举办独立客户会、Demo场次或技术讲座时，可建立独立Event/报名页，明确是品牌自己的活动，而非主办整个第三方展会。",
-          "是否建活动页取决于是否需要预约/报名、收集需求、提供门票/资料、跟踪转化；没有这些需求时，清晰的社媒帖/官网展会信息即可。"
-        ]
-      },
-      "linkedinEventGuidance": {
-        "title": "LinkedIn Event vs. Exhibitor Promotion｜选择原则",
-        "items": [
-          "第三方行业展会：展会主办方页面负责展会官方信息；参展品牌可用官网/活动 Landing Page、LinkedIn公司页和员工账号、邮件及合作渠道宣传展位、产品Demo和预约。无需默认建LinkedIn Event。",
-          "品牌主办的 Webinar、Workshop、产品Demo、技术讲座、圆桌或线上/混合活动，LinkedIn Event适合集中邀请、报名、提醒和活动传播。",
-          "展会期间品牌举办独立客户会、Demo场次或技术讲座时，可建立独立Event/报名页，明确是品牌自己的活动，而非主办整个第三方展会。",
-          "是否建活动页取决于是否需要预约/报名、收集需求、提供门票/资料、跟踪转化；没有这些需求时，清晰的社媒帖/官网展会信息即可。"
+          "展会期间品牌举办独立客户会、Demo场次或技术讲座时，可建立独立Event/报名页，明确是品牌自己的活动，而非主办整个第三方展会。"
         ]
       }
     },
@@ -763,17 +706,8 @@
           "二维码/预约登记牌",
           "展位导引与现场信息牌"
         ],
-        "rule": "制作前向主办方/搭建商/供应商确认尺寸、材质、结构、安装、分辨率、色彩模式、字体与交付格式。仅需裁切的印刷品按供应商模板添加出血（Artwork 延伸至裁切线外的余量），出血数值由供应商指定，不作为所有展会物料的通用要求。提交前校对内容、二维码、Logo并确认最终样稿。"
+        "rule": "制作前确认供应商/主办方的尺寸、材质、结构、安装、分辨率、色彩模式、字体及交付格式；校对内容与二维码并确认样稿。"
       }
     }
-  ],
-  "evidenceNotes": [
-    "Logo 保护空间与最小尺寸是品牌专属规则，不存在适用于所有 Logo 的统一 1X 或像素尺寸。DEF 规则暂定，须以正式矢量图稿和实际应用测试确认。",
-    "摄影构图、裁切比例和交付文件按应用场景定义；不将某个比例宣称为所有 B2B 工业品牌的强制标准。",
-    "LinkedIn 官方广告规格：单图广告推荐 1.91:1（1200×628）、1:1（1200×1200）、4:5（720×900）；轮播广告卡片推荐 1080×1080，2–10 张，单卡不超过 10 MB。发布前查阅平台当前规格。",
-    "展会获客应结合销售共同定义线索分级，记录需求、采购时间、下一步及负责人；展后及时跟进并衡量有效线索、会议、商机、归因收入与成本。",
-    "本项目是虚拟品牌作品集。涉及产品性能、客户案例、认证、ROI、实际检测能力和现场照片的内容必须标明模拟或经证据核实，不能伪装成真实客户成果。",
-    "展会分工、流程和 A/B/C 分级为 DEF 操作建议，非行业统一标准；应按团队、销售周期、CRM及隐私法规调整。",
-    "LinkedIn Events官方功能适合专业活动组织、邀请和报名；第三方展会参展商通常可用公司/员工主页、主办方活动页及自有Landing Page推广，无需默认创建LinkedIn Event。"
   ]
 }
