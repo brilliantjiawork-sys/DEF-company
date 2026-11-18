@@ -1,0 +1,47 @@
+{
+  "articles": [
+    {
+      "title": "Why Reliable Machine Vision Starts with a Consistent Image",
+      "detail_title_font_size": 34,
+      "date": "2026-10-31",
+      "category": "Product & Technology",
+      "industries": [
+        "Electronics"
+      ],
+      "tags": [
+        "Machine Vision",
+        "Defect Detection",
+        "Quality Control"
+      ],
+      "summary": "Reliable automated inspection starts with consistent image acquisition. Explore how camera settings, lighting conditions, and inspection requirements work together to support more stable machine vision workflows.",
+      "summary_font_size": 16,
+      "image": "/images/social-youtube-wide.jpg",
+      "image_alt": "none",
+      "illustrative_example": false,
+      "body": "**A Good Inspection Begins with a Good Image**\n\nMachine vision systems help manufacturers inspect products, identify visible defects and support quality control across production processes. However, the performance of an inspection workflow depends on more than the camera itself.\n\nBefore an image can be analyzed, the system needs to capture it under suitable and repeatable conditions. Changes in lighting, object position, exposure or surface reflection can make the same feature appear different from one image to another.\n\nThis is why image consistency should be considered at the beginning of an inspection project.\n\n**Three Factors That Influence Image Consistency**\n\n**1. Lighting conditions**\n\nLighting determines how product features appear in an image. Different surfaces may require different lighting approaches to make scratches, edges, marks or other visual characteristics easier to distinguish.\n\n**2. Camera configuration**\n\nExposure time, gain, resolution and image acquisition timing all influence the captured image. These settings should be considered in relation to product movement, inspection speed and the details that need to be identified.\n\n**3. Inspection requirements**\n\nNot every application needs the same image detail. A project should first define which features matter, what types of defects need to be identified and how consistently the system must perform.\n\n**From Image Acquisition to Inspection**\n\nA practical machine vision workflow connects image acquisition with image processing and inspection decisions.\n\nThe objective is not simply to capture a high-resolution image. It is to obtain useful, repeatable image data that supports the specific inspection task.\n\nWhen camera configuration, lighting and application requirements are considered together, manufacturers can build a clearer foundation for automated visual inspection.\n\n**Start with the Application**\n\nEvery production environment presents different inspection conditions. A suitable machine vision setup should be evaluated according to the product, production process and quality requirements.\n\nContact our team to discuss your machine vision inspection requirements.",
+      "body_font_size": 18,
+      "cta_enabled": true,
+      "cta_label": "Contact Sales",
+      "slug": "why-reliable-machine-vision-starts-with-a-consistent-image"
+    },
+    {
+      "title": "How Machine Vision Guides Industrial Robots to Handle Variable Parts",
+      "date": "2026-10-29",
+      "category": "Product & Technology",
+      "industries": [
+        "Automotive"
+      ],
+      "tags": [
+        "Machine Vision"
+      ],
+      "summary": "Discover how machine vision helps industrial robots adapt their movements to changing workpieces.",
+      "image": "/images/social-cover.webp",
+      "image_alt": "",
+      "illustrative_example": false,
+      "body": "## Why Robot Guidance Needs More Than a Fixed Position\n\nIndustrial robots are often programmed to move through repeatable paths. In real production environments, however, parts may arrive with small variations in position or orientation. A component may shift on a conveyor, sit at a slightly different angle in a tray, or appear in a different location from one cycle to the next.\n\nMachine vision can help address this variation by providing visual information about the workpiece before a movement is executed.\n\nInstead of relying only on a predefined position, a vision-guided workflow uses image data to estimate where a part is and how it is oriented. The robot can then use this information to determine an appropriate pick-up or processing position.\n\n## How Vision-Guided Robotics Works\n\nA typical vision-guided workflow combines image capture, visual analysis and robot motion.\n\n**1. Capture the work area**\n\nAn industrial camera captures an image of the part or work area. Camera placement, lens selection and lighting should be chosen for the features that need to be recognized.\n\n**2. Identify the target**\n\nVision software analyzes the image to locate the relevant part. Depending on the application, this may involve matching a visual pattern, detecting an edge or feature, or interpreting a more complex three-dimensional scene.\n\n**3. Calculate position and orientation**\n\nThe system estimates the target's location in the image. The result may include position coordinates and an angle of rotation. For a more complex scene, depth information may also be required.\n\n**4. Translate vision data into robot coordinates**\n\nThe camera and robot operate in their own coordinate systems. Calibration establishes the relationship between them so that a location identified in the image can be interpreted as a meaningful robot position.\n\n**5. Execute and verify the movement**\n\nThe robot uses the calculated position to approach, pick up, place or process the part. Where required, additional inspection can confirm that the operation has produced the expected result.\n\n## Choosing Between 2D and 3D Vision\n\nNot every robotic application requires three-dimensional imaging.\n\nA 2D vision system may be suitable when parts are presented on a relatively flat surface and the main task is to determine their position and orientation within that plane.\n\nThree-dimensional vision may be more appropriate when height differences, overlapping objects or complex part arrangements affect the robot's ability to identify a suitable grasping position.\n\nThe choice depends on the workpiece, the variation in its presentation, the available space, the inspection requirements and the expected production conditions. More complex imaging is not automatically better if the application does not require it.\n\n## Four Factors to Consider During System Design\n\n**Lighting and image quality**\n\nReflections, shadows and changes in ambient light can affect how visual features appear. Lighting should be selected to make the relevant part features distinguishable and consistent.\n\n**Camera-to-robot calibration**\n\nAn image coordinate cannot be used directly as a robot movement instruction without understanding the relationship between the camera and robot coordinate systems. Camera movement, changes in mounting position or adjustments to the optical setup may require calibration checks.\n\n**Part variation**\n\nThe vision workflow should account for the range of positions, orientations and appearances expected in production. A system tested only with perfectly aligned parts may not handle ordinary variation as intended.\n\n**Integration with the production process**\n\nThe inspection and movement sequence needs to fit the robot controller, conveyor or fixture, gripper and surrounding equipment. The timing of image capture and movement also matters when parts are moving.\n\n## From Visual Recognition to a More Flexible Workflow\n\nVision-guided robotics is not simply a matter of adding a camera to a robot. The camera, lighting, image-processing method, calibration and motion sequence must work together around a clearly defined application.\n\nFor manufacturers considering robotic handling or assembly, a useful starting point is to identify which part variations create difficulties, determine what visual information is needed, and evaluate the imaging and control approach against representative operating conditions.\n\nThe right design is the one that reliably addresses the application requirements without introducing unnecessary system complexity.",
+      "cta_enabled": true,
+      "cta_label": "Book a Demo",
+      "slug": "how-machine-vision-guides-industrial-robots-to-handle-variable-parts"
+    }
+  ]
+}

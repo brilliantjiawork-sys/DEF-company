@@ -20,6 +20,23 @@
     "data/stories/why-reliable-machine-vision-starts-with-a-consistent-image.json",
     "data/trade-show-articles/connecting-machine-vision-with-production-quality.json",
     "data/trade-show-articles/industrial-vision-application-showcase-2025-product-demonstrations-and-quality-control-applications-20251120.json",
-    "data/trade-shows-page-settings.json"
+    "data/trade-shows-page-settings.json",
+    "images/.gitkeep",
+    "images/11.jpg",
+    "images/event-1.jpg",
+    "images/event-2.jpg",
+    "images/event-3.jpg",
+    "images/hero-bg.jpg",
+    "images/logo.jpg",
+    "images/media-1.jpg",
+    "images/media-2.jpg",
+    "images/media-cover.jpg",
+    "images/social-cover.webp",
+    "images/social-facebook.jpg",
+    "images/social-linkedin.jpg",
+    "images/social-youtube-wide.jpg",
+    "images/social-youtube.jpg",
+    "images/story-cover.jpg",
+    "images/team.jpg"
   ]
 }

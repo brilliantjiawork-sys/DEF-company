@@ -1,0 +1,15 @@
+{
+  "title": "Your privacy matters.",
+  "description": "We use cookies to make this website work and, with your permission, to understand how it is used and measure marketing. You can change your choice at any time.",
+  "reject_button": "Reject all",
+  "customize_button": "Customize",
+  "accept_button": "Accept all",
+  "necessary_title": "Strictly necessary",
+  "necessary_description": "Required for the website to work. Always on.",
+  "analytics_title": "Analytics",
+  "analytics_description": "Helps us understand which pages and content are useful (Google Analytics).",
+  "marketing_title": "Marketing",
+  "marketing_description": "Lets us measure advertising performance and show more relevant ads.",
+  "save_button": "Save my choices",
+  "reopen_button": "Cookie settings"
+}

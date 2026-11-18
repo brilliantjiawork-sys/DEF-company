@@ -1,0 +1,103 @@
+{
+  "exhibitions": [
+    {
+      "title": "Industrial Vision & Automation Showcase 2026",
+      "start_date": "2026-11-12",
+      "end_date": "2026-11-15",
+      "booth": "TBC",
+      "loc": "Detroit, MI, USA (illustrative location)",
+      "venue": "Illustrative event venue",
+      "theme": "AI-driven inspection systems",
+      "summary": "A fictional event concept focused on AI-assisted inspection, defect detection and automation workflows.",
+      "tags": [
+        "AI & Deep Learning",
+        "Defect Detection",
+        "Quality Control",
+        "Robotics & Automation"
+      ],
+      "industries": [
+        "Automotive",
+        "Electronics"
+      ],
+      "cover": "/images/event-1.jpg",
+      "url": "",
+      "cta_enabled": true,
+      "cta_label": "Book a Meeting at This Show",
+      "illustrative_example": true
+    },
+    {
+      "title": "Smart Inspection & Vision Forum 2026",
+      "start_date": "2026-12-05",
+      "end_date": "2026-12-08",
+      "booth": "TBC",
+      "loc": "Stuttgart, Germany (illustrative location)",
+      "venue": "Illustrative event venue",
+      "theme": "Industrial camera solutions",
+      "summary": "A fictional event concept focused on industrial cameras, 3D vision and quality-control applications.",
+      "tags": [
+        "Machine Vision",
+        "3D Vision",
+        "Quality Control"
+      ],
+      "industries": [
+        "Electronics",
+        "Semiconductors"
+      ],
+      "cover": "/images/event-2.jpg",
+      "url": "",
+      "cta_enabled": true,
+      "cta_label": "Book a Meeting at This Show",
+      "illustrative_example": true
+    },
+    {
+      "title": "Robotics & Vision Integration Expo 2027",
+      "start_date": "2027-05-10",
+      "end_date": "2027-05-13",
+      "booth": "TBC",
+      "loc": "Chicago, IL, USA (illustrative location)",
+      "venue": "Illustrative event venue",
+      "theme": "Compact smart cameras and automation",
+      "summary": "An illustrative future-show concept around smart cameras, measurement and automation integration.",
+      "tags": [
+        "Machine Vision",
+        "Robotics & Automation",
+        "Positioning & Measurement"
+      ],
+      "industries": [
+        "Automotive",
+        "Electronics"
+      ],
+      "cover": "/images/event-3.jpg",
+      "url": "",
+      "cta_enabled": true,
+      "cta_label": "Book a Meeting at This Show",
+      "illustrative_example": true
+    },
+    {
+      "title": "Industrial Vision Application Showcase 2025: Product Demonstrations and Quality-Control Applications",
+      "event_year": "2025",
+      "start_date": "",
+      "end_date": "",
+      "loc": "Stuttgart, Germany (illustrative location)",
+      "venue": "Illustrative event venue",
+      "booth": "",
+      "theme": "Machine vision and quality-control applications",
+      "summary": "A fictional recap concept showing how product demonstration themes and quality-control applications might be presented after an event.",
+      "tags": [
+        "Machine Vision",
+        "AI & Deep Learning",
+        "Quality Control",
+        "Robotics & Automation"
+      ],
+      "industries": [
+        "Electronics",
+        "Semiconductors"
+      ],
+      "cover": "/images/event-3.jpg",
+      "url": "",
+      "cta_enabled": true,
+      "cta_label": "Talk to Our Team",
+      "illustrative_example": true
+    }
+  ]
+}

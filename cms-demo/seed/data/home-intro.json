@@ -1,0 +1,15 @@
+{
+  "page_title": "DEF Company | Industrial Vision",
+  "name": "DEF Company",
+  "tagline": "DEFINE THE STANDARD OF SIGHT.",
+  "logo": "images/logo.jpg",
+  "logo_alt": "DEF Company",
+  "nav_home": "Home",
+  "nav_newsroom": "Newsroom",
+  "nav_contact_sales": "Contact Sales",
+  "hero_title": "Precision Industrial Vision.",
+  "hero_description": "DEF Company designs industrial vision concepts to help manufacturers explore inspection quality, automation and production challenges.",
+  "hero_button": "Book a Demo",
+  "hero_image": "images/hero-bg.jpg",
+  "hero_image_alt": "Illustrative industrial machine vision system"
+}

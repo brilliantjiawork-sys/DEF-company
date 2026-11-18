@@ -1,0 +1,710 @@
+{
+  "version": "1.0",
+  "foundation": {
+    "positioning": "DEF Company 提供工业机器视觉产品与应用支持，服务设备制造商、系统集成商和制造企业，帮助解决检测、识别、测量与定位等生产问题。",
+    "audience": [
+      {
+        "name": "设备制造商｜OEM",
+        "need": "集成视觉产品到设备，关注适配、集成效率与稳定供货。"
+      },
+      {
+        "name": "系统集成商｜SI",
+        "need": "交付视觉系统，关注兼容性、开发效率与技术支持。"
+      },
+      {
+        "name": "制造企业｜End Users",
+        "need": "在生产中应用视觉，关注检测任务、节拍与实际效果。"
+      }
+    ],
+    "values": [
+      {
+        "title": "Innovation｜创新",
+        "description": "持续探索视觉技术与应用，回应真实工业需求。"
+      },
+      {
+        "title": "Customer Focus｜客户导向",
+        "description": "从客户的生产任务与实际挑战出发。"
+      },
+      {
+        "title": "Quality｜质量",
+        "description": "重视产品品质与性能的一致性。"
+      },
+      {
+        "title": "Reliability｜可靠",
+        "description": "以稳定产品和专业支持建立长期信任。"
+      }
+    ],
+    "belief": "我们相信，机器视觉应当解决真实工业问题，让生产更高效、更智能、更可靠。"
+  },
+  "logo": {
+    "primary": "DEF Company 字母字标，无独立图形标志。",
+    "variants": [
+      {
+        "name": "Primary Full-color｜彩色标准版",
+        "detail": "默认用于浅色背景的官网、社媒、宣传册和常规展会物料。保存 SVG/PDF 矢量源文件及 PNG 透明底预览。"
+      },
+      {
+        "name": "Reverse White｜白色反白版",
+        "detail": "用于深色纯色背景。必须使用正式白色文件，不可临时反色。保存 SVG/PDF 及 PNG 透明底文件。"
+      },
+      {
+        "name": "Monochrome｜单色版",
+        "detail": "用于黑白印刷及单色加工工艺。所有字母使用同一种颜色；单色版不等于灰度版。"
+      }
+    ],
+    "clearSpace": "暂定规则：以正式 Logo 中大写字母 D 的字高定义 X，Logo 四周至少留出 1X 的保护空间。X 是相对比例单位，不是像素。该规则需在最终 Logo 矢量稿上验证后才能作为正式规范。",
+    "minimum": "不规定跨品牌通用的固定尺寸。使用前应测试字标、图形与必要文字在目标尺寸下的辨识度；数字端按实际设备显示测试，印刷端由供应商结合工艺、材料与观看距离打样确认。若小尺寸无法清晰辨认，应使用已批准的简化版标志。",
+    "background": "优先使用白色或浅色纯背景。深色背景使用正式反白文件。避免在复杂照片、低对比度颜色、渐变或纹理上直接放置 Logo；确需叠加时使用足够面积的纯色承载区。",
+    "misuse": [
+      "不得拉伸、压扁、倾斜或旋转",
+      "不得改变图形与字标的相对位置或比例",
+      "不得自行更改品牌色、添加描边、阴影或渐变",
+      "不得把标语改写、拆分或替换字体",
+      "不得放在对比度不足或细节复杂的背景上",
+      "不得使用截图、低分辨率文件或未经批准的重绘版本"
+    ],
+    "formats": [
+      "Master artwork：保留 AI / SVG 等可编辑矢量母版，源文件不直接修改。",
+      "Digital：SVG 优先；透明背景 PNG 用于不支持矢量的场景。导出前检查透明边缘与色彩。",
+      "Print：优先交付供应商接受的矢量 PDF / EPS；按供应商要求处理字体与色彩模式。",
+      "Raster preview：JPG 用于无透明背景预览，不作为 Logo 主文件。"
+    ],
+    "displayNote": "作品集模拟品牌，CMS 以字标文字展示彩色、反白和单色版本。",
+    "printNote": "单色版：所有元素同一颜色；灰度版：可包含不同灰阶。印刷前按供应商材料和工艺打样。"
+  },
+  "colors": {
+    "brand": [
+      {
+        "name": "Primary Blue",
+        "hex": "#45B2D3",
+        "role": "Primary · 主色",
+        "usage": "品牌识别、常规品牌图形与视觉元素。"
+      },
+      {
+        "name": "Accent Yellow",
+        "hex": "#FFE817",
+        "role": "Accent · 强调色",
+        "usage": "CTA、关键数字和少量重点标记。"
+      }
+    ],
+    "supporting": [
+      {
+        "name": "Light Blue",
+        "hex": "#D9EEF4",
+        "role": "Supporting Blue · Tint",
+        "usage": "主蓝的浅色色阶，用于浅色信息卡片和辅助图形；不替代白色或浅灰作为页面底色。"
+      },
+      {
+        "name": "Deep Blue",
+        "hex": "#24677C",
+        "role": "Supporting Blue · Shade",
+        "usage": "主蓝体系中的深色色阶，用于深色区块、深色图形和白色文字的承载背景；不是独立品牌核心色。"
+      }
+    ],
+    "neutral": [
+      {
+        "name": "White",
+        "hex": "#FFFFFF",
+        "usage": "浅色背景和深色背景上的反白文字。"
+      },
+      {
+        "name": "Light Gray",
+        "hex": "#E8EDF0",
+        "usage": "内容分区和卡片背景，与白色形成层次。"
+      },
+      {
+        "name": "Charcoal",
+        "hex": "#222B32",
+        "usage": "浅色背景上的标题、正文，以及深色背景选项。"
+      }
+    ],
+    "backgroundText": [
+      {
+        "background": "White",
+        "backgroundHex": "#FFFFFF",
+        "title": "#222B32",
+        "body": "#40515B",
+        "accent": "#FFE817",
+        "accentText": "#222B32",
+        "titleContrast": "14.39:1",
+        "bodyContrast": "8.25:1",
+        "accentContrast": "11.51:1"
+      },
+      {
+        "background": "Light Gray",
+        "backgroundHex": "#E8EDF0",
+        "title": "#222B32",
+        "body": "#40515B",
+        "accent": "#FFE817",
+        "accentText": "#222B32",
+        "titleContrast": "13.13:1",
+        "bodyContrast": "7.53:1",
+        "accentContrast": "11.51:1"
+      },
+      {
+        "background": "Light Blue",
+        "backgroundHex": "#D9EEF4",
+        "title": "#222B32",
+        "body": "#40515B",
+        "accent": "#FFE817",
+        "accentText": "#222B32",
+        "titleContrast": "11.98:1",
+        "bodyContrast": "6.87:1",
+        "accentContrast": "11.51:1"
+      },
+      {
+        "background": "Deep Blue",
+        "backgroundHex": "#24677C",
+        "title": "#FFFFFF",
+        "body": "#D9EEF4",
+        "accent": "#FFE817",
+        "accentText": "#222B32",
+        "titleContrast": "6.35:1",
+        "bodyContrast": "5.29:1",
+        "accentContrast": "11.51:1"
+      },
+      {
+        "background": "Charcoal",
+        "backgroundHex": "#222B32",
+        "title": "#FFFFFF",
+        "body": "#D9EEF4",
+        "accent": "#FFE817",
+        "accentText": "#222B32",
+        "titleContrast": "14.39:1",
+        "bodyContrast": "11.98:1",
+        "accentContrast": "11.51:1"
+      }
+    ],
+    "usagePriority": [
+      {
+        "name": "White",
+        "hex": "#FFFFFF",
+        "priority": "01",
+        "usage": "主背景、留白。"
+      },
+      {
+        "name": "Charcoal",
+        "hex": "#222B32",
+        "priority": "02",
+        "usage": "标题与正文。"
+      },
+      {
+        "name": "Light Gray",
+        "hex": "#E8EDF0",
+        "priority": "03",
+        "usage": "卡片和内容分区背景。"
+      },
+      {
+        "name": "Primary Blue",
+        "hex": "#45B2D3",
+        "priority": "04",
+        "usage": "Logo 与品牌识别。"
+      },
+      {
+        "name": "Accent Yellow",
+        "hex": "#FFE817",
+        "priority": "05",
+        "usage": "主要 CTA 与少量重点强调。"
+      },
+      {
+        "name": "Deep Blue",
+        "hex": "#24677C",
+        "priority": "06",
+        "usage": "功能强调与深色背景。"
+      },
+      {
+        "name": "Light Blue",
+        "hex": "#D9EEF4",
+        "priority": "07",
+        "usage": "辅助背景与图形。"
+      }
+    ],
+    "functionalColors": [
+      {
+        "element": "Primary CTA｜主要行动按钮",
+        "color": "Accent Yellow",
+        "hex": "#FFE817",
+        "sample": "CTA",
+        "contrast": "11.51:1",
+        "usage": "黄色按钮背景搭配深炭灰文字；所有主要行动按钮统一使用这一组合。",
+        "sampleBackground": "#FFE817",
+        "sampleTextColor": "#222B32"
+      },
+      {
+        "element": "Key Information｜重点信息",
+        "color": "Deep Blue（浅色背景）/ Accent Yellow（深色背景）",
+        "hex": "#24677C / #FFE817",
+        "sample": "01",
+        "contrast": "6.35:1 / 5.08:1",
+        "usage": "浅色背景使用深蓝；深色背景使用强调黄。用于关键数字和少量重点信息。",
+        "sampleBackground": "#FFFFFF",
+        "sampleTextColor": "#24677C"
+      },
+      {
+        "element": "Icons｜图标",
+        "color": "Deep Blue（浅色背景）/ White（深色背景）",
+        "hex": "#24677C / #FFFFFF",
+        "sample": "◇",
+        "contrast": "≥5.29:1",
+        "usage": "浅色背景使用深蓝；深色背景使用白色。图标颜色随背景切换，不另设颜色。",
+        "sampleBackground": "#FFFFFF",
+        "sampleTextColor": "#24677C"
+      }
+    ],
+    "contrastStandards": {
+      "standard": {
+        "ratio": "4.5:1",
+        "definition": "未达到大字号门槛的文字（例如 16px 正文、14–16px 按钮文字）。"
+      },
+      "large": {
+        "ratio": "3:1",
+        "definition": "字号至少 24px（任意字重）；或至少 18.66px 且字重至少 700（Bold）。满足其中一项即可。"
+      },
+      "nonText": {
+        "ratio": "3:1",
+        "definition": "需要识别的信息图标、控件边界和图形，与相邻背景的最低对比度。"
+      }
+    }
+  },
+  "typography": {
+    "family": "英文与数字：Inter；中文：Noto Sans SC。备用字体：Arial、思源黑体。",
+    "styles": [
+      {
+        "name": "Page Title｜页面主标题（H1）",
+        "size": "32–40 px",
+        "weight": "Semibold / Bold",
+        "line": "1.15–1.25",
+        "use": "官网页面主标题、社媒主视觉标题、展会主标题。"
+      },
+      {
+        "name": "Section Title｜分区标题（H2）",
+        "size": "22–28 px",
+        "weight": "Semibold",
+        "line": "1.25–1.35",
+        "use": "官网主要内容分区、社媒轮播页标题、产品信息模块。"
+      },
+      {
+        "name": "Subsection Title｜小节标题（H3）",
+        "size": "18–20 px",
+        "weight": "Semibold",
+        "line": "1.3–1.4",
+        "use": "H2 章节内部的小主题标题。"
+      },
+      {
+        "name": "Body｜正文",
+        "size": "16–18 px",
+        "weight": "Regular",
+        "line": "1.5–1.65",
+        "use": "官网正文、社媒图片说明及产品介绍。"
+      },
+      {
+        "name": "Caption｜辅助文字",
+        "size": "12–14 px",
+        "weight": "Regular / Medium",
+        "line": "1.35–1.5",
+        "use": "参数注释、图片说明、页码和来源。"
+      },
+      {
+        "name": "Button｜按钮文字",
+        "size": "14–16 px",
+        "weight": "Semibold",
+        "line": "1.2",
+        "use": "Contact Sales、Learn More 等行动按钮。"
+      }
+    ],
+    "rules": [
+      "官网、社媒图片和展会物料共用这五类文字角色；按实际版面选择，不要求每张图全部使用。",
+      "产品型号、数字、单位和技术缩写按正式产品资料原样书写。"
+    ],
+    "articleHeadingLevels": [
+      {
+        "level": "H1",
+        "name": "Article Title",
+        "size": "32–40 px",
+        "weight": "Semibold / Bold",
+        "usage": "每篇文章只使用一个，作为文章主标题。"
+      },
+      {
+        "level": "H2",
+        "name": "Section Heading",
+        "size": "22–28 px",
+        "weight": "Semibold",
+        "usage": "用于划分主要内容章节。"
+      },
+      {
+        "level": "H3",
+        "name": "Subsection Heading",
+        "size": "18–20 px",
+        "weight": "Semibold",
+        "usage": "仅在 H2 章节下确实需要拆分多个小主题时使用。"
+      }
+    ]
+  },
+  "imagery": [
+    {
+      "name": "Product Photography",
+      "subject": "工业相机、镜头、控制器、读码器与配件的产品本体。",
+      "composition": "统一系列产品的拍摄角度、尺度和背景。主图展示整体外观；辅助图展示接口、安装结构、关键细节。产品保持完整，不因版面裁切关键结构。",
+      "lighting": "均匀柔光控制反射，保持颜色、材质和结构准确；金属与玻璃表面避免高光遮挡细节。",
+      "crop": "建立方形 1:1 产品图母版；官网产品详情另输出适配横向空间的 4:3 或 16:9 版本。比例属于内容布局选择，并非所有工业品牌统一标准。",
+      "avoid": "透视变形、过度反光、颜色失真、错误型号/接口、未经证实的光效或结构改造。",
+      "captureRule": "拍摄前核对型号、外观版本、接口方向和配件；同系列尽量保持视角、比例、背景与光线一致。",
+      "delivery": "归档未裁切原始高分辨率文件、修图母版和发布导出版本。文件命名包含型号、视角、版本或日期；保留源文件。"
+    },
+    {
+      "name": "Application Photography",
+      "subject": "机器视觉设备在生产线、机器人、检测工位、包装、物流等真实应用场景中的使用。",
+      "composition": "环境全景用于说明工艺与设备关系；中景展示安装与工作位置；细节图展示相机、被测对象和检测区域。主体与用途应明确。",
+      "lighting": "真实且可辨认的工业环境；尽量避免极端色调、过度 HDR 或无法还原现场的后期处理。",
+      "crop": "保留原始全分辨率。按渠道导出横向 16:9 / 1.91:1、方形 1:1、竖向 4:5 等版本；重要主体与文字预留安全区，裁切前确认不同渠道预览。",
+      "avoid": "无关的通用工厂图库、无法辨认工序的远景、虚构场景或与实际产品不匹配的设备。",
+      "captureRule": "确认设备、工序、检测对象与拍摄权限；照片应能解释机器视觉在流程中的角色，必要时拍摄同一场景的全景与细节。",
+      "delivery": "保存原图、选片、授权记录与裁切版本；按项目/行业/场景归档。"
+    },
+    {
+      "name": "Technical Imagery",
+      "subject": "接口结构、镜头/传感器细节、成像效果、检测区域、技术流程和原理示意。",
+      "composition": "一张图说明一个技术信息。根据用途采用特写、标注图、流程图或对比图；标注层与主体分离，保留可编辑文件。",
+      "lighting": "保证真实细节和标注可读；示意图使用统一箭头、线宽、图例与标注规则。",
+      "crop": "技术图可用 4:3、1:1 或横向比例，按信息结构决定。尺寸线、标签、单位、图例和关键部件不得被裁切。",
+      "avoid": "未经工程确认的结构、错误参数、虚构检测结果、装饰性技术标注或过小文字。",
+      "captureRule": "工程或产品负责人核对型号、参数、接口、尺寸、单位与示意关系；非真实画面明确标注 Illustrative。",
+      "delivery": "交付可编辑源文件及发布用 PNG/JPG/PDF。检查字体、标注可读性、图层和链接资源；保留版本及核准记录。"
+    },
+    {
+      "name": "Trade Show Photography",
+      "subject": "展台、产品演示、现场互动、客户交流、活动内容及团队记录。",
+      "composition": "拍摄展台全景、品牌/展位信息、产品演示细节、人员互动和活动现场；照片需兼顾后续案例、社媒及回顾内容的裁切空间。",
+      "lighting": "保持现场真实颜色和品牌标识可辨；避免严重偏色、模糊或曝光失控。",
+      "crop": "保留原始图；根据使用场景导出 16:9、1:1、4:5 或 1.91:1。裁切时保留人物、产品和展会标识等必要信息。",
+      "avoid": "空展台重复照片、模糊图、未经授权的客户/访客特写、无法识别展会或品牌的画面。",
+      "captureRule": "建立拍摄清单：展台全景、品牌露出、产品演示、现场交流、重点活动、团队照片。拍摄人物特写前确认授权及公司政策。",
+      "delivery": "按展会名称与日期归档原图、精选、授权与导出文件；保留原始素材，发布版本不得覆盖原图。"
+    }
+  ],
+  "layouts": [],
+  "applications": {
+    "website": {
+      "summary": "官网是品牌长期运营的内容与转化中心。",
+      "rules": [
+        "复用统一 Logo、颜色、字体和按钮样式。",
+        "产品信息、参数、案例和图片使用已确认的正式资料。",
+        "检查桌面与移动端展示、链接和表单。"
+      ]
+    },
+    "social": {
+      "summary": "社媒包含单图、轮播和视频；内容选题不预设，由品牌日常传播计划决定。",
+      "singleImage": [
+        "Single-image master template（单图母版）：固定品牌标识、标题/正文层级、主视觉与 CTA 的可替换区域；根据主题调整，不要求每张图填满所有区域。",
+        "常用尺寸建立独立画板：1:1（1200×1200）、4:5（1080×1350）、横向 1.91:1（1200×628）；发布前按平台最新规格核对。",
+        "为自然帖和广告分别检查文字密度、主体裁切与缩略图；不要把广告规格当作所有自然帖的硬性限制。"
+      ],
+      "carousel": [
+        "Carousel master（轮播母版）包括封面、内容页、图文页、数据/步骤页和结尾 CTA；按内容选择需要的页面，不必每套轮播固定页数。",
+        "LinkedIn 轮播广告卡片官方建议 1080×1080 px，2–10 张卡片，单卡最大 10 MB；自然内容如采用 PDF 文档轮播，应另按平台文件规格检查。",
+        "统一标题、页码/进度提示、图片边距、图表风格与结尾行动入口。"
+      ],
+      "video": [
+        "Video visual kit（视频视觉组件）：封面、字幕样式、片头/片尾标识、产品名称条及 CTA；作为组件复用，不把每支视频做成完全相同的固定模板。",
+        "按渠道建立横版 16:9、竖版 9:16、方版 1:1 等输出版本；字幕、安全区、封面与声音需在移动端预览。",
+        "优先确保静音观看仍理解关键信息；不得遮挡产品、演示细节或平台 UI。"
+      ]
+    },
+    "tradeShow": {
+      "summary": "以明确商业目标和预算为起点，策划、执行并评估展会投入。",
+      "pre": [
+        "参展目标：明确获客、重点客户会面、新品发布或市场拓展等目标及衡量标准。",
+        "预算与策划：核算展位、搭建、差旅、运输、物料与推广费用；确定展位方案、Demo、供应商、人员和时间表。",
+        "展前传播：规划官网、社媒、邮件等渠道内容，发布参展信息、主推产品/Demo及预约入口。",
+        "客户邀约：市场负责传播与邀约执行；销售提供目标客户、联系人和关系信息，协同邀请并确认到访。"
+      ],
+      "onsite": [
+        "每日汇总销售填写的客户接待记录，核对信息完整性并备份，避免线索遗漏。",
+        "观察客户关注的应用、行业问题与趋势，整理市场/内容洞察。",
+        "观察竞品展位、主推产品、Demo、传播信息及活动形式，记录可借鉴点。",
+        "拍摄并整理展台、产品演示、现场交流及活动素材，支持即时传播和后续内容制作。"
+      ],
+      "post": [
+        "整理并归档展会线索与每日接待记录，交由销售团队处理。",
+        "跟销售确认线索首次跟进完成情况、客户反馈及后续进展，更新追踪结果。",
+        "发布展会回顾、Demo精选、现场洞察及客户常见问题等内容。",
+        "汇总目标达成、费用、有效线索、销售跟进及后续转化，完成展会复盘。"
+      ],
+      "reusableSystem": [
+        "按渠道规格制作并适配展前、现场、展后素材。",
+        "发布前核对信息、链接/二维码、授权及追踪参数。"
+      ],
+      "funnel": {
+        "title": "目标与预算 → 策划筹备 → 展前邀约 → 现场执行 → 销售跟进 → 效果复盘",
+        "steps": [
+          {
+            "name": "目标",
+            "detail": "明确参展目的、目标客户、目标数量与衡量方式。"
+          },
+          {
+            "name": "预算与策划",
+            "detail": "评估费用、展位方案、Demo、供应商、人员及时间安排。"
+          },
+          {
+            "name": "展前邀约",
+            "detail": "市场负责传播及邀约执行；销售提供重点客户与联系人信息，协同邀请并确认会面。"
+          },
+          {
+            "name": "现场执行",
+            "detail": "接待、产品演示、交流与内容采集；销售记录客户需求，市场每日汇总销售接待记录并观察行业/竞品、收集传播素材。"
+          },
+          {
+            "name": "跟进与复盘",
+            "detail": "销售负责客户跟进；市场追踪跟进状态、整理展会数据与内容，评估投入产出及后续参展决策。"
+          }
+        ],
+        "rules": [
+          "LinkedIn Event：品牌自办 Webinar、Workshop、发布会或需要平台报名/提醒的活动可创建；第三方展会通常用主办方页面、公司主页内容、邮件和预约链接即可。"
+        ]
+      },
+      "trackingSheets": [
+        {
+          "name": "01 · 展前邀约表",
+          "purpose": "管理邀约名单与到访确认。",
+          "fields": [
+            "序号",
+            "客户公司",
+            "行业",
+            "联系人职位",
+            "联系方式",
+            "意向产品/方案",
+            "预计到访日期",
+            "预计到访时间",
+            "负责销售",
+            "邀约状态",
+            "客户关注点",
+            "备注"
+          ]
+        },
+        {
+          "name": "02 · 展中线索登记表",
+          "purpose": "记录现场交流、需求与下一步。",
+          "fields": [
+            "序号",
+            "接待日期时间",
+            "客户公司",
+            "行业",
+            "客户类型",
+            "联系人职位",
+            "联系方式",
+            "关注产品/方案",
+            "需求痛点",
+            "项目阶段",
+            "预计采购时间",
+            "线索等级（A/B/C）",
+            "现场沟通要点",
+            "下一步动作",
+            "对接销售",
+            "是否需要技术支持"
+          ]
+        },
+        {
+          "name": "03 · 展后跟进追踪表",
+          "purpose": "追踪销售首次联系、反馈及后续进展。",
+          "fields": [
+            "序号",
+            "客户公司",
+            "联系人",
+            "联系方式",
+            "关注产品/方案",
+            "线索等级",
+            "现场需求摘要",
+            "跟进负责人",
+            "首次跟进截止时间",
+            "实际首次跟进时间",
+            "跟进方式",
+            "跟进结果",
+            "客户反馈/待解决问题",
+            "下一步计划",
+            "下次跟进日期",
+            "当前状态",
+            "备注"
+          ]
+        }
+      ],
+      "kpis": [
+        "目标客户到访：实际到访的目标企业数量。",
+        "有效线索：符合目标客户范围，且有明确产品应用/业务需求的联系人；由销售确认。",
+        "Demo / Meeting Requests：展会产生的产品演示或商务会议需求。",
+        "销售跟进完成率：已完成首次跟进的线索数 ÷ 应跟进线索数。",
+        "新增商机与实际成交：由销售在 CRM 确认的展会来源商机及后续成交金额，展后持续追踪。",
+        "复参评估：结合目标完成、线索质量、销售跟进、后续商机/成交及市场战略价值，决定继续、调整或不参加。"
+      ],
+      "leadTierDefinitions": [
+        {
+          "tier": "A",
+          "name": "Hot / 高意向",
+          "definition": "需求明确、产品匹配，采购时间或项目推进明确，已约定具体下一步。"
+        },
+        {
+          "tier": "B",
+          "name": "Warm / 有兴趣",
+          "definition": "产品或应用有匹配兴趣，但需求、采购时间或项目进度尚未明确。"
+        },
+        {
+          "tier": "C",
+          "name": "Early-stage / 初步接触",
+          "definition": "初步了解、暂未明确项目或采购计划，适合后续培育。"
+        }
+      ],
+      "eventPageSelection": {
+        "title": "LinkedIn Event 使用判断",
+        "items": [
+          "适用：品牌自主举办的 Webinar、Workshop、产品发布、线上/线下 Demo，且需要报名、邀请或平台提醒。",
+          "不必创建：作为参展商参加第三方展会；用主办方展会页面、品牌内容、邮件和预约链接推广即可。"
+        ]
+      }
+    },
+    "evidenceNotes": [
+      "Brand platform terminology: values express enduring beliefs and decision principles; personality describes human-like character; attributes are descriptive traits. These categories overlap across frameworks, so this portfolio uses only distinct, useful sections rather than repeating terms.",
+      "Basler's official company materials highlight quality, innovation, reliability, customer focus, compatibility and product expertise. These are industry reference points, not copied claims for DEF.",
+      "Exhibition examples reviewed: Basler VISION pages/recaps use booth demos, application highlights and meeting invitations; IDS uses booth information, ticket registration, guided tours, talks and post-show video/media; Cognex Automate promotes booth demos, experts and registration.",
+      "Trade-show lead capture references support capturing contact data, product/application interest, qualification notes, agreed next step, lead rating and prompt follow-up. Exact fields, A/B/C definitions and SLA vary by company/event; DEF's are proposed operating standards, not universal rules.",
+      "LinkedIn Event suits brand-organized Webinar, Workshop, Demo, talk or customer event; third-party exhibitors may promote through official show pages, company/employee posts, email, website and meeting booking.",
+      "Print production: no universal bleed, dimensions, color mode or file format. Apply bleed only to print pieces that are trimmed and only at the printer's specified amount; confirm final size, safe area, material, resolution, color profile, font handling, installation and proof with the vendor."
+    ]
+  },
+  "verbal": {
+    "voice": "专业、严谨、务实、协作。以客户生产任务与应用需求为起点，说明机器视觉如何参与解决问题。",
+    "writing": [
+      "先说明客户的任务、痛点或应用场景，再介绍视觉技术与产品如何适配。",
+      "性能、精度、速度、认证、客户成果和成本节省等声明必须有正式资料或可验证证据。",
+      "避免夸大或无法证明的表达；产品型号、参数、单位和技术术语统一。",
+      "品牌个性不是所有文案都使用相同语气：技术资料讲准确，社媒可更易读，销售邀请更直接，但始终专业、可信。"
+    ],
+    "terms": "产品名称、系列名称、技术缩写、参数单位及行业术语使用统一术语表。"
+  },
+  "imageryOverview": [
+    {
+      "name": "Product Photography｜产品摄影",
+      "purpose": "产品外观、型号、接口与配件。",
+      "accent": "#E8F2F7"
+    },
+    {
+      "name": "Application Photography｜应用摄影",
+      "purpose": "设备安装、生产工序与真实应用场景。",
+      "accent": "#EAF3EE"
+    },
+    {
+      "name": "Technical Imagery｜技术图像",
+      "purpose": "接口结构、成像效果、检测区域与原理示意。",
+      "accent": "#F2EFF8"
+    },
+    {
+      "name": "Trade Show Photography｜展会摄影",
+      "purpose": "展台、产品演示、现场交流与活动记录。",
+      "accent": "#FBF2E5"
+    }
+  ],
+  "layoutGroups": [
+    {
+      "id": "social",
+      "name": "Social Media｜社媒",
+      "purpose": "可复用的设计母版与组件。母版锁定视觉结构，实际内容根据传播主题替换。",
+      "items": [
+        {
+          "name": "Single Image｜单图",
+          "assetType": "可编辑母版（Master Template）+ 发布导出尺寸",
+          "status": "待设计",
+          "purpose": "固定品牌标识、标题层级、主视觉、辅助信息和 CTA 的可替换区域。适配 1:1、4:5 与横版，不把所有比例强行塞进一个画板。",
+          "structure": [
+            "Logo / Brand Area",
+            "Headline",
+            "Hero Image / Visual",
+            "Supporting Information",
+            "CTA / Footer"
+          ]
+        },
+        {
+          "name": "Carousel｜轮播",
+          "assetType": "可编辑母版（Cover / Content / CTA Page Components）",
+          "status": "待设计",
+          "purpose": "建立封面、内容页、图表/步骤页、图片页与结尾页组件。按主题自由组合页数，不固定每页内容。",
+          "structure": [
+            "Cover",
+            "Content Page",
+            "Visual / Data Page",
+            "Closing CTA"
+          ]
+        },
+        {
+          "name": "Video｜视频",
+          "assetType": "视频视觉组件（Cover / Subtitle / Lower Third / Intro & Outro）",
+          "status": "待设计",
+          "purpose": "建立可复用的封面、字幕、产品名称条、片头/片尾与 CTA 组件，按视频类型组合。",
+          "structure": [
+            "Cover",
+            "Subtitle",
+            "Product / Topic Label",
+            "End Card / CTA"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "trade-show",
+      "name": "Trade Show｜展会",
+      "purpose": "展会是营销项目。母版与各阶段素材需同时支持传播、预约、现场获客、销售跟进和效果测量。",
+      "phases": [
+        {
+          "name": "Pre-show｜展前",
+          "goal": "展前邀约与预约会面素材",
+          "items": [
+            "参展预告",
+            "目标客户个性化邀约",
+            "预约会面/演示",
+            "展位与地图信息",
+            "重点展示产品/应用"
+          ],
+          "cta": "Book a Meeting / Register / Visit Booth",
+          "rule": "母版预留展会名称、日期、地点/展位、展示内容、目标客户行动、可追踪 URL/二维码；每场活动复制项目版本。"
+        },
+        {
+          "name": "On-site｜展中",
+          "goal": "现场内容与线索捕获辅助素材",
+          "items": [
+            "展台/产品演示现场动态",
+            "每日活动/主题",
+            "扫码预约或资料领取",
+            "现场互动/交流（需授权）",
+            "展位导引与信息牌"
+          ],
+          "cta": "Scan to Book / Request Information / Visit Booth",
+          "rule": "母版预留现场照片、当日内容、二维码与清晰 CTA。二维码链接须标识活动来源并测试；现场登记须由访客主动提交。"
+        },
+        {
+          "name": "Post-show｜展后",
+          "goal": "展后回顾与销售跟进内容",
+          "items": [
+            "展会回顾",
+            "重点演示/技术亮点",
+            "资料或案例分享",
+            "预约后续交流",
+            "线索培育内容"
+          ],
+          "cta": "Request Materials / Continue the Discussion / Contact Sales",
+          "rule": "母版预留回顾内容、精选现场素材、后续资料/表单入口；发布内容应与线索分级和销售跟进计划衔接。"
+        }
+      ],
+      "collateral": {
+        "name": "Exhibition Collateral｜展会现场物料",
+        "purpose": "展台空间与现场销售支持资产；由母版衍生并按主办方、搭建商及供应商规格制作。",
+        "items": [
+          "展台背板与品牌标识",
+          "易拉宝 / Roll-up Banner",
+          "产品展示板与技术信息板",
+          "宣传单页、产品目录与资料包",
+          "演示屏画面",
+          "二维码/预约登记牌",
+          "展位导引与现场信息牌"
+        ],
+        "rule": "制作前确认供应商/主办方的尺寸、材质、结构、安装、分辨率、色彩模式、字体及交付格式；校对内容与二维码并确认样稿。"
+      }
+    }
+  ]
+}
