@@ -514,8 +514,8 @@
               ? h('video', { controls: true, muted: true, preload: 'metadata', style: { maxWidth: '100%', maxHeight: '100%' } }, h('source', { src: item.url }))
               : h('a', { href: item.url, target: '_blank', rel: 'noreferrer' }, 'Open document');
           const usageRows = (item.usages || []).map((usage, index) => h('li', { key: index, style: { fontSize: 12, lineHeight: 1.45, marginBottom: 5 } },
-            usage.editUrl ? h('a', { href: usage.editUrl, style: { color: '#234b68', textDecoration: 'underline', fontWeight: 600 } }, usage.title || usage.category || 'Content entry') : h('strong', null, usage.title || usage.category || 'Content entry'),
-            h('span', { style: { color: '#71818d' } }, ' · ' + (usage.category || 'Content') + ' · ' + (usage.label || usage.location || 'Asset'))
+            h('strong', null, usage.title || usage.category || 'Content entry'),
+            h('span', { style: { color: '#71818d' } }, ' · ' + (usage.category || 'Content') + ' · ' + (usage.label || usage.location || 'Asset') + '（因技术原因暂无法打开）')
           ));
           const usageList = usageRows.length ? h('ul', { style: { paddingLeft: 17, margin: '7px 0 0' } }, ...usageRows) : h('p', { style: { fontSize: 12, color: '#71818d', margin: '7px 0 0' } }, '当前未检测到内容引用。');
           return h('article', { key: item.path, style: { border: '1px solid #dce3e9', borderRadius: 8, overflow: 'hidden', background: '#fff', minWidth: 0 } },
@@ -524,8 +524,7 @@
               h('strong', { style: { display: 'block', overflowWrap: 'anywhere', marginBottom: 4, fontSize: 13 } }, item.name),
               h('div', { style: { fontSize: 11, color: '#657381' } }, typeLabel(item.type)),
               h('div', { style: { marginTop: 10, borderTop: '1px solid #e7edf1', paddingTop: 8 } }, h('strong', { style: { fontSize: 12 } }, '使用位置'), usageList),
-              h('a', { href: '#/assets/images', style: { display: 'inline-block', marginTop: 10, color: '#234b68', fontSize: 12, textDecoration: 'underline', fontWeight: 650 } }, 'Replace / Manage in Asset Library'),
-              h('p', { style: { margin: '4px 0 0', fontSize: 11, color: '#71818d', lineHeight: 1.45 } }, '在 Asset Library 搜索文件名，选择该文件并使用 Replace。替换同一路径文件可保留现有内容引用。')
+
             )
           );
         };
@@ -595,8 +594,7 @@
               mini('Value Proposition｜核心价值',f.value)
             )),
             card('Target Audience｜目标客户',h('div',{className:'bh-grid'},...f.audience.map((a,i)=>mini(a.name,a.need,'Audience '+String(i+1).padStart(2,'0'))))),
-            card('Brand Values｜品牌价值观',h('div',{className:'bh-grid'},...f.values.map((v,i)=>mini(v.title,v.description,v.behaviors.join(' / '))))),
-            card('Brand Personality｜品牌个性',h('div',{className:'bh-grid'},...f.personality.map((x,i)=>mini(x.split('｜')[0],x.split('｜').slice(1).join('｜'))))),
+            card('Brand Values｜品牌价值观',h('div',{className:'bh-grid'},...f.values.map((v,i)=>mini(v.title,v.description)))),
             card('Tagline / Slogan｜品牌口号',h('div',null,h('p',{className:'bh-positioning'},f.tagline),para('口号是简短的品牌表达；它不是品牌价值观或个性。官网首页的实际口号字段位于 Brand Introduction（Home Intro）内容设置中。')))
           );
         };
@@ -733,7 +731,6 @@
               para('指标从活动目标倒推，不能把曝光或扫码量直接当作有效线索、商机或 ROI。'),
               list(trade.kpis)
             )),
-            card('Reference Notes · 规范依据',list(a.evidenceNotes))
           );
         };
                         const render=()=>!guide?h('div',{className:'bh-section'},h('h3',null,loading?'正在加载品牌规范':'品牌规范暂时无法加载'),h('p',{className:'bh-text'},loading?'正在读取品牌规范数据，请稍候。':(error||'请检查品牌规范数据文件后重试。')),!loading?h('button',{type:'button',onClick:()=>{setLoading(true);setError('');fetch('/data/brand-guidelines.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(data=>setGuide(data)).catch(err=>setError(err.message)).finally(()=>setLoading(false));},style:{marginTop:12,padding:'8px 12px',border:'1px solid #cbd9e0',borderRadius:6,background:'#fff',color:'#294b60',font:'inherit',cursor:'pointer'}},'重新加载'):null):active==='foundation'?renderFoundation():active==='identity'?renderIdentity():active==='imagery'?renderImagery():active==='layouts'?renderLayouts():renderApplications();
