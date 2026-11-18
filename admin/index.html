@@ -599,17 +599,16 @@
         const renderFoundation=()=> {
           const f=guide.foundation;
           return h('div',null,
-            sectionHead('01 / Strategy','Brand Foundation','品牌基础：明确品牌定位、服务对象、核心价值与统一表达原则。'),
+            sectionHead('01 / Strategy','Brand Foundation','品牌战略基础：定位、目标客户与客户价值。品牌价值回答客户为什么选择我们；技术资料与内容是价值证明，不是品牌价值本身。'),
             card('Brand Positioning',h('div',null,
               h('p',{className:'bh-positioning'},f.positioning),
-              h('div',{className:'bh-grid'},mini('Category',f.category,'品牌类别'),mini('Value Proposition',f.value,'核心价值'))
+              mini('Value Proposition｜核心价值',f.value)
             )),
-            card('Target Audience',h('div',{className:'bh-grid'},...f.audience.map((a,i)=>mini(a.name,a.need,'受众 '+String(i+1).padStart(2,'0'))))),
-            card('Brand Personality',h('div',{className:'bh-grid3'},...f.personality.map((x,i)=>mini(x.split(' · ')[0],x.split(' · ').slice(1).join(' · '),'品牌个性')))),
-            card('Brand Principles',h('div',{className:'bh-grid'},...f.principles.map((item,i)=>mini(item.name,item.rule,'执行原则 '+String(i+1).padStart(2,'0')))))
+            card('Target Audience｜目标客户',h('div',{className:'bh-grid'},...f.audience.map((a,i)=>mini(a.name,a.need,'Audience '+String(i+1).padStart(2,'0'))))),
+            card('Brand Attributes｜品牌属性',h('div',{className:'bh-grid3'},...f.personality.map((x,i)=>mini(x.split('｜')[0],x.split('｜').slice(1).join('｜')))))
           );
         };
-        const renderIdentity=()=> {
+                const renderIdentity=()=> {
           const l=guide.logo,c=guide.colors,t=guide.typography,contrast=c.contrastStandards;
           const palette=(title,desc,items)=>h('section',{className:'bh-color-group'},h('div',{className:'bh-color-group-head'},h('h4',null,title),h('p',null,desc)),h('div',{className:'bh-palette'},...items.map((x,i)=>h('div',{className:'bh-palette-item',key:i},h('div',{className:'bh-palette-chip',style:{background:x.hex}}),h('div',{className:'bh-palette-meta'},h('strong',null,x.name),h('code',null,x.hex),x.role?h('small',null,x.role):null,h('p',null,x.usage))))));
           const combo=x=>h('div',{className:'bh-combo',key:x.background},h('div',{className:'bh-combo-preview',style:{background:x.backgroundHex}},h('strong',{style:{color:x.title}},'DEF Company · '+x.background),h('p',{style:{color:x.body}},'Industrial Vision, Precisely Applied'),h('span',{style:{background:x.accent,color:x.accentText,borderColor:x.accent}},'CTA / 重点信息')),h('div',{className:'bh-combo-meta'},h('strong',null,x.background+' Background · '+x.backgroundHex),h('p',null,'标题 '+x.title+' · '+x.titleContrast),h('p',null,'正文 '+x.body+' · '+x.bodyContrast),h('p',null,'CTA 背景 '+x.accent+' / 文字 '+x.accentText+' · '+x.accentContrast)));
@@ -625,7 +624,7 @@
                 h('div',{className:'bh-logo-bg',style:{background:'#F2F5F6'}},h('div',{style:{textAlign:'center'}},h('div',{style:{fontSize:25,fontWeight:750,letterSpacing:'.04em',color:'#222222'}},'DEF COMPANY'),h('small',null,'黑色单色版 · Monochrome')))
               ),
               h('div',{className:'bh-logo-rules'},...l.variants.map((v,i)=>h('div',{className:'bh-rule',key:i},h('strong',null,v.name),h('p',null,v.detail))),h('div',{className:'bh-note'},l.displayNote),h('div',{className:'bh-note'},l.printNote)),
-              h('div',{className:'bh-grid',style:{marginTop:22}},mini('Clear Space',l.clearSpace),mini('Minimum Size',l.minimum),mini('Background Usage',l.background),mini('File Formats',l.formats.join(' · ')))
+              h('div',{className:'bh-grid',style:{marginTop:22}},mini('Clear Space｜保护空间（暂定）',l.clearSpace),mini('Minimum Size｜最小尺寸原则',l.minimum),mini('Background Usage',l.background),mini('File Formats',l.formats.join(' · ')))
             )),
             card('02 · Color System｜色彩系统',h('div',{className:'bh-color-system'},
               palette('Brand Colors｜品牌核心色','品牌识别的核心颜色：主蓝与强调黄。',c.brand),
