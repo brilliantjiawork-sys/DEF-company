@@ -699,35 +699,31 @@
           const trade = a.tradeShow;
           return h('div', null,
             sectionHead('05 / Applications', 'Brand Applications', '官网、社媒与展会的内容规范。'),
-            card('Application Overview · 应用总览',h('div',{className:'bh-grid'},mini('01 · Website 官网','统一品牌体验与询盘入口。'),mini('02 · Social Media 社媒','单图、轮播和视频规范。'),mini('03 · Trade Shows 展会','展前邀约、现场传播与展后延续。'))),
+            card('Application Overview · 应用总览',h('div',{className:'bh-grid'},mini('01 · Website 官网','统一品牌体验与询盘入口。'),mini('02 · Social Media 社媒','单图、轮播和视频规范。'),mini('03 · Trade Shows 展会','围绕目标、执行与效果评估。'))),
             group('01 · Website / 官网',a.website.summary,[{title:'必须遵守',items:a.website.rules}]),
             group('02 · Social Media / 社媒',a.social.summary,[{title:'Single Image · 单图',items:a.social.singleImage},{title:'Carousel · 轮播',items:a.social.carousel},{title:'Video · 视频',items:a.social.video}]),
-            group('03 · Trade Shows / 展会',trade.summary,[{title:'Pre-show · 展前',items:trade.pre},{title:'On-site · 展中',items:trade.onsite},{title:'Post-show · 展后',items:trade.post},{title:'Reusable System · 母版系统',items:trade.reusableSystem}]),
-            card('Trade Show Lead Journey · 展会获客闭环',h('div',null,
+            group('03 · Trade Shows / 展会',trade.summary,[{title:'展前',items:trade.pre},{title:'展中',items:trade.onsite},{title:'展后',items:trade.post}]),
+            card('Trade Show Workflow｜展会流程',h('div',null,
               para(trade.funnel.title),
               h('div',{className:'bh-funnel'},...trade.funnel.steps.map((step,i)=>h('div',{className:'bh-funnel-step',key:i},h('strong',null,String(i+1).padStart(2,'0')+' · '+step.name),h('p',null,step.detail)))),
               list(trade.funnel.rules)
             )),
             card('Three Tracking Sheets｜三张执行表',h('div',null,
-              para('展前邀约、展中记录、展后跟进。'),
               ...trade.trackingSheets.map((sheet,i)=>h('div',{className:'bh-mini',key:i,style:{marginTop:12}},
                 h('h4',null,sheet.name),h('p',null,sheet.purpose),
-                h('div',{className:'bh-note'},h('strong',null,'字段建议：'),sheet.fields.join(' · '))
+                h('div',{className:'bh-note'},h('strong',null,'字段：'),sheet.fields.join(' · '))
               ))
             )),
-            card('Lead Tier A/B/C｜展会线索分级',h('div',null,
-              para('A/B/C 是现场线索处理优先级建议，不是行业统一标准；基于业务匹配、需求、项目阶段和下一步，而非只看职位/公司规模。'),
-              list(trade.leadTierDefinitions.map(tier=>tier.tier+' · '+tier.name+'：'+tier.definition+' 建议：'+tier.action))
+            card('Lead Qualification｜线索等级',h('div',null,
+              list(trade.leadTierDefinitions.map(tier=>tier.tier+'：'+tier.definition))
             )),
-            card('LinkedIn Event / 活动页选择',h('div',null,
-              para('第三方展会参展商不需要默认创建 LinkedIn Event；判断是否品牌自办独立活动，以及是否需要平台内报名、邀请和通知。'),
-              
-              h('h4',null,trade.eventPageSelection.title),list(trade.eventPageSelection.items)
+            card('LinkedIn Event｜是否创建活动',h('div',null,
+              list(trade.eventPageSelection.items)
             )),
-            card('Event Measurement｜展会衡量指标',h('div',null,
-              
-              list(trade.kpis)
-            )),
+            card('Event Performance｜展会效果评估',h('div',null,
+              list(trade.kpis),
+              para('CPL（有效线索成本）= 展会总费用 ÷ 有效线索数。复参决策同时看目标达成、线索质量、商机/收入、成本效率及战略价值。')
+            ))
           );
         };
                         const render=()=>!guide?h('div',{className:'bh-section'},h('h3',null,loading?'正在加载品牌规范':'品牌规范暂时无法加载'),h('p',{className:'bh-text'},loading?'正在读取品牌规范数据，请稍候。':(error||'请检查品牌规范数据文件后重试。')),!loading?h('button',{type:'button',onClick:()=>{setLoading(true);setError('');fetch('/data/brand-guidelines.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(data=>setGuide(data)).catch(err=>setError(err.message)).finally(()=>setLoading(false));},style:{marginTop:12,padding:'8px 12px',border:'1px solid #cbd9e0',borderRadius:6,background:'#fff',color:'#294b60',font:'inherit',cursor:'pointer'}},'重新加载'):null):active==='foundation'?renderFoundation():active==='identity'?renderIdentity():active==='imagery'?renderImagery():active==='layouts'?renderLayouts():renderApplications();
