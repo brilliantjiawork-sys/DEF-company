@@ -402,6 +402,9 @@
                 .map(file => ({ ...file, name: file.path.split('/').pop(), type: getType(file.path), imageGroup: getType(file.path) === 'image' ? imageGroupFor(file.path) : '', videoGroup: getType(file.path) === 'video' ? videoGroupFor(file.path) : '', documentGroup: getType(file.path) === 'pdf' ? documentGroupFor(file.path) : '', usages: [], categories: [] }));
               // Use actual CMS entry files as the source of truth for editable content.
               // Public website manifests can contain legacy slugs that do not match CMS filenames.
+              // CMS folder entries are the single source of truth for Story/article usages.
+              // Do not scan public website index manifests (database.json / event-coverage.json):
+              // they duplicate the same content and can produce invalid edit links.
               const contentSources = [
                 ...staticData.map(([path, kind]) => ({ path, kind, slug: path.split('/').pop().replace(/\.json$/i, '') })),
                 ...repoFiles.filter(file => /^data\/stories\/[^/]+\.json$/i.test(file.path))
