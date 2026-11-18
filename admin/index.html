@@ -588,12 +588,9 @@
         const renderFoundation=()=> {
           const f=guide.foundation;
           return h('div',null,
-            sectionHead('01 / Strategy','Brand Foundation','品牌战略基础：定位、目标客户与客户价值。品牌价值回答客户为什么选择我们；技术资料与内容是价值证明，不是品牌价值本身。'),
-            card('Brand Positioning',h('div',null,
-              h('p',{className:'bh-positioning'},f.positioning),
-              mini('Value Proposition｜核心价值',f.value)
-            )),
-            card('Target Audience｜目标客户',h('div',{className:'bh-grid'},...f.audience.map((a,i)=>mini(a.name,a.need,'Audience '+String(i+1).padStart(2,'0'))))),
+            sectionHead('01 / Strategy','Brand Foundation','我们是谁、服务谁、解决什么问题、相信什么。'),
+            card('Who We Are｜我们是谁',h('div',null,h('p',{className:'bh-positioning'},f.positioning),mini('What We Believe｜我们相信什么',f.belief))),
+            card('Who We Serve｜目标客户',h('div',{className:'bh-grid'},...f.audience.map((a,i)=>mini(a.name,a.need)))),
             card('Brand Values｜品牌价值观',h('div',{className:'bh-grid'},...f.values.map((v,i)=>mini(v.title,v.description)))),
             card('Tagline / Slogan｜品牌口号',h('div',null,h('p',{className:'bh-positioning'},f.tagline),para('口号是简短的品牌表达；它不是品牌价值观或个性。官网首页的实际口号字段位于 Brand Introduction（Home Intro）内容设置中。')))
           );
@@ -605,7 +602,7 @@
           const priorityItem=x=>h('div',{className:'bh-priority-item',key:x.name},h('i',{className:'bh-priority-chip',style:{background:x.hex}}),h('div',null,h('strong',null,x.priority+' · '+x.name),h('code',null,x.hex),h('p',null,x.usage)));
           const functionalItem=x=>h('div',{className:'bh-functional-item',key:x.element},h('div',{className:'bh-functional-chip',style:{background:x.sampleBackground||x.hex,color:x.sampleTextColor||'#FFFFFF'}},x.sample||''),h('div',null,h('strong',null,x.element),h('p',null,x.color),h('code',null,x.hex+' · '+x.contrast),h('small',null,x.usage)));
           return h('div',null,
-            sectionHead('02 / Visual Identity','Visual Identity','品牌视觉规范：Logo、颜色和字体。每个主题独立分区，直接展示视觉样例与使用规则。'),
+            sectionHead('02 / Visual Identity','Visual Identity','Logo、颜色与字体规范。'),
             card('01 · Logo System｜Logo 系统',h('div',null,
               h('p',{className:'bh-text',style:{marginBottom:18}},l.primary),
               h('div',{className:'bh-logo-stage'},
@@ -701,18 +698,18 @@
           ));
           const trade = a.tradeShow;
           return h('div', null,
-            sectionHead('05 / Applications', 'Brand Applications', '按实际营销场景管理规范与执行：官网、社媒、展会。展会设计必须服务于目标客户邀约、现场获客、销售跟进与效果测量。'),
-            card('Application Overview · 应用总览',h('div',{className:'bh-grid'},mini('01 · Website 官网','长期品牌资产与内容中心，重点是导航、阅读、产品信息和询盘体验。'),mini('02 · Social Media 社媒','包含静态单图、轮播和视频；母版提供可复用视觉组件。'),mini('03 · Trade Shows 展会','营销项目闭环：目标与邀约、预约、现场线索、销售跟进、ROI。'))),
+            sectionHead('05 / Applications', 'Brand Applications', '官网、社媒与展会的内容规范。'),
+            card('Application Overview · 应用总览',h('div',{className:'bh-grid'},mini('01 · Website 官网','统一品牌体验与询盘入口。'),mini('02 · Social Media 社媒','单图、轮播和视频规范。'),mini('03 · Trade Shows 展会','展前邀约、现场传播与展后延续。'))),
             group('01 · Website / 官网',a.website.summary,[{title:'必须遵守',items:a.website.rules}]),
             group('02 · Social Media / 社媒',a.social.summary,[{title:'Single Image · 单图',items:a.social.singleImage},{title:'Carousel · 轮播',items:a.social.carousel},{title:'Video · 视频',items:a.social.video}]),
             group('03 · Trade Shows / 展会',trade.summary,[{title:'Pre-show · 展前',items:trade.pre},{title:'On-site · 展中',items:trade.onsite},{title:'Post-show · 展后',items:trade.post},{title:'Reusable System · 母版系统',items:trade.reusableSystem}]),
             card('Trade Show Lead Journey · 展会获客闭环',h('div',null,
               para(trade.funnel.title),
               h('div',{className:'bh-funnel'},...trade.funnel.steps.map((step,i)=>h('div',{className:'bh-funnel-step',key:i},h('strong',null,String(i+1).padStart(2,'0')+' · '+step.name),h('p',null,step.detail)))),
-              h('h4',null,'执行规则'),list(trade.funnel.rules)
+              list(trade.funnel.rules)
             )),
             card('Three Tracking Sheets｜三张执行表',h('div',null,
-              para('三张表分别记录展前邀约、展中交流、展后销售跟进；按单场展会使用即可，无需额外设置 Event ID。'),
+              para('展前邀约、展中记录、展后跟进。'),
               ...trade.trackingSheets.map((sheet,i)=>h('div',{className:'bh-mini',key:i,style:{marginTop:12}},
                 h('h4',null,sheet.name),h('p',null,sheet.purpose),
                 h('div',{className:'bh-note'},h('strong',null,'字段建议：'),sheet.fields.join(' · '))
@@ -724,11 +721,11 @@
             )),
             card('LinkedIn Event / 活动页选择',h('div',null,
               para('第三方展会参展商不需要默认创建 LinkedIn Event；判断是否品牌自办独立活动，以及是否需要平台内报名、邀请和通知。'),
-              h('h4',null,trade.linkedinEventGuidance.title),list(trade.linkedinEventGuidance.items),
+              
               h('h4',null,trade.eventPageSelection.title),list(trade.eventPageSelection.items)
             )),
             card('Event Measurement｜展会衡量指标',h('div',null,
-              para('指标从活动目标倒推，不能把曝光或扫码量直接当作有效线索、商机或 ROI。'),
+              
               list(trade.kpis)
             )),
           );
