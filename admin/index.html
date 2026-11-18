@@ -331,25 +331,30 @@
             .replace(/_/g, ' ')
             .replace(/^./, char => char.toUpperCase());
         };
-        const getEditUrl = (kind, slug = '') => {
-          const encoded = encodeURIComponent(slug);
-          if (kind === 'stories' && slug) return `#/collections/stories/entries/${encoded}`;
-          if (kind === 'tradeArticles' && slug) return `#/collections/trade-show-articles/entries/${encoded}`;
-          if (kind === 'shows') return '#/collections/content-management/entries/upcoming_shows';
-          if (kind === 'socialMedia') return '#/collections/content-management/entries/social_media';
-          if (kind === 'socialPage') return '#/collections/content-management/entries/social_page';
-          if (kind === 'mediaContacts' || kind === 'mediaPage') return `#/collections/content-management/entries/${kind === 'mediaContacts' ? 'media_contacts' : 'media_page'}`;
+        const getEditUrl = (kind, slug = '', sourcePath = '') => {
+          // Use the CMS folder filename as the entry ID, never the public website slug.
+          const isFolderEntry = (kind === 'stories' && sourcePath.startsWith('data/stories/'))
+            || (kind === 'tradeArticles' && sourcePath.startsWith('data/trade-show-articles/'));
+          const entryId = isFolderEntry ? sourcePath.split('/').pop().replace(/\\.[^.]+$/, '') : slug;
+          const encoded = encodeURIComponent(entryId);
+          const adminBase = window.location.origin + '/admin/';
+          if (kind === 'stories' && entryId) return adminBase + '#/collections/stories/entries/' + encoded;
+          if (kind === 'tradeArticles' && entryId) return adminBase + '#/collections/trade-show-articles/entries/' + encoded;
+          if (kind === 'shows') return adminBase + '#/collections/content-management/entries/upcoming_shows';
+          if (kind === 'socialMedia') return adminBase + '#/collections/content-management/entries/social_media';
+          if (kind === 'socialPage') return adminBase + '#/collections/content-management/entries/social_page';
+          if (kind === 'mediaContacts' || kind === 'mediaPage') return adminBase + '#/collections/content-management/entries/' + (kind === 'mediaContacts' ? 'media_contacts' : 'media_page');
           if (kind === 'website') {
-            if (slug === 'home-intro') return '#/collections/content-management/entries/home_intro';
-            if (slug === 'home-newsletter') return '#/collections/content-management/entries/home_newsletter';
-            if (slug === 'stories-page-settings') return '#/collections/content-management/entries/stories_page_settings';
-            if (slug === 'trade-shows-page-settings') return '#/collections/content-management/entries/events_page_settings';
-            if (slug === 'contact-content') return '#/collections/content-management/entries/contact_content';
-            if (slug === 'cookie-content') return '#/collections/content-management/entries/cookie_content';
+            if (slug === 'home-intro') return adminBase + '#/collections/content-management/entries/home_intro';
+            if (slug === 'home-newsletter') return adminBase + '#/collections/content-management/entries/home_newsletter';
+            if (slug === 'stories-page-settings') return adminBase + '#/collections/content-management/entries/stories_page_settings';
+            if (slug === 'trade-shows-page-settings') return adminBase + '#/collections/content-management/entries/events_page_settings';
+            if (slug === 'contact-content') return adminBase + '#/collections/content-management/entries/contact_content';
+            if (slug === 'cookie-content') return adminBase + '#/collections/content-management/entries/cookie_content';
           }
           return '';
         };
-        const recordsFrom = (data, kind, path, explicitSlug = '') => {
+                const recordsFrom = (data, kind, path, explicitSlug = '') => {
           if (!data) return [];
           const toRecord = (record, slug, fallback) => ({
             record, kind, source: path, slug: String(record?.slug || slug || '').trim(),
@@ -421,16 +426,7 @@
                 if (kind === 'tradeArticles-index') kind = 'tradeArticles';
                 if (source.path === 'data/social-media.json') kind = 'socialMedia';
                 records.push(...recordsFrom(source.data, kind, source.path, source.slug));
-                // Add the real per-file slug to folder-based content so the edit link points at the exact entry.
-                if ((kind === 'stories' || kind === 'tradeArticles') && source.path.match(/^data\/(?:stories|trade-show-articles)\/[^/]+\.json$/i) && records.length) {
-                  const last = records[records.length - 1];
-                  // Sveltia CMS identifies folder entries by their file path within the
-                  // collection folder (without the extension), not by a website-facing
-                  // "slug" field stored inside the JSON record.
-                  const entryId = String(source.path.split('/').pop().replace(/\.[^.]+$/, '') || '').trim();
-                  last.slug = entryId;
-                  last.editUrl = getEditUrl(kind, entryId);
-                }
+
               });
 
               const usageByExactPath = new Map();
@@ -536,7 +532,7 @@
                   h('div', { style: { color: '#53697a', fontSize: 11, marginBottom: 2 } }, `${usageGroup(usage)} · ${usage.label}`),
                   h('strong', { style: { display: 'block', overflowWrap: 'anywhere' } }, usage.title),
                   h('div', { style: { color: '#657381', fontSize: 11, marginTop: 2 } }, usage.location || usage.label),
-                  usage.editUrl ? h('a', { href: usage.editUrl, style: { display: 'inline-block', marginTop: 5, color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 2, cursor: 'pointer' } }, 'Open content to replace asset →') : h('span', { style: { display: 'block', marginTop: 5, color: '#8a6d45', fontSize: 11 } }, 'This source is not directly editable in CMS.')
+                  usage.editUrl ? h('a', { href: usage.editUrl, target: '_blank', rel: 'noopener noreferrer', style: { display: 'inline-block', marginTop: 5, color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 2, cursor: 'pointer' } }, 'Open content to replace asset →') : h('span', { style: { display: 'block', marginTop: 5, color: '#8a6d45', fontSize: 11 } }, 'This source is not directly editable in CMS.')
                 ))) : h('p', { style: { color: '#7b6262', fontSize: 12, margin: 0 } }, 'No current content references.'),
                 h('a', { href: item.url, target: '_blank', rel: 'noreferrer', style: { display: 'inline-block', marginTop: 9, color: '#234b68', fontSize: 12, textDecoration: 'underline' } }, 'Open original file')
               ) : null
