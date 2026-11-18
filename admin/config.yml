@@ -1,7 +1,6 @@
 backend:
-  name: github
-  repo: brilliantjiawork-sys/DEF-company
-  branch: main
+  name: test-repo
+
 # A Save operation creates/updates an unpublished draft. Only Publish merges it into main.
 publish_mode:
   type: editorial_workflow
