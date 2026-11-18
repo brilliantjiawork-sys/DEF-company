@@ -1,296 +1,1158 @@
-<!doctype html>
-<html lang="en">
+<!DOCTYPE html>
+<html lang="zh-CN">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="robots" content="noindex,nofollow">
-<title>DEF Company CMS · Read-only</title>
-<style>
-:root{--ink:#202b35;--muted:#78848e;--line:#dfe5e9;--canvas:#f5f7f8;--white:#fff;--blue:#285d80;--blue-soft:#eaf2f7;--green:#438065;--amber:#9a713c}
-*{box-sizing:border-box}
-body{margin:0;background:var(--canvas);color:var(--ink);font:15px/1.5 Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
-button,input,textarea,select{font:inherit}
-button{cursor:pointer}
-.app{display:grid;grid-template-columns:245px minmax(0,1fr);min-height:100vh}
-.sidebar{background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;padding:21px 14px;min-height:100vh}
-.brand{display:flex;align-items:center;gap:11px;padding:2px 9px 21px;border-bottom:1px solid var(--line);margin-bottom:20px}
-.brand-icon{width:37px;height:37px;border-radius:8px;background:#1e4058;color:#fff;display:grid;place-items:center;font-size:12px;font-weight:800;letter-spacing:.04em}
-.brand-name{font-size:13px;font-weight:750;letter-spacing:.055em}.brand-sub{font-size:11px;color:#89949c;margin-top:2px}
-.nav-caption{font-size:10px;color:#99a3ab;font-weight:750;letter-spacing:.13em;padding:0 12px 8px}
-.nav{display:grid;gap:4px}
-.nav button{height:42px;border:0;background:transparent;text-align:left;padding:0 12px;border-radius:6px;color:#53626e;font-size:14px;display:flex;align-items:center;gap:11px}
-.nav button:hover{background:#f4f7f8}.nav button.active{background:var(--blue-soft);color:#264f6d;font-weight:700}
-.nav-icon{width:19px;text-align:center;font-size:17px;color:#728899}
-.sidebar-foot{margin-top:auto;border-top:1px solid var(--line);padding:14px 10px 0;color:#929ca4;font-size:10px;line-height:1.7}
-.main{min-width:0}
-.topbar{height:59px;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 29px}
-.crumb{font-size:12px;color:#87939b}.crumb strong{font-weight:650;color:#3d4e5b}
-.top-right{display:flex;align-items:center;gap:10px}
-.readonly{font-size:10px;font-weight:750;letter-spacing:.07em;padding:5px 10px;border-radius:16px;border:1px solid #e8dcc8;background:#fffaf2;color:#906d40}
-.content{max-width:1320px;margin:0 auto;padding:29px 32px 54px}
-.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:20px}
-.eyebrow{font-size:10px;letter-spacing:.13em;text-transform:uppercase;font-weight:750;color:#91a0a9;margin-bottom:5px}
-h1{font-size:28px;line-height:1.25;letter-spacing:-.03em;margin:0 0 6px;font-weight:700}
-.subtitle{font-size:14px;color:#75838d;margin:0;line-height:1.5}
-.readonly-note{border:1px solid #e7e2d9;background:#fffdf9;border-radius:7px;padding:10px 13px;color:#776b5a;font-size:12px;margin-bottom:18px}
-.readonly-note strong{color:#68563e}
-.btn{height:36px;padding:0 13px;border:1px solid #d8e0e5;border-radius:5px;background:#fff;color:#4b5d69;font-size:13px;font-weight:650}
-.btn.primary{background:#285d80;border-color:#285d80;color:#fff}
-.btn:disabled{opacity:.62;cursor:not-allowed}
-.btn:focus-visible,.nav button:focus-visible,.navlink:focus-visible{outline:2px solid #6b9abb;outline-offset:2px}
-.panel{background:#fff;border:1px solid var(--line);border-radius:7px;overflow:hidden}
-.panel-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 17px;border-bottom:1px solid var(--line)}
-.panel-head strong{font-size:14px;font-weight:700}.panel-head small{display:block;color:#8a969f;font-size:11px;margin-top:3px}
-.group{background:#fff;border:1px solid var(--line);border-radius:7px;overflow:hidden;margin-bottom:15px}
-.group-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:14px 17px;border-bottom:1px solid #e9edf0;background:#fff}
-.group-head strong{font-size:15px;font-weight:700}.group-head small{display:block;color:#8b979f;font-size:11px;margin-top:2px}
-.group-body{padding:11px 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
-.navlink{width:100%;min-height:56px;border:1px solid #e2e8ec;border-radius:6px;background:#fff;display:flex;align-items:center;justify-content:space-between;gap:12px;text-align:left;padding:10px 13px;color:#30424f}
-.navlink:hover{border-color:#a9c0d0;background:#fbfdfe}
-.navlink strong{display:block;font-size:14px;font-weight:650}.navlink small{display:block;color:#89959e;font-size:11px;margin-top:3px}
-.arrow{font-size:17px;color:#99a5ad}
-.subgroup{grid-column:1/-1;border:1px solid #e8edf0;border-radius:6px;padding:11px;background:#fbfcfd}
-.subgroup-title{font-size:13px;font-weight:750;color:#4c6170;margin:0 0 8px}
-.subgroup .group-body{padding:0;gap:8px}
-.toolbar{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:12px 15px;border-bottom:1px solid var(--line)}
-.search{height:37px;border:1px solid #dbe3e8;border-radius:5px;padding:0 11px;min-width:220px;max-width:420px;flex:1;font-size:13px;outline:none}
-.search:focus{border-color:#91b1c8}
-.filter{height:32px;border:1px solid #dfe5e9;background:#fff;border-radius:4px;padding:0 10px;font-size:12px;color:#5d6d78}
-.filter.active{background:#edf4f8;border-color:#c9d9e4;color:#345c76}
-.table-wrap{overflow:auto}
-table{width:100%;border-collapse:collapse;min-width:650px}
-th{text-align:left;background:#fafbfc;color:#89959e;font-size:10px;letter-spacing:.08em;text-transform:uppercase;font-weight:700;padding:11px 15px;border-bottom:1px solid var(--line)}
-td{padding:13px 15px;border-bottom:1px solid #edf0f2;color:#5d6b75;font-size:12px;vertical-align:middle}
-tr:last-child td{border-bottom:0}
-.entry-title{font-size:13px;font-weight:650;color:#344653}
-.pill{display:inline-block;padding:4px 8px;border-radius:14px;background:#eef3f6;color:#5b7588;font-size:10px;white-space:nowrap}
-.pill.green{background:#edf5ef;color:#4c785e}.pill.amber{background:#fbf3e8;color:#936d3c}
-.open-link{border:0;background:none;color:#2c6083;font-size:12px;font-weight:650;text-decoration:underline;text-underline-offset:3px;padding:4px 0}
-.card-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;padding:15px}
-.record-card{background:#fff;border:1px solid var(--line);border-radius:7px;overflow:hidden}
-.record-card img{width:100%;height:130px;object-fit:cover;display:block;background:#eef2f4}
-.record-copy{padding:12px 13px}
-.record-meta{font-size:10px;color:#89959e;margin-bottom:6px}
-.record-copy strong{font-size:13px;line-height:1.45;display:block;font-weight:700}
-.record-copy p{font-size:11px;line-height:1.55;color:#77848e;margin:7px 0 9px}
-.form-layout{display:grid;grid-template-columns:minmax(0,1fr) 258px;gap:15px;align-items:start}
-.editor-panel{background:#fff;border:1px solid var(--line);border-radius:7px;overflow:hidden}
-.editor-header{padding:14px 17px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:12px}
-.editor-header strong{font-size:14px;font-weight:700}.editor-header small{display:block;color:#89949c;font-size:11px;margin-top:3px}
-.form-body{padding:20px 21px}
-.field{margin:0 0 20px}.field:last-child{margin-bottom:0}
-.field label{display:block;font-size:13px;font-weight:700;color:#3d4f5b;margin:0 0 7px}
-.required{color:#b36d5b;padding-left:3px}
-.hint{font-size:11px;color:#87949d;line-height:1.55;margin-top:6px}
-.control{width:100%;min-height:39px;padding:8px 11px;border:1px solid #dce3e8;border-radius:5px;background:#fbfcfd;color:#53636e;font-size:13px;opacity:1}
-.control:disabled,.control[readonly]{opacity:1;color:#53636e;-webkit-text-fill-color:#53636e;background:#fbfcfd;cursor:default}
-textarea.control{min-height:92px;resize:none;line-height:1.6}
-.control.select{appearance:none}
-.select-display{border:1px solid #dce3e8;border-radius:5px;background:#fbfcfd;min-height:40px;padding:8px 11px;display:flex;align-items:center;justify-content:space-between;gap:10px;color:#53636e;font-size:13px}
-.select-options{display:flex;flex-wrap:wrap;gap:6px;margin-top:7px}
-.option-chip{border:1px solid #e0e7eb;background:#fff;color:#788791;border-radius:4px;padding:4px 7px;font-size:10px}
-.option-chip.selected{background:#edf4f8;border-color:#c7d8e3;color:#355e79;font-weight:650}
-.token-list{display:flex;flex-wrap:wrap;gap:6px;padding:9px 10px;border:1px solid #dce3e8;border-radius:5px;background:#fbfcfd;min-height:40px}
-.token{background:#edf2f5;border-radius:4px;padding:5px 8px;color:#5a7080;font-size:11px}
-.check-row{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid #dfe6ea;background:#fbfcfd;border-radius:5px}
-.check-row input{width:16px;height:16px;accent-color:#2d668d}.check-row span{font-size:12px;color:#52636e}
-.switch-pill{margin-left:auto;font-size:10px;color:#477d62;background:#edf5ef;border-radius:12px;padding:4px 8px}
-.switch-pill.off{color:#7f8991;background:#eef1f3}
-.image-field{display:flex;align-items:center;gap:13px;border:1px solid #dfe5e9;border-radius:5px;background:#fbfcfd;padding:9px}
-.image-field img{width:116px;height:68px;object-fit:cover;border-radius:3px;background:#e9eef1}
-.image-field strong{display:block;font-size:12px;color:#53636e}.image-field small{display:block;font-size:10px;color:#8a969e;margin-top:4px}
-.rich-toolbar{border:1px solid #dce3e8;border-bottom:0;border-radius:5px 5px 0 0;background:#f7f9fa;padding:7px 9px;display:flex;align-items:center;gap:7px;flex-wrap:wrap}
-.rich-tool{height:27px;min-width:28px;border:1px solid #e3e8eb;border-radius:4px;background:#fff;color:#687a86;font-size:11px;padding:0 7px;display:grid;place-items:center}
-.rich-area{border:1px solid #dce3e8;border-radius:0 0 5px 5px;padding:13px 14px;min-height:205px;background:#fff;color:#53636e;font-size:13px;line-height:1.75;white-space:pre-line}
-.rich-modes{display:flex;justify-content:flex-end;gap:10px;font-size:10px;color:#75848e;margin-top:7px}
-.side-box{border:1px solid var(--line);border-radius:7px;background:#fff;overflow:hidden;margin-bottom:13px}
-.side-box header{padding:12px 14px;border-bottom:1px solid var(--line);font-size:12px;font-weight:750}
-.side-box .inside{padding:12px 14px}
-.info-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-bottom:1px solid #eef1f3;font-size:11px}
-.info-row:last-child{border:0}.info-row span:first-child{color:#89959e}.info-row b{font-weight:650;color:#556873;text-align:right}
-.action-bar{display:flex;justify-content:flex-end;align-items:center;gap:8px;background:#fbfcfc;border-top:1px solid var(--line);padding:12px 16px}
-.action-hint{margin-right:auto;font-size:10px;color:#97a1a8}
-.assets-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:13px;padding:16px}
-.asset-card{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fff}
-.asset-card img{width:100%;height:130px;display:block;object-fit:contain;background:#f1f4f5}
-.asset-info{padding:10px 11px}.asset-info strong{font-size:12px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.asset-info small{font-size:10px;color:#8b969e;display:block;margin-top:3px}
-.empty-state{padding:30px 22px;text-align:center;color:#7c8992;font-size:13px;line-height:1.6}
-.empty-state strong{display:block;color:#52636e;font-size:14px;margin-bottom:5px}
-@media(max-width:980px){.form-layout{grid-template-columns:1fr}.side-column{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.side-box{margin:0}.assets-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
-@media(max-width:700px){.app{display:block}.sidebar{min-height:0;padding:10px 12px;border-right:0;border-bottom:1px solid var(--line)}.brand{padding:0 4px 9px;margin-bottom:9px}.nav-caption,.sidebar-foot{display:none}.nav{display:flex;overflow:auto}.nav button{white-space:nowrap;height:36px;padding:0 10px}.topbar{height:49px;padding:0 14px}.content{padding:20px 13px 35px}.page-head{display:block}.group-body{grid-template-columns:1fr}.card-grid{grid-template-columns:1fr}.assets-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.form-layout{display:block}.side-column{display:grid;grid-template-columns:1fr;margin-top:13px}.form-body{padding:15px}.action-bar{flex-wrap:wrap}.action-hint{width:100%;margin:0}}
-</style>
+  <link rel="cms-seed-url" href="/cms-demo/seed/manifest.json" />
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DEF Company 内容管理</title>
+  <style>
+    :root { color-scheme: light; }
+    .def-cms-dashboard { max-width: 980px; margin: 0 auto; padding: 28px 26px 44px; color: #1b2733; font-family: Inter, system-ui, sans-serif; }
+    .def-cms-dashboard h1 { margin: 0 0 8px; font-size: 28px; font-weight: 650; }
+     .def-cms-dashboard h3 { margin: 24px 0 10px; font-size: 17px; font-weight: 650; }
+    .def-cms-dashboard .intro { margin: 0 0 22px; color: #586675; font-size: 16px; line-height: 1.55; }
+    .def-cms-group { border-bottom: 1px solid #dce3e9; padding: 0 0 20px; margin: 0 0 20px; }
+     .def-cms-group > h2 { margin: 0 0 12px; padding: 0; font-size: 19px; line-height: 1.4; font-weight: 700; color: #172a3a; }
+    .def-cms-items { padding: 0; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; }
+     .def-cms-item { display: flex; align-items: center; gap: 12px; min-height: 54px; padding: 12px 14px; border: 1px solid #e0e7ed; border-radius: 8px; text-decoration: none; color: #1f2d3a; background: #fff; }
+    .def-cms-item:hover, .def-cms-item:focus-visible { border-color: #93b7d4; background: #f7fbff; outline: none; }
+     .def-cms-item strong { display: block; font-size: 16px; font-weight: 650; }
+    .def-cms-icon { display: grid; place-items: center; flex: 0 0 28px; width: 28px; height: 28px; border-radius: 7px; background: #eef4f8; color: #234b68; }
+    .def-cms-icon svg { width: 18px; height: 18px; display: block; }
+    .def-cms-subgroup { margin: 12px 0; padding: 0 0 4px; }
+    .def-cms-subgroup > h3 { margin: 0 0 8px; font-size: 14px; font-weight: 700; color: #43596b; }
+    .def-cms-subgroup .def-cms-items { padding-top: 0; }
+    .def-cms-group-stacked > .def-cms-items { display: flex; flex-direction: column; align-items: stretch; gap: 12px; }
+    .def-cms-group-stacked > .def-cms-items > .def-cms-subgroup { width: 100%; box-sizing: border-box; }
+    .def-cms-dashboard .def-cms-subgroup + .def-cms-item { margin-top: 8px; }
+     .def-cms-section-caption { margin: -3px 0 12px; color: #687887; font-size: 15px; line-height: 1.5; }
+
+    .def-library { font-size:16px; line-height:1.6; }
+    .def-library h1 { font-size:28px !important; line-height:1.3; }
+    .def-library h2 { font-size:20px !important; line-height:1.4; }
+    .def-library p { line-height:1.6; }
+    .def-library input, .def-library button { font-size:15px !important; }
+    .def-library strong { line-height:1.45; }
+    .def-library article > div:nth-child(2) > strong { font-size:15px !important; }
+    .def-library article > div:nth-child(2) > div { font-size:13px !important; line-height:1.5; }
+    .def-library article button, .def-library article a { font-size:13px !important; }
+    .def-cms-dashboard { font-size:16px; line-height:1.6; }
+    .def-cms-dashboard .intro { font-size:16px; }
+    .def-cms-dashboard .def-cms-item strong { font-size:16px; }
+    @media (max-width: 720px) { .def-cms-items { grid-template-columns: 1fr; } .def-cms-dashboard { padding: 18px; } }
+  </style>
 </head>
 <body>
-<div class="app">
- <aside class="sidebar">
-  <div class="brand"><div class="brand-icon">DEF</div><div><div class="brand-name">DEF COMPANY</div><div class="brand-sub">Content Management</div></div></div>
-  <div class="nav-caption">WORKSPACE</div>
-  <nav class="nav">
-   <button class="active" data-nav="library"><span class="nav-icon">▦</span>Library</button>
-   <button data-nav="content"><span class="nav-icon">▤</span>Content Management</button>
-  </nav>
-  <div class="sidebar-foot">DEF Company · CMS Preview<br>All editor controls are read-only</div>
- </aside>
- <main class="main">
-  <header class="topbar"><div class="crumb">DEF Company&nbsp; / &nbsp;<strong id="breadcrumb">Library</strong></div><div class="top-right"><span class="readonly">READ-ONLY PREVIEW</span></div></header>
-  <div class="content" id="view"></div>
- </main>
-</div>
-<script>
-(function(){
-const $=s=>document.querySelector(s), root=$("#view"), crumb=$("#breadcrumb");
-let state={page:"library",list:"",record:0};
-const categories=["Product & Technology","Industry Applications","Industry Insights","Company & Culture","Brand News & Updates"];
-const industries=["Automotive","Electronics","Food & Beverage","Packaging","Semiconductors","Logistics","Pharmaceuticals"];
-const topics=["Machine Vision","AI & Deep Learning","Defect Detection","Quality Control","AOI","3D Vision","Robotics & Automation","Positioning & Measurement","Electronics & Semiconductors","Food & Beverage Inspection","Packaging Inspection","Warehouse & Logistics","Innovation","Sustainability"];
-const ctaOptions=["Talk to Our Team","Contact Sales","Book a Demo"];
-const showCtaOptions=["Book a Meeting at This Show","Talk to Our Team","Contact Sales","Book a Demo"];
-const stories=[
-{title:"Why Reliable Machine Vision Starts with a Consistent Image",date:"2026-10-31",category:"Product & Technology",industries:["Electronics"],tags:["Machine Vision","Defect Detection","Quality Control"],summary:"Reliable automated inspection starts with consistent image acquisition. Explore how camera settings, lighting conditions, and inspection requirements work together to support more stable machine vision workflows.",image:"social-youtube-wide.jpg",alt:"none",illustrative:false,titleSize:34,summarySize:16,bodySize:18,cta:true,ctaLabel:"Contact Sales",body:"A Good Inspection Begins with a Good Image\n\nMachine vision systems help manufacturers inspect products, identify visible defects and support quality control across production processes. However, the performance of an inspection workflow depends on more than the camera itself.\n\nThree Factors That Influence Image Consistency\n\n1. Lighting conditions\n2. Camera configuration\n3. Inspection requirements\n\nFrom Image Acquisition to Inspection\n\nA practical machine vision workflow connects image acquisition with image processing and inspection decisions."},
-{title:"How Machine Vision Guides Industrial Robots to Handle Variable Parts",date:"2026-10-29",category:"Product & Technology",industries:["Automotive"],tags:["Machine Vision"],summary:"Discover how machine vision helps industrial robots adapt their movements to changing workpieces.",image:"social-cover.webp",alt:"",illustrative:false,titleSize:34,summarySize:16,bodySize:17,cta:true,ctaLabel:"Book a Demo",body:"Why Robot Guidance Needs More Than a Fixed Position\n\nIndustrial robots are often programmed to move through repeatable paths. In real production environments, parts may arrive with small variations in position or orientation.\n\nHow Vision-Guided Robotics Works\n\n1. Capture the work area\n2. Identify the target\n3. Calculate position and orientation\n4. Translate vision data into robot coordinates\n5. Execute and verify the movement."}
-];
-const tradeArticles=[
-{title:"Connecting Machine Vision with Production Quality",date:"2026-10-31",stage:"Post-show Recap",related:"",industries:["Automotive"],tags:["AI & Deep Learning","Defect Detection","Robotics & Automation"],summary:"A recap of the DEF Vision & Automation Showcase, exploring machine vision demonstrations, industrial inspection applications and key discussions on connecting imaging technology with real manufacturing needs.",image:"social-linkedin.jpg",alt:"",illustrative:true,titleSize:34,summarySize:16,bodySize:17,cta:true,ctaLabel:"Talk to Our Team",body:"At the DEF booth, we focused on several application areas that reflect common challenges across industrial production.\n\nThe Questions Behind the Technology\n\nHow can inspection remain consistent when products vary?\n\nHow should manufacturers choose between different vision configurations?\n\nHow can machine vision fit into an existing production line?"},
-{title:"Industrial Vision Application Showcase 2025",date:"2025-11-20",stage:"Post-show Recap",related:"",industries:["Electronics","Semiconductors"],tags:["Machine Vision","AI & Deep Learning","Quality Control","Robotics & Automation"],summary:"A fictional recap concept showing how product demonstration themes and quality-control applications might be presented after an event.",image:"event-3.jpg",alt:"Illustrative post-show product and solution recap for a fictional portfolio project",illustrative:true,titleSize:34,summarySize:16,bodySize:17,cta:false,ctaLabel:"Talk to Our Team",body:"Illustrative post-show recap\n\nThis is a fictional portfolio example, not a report of a real DEF Company event.\n\nProduct and solution themes\n\nIndustrial camera and machine-vision concepts\nDefect-detection and quality-control workflows"}
-];
-const shows=[
-{title:"Industrial Vision & Automation Showcase 2026",start:"2026-11-12",end:"2026-11-15",booth:"TBC",location:"Detroit, MI, USA (illustrative location)",theme:"AI-driven inspection systems",tags:["AI & Deep Learning","Defect Detection","Quality Control","Robotics & Automation"],image:"event-1.jpg",summary:"A fictional event concept focused on AI-assisted inspection, defect detection and automation workflows."},
-{title:"Smart Inspection & Vision Forum 2026",start:"2026-12-05",end:"2026-12-08",booth:"TBC",location:"Stuttgart, Germany (illustrative location)",theme:"Industrial camera solutions",tags:["Machine Vision","3D Vision","Quality Control"],image:"event-2.jpg",summary:"A fictional event concept focused on industrial cameras, 3D vision and quality-control applications."},
-{title:"Robotics & Vision Integration Expo 2027",start:"2027-05-10",end:"2027-05-13",booth:"TBC",location:"Chicago, IL, USA (illustrative location)",theme:"Compact smart cameras and automation",tags:["Machine Vision","Robotics & Automation","Positioning & Measurement"],image:"event-3.jpg",summary:"An illustrative future-show concept around smart cameras, measurement and automation integration."},
-{title:"Industrial Vision Application Showcase 2025: Product Demonstrations and Quality-Control Applications",start:"",end:"",booth:"",location:"Stuttgart, Germany (illustrative location)",theme:"Machine vision and quality-control applications",tags:["Machine Vision","AI & Deep Learning","Quality Control","Robotics & Automation"],image:"event-3.jpg",summary:"A fictional recap concept showing how product demonstration themes and quality-control applications might be presented after an event."}
-];
-const assets=[
-["11.jpg","Image"],["event-1.jpg","Image"],["event-2.jpg","Image"],["event-3.jpg","Image"],["hero-bg.jpg","Image"],["logo.jpg","Image"],["media-1.jpg","Image"],["media-2.jpg","Image"],["media-cover.jpg","Image"],["social-cover.webp","Image"],["social-facebook.jpg","Image"],["social-linkedin.jpg","Image"],["social-youtube-wide.jpg","Image"],["social-youtube.jpg","Image"],["story-cover.jpg","Image"],["team.jpg","Image"]
-];
-const socialChannels=[
-{platform:"LinkedIn",description:"Our primary B2B channel for networking and technical thought leadership.",url:"https://linkedin.com/",button:"Follow us",image:"social-linkedin.jpg",alt:"Social media preview image for the fictional DEF Company LinkedIn channel",active:true},
-{platform:"YouTube",description:"Watch product tutorials and customer case studies.",url:"https://youtube.com/",button:"Follow",image:"social-youtube-wide.jpg",alt:"Horizontal industrial machine-vision video preview image for the fictional DEF Company YouTube channel",active:true},
-{platform:"Facebook",description:"Join our global community for the latest updates.",url:"https://facebook.com/",button:"Follow",image:"social-facebook.jpg",alt:"Social media preview image for the fictional DEF Company Facebook channel",active:true}
-];
-const contacts=[
-{name:"Jane Doe",title:"Senior PR Manager",email:"pr@defcompany.com",portrait:"media-1.jpg",alt:"Fictional portfolio demonstration portrait of Jane Doe",active:true},
-{name:"Sarah Smith",title:"Communications Lead",email:"press@defcompany.com",portrait:"media-2.jpg",alt:"Fictional portfolio demonstration portrait of Sarah Smith",active:true}
-];
-const settings={
-"brand-intro":[["浏览器页面标题","DEF Company | Industrial Vision"],["品牌名称","DEF Company"],["品牌标语","DEFINE THE STANDARD OF SIGHT."],["Logo 图片","logo.jpg"],["Logo 替代文本","DEF Company"],["首页导航文字 Home","Home"],["首页导航文字 Newsroom","Newsroom"],["全局按钮 Contact Sales","Contact Sales"],["首页主标题","Precision Industrial Vision."],["首页品牌介绍文案","DEF Company designs industrial vision concepts to help manufacturers explore inspection quality, automation and production challenges."],["首页按钮文字","Book a Demo"],["首页主视觉图片","hero-bg.jpg"],["主视觉图片替代文本","Illustrative industrial machine vision system"]],
-"newsletter":[["订阅区图片","team.jpg"],["图片替代文本","Illustrative engineering team collaborating on industrial vision concepts"],["图片说明","Illustrative engineering-team imagery for a fictional portfolio project."],["订阅区标题","Subscribe to our Technical Newsletter"],["订阅区介绍","Receive illustrative product and technology explainers, industry application ideas and machine-vision insights for B2B manufacturers."],["工作邮箱输入提示","Enter your Work Email"],["订阅按钮文字","Subscribe"],["提交成功标题","Welcome to DEF Insights!"],["提交成功说明","Thank you for subscribing to this portfolio demonstration newsletter."]],
-"story-settings":[["Stories 页面标题","Explore our stories"],["Stories 页面简介","Explore industrial vision technology, applications and industry insights."],["文章详情页返回 Stories 的按钮文字","← Back to Stories"]],
-"trade-settings":[["Trade Shows 页面标题","Trade Shows"],["Trade Shows 页面简介","Explore upcoming exhibitions or browse trade show articles and technical highlights."],["Trade Show Articles 切换按钮文字","Trade Show Articles"],["展会文章区域说明","Pre-show previews, during-show updates and post-show recaps."],["展会详情页返回按钮文字","← Back to Trade Shows"]],
-"social-page":[["页面标题","Social Media"],["免责声明开头","Learning & portfolio notice:"],["免责声明正文","DEF Company is a fictional project created only for learning and portfolio presentation. The social media cards on this page are examples, not official DEF Company accounts. The photos are from "],["图片来源名称","Unsplash"],["图片来源网址","https://unsplash.com/"]],
-"media-page":[["页面标题","Media Contacts"],["页面简介","For press inquiries, please contact the communications team using the details below."],["免责声明开头","Learning & portfolio notice:"],["免责声明正文","This Media Contacts page is a fictional example for portfolio presentation. Names, titles and email addresses are simulated and do not identify real media contacts. The portraits are from "]],
-"contact":[["表单标题","Contact Sales"],["表单说明","Please share your business requirements below. This fictional portfolio site demonstrates the B2B lead-submission flow."],["Work Email 标签","Work Email *"],["First Name 标签","First Name *"],["Last Name 标签","Last Name *"],["Company 标签","Company *"],["Phone 标签","Phone *"],["Country/Region 标签","Country/Region *"],["Zip Code 标签","Zip Code"],["Industry 标签","Industry"],["Additional Comments 标签","Additional Comments"],["国家下拉提示","Select Country"],["行业下拉提示","Select Industry"],["留言输入提示","Please tell us about your application or requirements..."],["提交按钮文字","Submit Inquiry"],["提交成功标题","Inquiry Received"],["提交成功说明","Thank you for submitting this portfolio demonstration form."],["返回首页按钮文字","Return to Home"]],
-"cookie":[["标题","Your privacy matters."],["说明","We use cookies to make this website work and, with your permission, to understand how it is used and measure marketing. You can change your choice at any time."],["Reject all 按钮","Reject all"],["Customize 按钮","Customize"],["Accept all 按钮","Accept all"],["必要 Cookie 标题","Strictly necessary"],["必要 Cookie 说明","Required for the website to work. Always on."],["Analytics 标题","Analytics"],["Analytics 说明","Helps us understand which pages and content are useful (Google Analytics)."],["Marketing 标题","Marketing"],["Marketing 说明","Lets us measure advertising performance and show more relevant ads."],["保存设置按钮","Save my choices"],["重新打开设置按钮","Cookie settings"]]
+  <script src="https://unpkg.com/@sveltia/cms@0.250.2/dist/sveltia-cms.js"></script>
+  <script>
+    (() => {
+      if (!window.CMS || typeof CMS.registerCustomPage !== 'function' || !CMS.React) return;
+      const h = CMS.React.createElement;
+      const iconPaths = {
+        plus: h('path', { d: 'M12 5v14M5 12h14', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round' }),
+        check: h('path', { d: 'm5 12 4 4L19 6', fill: 'none', stroke: 'currentColor', strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round' }),
+        draft: h('path', { d: 'M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z M14 2v6h6 M8 13h8 M8 17h6', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round', strokeLinejoin: 'round' }),
+        settings: h('path', { d: 'M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-1.8 3.1-.2-.1a1.7 1.7 0 0 0-1.9.2 1.7 1.7 0 0 0-.8 1.5v.3h-3.6v-.3a1.7 1.7 0 0 0-1.1-1.6 1.7 1.7 0 0 0-1.8.2l-.2.1-1.8-3.1.2-.2a1.7 1.7 0 0 0 .2-1.8A1.7 1.7 0 0 0 5.5 14h-.3v-3.6h.3a1.7 1.7 0 0 0 1.6-1.1 1.7 1.7 0 0 0-.2-1.8l-.1-.2 3.1-1.8.2.2a1.7 1.7 0 0 0 1.8.2A1.7 1.7 0 0 0 13 4.3V4h3.6v.3a1.7 1.7 0 0 0 1.1 1.6 1.7 1.7 0 0 0 1.8-.2l.2-.1 1.8 3.1-.2.2a1.7 1.7 0 0 0-.2 1.8 1.7 1.7 0 0 0 1.5.8h.3v3.6h-.3a1.7 1.7 0 0 0-1.2.1z', fill: 'none', stroke: 'currentColor', strokeWidth: 1.1, strokeLinejoin: 'round' }),
+        image: h('path', { d: 'M4 5h16v14H4z M8 10a1.5 1.5 0 1 0 0-3 1.5 1.5 0 0 0 0 3z M4 16l5-5 4 4 3-3 4 4', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinejoin: 'round' }),
+        home: h('path', { d: 'm3 10 9-7 9 7 M5 9v11h14V9 M9 20v-7h6v7', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinejoin: 'round' }),
+        social: h('path', { d: 'M7 8a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M17 14a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M7 22a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M9.5 6.5l5 3 M9.5 17.5l5-3', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round' }),
+        media: h('path', { d: 'M4 4h16v16H4z M8 9h8 M8 13h8 M8 17h5', fill: 'none', stroke: 'currentColor', strokeWidth: 1.7, strokeLinecap: 'round' })
+      };
+      const icon = (name) => h('span', { className: 'def-cms-icon', 'aria-hidden': 'true' }, h('svg', { viewBox: '0 0 24 24', fill: 'none' }, iconPaths[name] || iconPaths.draft));
+      const link = (title, route, iconName = 'draft') => h('a', { className: 'def-cms-item', href: route }, icon(iconName), h('strong', null, title));
+      const group = (title, children, caption = '', stacked = false) => h('section', { className: 'def-cms-group' + (stacked ? ' def-cms-group-stacked' : '') },
+        h('h2', null, title),
+        caption ? h('p', { className: 'def-cms-section-caption' }, caption) : null,
+        h('div', { className: 'def-cms-items' }, ...children)
+      );
+      const subgroup = (title, children, caption = '') => h('div', { className: 'def-cms-subgroup' },
+        h('h3', null, title),
+        caption ? h('p', { className: 'def-cms-section-caption' }, caption) : null,
+        h('div', { className: 'def-cms-items' }, ...children)
+      );
+
+      // Every section and sub-entry is visible at once. There are no accordions here,
+      // so high-frequency tasks never require an extra click just to reveal links.
+      const contentViewFromHash = () => {
+        const hash = String(window.location.hash || '');
+        if (!hash.includes('/pages/content-navigator')) return 'dashboard';
+        const query = hash.includes('?') ? hash.slice(hash.indexOf('?') + 1) : '';
+        const params = new URLSearchParams(query);
+        const requested = params.get('view') || 'dashboard';
+        return new Set(['draft-stories', 'published-stories', 'draft-trade-show-articles', 'published-trade-show-articles']).has(requested) ? requested : 'dashboard';
+      };
+
+      const ContentEntryListing = ({ view, onBack }) => {
+        const [entries, setEntries] = CMS.React.useState([]);
+        const [query, setQuery] = CMS.React.useState('');
+        const [loading, setLoading] = CMS.React.useState(true);
+        const [error, setError] = CMS.React.useState('');
+        const repo = 'brilliantjiawork-sys/DEF-company';
+        const config = {
+          'draft-stories': { collection: 'stories', folder: 'data/stories', label: 'Draft Stories', mode: 'draft' },
+          'published-stories': { collection: 'stories', folder: 'data/stories', label: 'Published Stories', mode: 'published' },
+          'draft-trade-show-articles': { collection: 'trade-show-articles', folder: 'data/trade-show-articles', label: 'Draft Trade Show Articles', mode: 'draft' },
+          'published-trade-show-articles': { collection: 'trade-show-articles', folder: 'data/trade-show-articles', label: 'Published Trade Show Articles', mode: 'published' }
+        }[view];
+
+        CMS.React.useEffect(() => {
+          let cancelled = false;
+          const api = (path, params = {}) => {
+            const url = new URL(`https://api.github.com/repos/${repo}/${path}`);
+            Object.entries(params).forEach(([key, value]) => url.searchParams.set(key, value));
+            return fetch(url.toString(), { headers: { Accept: 'application/vnd.github+json' }, cache: 'no-cache' });
+          };
+          const jsonFromResponse = async response => {
+            if (!response.ok) throw new Error(`GitHub returned ${response.status}`);
+            return response.json();
+          };
+          const fallbackTitle = slug => String(slug || 'Untitled').replace(/[-_]+/g, ' ').replace(/\b\w/g, char => char.toUpperCase());
+          const entryUrl = slug => `#/collections/${config.collection}/entries/${encodeURIComponent(slug)}`;
+          const loadPublished = async () => {
+            // Read the site's already-generated Story manifest from the same
+            // Cloudflare Pages origin. Browser requests to GitHub's API/raw host
+            // were failing in production ("Failed to fetch"), even though deploys
+            // had succeeded. The sync-content-index workflow updates this file
+            // after a Story is merged into main, then Pages deploys the new version.
+            const manifestUrl = new URL('/data/database.json', window.location.origin);
+            const response = await fetch(manifestUrl.toString(), {
+              headers: { 'Cache-Control': 'no-cache' },
+              cache: 'no-cache'
+            });
+            if (!response.ok) throw new Error(`Story manifest ${response.status}`);
+            const manifest = await response.json();
+            const records = (Array.isArray(manifest.articles) ? manifest.articles : [])
+              .map(record => {
+                const slug = String(record.slug || '').trim();
+                if (!slug) return null;
+                return {
+                  slug,
+                  title: record.title || record.name || fallbackTitle(slug),
+                  date: record.date || record.publish_date || record.published_date || '',
+                  category: record.category || '',
+                  status: 'Published',
+                  url: entryUrl(slug)
+                };
+              })
+              .filter(Boolean);
+            const unique = new Map(records.map(record => [record.slug, record]));
+            return [...unique.values()].sort((a, b) =>
+              String(b.date).localeCompare(String(a.date)) || a.title.localeCompare(b.title)
+            );
+          };
+          const loadDrafts = async () => {
+            const response = await api('pulls', { state: 'open', per_page: '100', sort: 'updated', direction: 'desc' });
+            const pulls = await jsonFromResponse(response);
+            const prefix = `cms/${config.collection}/`;
+            const related = (Array.isArray(pulls) ? pulls : []).filter(pr => String(pr.head?.ref || '').startsWith(prefix));
+            const records = await Promise.all(related.map(async pr => {
+              const slug = String(pr.head.ref).slice(prefix.length).replace(/\/$/, '');
+              let title = pr.title || fallbackTitle(slug);
+              let date = '';
+              let category = '';
+              try {
+                const branchResponse = await api(`contents/${config.folder}/${encodeURIComponent(slug)}.json`, { ref: pr.head.ref });
+                if (branchResponse.ok) {
+                  const file = await branchResponse.json();
+                  const bytes = Uint8Array.from(atob(String(file.content || '').replace(/\s/g, '')), char => char.charCodeAt(0));
+                  const data = JSON.parse(new TextDecoder('utf-8').decode(bytes));
+                  title = data.title || title;
+                  date = data.date || data.publish_date || '';
+                  category = data.category || '';
+                }
+              } catch (_) { /* Keep the pull-request title when branch content cannot be read. */ }
+              const labels = (pr.labels || []).map(label => label.name).filter(Boolean);
+              return { slug, title, date, category, status: labels.find(label => label.startsWith('sveltia-cms/'))?.replace('sveltia-cms/', '') || 'Draft', prNumber: pr.number, url: entryUrl(slug), updatedAt: pr.updated_at || '' };
+            }));
+            return records.sort((a, b) => String(b.updatedAt).localeCompare(String(a.updatedAt)) || a.title.localeCompare(b.title));
+          };
+          (async () => {
+            setLoading(true); setError(''); setEntries([]);
+            try {
+              const data = config.mode === 'published' ? await loadPublished() : await loadDrafts();
+              if (!cancelled) setEntries(data);
+            } catch (err) {
+              if (!cancelled) setError(`无法读取${config.label}。请确认 GitHub 仓库公开可读、API 限额未用尽，然后重试。(${err?.message || 'Unknown error'})`);
+            } finally { if (!cancelled) setLoading(false); }
+          })();
+          return () => { cancelled = true; };
+        }, [view]);
+
+        const normalizedQuery = query.trim().toLowerCase();
+        const shown = entries.filter(entry => [entry.title, entry.date, entry.category, entry.slug, entry.status].join(' ').toLowerCase().includes(normalizedQuery));
+        const smallText = { color: '#657381', fontSize: 12, lineHeight: 1.5 };
+        return h('div', { className: 'def-cms-dashboard' },
+          h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 12, flexWrap: 'wrap', marginBottom: 14 } },
+            h('div', null, h('h1', null, config.label), h('p', { className: 'intro', style: { marginBottom: 0 } }, config.mode === 'published' ? 'Only entries already merged into main are listed here. This page does not create new content.' : 'Only unpublished entries from this content type are listed here. Select an entry to continue editing it.')),
+            h('a', { href: '#/pages/content-navigator', onClick: onBack, style: { color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 3, fontSize: 13, fontWeight: 600, whiteSpace: 'nowrap' } }, '← Content Management')
+          ),
+          h('input', { value: query, onChange: event => setQuery(event.target.value), placeholder: 'Search title, date, category…', 'aria-label': `Search ${config.label}`, style: { width: '100%', maxWidth: 620, boxSizing: 'border-box', padding: '10px 12px', border: '1px solid #ccd5dd', borderRadius: 7, font: 'inherit', margin: '0 0 16px' } }),
+          loading ? h('p', { style: smallText }, 'Loading entries…') : null,
+          error ? h('div', { role: 'alert', style: { border: '1px solid #e5c7c7', background: '#fffafa', padding: 14, borderRadius: 8, color: '#8a3434', lineHeight: 1.5 } }, error,
+            h('div', { style: { marginTop: 10 } }, h('a', { href: config.mode === 'draft' ? '#/workflow' : `#/collections/${config.collection}`, style: { color: '#234b68', textDecoration: 'underline' } }, config.mode === 'draft' ? 'Open native Editorial Workflow' : 'Open native collection list'))) : null,
+          !loading && !error ? h('p', { style: { ...smallText, margin: '0 0 10px' } }, `${shown.length} entries`) : null,
+          !loading && !error && shown.length ? h('div', { style: { border: '1px solid #dce3e9', borderRadius: 8, overflow: 'hidden', background: '#fff' } },
+            ...shown.map(entry => h('div', { key: entry.slug, style: { display: 'flex', alignItems: 'center', gap: 12, justifyContent: 'space-between', padding: '14px 16px', borderBottom: '1px solid #edf0f2', flexWrap: 'wrap' } },
+              h('div', { style: { minWidth: 0, flex: '1 1 280px' } },
+                h('strong', { style: { display: 'block', color: '#1d2d3b', fontSize: 14, lineHeight: 1.45, overflowWrap: 'anywhere' } }, entry.title),
+                h('div', { style: { ...smallText, marginTop: 4 } }, [entry.date, entry.category, entry.status].filter(Boolean).join(' · ')),
+                entry.prNumber ? h('div', { style: { ...smallText, marginTop: 2 } }, `Draft PR #${entry.prNumber}`) : null
+              ),
+              h('a', { href: entry.url, style: { color: '#234b68', fontSize: 13, fontWeight: 650, textDecoration: 'underline', textUnderlineOffset: 3, whiteSpace: 'nowrap' } }, 'Edit entry →')
+            ))
+          ) : null,
+          !loading && !error && !shown.length ? h('div', { style: { border: '1px solid #e0e7ed', background: '#fff', padding: 18, borderRadius: 8, color: '#657381', lineHeight: 1.5 } }, config.mode === 'draft' ? `No unpublished ${config.collection === 'stories' ? 'Stories' : 'Trade Show Articles'} found.` : `No published ${config.collection === 'stories' ? 'Stories' : 'Trade Show Articles'} found.`) : null
+        );
+      };
+
+      const ContentManagement = () => {
+        const [view, setView] = CMS.React.useState(contentViewFromHash);
+        CMS.React.useEffect(() => {
+          const onHashChange = () => setView(contentViewFromHash());
+          window.addEventListener('hashchange', onHashChange);
+          return () => window.removeEventListener('hashchange', onHashChange);
+        }, []);
+        const openView = viewName => () => setView(viewName);
+        if (view !== 'dashboard') return h(ContentEntryListing, { key: view, view, onBack: openView('dashboard') });
+        return h('div', { className: 'def-cms-dashboard' },
+          h('h1', null, 'Content Management'),
+          h('p', { className: 'intro' }, 'Edit website content and publishing settings. Assets are managed separately in Brand Assets.'),
+          group('Stories', [
+            link('New Story', '#/collections/stories/new', 'plus'),
+            link('Draft Stories', '#/pages/content-navigator?view=draft-stories', 'draft'),
+            link('Published Stories', '#/pages/content-navigator?view=published-stories', 'check'),
+            link('Stories Page Settings', '#/collections/content-management/entries/stories_page_settings', 'settings')
+          ]),
+          group('Trade Shows', [
+            link('Upcoming Shows', '#/collections/content-management/entries/upcoming_shows', 'plus'),
+            subgroup('Trade Show Articles', [
+              link('New Trade Show Article', '#/collections/trade-show-articles/new', 'plus'),
+              link('Draft Trade Show Articles', '#/pages/content-navigator?view=draft-trade-show-articles', 'draft'),
+              link('Published Trade Show Articles', '#/pages/content-navigator?view=published-trade-show-articles', 'check'),
+              link('Trade Shows Page Settings', '#/collections/content-management/entries/events_page_settings', 'settings')
+            ])
+          ], '', true),
+          group('Social Media', [
+            link('Social Media Page Content', '#/collections/content-management/entries/social_page', 'social'),
+            link('Social Channel Cards', '#/collections/content-management/entries/social_media', 'image')
+          ]),
+          group('Media', [
+            link('Media Page Content', '#/collections/content-management/entries/media_page', 'media'),
+            link('Media Contacts', '#/collections/content-management/entries/media_contacts', 'plus')
+          ]),
+          group('Website Basics', [
+            link('Brand Introduction', '#/collections/content-management/entries/home_intro', 'home'),
+            link('Newsletter', '#/collections/content-management/entries/home_newsletter', 'plus')
+          ])
+        );
+      };
+
+      // Only Brand Hub, Brand Assets and Content Management are registered as custom pages.
+      // Article management shortcuts live inside Content Management, not as toolbar icons.
+
+
+      // Brand Assets indexes files already in the public repository and relates them back
+      // to the CMS records that reference them. Uploading/replacing files remains in
+      // Sveltia's native Asset Library, reached from the action at the top of this page.
+      let brandAssetsCache = null;
+      let brandAssetsCacheAt = 0;
+      const MediaLibrary = () => {
+        const [items, setItems] = CMS.React.useState([]);
+        const [query, setQuery] = CMS.React.useState('');
+        const [typeFilter, setTypeFilter] = CMS.React.useState('all');
+        const [useFilter, setUseFilter] = CMS.React.useState('all');
+        const [expandedAsset, setExpandedAsset] = CMS.React.useState('');
+        const [loading, setLoading] = CMS.React.useState(true);
+        const [error, setError] = CMS.React.useState('');
+        const repo = 'brilliantjiawork-sys/DEF-company';
+        const branch = 'main';
+        const pdfExt = /\.(?:pdf|docx?|pptx?|xlsx?)$/i;
+        const videoExt = /\.(?:mp4|webm|mov|m4v|ogv|avi|mkv)$/i;
+        const assetExt = /\.(?:png|jpe?g|webp|gif|svg|avif|pdf|docx?|pptx?|xlsx?|mp4|webm|mov|m4v|ogv|avi|mkv)$/i;
+        const assetRoots = ['images/', 'videos/', 'pdf/', 'documents/', 'downloads/', 'whitepapers/', 'catalogs/', 'assets/'];
+        const staticData = [
+          ['data/events.json', 'shows'],
+          ['data/social-media.json', 'socialMedia'],
+          ['data/newsroom-social-media.json', 'socialPage'],
+          ['data/media-contacts.json', 'mediaContacts'],
+          ['data/newsroom-media.json', 'mediaPage'],
+          ['data/site-content.json', 'website'],
+          ['data/home-intro.json', 'website'],
+          ['data/home-newsletter.json', 'website'],
+          ['data/stories-page-settings.json', 'website'],
+          ['data/trade-shows-page-settings.json', 'website'],
+          ['data/contact-content.json', 'website'],
+          ['data/cookie-content.json', 'website']
+        ];
+        const cleanPath = value => {
+          let result = String(value || '').split(/[?#]/)[0].trim().replace(/\\/g, '/').replace(/^\.\//, '').replace(/^\/+/, '');
+          try { result = decodeURIComponent(result); } catch (_) {}
+          return result;
+        };
+        const baseName = value => cleanPath(value).split('/').pop().toLowerCase();
+        const getType = path => pdfExt.test(path) ? 'pdf' : videoExt.test(path) ? 'video' : 'image';
+        const typeLabel = type => type === 'pdf' ? 'Document' : type === 'video' ? 'Video' : 'Image';
+        const imageGroupFor = () => '';
+        const videoGroupFor = () => '';
+        const documentGroupFor = () => '';
+        const usageGroup = usage => usage.kind === 'stories' ? 'Stories'
+          : (usage.kind === 'tradeArticles' || usage.kind === 'shows') ? 'Trade Shows'
+          : 'Website & Shared';
+        const categoryForKind = kind => ({
+          stories: 'Stories', tradeArticles: 'Trade Shows', shows: 'Trade Shows'
+        }[kind] || 'Website & Shared');
+        const titleForRecord = (record, fallback, kind) => String((kind === 'mediaContacts' ? record?.name : '') || record?.title || record?.name || record?.platform || record?.full_name || record?.contact_name || record?.page_title || fallback || 'Untitled').trim();
+        const collectRefs = (value, fieldPath = '', out = []) => {
+          if (typeof value === 'string') {
+            const matches = value.match(/(?:\/?[A-Za-z0-9_ .@()/-]+\.(?:png|jpe?g|webp|gif|svg|avif|pdf|mp4|webm|mov|m4v|ogv|avi|mkv))(?:[?#][^\s"'<>]*)?/gi) || [];
+            matches.forEach((match, index) => out.push({ path: cleanPath(match), field: fieldPath, occurrence: index + 1 }));
+          } else if (Array.isArray(value)) {
+            value.forEach((item, index) => collectRefs(item, fieldPath ? `${fieldPath}[${index}]` : `[${index}]`, out));
+          } else if (value && typeof value === 'object') {
+            Object.entries(value).forEach(([key, item]) => collectRefs(item, fieldPath ? `${fieldPath}.${key}` : key, out));
+          }
+          return out;
+        };
+        const fieldLocationFor = (field, occurrence = 1, kind = '') => {
+          const raw = String(field || '').trim();
+          const normalizedField = raw.toLowerCase();
+          if (!raw) return 'Page content';
+          if (/gallery/.test(normalizedField)) {
+            const item = raw.match(/\[(\d+)\]/);
+            return 'Gallery image ' + (item ? Number(item[1]) + 1 : occurrence);
+          }
+          if (/cover/.test(normalizedField) || ((kind === 'stories' || kind === 'tradeArticles') && /^(?:image|thumbnail)$/i.test(raw))) return 'Cover image';
+          if (/hero/.test(normalizedField)) return 'Hero image';
+          if (/avatar|photo|portrait/.test(normalizedField)) return 'Contact photo';
+          if (/logo/.test(normalizedField)) return 'Logo';
+          if (/^(?:body|content|markdown)$/i.test(raw)) return 'Article body · image ' + occurrence;
+          return raw
+            .replace(/\[(\d+)\]/g, (_, index) => 'item ' + (Number(index) + 1))
+            .replace(/\./g, ' › ')
+            .replace(/_/g, ' ')
+            .replace(/^./, char => char.toUpperCase());
+        };
+        const getEditUrl = (kind, slug = '', sourcePath = '') => {
+          // Use the CMS folder filename as the entry ID, never the public website slug.
+          const isFolderEntry = (kind === 'stories' && sourcePath.startsWith('data/stories/'))
+            || (kind === 'tradeArticles' && sourcePath.startsWith('data/trade-show-articles/'));
+          const entryId = isFolderEntry ? sourcePath.split('/').pop().replace(/\\.[^.]+$/, '') : slug;
+          const encoded = encodeURIComponent(entryId);
+          const adminBase = window.location.origin + '/admin/';
+          if (kind === 'stories' && entryId) return adminBase + '#/collections/stories/entries/' + encoded;
+          if (kind === 'tradeArticles' && entryId) return adminBase + '#/collections/trade-show-articles/entries/' + encoded;
+          if (kind === 'shows') return adminBase + '#/collections/content-management/entries/upcoming_shows';
+          if (kind === 'socialMedia') return adminBase + '#/collections/content-management/entries/social_media';
+          if (kind === 'socialPage') return adminBase + '#/collections/content-management/entries/social_page';
+          if (kind === 'mediaContacts' || kind === 'mediaPage') return adminBase + '#/collections/content-management/entries/' + (kind === 'mediaContacts' ? 'media_contacts' : 'media_page');
+          if (kind === 'website') {
+            if (slug === 'home-intro') return adminBase + '#/collections/content-management/entries/home_intro';
+            if (slug === 'home-newsletter') return adminBase + '#/collections/content-management/entries/home_newsletter';
+            if (slug === 'stories-page-settings') return adminBase + '#/collections/content-management/entries/stories_page_settings';
+            if (slug === 'trade-shows-page-settings') return adminBase + '#/collections/content-management/entries/events_page_settings';
+            if (slug === 'contact-content') return adminBase + '#/collections/content-management/entries/contact_content';
+            if (slug === 'cookie-content') return adminBase + '#/collections/content-management/entries/cookie_content';
+          }
+          return '';
+        };
+        const recordsFrom = (data, kind, path, explicitSlug = '') => {
+          if (!data) return [];
+          const toRecord = (record, slug, fallback) => ({
+            record, kind, source: path, slug: String(record?.slug || slug || '').trim(),
+            title: titleForRecord(record, fallback, kind), category: categoryForKind(kind),
+            editUrl: getEditUrl(kind, String(record?.slug || slug || '').trim(), path)
+          });
+          if (kind === 'stories' && Array.isArray(data.articles)) return data.articles.map(record => toRecord(record, String(record.slug || ''), 'Story'));
+          if (kind === 'tradeArticles' && Array.isArray(data.articles)) return data.articles.map(record => toRecord(record, String(record.slug || ''), 'Trade Show Article'));
+          if (kind === 'shows' && Array.isArray(data.exhibitions)) return data.exhibitions.map((record, i) => toRecord(record, '', `Trade Show ${i + 1}`));
+          if (kind === 'socialMedia' && Array.isArray(data.channels)) return data.channels.map((record, i) => toRecord(record, '', `Social Channel ${i + 1}`));
+          if (kind === 'mediaContacts' && Array.isArray(data.contacts)) return data.contacts.map((record, i) => toRecord(record, '', `Media Contact ${i + 1}`));
+          if (Array.isArray(data)) return data.map((record, i) => toRecord(record, '', `${kind} ${i + 1}`));
+          return [toRecord(data, explicitSlug, path.split('/').pop().replace(/\.json$/i, ''))];
+        };
+
+        CMS.React.useEffect(() => {
+          let cancelled = false;
+          const cacheIsFresh = brandAssetsCache && (Date.now() - brandAssetsCacheAt < 30000);
+          if (brandAssetsCache) setItems(brandAssetsCache);
+          if (cacheIsFresh) { setLoading(false); return () => { cancelled = true; }; }
+          const fetchIndex = async () => {
+            try {
+              const response = await fetch(`https://data.jsdelivr.com/v1/package/gh/${repo}@${branch}/flat`, { cache: 'default' });
+              if (!response.ok) throw new Error(`CDN ${response.status}`);
+              const data = await response.json();
+              return (data.files || []).map(file => ({ path: cleanPath(file.name), size: file.size || 0, url: `https://cdn.jsdelivr.net/gh/${repo}@${branch}/${cleanPath(file.name)}` }));
+            } catch (cdnError) {
+              const response = await fetch(`https://api.github.com/repos/${repo}/git/trees/${branch}?recursive=1`, { headers: { Accept: 'application/vnd.github+json' }, cache: 'default' });
+              if (!response.ok) throw new Error(`素材索引暂时不可用（GitHub ${response.status}）。请刷新后重试。`);
+              const data = await response.json();
+              if (data.truncated) throw new Error('仓库文件列表超过单次索引范围，无法保证素材完整。');
+              return (data.tree || []).filter(file => file.type === 'blob').map(file => ({ path: cleanPath(file.path), size: file.size || 0, url: `https://raw.githubusercontent.com/${repo}/${branch}/${cleanPath(file.path)}` }));
+            }
+          };
+          const fetchJson = async path => {
+            try {
+              const local = await fetch('/' + path, { cache: 'default' });
+              if (local.ok) return await local.json();
+            } catch (_) { /* Use the public repository fallback below. */ }
+            try {
+              const remote = await fetch(`https://raw.githubusercontent.com/${repo}/${branch}/${path}`, { cache: 'default' });
+              if (!remote.ok) return null;
+              return await remote.json();
+            } catch (_) { return null; }
+          };
+          const load = async () => {
+            try {
+              const repoFiles = await fetchIndex();
+              const assets = repoFiles.filter(file => assetRoots.some(root => file.path.startsWith(root)) && assetExt.test(file.path))
+                .map(file => ({ ...file, name: file.path.split('/').pop(), type: getType(file.path), imageGroup: getType(file.path) === 'image' ? imageGroupFor(file.path) : '', videoGroup: getType(file.path) === 'video' ? videoGroupFor(file.path) : '', documentGroup: getType(file.path) === 'pdf' ? documentGroupFor(file.path) : '', usages: [], categories: [] }));
+              // Use actual CMS entry files as the source of truth for editable content.
+              // Public website manifests can contain legacy slugs that do not match CMS filenames.
+              // CMS folder entries are the single source of truth for Story/article usages.
+              // Do not scan public website index manifests (database.json / event-coverage.json):
+              // they duplicate the same content and can produce invalid edit links.
+              const contentSources = [
+                ...staticData.map(([path, kind]) => ({ path, kind, slug: path.split('/').pop().replace(/\.json$/i, '') })),
+                ...repoFiles.filter(file => /^data\/stories\/[^/]+\.json$/i.test(file.path))
+                  .map(file => ({ path: file.path, kind: 'stories', slug: file.path.split('/').pop().replace(/\.json$/i, '') })),
+                ...repoFiles.filter(file => /^data\/trade-show-articles\/[^/]+\.json$/i.test(file.path))
+                  .map(file => ({ path: file.path, kind: 'tradeArticles', slug: file.path.split('/').pop().replace(/\.json$/i, '') }))
+              ];
+              const loadedSources = await Promise.all(contentSources.map(async source => ({ ...source, data: await fetchJson(source.path) })));
+              const records = [];
+              loadedSources.forEach(source => {
+                if (!source.data) return;
+                let kind = source.kind;
+                if (kind === 'stories-index') kind = 'stories';
+                if (kind === 'tradeArticles-index') kind = 'tradeArticles';
+                if (source.path === 'data/social-media.json') kind = 'socialMedia';
+                records.push(...recordsFrom(source.data, kind, source.path, source.slug));
+
+              });
+
+              const usageByExactPath = new Map();
+              const usageByBasename = new Map();
+              records.forEach(entry => {
+                collectRefs(entry.record).forEach(ref => {
+                  const refPath = cleanPath(ref.path);
+                  const base = baseName(refPath);
+                  const fieldLower = ref.field.toLowerCase();
+                  const storyCoverField = (entry.kind === 'stories' || entry.kind === 'tradeArticles') && /^(?:image|thumbnail)$/i.test(ref.field);
+                  let usageLabel = /gallery/.test(fieldLower) ? 'Gallery Image' : /avatar|photo|portrait/.test(fieldLower) ? 'Contact Photo' : (/cover/.test(fieldLower) || storyCoverField) ? 'Cover Image' : /body|content|markdown/.test(fieldLower) ? 'Body Image' : /video/.test(fieldLower) ? 'Video' : /pdf|whitepaper|catalog|brochure|document|file/.test(fieldLower) ? 'PDF File' : /logo/.test(fieldLower) ? 'Brand Logo' : /hero/.test(fieldLower) ? 'Homepage Hero Image' : /image|thumbnail|media|asset/.test(fieldLower) ? 'Image' : 'Page Asset';
+                  const usage = {
+                    category: entry.category, title: entry.title, kind: entry.kind, source: entry.source,
+                    label: usageLabel, location: fieldLocationFor(ref.field, ref.occurrence, entry.kind), editUrl: entry.editUrl,
+                    topics: Array.isArray(entry.record?.tags) ? entry.record.tags : [],
+                    industries: Array.isArray(entry.record?.industries) ? entry.record.industries : []
+                  };
+                  const keys = new Set([refPath]);
+                  if (refPath.startsWith('images/')) keys.add(refPath.slice('images/'.length));
+                  if (refPath.startsWith('/')) keys.add(refPath.slice(1));
+                  keys.forEach(key => {
+                    if (!usageByExactPath.has(key)) usageByExactPath.set(key, []);
+                    usageByExactPath.get(key).push(usage);
+                  });
+                  if (!usageByBasename.has(base)) usageByBasename.set(base, []);
+                  usageByBasename.get(base).push(usage);
+                });
+              });
+              const mapped = assets.map(asset => {
+                const exactCandidates = [asset.path, asset.path.startsWith('images/') ? asset.path.slice('images/'.length) : asset.path];
+                let usages = [];
+                exactCandidates.some(key => {
+                  if (usageByExactPath.has(key)) { usages = usageByExactPath.get(key); return true; }
+                  return false;
+                });
+                if (!usages.length) {
+                  const byBase = usageByBasename.get(asset.name.toLowerCase()) || [];
+                  // Only use filename fallback if the repository contains a single asset with that name.
+                  const duplicatePathCount = assets.filter(other => other.name.toLowerCase() === asset.name.toLowerCase()).length;
+                  if (duplicatePathCount === 1) usages = byBase;
+                }
+                const unique = [];
+                const seen = new Set();
+                usages.forEach(usage => {
+                  const key = [usage.category, usage.title, usage.source, usage.label, usage.location].join('|');
+                  if (!seen.has(key)) { seen.add(key); unique.push(usage); }
+                });
+                const categories = [...new Set(unique.map(usage => usage.category))];
+                return { ...asset, usages: unique, categories, category: categories[0] || 'unused' };
+              });
+              const sortedAssets = mapped.sort((a, b) => a.name.localeCompare(b.name));
+              brandAssetsCache = sortedAssets;
+              brandAssetsCacheAt = Date.now();
+              if (!cancelled) { setItems(sortedAssets); setError(''); }
+            } catch (err) {
+              if (!cancelled) setError(err?.message || '读取素材失败。');
+            } finally { if (!cancelled) setLoading(false); }
+          };
+          load();
+          return () => { cancelled = true; };
+        }, []);
+
+        const useOptions = [
+          ['all', 'All content'], ['Stories', 'Stories'], ['Trade Shows', 'Trade Shows'],
+          ['Website & Shared', 'Website & Shared'], ['unused', 'Not currently used']
+        ];
+        const filtered = items.filter(item => {
+          if (typeFilter !== 'all' && item.type !== typeFilter) return false;
+          if (useFilter === 'unused' && item.usages.length) return false;
+          if (useFilter !== 'all' && useFilter !== 'unused' && !(item.categories || []).includes(useFilter)) return false;
+          const searchText = [item.name, item.path, ...(item.categories || []), ...item.usages.flatMap(usage => [usage.title, usage.label, usage.category, ...(usage.topics || []), ...(usage.industries || [])])].join(' ').toLowerCase();
+          return !query.trim() || searchText.includes(query.trim().toLowerCase());
+        });
+        const textFilterStyle = active => ({
+          border: 0, borderBottom: active ? '2px solid #234b68' : '2px solid transparent',
+          borderRadius: 0, padding: '5px 4px 6px', background: 'transparent', color: active ? '#1b3448' : '#526474',
+          fontWeight: active ? 700 : 500, cursor: 'pointer', font: 'inherit', fontSize: 13
+        });
+        const typeButton = (id, label) => h('button', { type: 'button', key: id, 'aria-pressed': String(typeFilter === id), onClick: () => setTypeFilter(typeFilter === id ? 'all' : id), style: textFilterStyle(typeFilter === id) }, label);
+        const useButton = (id, label) => h('button', { type: 'button', key: id, 'aria-pressed': String(useFilter === id), onClick: () => setUseFilter(id), style: textFilterStyle(useFilter === id) }, label);
+        const card = item => {
+          const preview = item.type === 'image'
+            ? h('img', { src: item.url, alt: item.name, loading: 'lazy', style: { width: '100%', height: '100%', objectFit: 'contain', display: 'block' }, onError: event => { event.currentTarget.style.display = 'none'; } })
+            : item.type === 'video'
+              ? h('video', { controls: true, muted: true, preload: 'metadata', style: { maxWidth: '100%', maxHeight: '100%' } }, h('source', { src: item.url }))
+              : h('a', { href: item.url, target: '_blank', rel: 'noreferrer' }, 'Open document');
+          const usageRows = (item.usages || []).map((usage, index) => h('li', { key: index, style: { fontSize: 12, lineHeight: 1.45, marginBottom: 5 } },
+            h('strong', null, usage.title || usage.category || 'Content entry'),
+            h('span', { style: { color: '#71818d' } }, ' · ' + (usage.category || 'Content') + ' · ' + (usage.label || usage.location || 'Asset') + '（因技术原因暂无法打开）')
+          ));
+          const usageList = usageRows.length ? h('ul', { style: { paddingLeft: 17, margin: '7px 0 0' } }, ...usageRows) : h('p', { style: { fontSize: 12, color: '#71818d', margin: '7px 0 0' } }, '当前未检测到内容引用。');
+          return h('article', { key: item.path, style: { border: '1px solid #dce3e9', borderRadius: 8, overflow: 'hidden', background: '#fff', minWidth: 0 } },
+            h('div', { style: { aspectRatio: '16/9', background: '#f3f5f7', display: 'grid', placeItems: 'center', overflow: 'hidden', padding: item.type === 'pdf' ? 10 : 0, boxSizing: 'border-box' } }, preview),
+            h('div', { style: { padding: 12 } },
+              h('strong', { style: { display: 'block', overflowWrap: 'anywhere', marginBottom: 4, fontSize: 13 } }, item.name),
+              h('div', { style: { fontSize: 11, color: '#657381' } }, typeLabel(item.type)),
+              h('div', { style: { marginTop: 10, borderTop: '1px solid #e7edf1', paddingTop: 8 } }, h('strong', { style: { fontSize: 12 } }, '使用位置'), usageList),
+
+            )
+          );
+        };
+        return h('main', { className: 'def-library', style: { maxWidth: 1180, margin: '0 auto', padding: '28px 24px 44px', color: '#1b2733', fontFamily: 'Inter, system-ui, sans-serif' } },
+          h('div', { style: { display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 12 } },
+            h('div', null, h('h1', { style: { margin: '0 0 5px', fontSize: 28, fontWeight: 700 } }, 'Brand Assets'), h('p', { style: { margin: 0, color: '#687887', fontSize: 14 } }, 'Find website files and see where each asset is used. Filter by file type, search by filename or content title, and open the source content.')),
+            h('a', { href: '#/assets/-/all', style: { display: 'inline-block', color: '#234b68', textDecoration: 'underline', textUnderlineOffset: 3, fontWeight: 600, fontSize: 13 } }, 'Upload / Manage Assets')
+          ),
+          h('h2', { style: { margin: '24px 0 12px', fontSize: 17, fontWeight: 700 } }, 'All Assets'),
+          h('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 14, marginBottom: 12 } },
+            h('strong', { style: { fontSize: 13, fontWeight: 650 } }, 'File type'),
+            typeButton('all', 'All'), typeButton('image', 'Images'), typeButton('video', 'Videos'), typeButton('pdf', 'Documents')
+          ),
+          h('input', { value: query, onChange: event => setQuery(event.target.value), placeholder: 'Search filename, path, content title or category', 'aria-label': 'Search Brand Assets', style: { width: '100%', maxWidth: 680, boxSizing: 'border-box', padding: '11px 12px', border: '1px solid #ccd5dd', borderRadius: 6, font: 'inherit', margin: '4px 0 13px' } }),
+          h('div', { style: { display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 12, margin: '0 0 6px' } },
+            h('strong', { style: { fontSize: 13, fontWeight: 650 } }, 'Content'),
+            ...useOptions.map(([id, label]) => useButton(id, id === 'unused' ? 'Not currently used' : label))
+          ),
+          h('p', { style: { margin: '0 0 18px', color: '#71818d', fontSize: 11, lineHeight: 1.5 } }, '点击使用位置可直接进入对应内容编辑；替换图片请打开 Asset Library，搜索文件名并选择 Replace。网站共享区域的引用会归入 Website & Shared。'),
+          loading && !items.length ? h('p', { style: { color: '#657381' } }, 'Loading Brand Assets…') : loading ? h('p', { style: { color: '#657381', fontSize: 12 } }, 'Refreshing asset index; existing files remain visible.') : null,
+          error ? h('p', { role: 'alert', style: { padding: 14, border: '1px solid #e4b5b5', color: '#8b2424', borderRadius: 6 } }, error) : null,
+          items.length ? h('p', { style: { color: '#596775', fontSize: 13, margin: '0 0 14px' } }, `${items.length} assets · ${filtered.length} shown · 使用位置由 CMS 内容中的文件引用自动识别；正文 Markdown 内嵌图片及未同步的草稿引用可能无法完整识别。`) : null,
+          items.length && filtered.length ? h('div', { style: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill,minmax(260px,1fr))', gap: 14 } }, ...filtered.map(card)) : null,
+          !loading && !error && !filtered.length ? h('p', { style: { padding: 18, border: '1px solid #e4e9ed', borderRadius: 8, color: '#657381' } }, 'No matching assets. Try another search term or filter.') : null
+        );
+      };
+
+      const BrandHub = () => {
+        const [guide, setGuide] = CMS.React.useState(null);
+        const [active, setActive] = CMS.React.useState('foundation');
+        const [error, setError] = CMS.React.useState('');
+        const [loading, setLoading] = CMS.React.useState(true);
+        CMS.React.useEffect(() => {
+          let cancelled = false;
+          fetch('/data/brand-guidelines.json', { cache: 'default' })
+            .then(r => { if (!r.ok) throw new Error('Brand Guidelines could not be loaded.'); return r.json(); })
+            .then(data => {
+              const required = data && data.foundation && data.logo && data.colors && data.typography && Array.isArray(data.imagery) && Array.isArray(data.layouts) && data.applications;
+              if (!required) throw new Error('品牌规范数据结构不完整，请检查 data/brand-guidelines.json。');
+              if (!cancelled) { setGuide(data); setError(''); }
+            })
+            .catch(err => { if (!cancelled) setError(err.message || '品牌规范加载失败。'); })
+            .finally(() => { if (!cancelled) setLoading(false); });
+          return () => { cancelled = true; };
+        }, []);
+        const sections = [
+          {id:'foundation',label:'Brand Foundation',sub:'定位 · 客户 · 沟通'},
+          {id:'identity',label:'Visual Identity',sub:'Logo · Color · Typography'},
+          {id:'imagery',label:'Photography',sub:'产品 · 应用 · 技术 · 展会'},
+          {id:'layouts',label:'Layout Templates',sub:'社媒单图 · 轮播 · 展会'},
+          {id:'applications',label:'Applications',sub:'官网 · 社媒 · 展会'}
+        ];
+        const css = ".bh{width:100%;max-width:1180px;min-width:0;margin:0 auto;padding:24px 24px 48px;color:#263946;font-family:Inter,\"Noto Sans SC\",Arial,sans-serif;font-size:16px;line-height:1.65}\n.bh *{box-sizing:border-box;min-width:0;overflow-wrap:anywhere}\n.bh-head{display:flex;justify-content:space-between;align-items:flex-end;gap:18px;padding-bottom:16px;border-bottom:1px solid #dfe6eb;margin-bottom:20px}\n.bh-kicker{font-size:11px;font-weight:700;letter-spacing:.1em;color:#648092;text-transform:uppercase;margin-bottom:6px}\n.bh h1{font-size:28px;line-height:1.3;font-weight:700;margin:0;color:#1e3546}\n.bh-sub{font-size:15px;color:#71818d;margin:6px 0 0;line-height:1.55}\n.bh-layout{display:grid;grid-template-columns:196px minmax(0,1fr);gap:20px;align-items:start;width:100%}\n.bh-nav{display:grid;gap:5px;position:sticky;top:14px;min-width:0}\n.bh-nav button{border:1px solid transparent;background:transparent;text-align:left;padding:10px 11px;border-radius:7px;cursor:pointer;color:#405564;font:inherit;width:100%}\n.bh-nav button:hover{background:#f5f8fa}\n.bh-nav button.active{background:#edf5f8;border-color:#d4e4eb;color:#1f4d64}\n.bh-nav button.applications-highlight{background:#fff8d5;border-color:#f0d84b;color:#263946}\n.bh-nav button.applications-highlight strong{font-weight:750}\n.bh-nav button.applications-highlight.active{background:#ffe817;border-color:#e2c900;color:#222b32}\n.bh-nav strong{display:block;font-size:15px;font-weight:650;line-height:1.4}\n.bh-nav small{display:block;color:#84929c;font-size:13px;margin-top:3px;line-height:1.4}\n.bh-panel{min-width:0;width:100%}\n.bh-intro{padding:0 0 15px}\n.bh-eyebrow{font-size:12px;color:#7290a1;font-weight:700;letter-spacing:.08em;text-transform:uppercase;margin-bottom:5px}\n.bh-panel h2{font-size:23px;line-height:1.35;font-weight:700;margin:0 0 5px;color:#203a4c}\n.bh-lead{font-size:15px;line-height:1.6;color:#627583;margin:0;max-width:760px}\n.bh-section{background:#fff;border:1px solid #e0e7eb;border-radius:8px;padding:18px 19px;margin:0 0 12px;min-width:0;width:100%}\n.bh-section h3{font-size:18px;line-height:1.4;font-weight:650;color:#263f50;margin:0 0 11px}\n.bh-section h4{font-size:16px;line-height:1.4;font-weight:650;color:#2b4658;margin:0 0 5px}\n.bh-text{font-size:16px;line-height:1.65;color:#5d707d;margin:0}\n.bh-positioning{font-size:16px!important;line-height:1.65!important;font-weight:400!important;color:#425968!important;margin:0 0 12px!important;max-width:78ch}\n.bh-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;width:100%}\n.bh-grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%}\n.bh-mini{border:1px solid #e7ecef;border-radius:7px;padding:12px;background:#fff;min-width:0}\n.bh-mini p{font-size:15px;line-height:1.6;color:#667985;margin:4px 0 0}\n.bh-tag{display:inline-block;font-size:12px;font-weight:700;letter-spacing:.03em;color:#527286;background:#eef4f7;border-radius:4px;padding:3px 6px;margin-bottom:6px}\n.bh-list{margin:0;padding-left:18px;color:#5d707d}\n.bh-list li{font-size:15px;line-height:1.65;margin:0 0 7px;padding-left:2px}\n.bh-swatch-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:8px 0}\n.bh-swatch{display:grid;grid-template-columns:48px minmax(0,1fr);gap:9px;align-items:start;border:1px solid #e7ecef;border-radius:7px;padding:9px;min-width:0}\n.bh-swatch-chip{width:48px;height:48px;border:1px solid #dce3e8;border-radius:5px}\n.bh-swatch strong{display:block;font-size:15px;color:#294456}\n.bh-swatch code{display:block;font-size:13px;color:#647987;margin:2px 0}\n.bh-swatch small{display:block;font-size:13px;color:#82919b}\n.bh-swatch p{font-size:14px;line-height:1.5;color:#657985;margin:4px 0 0}\n.bh-color strong{display:block;font-size:16px;color:#2c4658}\n.bh-color code{font-size:14px;color:#71818d}\n.bh-color p{font-size:14px;line-height:1.5;color:#74838d;margin:5px 0 0}\n.bh-sample{border:1px solid #e5eaed;border-radius:7px;padding:12px;background:#fff}\n.bh-sample .spec{font-size:13px;color:#84939c;margin-bottom:6px}\n.bh-sample .preview{font-size:14px!important;line-height:1.55!important;color:#263f50;margin:0}\n.bh-logo-stage{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}\n.bh-logo-bg{min-height:112px;border:1px solid #e3e8eb;border-radius:7px;display:flex;align-items:center;justify-content:center;padding:12px;background:#fff}\n.bh-logo-bg.dark{background:#203746}\n.bh-logo-bg img{max-width:100%;max-height:78px;object-fit:contain}\n.bh-steps{display:flex;flex-wrap:wrap;gap:6px;align-items:center}\n.bh-step{background:#f1f5f7;border:1px solid #e1e8ec;border-radius:5px;padding:8px 10px;font-size:14px;color:#506775}\n.bh-step-arrow{font-size:11px;color:#9aabb5}\n.bh-note{background:#f5f8f9;border-left:3px solid #8fb7c9;padding:12px 14px;border-radius:0 5px 5px 0;color:#637782;font-size:14px;line-height:1.6}\n.bh-table{width:100%;border-collapse:collapse;font-size:15px}\n.bh-table th{text-align:left;background:#f5f7f8;color:#536a79;font-weight:650}\n.bh-table th,.bh-table td{padding:9px 10px;border-bottom:1px solid #e8edef;vertical-align:top}\n.bh-table td{color:#627582;line-height:1.55}\n.bh-table td:first-child{font-weight:650;color:#334e60;white-space:nowrap}\n@media(max-width:1050px){.bh{padding:20px 16px 36px}.bh-layout{grid-template-columns:170px minmax(0,1fr);gap:14px}.bh-grid3{grid-template-columns:repeat(2,minmax(0,1fr))}}\n@media(max-width:760px){.bh-layout{grid-template-columns:1fr;gap:12px}.bh-nav{position:static;display:flex;overflow-x:auto;padding-bottom:5px}.bh-nav button{min-width:145px;width:auto}.bh-grid{grid-template-columns:1fr}.bh-logo-stage{grid-template-columns:1fr}.bh-grid3,.bh-swatch-grid{grid-template-columns:1fr}.bh-section{padding:15px}.bh-head{display:block}.bh-table{display:block;overflow-x:auto}}\n\n.bh-overview{background:#edf4f7;border:1px solid #c9dce5;border-left:4px solid #6f9fb5;border-radius:9px;padding:20px 21px;margin:0 0 16px}\n.bh-overview-head{display:flex;align-items:center;gap:10px;margin:0 0 6px}\n.bh-overview-kicker{font-size:12px;font-weight:750;letter-spacing:.08em;color:#547b90}\n.bh-overview-title{font-size:20px;font-weight:700;color:#213f52;line-height:1.35}\n.bh-overview-desc{font-size:15px;color:#5e7482;line-height:1.6;margin:0 0 13px}\n.bh-overview-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}\n.bh-overview-item{background:#fff;border:1px solid #d8e4e9;border-radius:7px;padding:12px 14px}\n.bh-overview-item strong{display:block;font-size:16px;color:#2b4b5e;line-height:1.45}\n.bh-overview-item p{font-size:14px;color:#667c89;line-height:1.55;margin:5px 0 0}\n.bh-template-group{border:1px solid #dce6eb;border-radius:9px;padding:18px;margin:0 0 16px;background:#fff}\n.bh-template-group-head{padding:0 0 12px;margin:0 0 13px;border-bottom:1px solid #e5edf1}\n.bh-template-group-head h3{font-size:20px!important;margin:0 0 4px!important;color:#24475b!important}\n.bh-template-group-head p{font-size:15px;color:#687d89;line-height:1.6;margin:0}\n.bh-phase{display:grid;grid-template-columns:150px minmax(0,1fr);gap:14px;padding:14px 0;border-bottom:1px solid #edf1f3}\n.bh-phase:last-child{border-bottom:0}\n.bh-phase-label{font-size:16px;font-weight:700;color:#31556a}\n.bh-phase-goal{font-size:14px;color:#6a7e89;margin-top:4px;line-height:1.5}\n.bh-phase-content{min-width:0}\n.bh-phase-content p{font-size:15px;line-height:1.6;color:#536b79;margin:0 0 8px}\n.bh-phase-content .bh-list li{font-size:14px}\n.bh-funnel{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin:12px 0}\n.bh-funnel-step{background:#edf4f7;border:1px solid #d5e3e9;border-radius:7px;padding:11px;min-width:0}\n.bh-funnel-step strong{display:block;font-size:14px;color:#2d5064;margin-bottom:5px}\n.bh-funnel-step p{font-size:13px;color:#627987;line-height:1.5;margin:0}\n.bh-subsection{margin-top:15px;padding:14px;background:#f7f9fa;border:1px solid #e5ecef;border-radius:7px}\n.bh-subsection h4{font-size:16px;margin:0 0 6px;color:#2b4b5e}\n.bh-subsection p{font-size:14px;line-height:1.6;color:#637783;margin:0 0 8px}\n@media(max-width:900px){.bh-funnel{grid-template-columns:repeat(2,minmax(0,1fr))}}\n@media(max-width:760px){.bh-overview-grid{grid-template-columns:1fr}.bh-phase{grid-template-columns:1fr;gap:6px}.bh-funnel{grid-template-columns:1fr}}\n\n.bh-color-system{display:grid;gap:26px}.bh-color-group{padding:22px 0 4px;border-top:1px solid #e4ebef}.bh-color-group:first-child{padding-top:0;border-top:0}.bh-color-group-head{margin:0 0 15px}.bh-color-group-head h4{font-size:18px!important;margin:0 0 5px!important;color:#24475b!important}.bh-color-group-head p{font-size:14px;color:#687d89;line-height:1.6;margin:0}.bh-palette{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.bh-palette-item{border:1px solid #e1e8ec;border-radius:8px;overflow:hidden;background:#fff}.bh-palette-chip{height:76px;border-bottom:1px solid #e5eaed}.bh-palette-meta{padding:11px 13px}.bh-palette-meta strong{display:block;font-size:15px;color:#294456}.bh-palette-meta code,.bh-inline-swatch code,.bh-functional-item code{display:block;font-size:13px;color:#647987;margin-top:2px}.bh-palette-meta small{display:block;color:#7a8b95;font-size:12px;margin-top:3px}.bh-palette-meta p{font-size:13px;color:#687d89;line-height:1.5;margin:6px 0 0}.bh-color-subhead{font-size:15px;color:#38586b;margin:18px 0 10px}.bh-inline-palette{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 12px}.bh-inline-swatch{display:grid;grid-template-columns:34px auto;column-gap:8px;align-items:center;border:1px solid #e2e8eb;border-radius:7px;padding:7px 10px;min-width:145px}.bh-inline-swatch i{grid-row:span 2;width:34px;height:34px;border:1px solid #dce3e8;border-radius:4px}.bh-inline-swatch span{font-size:13px;font-weight:650;color:#3d5665}.bh-inline-swatch code{margin:0}.bh-combo-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:9px 0 13px}.bh-combo{border:1px solid #e0e7eb;border-radius:8px;overflow:hidden}.bh-combo-preview{min-height:88px;padding:12px 14px;display:flex;flex-direction:column;justify-content:center;gap:5px}.bh-combo-preview strong{font-size:14px}.bh-combo-preview p{font-size:12px;margin:0}.bh-combo-preview span{align-self:flex-start;border:1px solid;border-radius:4px;padding:3px 7px;font-size:12px;font-weight:650}.bh-combo-meta{padding:10px 12px;background:#fff}.bh-combo-meta strong{font-size:14px;color:#334f60}.bh-combo-meta p{font-size:12px;color:#71818d;margin:3px 0 0}.bh-functional-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.bh-functional-item{display:flex;align-items:center;gap:10px;padding:10px;border:1px solid #e4eaed;border-radius:7px}.bh-functional-item>i{width:38px;height:38px;flex:0 0 38px;border:1px solid #dce3e8;border-radius:5px}.bh-functional-item strong{font-size:14px;color:#385466}.bh-functional-item p{font-size:12px;color:#71818d;margin:1px 0}.bh-functional-item code{margin:0}.bh-color-rules{margin-top:18px;padding:16px 18px;background:#f3f7f9;border-left:3px solid #75a8bd;border-radius:0 7px 7px 0}.bh-color-rules h4{margin:0 0 8px!important}.bh-color-rules p{font-size:14px;line-height:1.6;color:#5f7481;margin:0 0 6px}.bh-logo-rules{display:grid;gap:10px;margin-top:18px}.bh-logo-rules .bh-rule{padding:12px 14px;border:1px solid #e5ebee;border-radius:7px}.bh-logo-rules .bh-rule strong{display:block;color:#345366;margin-bottom:4px}.bh-logo-rules .bh-rule p{font-size:14px;color:#687d89;margin:0;line-height:1.6}.bh-logo-rules .bh-note{margin-top:2px}@media(max-width:760px){.bh-palette,.bh-combo-grid,.bh-functional-list{grid-template-columns:1fr}.bh-inline-swatch{flex:1 1 140px}}";
+        const cssEnhancements = ".bh-intro{padding:17px 19px 18px;margin:0 0 20px;background:#F2F5F6;border-left:5px solid #24677C;border-radius:0 8px 8px 0}\n.bh-intro .bh-eyebrow{color:#24677C;margin-bottom:7px}\n.bh-section{border:1px solid #DCE3E8;border-left:4px solid #24677C;border-radius:8px;padding:20px 21px;margin:0 0 20px;box-shadow:0 1px 2px rgba(20,45,60,.03)}\n.bh-section h3{padding:0 0 13px;margin:0 0 19px;border-bottom:2px solid #D9EEF4}\n.bh-logo-stage{gap:16px;align-items:stretch}\n.bh-logo-bg{min-height:148px;padding:20px}\n.bh-logo-bg small{display:block;margin-top:18px!important;font-size:13px;line-height:1.6;letter-spacing:.01em}\n.bh-logo-rules{gap:14px;margin-top:26px}\n.bh-logo-rules .bh-rule{padding:16px 18px}\n.bh-logo-rules .bh-rule strong{margin-bottom:8px}\n.bh-logo-rules .bh-rule p{margin:0;line-height:1.75}\n.bh-logo-rules .bh-note{margin-top:7px;padding:15px 17px;line-height:1.75}\n.bh-logo-stage{gap:16px;margin-bottom:22px}\n.bh-logo-bg{min-height:132px;padding:26px 18px}\n.bh-logo-bg small{display:block;margin-top:16px;line-height:1.5}\n.bh-logo-rules{gap:14px}\n.bh-logo-rules .bh-rule{padding:14px 16px}\n.bh-logo-rules .bh-rule p{margin-top:7px;line-height:1.8}\n.bh-color-system{gap:20px}\n.bh-color-group{padding:21px 0 3px;border-top:2px solid #24677C}\n.bh-color-group:first-child{padding-top:0;border-top:0}\n.bh-priority-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}\n.bh-priority-item{display:grid;grid-template-columns:54px minmax(0,1fr);gap:11px;align-items:center;padding:11px;border:1px solid #DCE3E8;border-radius:7px;background:#fff}\n.bh-priority-chip{display:block;width:54px;height:48px;border:1px solid #DCE3E8;border-radius:5px}\n.bh-priority-item strong{display:block;font-size:14px;line-height:1.4;color:#294456}\n.bh-priority-item code{display:block;font-size:13px;color:#40515B;margin-top:2px}\n.bh-priority-item p{font-size:13px;line-height:1.55;color:#40515B;margin:5px 0 0}\n.bh-combo-grid{gap:14px;margin:14px 0 20px}\n.bh-combo-preview{min-height:148px;padding:20px;gap:9px}\n.bh-combo-preview span{padding:6px 10px;border:0;border-radius:4px;font-size:13px}\n.bh-combo-meta{padding:13px 14px}\n.bh-combo-meta p{font-size:13px;line-height:1.5;color:#40515B;margin:5px 0 0}\n.bh-functional-list{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}\n.bh-functional-item{padding:12px;align-items:center}\n.bh-functional-chip{display:grid;place-items:center;width:48px;height:44px;flex:0 0 48px;border:1px solid #DCE3E8;border-radius:5px;font-size:13px;font-weight:750}\n.bh-functional-item strong{display:block;font-size:14px;color:#294456}\n.bh-functional-item p{font-size:12px;color:#40515B;margin:2px 0}\n.bh-functional-item code{font-size:12px;color:#40515B}\n.bh-functional-item small{display:block;font-size:12px;line-height:1.5;color:#40515B;margin-top:4px}\n.bh-contrast-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}\n.bh-contrast-item{padding:14px;border:1px solid #DCE3E8;border-radius:7px;background:#F8FAFB}\n.bh-contrast-item strong{display:block;font-size:15px;line-height:1.45;color:#24677C}\n.bh-contrast-item p{font-size:13px;line-height:1.6;color:#40515B;margin:7px 0 0}\n.bh-contrast-foot{font-size:13px;line-height:1.65;color:#40515B;margin:12px 0 0}\n.bh-color-rules{border-left-color:#24677C}\n.bh-logo-bg.dark small{color:#FFFFFF!important}\n.bh-logo-bg:not(.dark) small{color:#536A79!important}\n.bh-combo-grid{gap:8px;margin:8px 0 12px}\n.bh-combo-preview{min-height:88px;padding:12px 14px;gap:5px}\n.bh-combo-preview span{padding:3px 7px;font-size:12px}\n.bh-combo-meta{padding:9px 11px}\n.bh-combo-meta p{font-size:12px;line-height:1.4;margin:3px 0 0}\n@media(max-width:760px){.bh-priority-list,.bh-functional-list,.bh-contrast-grid{grid-template-columns:1fr}.bh-logo-stage{grid-template-columns:1fr}.bh-section{padding:17px}}";
+        const card=(title,children)=>h('section',{className:'bh-section'},title?h('h3',null,title):null,children);
+        const para=(text)=>h('p',{className:'bh-text'},text);
+        const list=(items)=>h('ul',{className:'bh-list'},...(items||[]).map((item,i)=>h('li',{key:i},typeof item==='string'?item:item.rule||item.name)));
+        const mini=(title,desc,tag)=>h('div',{className:'bh-mini'},tag?h('span',{className:'bh-tag'},tag):null,h('h4',null,title),h('p',null,desc));
+        const sectionHead=(eyebrow,title,lead)=>h('div',{className:'bh-intro'},h('div',{className:'bh-eyebrow'},eyebrow),h('h2',null,title),h('p',{className:'bh-lead'},lead));
+        const swatches=(items)=>h('div',{className:'bh-grid3'},...items.map((c,i)=>h('div',{className:'bh-color',key:i},h('div',{className:'bh-swatch',style:{background:c.hex}}),h('strong',null,c.name),h('code',null,c.hex),h('p',null,c.usage))));
+        const renderFoundation=()=> {
+          const f=guide.foundation;
+          return h('div',null,
+            sectionHead('01 / Strategy','Brand Foundation','我们是谁、服务谁、解决什么问题、相信什么。'),
+            card('Who We Are｜我们是谁',h('div',null,h('p',{className:'bh-positioning'},f.positioning),mini('What We Believe｜我们相信什么',f.belief))),
+            card('Who We Serve｜目标客户',h('div',{className:'bh-grid'},...f.audience.map((a,i)=>mini(a.name,a.need)))),
+            card('Brand Values｜品牌价值观',h('div',{className:'bh-grid'},...f.values.map((v,i)=>mini(v.title,v.description)))),
+            card('Tagline / Slogan｜品牌口号',h('div',null,h('p',{className:'bh-positioning'},f.tagline),para('口号是简短的品牌表达；它不是品牌价值观或个性。官网首页的实际口号字段位于 Brand Introduction（Home Intro）内容设置中。')))
+          );
+        };
+                const renderIdentity=()=> {
+          const l=guide.logo,c=guide.colors,t=guide.typography,contrast=c.contrastStandards;
+          const palette=(title,desc,items)=>h('section',{className:'bh-color-group'},h('div',{className:'bh-color-group-head'},h('h4',null,title),h('p',null,desc)),h('div',{className:'bh-palette'},...items.map((x,i)=>h('div',{className:'bh-palette-item',key:i},h('div',{className:'bh-palette-chip',style:{background:x.hex}}),h('div',{className:'bh-palette-meta'},h('strong',null,x.name),h('code',null,x.hex),x.role?h('small',null,x.role):null,h('p',null,x.usage))))));
+          const combo=x=>h('div',{className:'bh-combo',key:x.background},h('div',{className:'bh-combo-preview',style:{background:x.backgroundHex}},h('strong',{style:{color:x.title}},'DEF Company · '+x.background),h('p',{style:{color:x.body}},'Industrial Vision, Precisely Applied'),h('span',{style:{background:x.accent,color:x.accentText,borderColor:x.accent}},'CTA / 重点信息')),h('div',{className:'bh-combo-meta'},h('strong',null,x.background+' Background · '+x.backgroundHex),h('p',null,'标题 '+x.title+' · '+x.titleContrast),h('p',null,'正文 '+x.body+' · '+x.bodyContrast),h('p',null,'CTA 背景 '+x.accent+' / 文字 '+x.accentText+' · '+x.accentContrast)));
+          const priorityItem=x=>h('div',{className:'bh-priority-item',key:x.name},h('i',{className:'bh-priority-chip',style:{background:x.hex}}),h('div',null,h('strong',null,x.priority+' · '+x.name),h('code',null,x.hex),h('p',null,x.usage)));
+          const functionalItem=x=>h('div',{className:'bh-functional-item',key:x.element},h('div',{className:'bh-functional-chip',style:{background:x.sampleBackground||x.hex,color:x.sampleTextColor||'#FFFFFF'}},x.sample||''),h('div',null,h('strong',null,x.element),h('p',null,x.color),h('code',null,x.hex+' · '+x.contrast),h('small',null,x.usage)));
+          return h('div',null,
+            sectionHead('02 / Visual Identity','Visual Identity','Logo、颜色与字体规范。'),
+            card('01 · Logo System｜Logo 系统',h('div',null,
+              h('p',{className:'bh-text',style:{marginBottom:18}},l.primary),
+              h('div',{className:'bh-logo-stage'},
+                h('div',{className:'bh-logo-bg'},h('div',{style:{textAlign:'center'}},h('div',{style:{fontSize:25,fontWeight:750,letterSpacing:'.04em',color:'#222B32'}},h('span',{style:{color:'#45B2D3'}},'DEF'),' COMPANY'),h('small',null,'彩色标准版 · Full-color'))),
+                h('div',{className:'bh-logo-bg dark'},h('div',{style:{textAlign:'center'}},h('div',{style:{fontSize:25,fontWeight:750,letterSpacing:'.04em',color:'#FFFFFF'}},'DEF COMPANY'),h('small',null,'白色反白版 · Reverse White'))),
+                h('div',{className:'bh-logo-bg',style:{background:'#F2F5F6'}},h('div',{style:{textAlign:'center'}},h('div',{style:{fontSize:25,fontWeight:750,letterSpacing:'.04em',color:'#222222'}},'DEF COMPANY'),h('small',null,'黑色单色版 · Monochrome')))
+              ),
+              h('div',{className:'bh-logo-rules'},...l.variants.map((v,i)=>h('div',{className:'bh-rule',key:i},h('strong',null,v.name),h('p',null,v.detail))),h('div',{className:'bh-note'},l.displayNote),h('div',{className:'bh-note'},l.printNote)),
+              h('div',{className:'bh-grid',style:{marginTop:22}},mini('Clear Space｜保护空间（暂定）',l.clearSpace),mini('Minimum Size｜最小尺寸原则',l.minimum),mini('Background Usage',l.background),mini('File Formats',l.formats.join(' · ')))
+            )),
+            card('02 · Color System｜色彩系统',h('div',{className:'bh-color-system'},
+              palette('Brand Colors｜品牌核心色','品牌识别的核心颜色：主蓝与强调黄。',c.brand),
+              palette('Supporting Blue｜辅助蓝色阶','由主蓝延展，只保留浅蓝与深蓝两个层级；它们不是额外的品牌核心色。',c.supporting),
+              palette('Neutral Colors｜中性色','页面底色、内容分区和正文基础颜色。',c.neutral),
+              h('section',{className:'bh-color-group'},h('div',{className:'bh-color-group-head'},h('h4',null,'Color Usage Priority｜颜色使用优先级'),h('p',null,'按以下顺序选择颜色；每个色块都对应明确的品牌用途。')),h('div',{className:'bh-priority-list'},...c.usagePriority.map(priorityItem))),
+              h('section',{className:'bh-color-group'},
+                h('div',{className:'bh-color-group-head'},h('h4',null,'Background & Text｜背景与文字搭配'),h('p',null,'先选择背景色，再按对应色值选择标题、正文和 CTA 文字。以下组合均已核算对比度。')),
+                h('h5',{className:'bh-color-subhead'},'浅色背景 · Light Backgrounds'),
+                h('div',{className:'bh-inline-palette'},...c.backgroundText.filter(x=>['White','Light Gray','Light Blue'].includes(x.background)).map((x,i)=>h('div',{className:'bh-inline-swatch',key:i},h('i',{style:{background:x.backgroundHex}}),h('span',null,x.background),h('code',null,x.backgroundHex)))),
+                h('h5',{className:'bh-color-subhead'},'浅色背景文字 · Text Colors'),
+                h('div',{className:'bh-inline-palette'},h('div',{className:'bh-inline-swatch'},h('i',{style:{background:'#222B32'}}),h('span',null,'Primary Text'),h('code',null,'#222B32')),h('div',{className:'bh-inline-swatch'},h('i',{style:{background:'#40515B'}}),h('span',null,'Secondary Text'),h('code',null,'#40515B'))),
+                h('div',{className:'bh-combo-grid'},...c.backgroundText.filter(x=>['White','Light Gray','Light Blue'].includes(x.background)).map(combo)),
+                h('h5',{className:'bh-color-subhead'},'深色背景 · Dark Backgrounds'),
+                h('div',{className:'bh-inline-palette'},...c.backgroundText.filter(x=>['Deep Blue','Charcoal'].includes(x.background)).map((x,i)=>h('div',{className:'bh-inline-swatch',key:i},h('i',{style:{background:x.backgroundHex}}),h('span',null,x.background),h('code',null,x.backgroundHex)))),
+                h('h5',{className:'bh-color-subhead'},'深色背景文字 · Text Colors'),
+                h('div',{className:'bh-inline-palette'},h('div',{className:'bh-inline-swatch'},h('i',{style:{background:'#FFFFFF',border:'1px solid #DCE3E8'}}),h('span',null,'Primary Text'),h('code',null,'#FFFFFF')),h('div',{className:'bh-inline-swatch'},h('i',{style:{background:'#D9EEF4'}}),h('span',null,'Secondary Text'),h('code',null,'#D9EEF4'))),
+                h('div',{className:'bh-combo-grid'},...c.backgroundText.filter(x=>['Deep Blue','Charcoal'].includes(x.background)).map(combo))
+              ),
+              h('section',{className:'bh-color-group'},h('div',{className:'bh-color-group-head'},h('h4',null,'Functional Colors｜功能性颜色'),h('p',null,'只保留三种高频用途：主要 CTA、重点信息和图标。')),h('div',{className:'bh-functional-list'},...c.functionalColors.map(functionalItem))),
+              h('section',{className:'bh-color-group'},
+                h('div',{className:'bh-color-group-head'},h('h4',null,'Contrast Standards｜文字与图形对比度'),h('p',null,'WCAG 2.2 AA 最低要求。')),
+                h('div',{className:'bh-contrast-grid'},h('div',{className:'bh-contrast-item'},h('strong',null,'普通文字 · '+contrast.standard.ratio),h('p',null,contrast.standard.definition)),h('div',{className:'bh-contrast-item'},h('strong',null,'大字号文字 · '+contrast.large.ratio),h('p',null,contrast.large.definition)),h('div',{className:'bh-contrast-item'},h('strong',null,'信息图标 · '+contrast.nonText.ratio),h('p',null,contrast.nonText.definition)))
+              )
+            )),
+            card('03 · Typography｜字体系统',h('div',null,
+              h('p',{className:'bh-text',style:{marginBottom:18}},t.family),
+              ...t.styles.map((x,i)=>h('div',{className:'bh-sample',style:{marginBottom:14},key:i},h('div',{className:'spec'},x.name+' · '+x.size+' · '+x.weight+' · Line height '+x.line),h('p',{className:'preview',style:{fontSize:x.name.includes('Page Title')?32:x.name.includes('Section Title')?25:x.name.includes('Subsection Title')?19:x.name==='Body'?16:x.name==='Caption'?13:15,fontWeight:x.weight.includes('Bold')?700:x.weight.includes('Semibold')?600:400,lineHeight:x.line}},x.use+' — Industrial Vision, Precisely Applied'))),
+              h('div',{className:'bh-note',style:{marginTop:18}},h('strong',null,'Long-form Article Headings｜官网长文章标题层级'),...t.articleHeadingLevels.map((x,i)=>h('p',{key:i},x.level+' · '+x.name+' · '+x.size+' · '+x.weight+'：'+x.usage))),
+              list(t.rules)
+            ))
+          );
+        };
+        const renderImagery = () => h('div', null,
+          sectionHead('03 / Photography', 'Photography & Imagery', '工业机器视觉品牌的四类核心图片。先看分类，再按拍摄要求执行。'),
+          card('Photography Overview · 摄影分类总览',h('div',{className:'bh-grid'},...guide.imageryOverview.map((item,i)=>mini(String(i+1).padStart(2,'0')+' · '+item.name,item.purpose,'拍摄类别')))),
+          ...guide.imagery.map(item => {
+            const details = [mini('Subject · 拍什么', item.subject), mini('Composition · 怎么构图', item.composition), mini('Lighting & Background · 光线背景', item.lighting), mini('Crop & Ratio · 裁切比例', item.crop), mini('Capture Checklist · 拍摄执行',item.captureRule), mini('Delivery · 文件交付',item.delivery)];
+            details.push(h('div', { className: 'bh-note', style: { gridColumn: '1 / -1' } }, h('strong', null, 'Avoid · 不要这样拍：'), item.avoid));
+            return card(item.name, h('div', { className: 'bh-grid' }, ...details));
+          })
+        );
+                const renderLayouts = () => {
+          const groups = guide.layoutGroups || [];
+          const overview = h('section',{className:'bh-overview'},
+            h('div',{className:'bh-overview-head'},h('span',{className:'bh-overview-kicker'},'OVERVIEW / 01'),h('span',{className:'bh-overview-title'},'模板体系总览')),
+            h('p',{className:'bh-overview-desc'},'先按传播渠道与营销项目分类，再在各类别下选择具体内容形式或执行阶段。'),
+            h('div',{className:'bh-overview-grid'},...groups.map((g,i)=>h('div',{className:'bh-overview-item',key:g.id},
+              h('strong',null,String(i+1).padStart(2,'0')+' · '+g.name),
+              h('p',null,g.purpose),
+              h('p',null,(g.items||g.phases||[]).map(x=>x.name).join(' / ')+(g.collateral?' / '+g.collateral.name:'' ))
+            )))
+          );
+          const social = groups.find(g=>g.id==='social');
+          const trade = groups.find(g=>g.id==='trade-show');
+          const renderTemplate = item => card(item.name,h('div',null,
+            item.purpose ? para(item.purpose) : null,
+            h('div',{className:'bh-grid',style:{marginTop:10}},
+              item.assetType ? mini('Asset Type · 资产类型',item.assetType) : null,
+              item.status ? mini('Status · 当前状态',item.status) : null
+            ),
+            Array.isArray(item.structure) && item.structure.length ? h('div',{className:'bh-steps',style:{margin:'12px 0'}},...item.structure.map((step,index)=>h('span',{className:'bh-step',key:index},step))) : null,
+            item.rule ? h('div',{className:'bh-note'},h('strong',null,'执行要求：'),item.rule) : null
+          ));
+          const socialBlock = social ? h('section',{className:'bh-template-group'},
+            h('div',{className:'bh-template-group-head'},h('h3',null,'01 · '+social.name),h('p',null,social.purpose)),
+            ...social.items.map((item,index)=>h('div',{key:item.name,style:{marginBottom:index===social.items.length-1?0:12}},renderTemplate(item)))
+          ):null;
+          const tradeBlock = trade ? h('section',{className:'bh-template-group'},
+            h('div',{className:'bh-template-group-head'},h('h3',null,'02 · '+trade.name),h('p',null,trade.purpose)),
+            ...trade.phases.map((phase,index)=>h('div',{className:'bh-phase',key:phase.name},
+              h('div',null,h('div',{className:'bh-phase-label'},phase.name),h('div',{className:'bh-phase-goal'},phase.goal)),
+              h('div',{className:'bh-phase-content'},h('p',null,'传播内容'),list(phase.items),h('p',null,h('strong',null,'建议行动入口： '),phase.cta),h('div',{className:'bh-note'},h('strong',null,'执行要求：'),phase.rule))
+            )),
+            h('div',{className:'bh-subsection'},h('h4',null,trade.collateral.name),h('p',null,trade.collateral.purpose),list(trade.collateral.items),h('div',{className:'bh-note',style:{marginTop:8}},h('strong',null,'制作要求：'),trade.collateral.rule))
+          ):null;
+          return h('div',null,sectionHead('04 / Layout Templates','Layout & Content Templates','这里的 Template 指可编辑母版（Master）：固定品牌与版式组件，复制后替换文字、图片、日期、展位和 CTA 等项目变量。不是预制一张每次照搬的成品图。'),overview,socialBlock,tradeBlock);
+        };
+                const renderApplications = () => {
+          const a = guide.applications;
+          const group=(title,summary,sections)=>card(title,h('div',null,
+            para(summary),
+            ...sections.map((section,i)=>h('div',{style:{marginTop:13},key:i},h('h4',null,section.title),list(section.items)))
+          ));
+          const trade = a.tradeShow;
+          return h('div', null,
+            sectionHead('05 / Applications', 'Brand Applications', '官网、社媒与展会应用。'),
+            card('Application Overview · 应用总览',h('div',{className:'bh-grid'},mini('01 · Website 官网','统一品牌体验与询盘入口。'),mini('02 · Social Media 社媒','单图、轮播和视频规范。'),mini('03 · Trade Shows 展会','围绕目标、执行与效果评估。'))),
+            group('01 · Website / 官网',a.website.summary,[{title:'必须遵守',items:a.website.rules}]),
+            group('02 · Social Media / 社媒',a.social.summary,[{title:'Single Image · 单图',items:a.social.singleImage},{title:'Carousel · 轮播',items:a.social.carousel},{title:'Video · 视频',items:a.social.video}]),
+            group('03 · Trade Shows / 展会',trade.summary,[{title:'展前',items:trade.pre},{title:'展中',items:trade.onsite},{title:'展后',items:trade.post}]),
+            card('Trade Show Workflow｜展会流程',h('div',null,
+              para(trade.funnel.title),
+              h('div',{className:'bh-funnel'},...trade.funnel.steps.map((step,i)=>h('div',{className:'bh-funnel-step',key:i},h('strong',null,String(i+1).padStart(2,'0')+' · '+step.name),h('p',null,step.detail)))),
+              list(trade.funnel.rules)
+            )),
+            card('Three Tracking Sheets｜三张执行表',h('div',null,
+              ...trade.trackingSheets.map((sheet,i)=>h('div',{className:'bh-mini',key:i,style:{marginTop:12}},
+                h('h4',null,sheet.name),h('p',null,sheet.purpose),
+                h('div',{className:'bh-note'},h('strong',null,'字段：'),sheet.fields.join(' · '))
+              ))
+            )),
+            card('Lead Qualification｜线索等级',h('div',null,
+              list(trade.leadTierDefinitions.map(tier=>tier.tier+'：'+tier.definition))
+            )),
+            card('LinkedIn Event｜是否创建活动',h('div',null,
+              list(trade.eventPageSelection.items)
+            )),
+            card('Event Performance｜展会效果评估',h('div',null,
+              list(trade.kpis),
+              para('CPL（有效线索成本）= 展会总费用 ÷ 有效线索数。复参决策同时看目标达成、线索质量、销售跟进、后续商机/成交及战略价值。')
+            ))
+          );
+        };
+                        const render=()=>!guide?h('div',{className:'bh-section'},h('h3',null,loading?'正在加载品牌规范':'品牌规范暂时无法加载'),h('p',{className:'bh-text'},loading?'正在读取品牌规范数据，请稍候。':(error||'请检查品牌规范数据文件后重试。')),!loading?h('button',{type:'button',onClick:()=>{setLoading(true);setError('');fetch('/data/brand-guidelines.json',{cache:'no-store'}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json();}).then(data=>setGuide(data)).catch(err=>setError(err.message)).finally(()=>setLoading(false));},style:{marginTop:12,padding:'8px 12px',border:'1px solid #cbd9e0',borderRadius:6,background:'#fff',color:'#294b60',font:'inherit',cursor:'pointer'}},'重新加载'):null):active==='foundation'?renderFoundation():active==='identity'?renderIdentity():active==='imagery'?renderImagery():active==='layouts'?renderLayouts():renderApplications();
+        return h('main',{className:'bh'},h('style',null,css+cssEnhancements),h('header',{className:'bh-head'},h('div',null,h('div',{className:'bh-kicker'},'DEF COMPANY / BRAND STANDARDS'),h('h1',null,'Brand Hub'),h('p',{className:'bh-sub'},'Brand guidelines for consistent marketing and communication.')),h('div',{style:{fontSize:11,color:'#81909a',whiteSpace:'nowrap'}},'INTERNAL BRAND REFERENCE')),h('div',{className:'bh-layout'},h('nav',{className:'bh-nav','aria-label':'Brand guideline sections'},...sections.map(item=>h('button',{type:'button',key:item.id,className:(active===item.id?'active ':'')+(item.id==='applications'?'applications-highlight':''),onClick:()=>setActive(item.id)},h('strong',null,item.label),h('small',null,item.sub)))),h('div',{className:'bh-panel'},render())));
+      };
+
+      CMS.registerCustomPage({ id: 'brand-hub', label: 'Brand Hub', icon: 'palette', component: BrandHub });
+      CMS.registerCustomPage({ id: 'media-library', label: 'Brand Assets', icon: 'library_books', component: MediaLibrary });
+      CMS.registerCustomPage({ id: 'content-navigator', label: 'Content Management', icon: 'dashboard_customize', component: ContentManagement });
+
+      // Reduce Sveltia's global page toolbar to the three custom entry points only.
+      // Previous versions relied on tooltip text or exact routes for native controls;
+      // several native icons have neither, so those selectors could not hide them.
+      // This version keeps the two named custom pages by route/label and hides every
+      // other compact icon control in the top-left toolbar area, including unlabeled icons.
+      const normalized = (value) => String(value || '').replace(/\s+/g, ' ').trim().toLowerCase();
+      const primaryRoutes = new Set(['#/pages/brand-hub', '#/pages/media-library', '#/pages/content-navigator']);
+      // Keep only the three registered custom pages. Native Sveltia toolbar tools
+      // are not CMS sections and must not become extra navigation for this project.
+      const resourceRowPattern = /^(?:all resources|global resources|internal content resources\s*\(system\)|全部资源|全局资源|内部内容资源（系统）|内部内容资源 \(系统\))(?:\s*\d+)?$/i;
+      const navItemSelector = 'a, button, [role="button"], [role="link"], [role="menuitem"], [role="treeitem"], li';
+      const observedRoots = new WeakSet();
+
+      const normalizeRoute = (href) => {
+        const raw = String(href || '').trim().toLowerCase();
+        const marker = raw.indexOf('#/');
+        return marker >= 0 ? raw.slice(marker).split(/[?&]/)[0] : raw.split(/[?&]/)[0];
+      };
+
+      const nodeLabels = (node) => {
+        if (!node || node.nodeType !== 1) return [];
+        return [
+          node.getAttribute('aria-label'), node.getAttribute('title'),
+          node.getAttribute('data-tooltip'), node.getAttribute('data-testid'),
+          node.getAttribute('aria-description'), node.getAttribute('data-label'),
+          node.getAttribute('data-page'), node.innerText || node.textContent
+        ].map(normalized).filter(Boolean);
+      };
+
+      const routeOf = (node) => normalizeRoute(
+        node && (node.getAttribute('href') || node.getAttribute('data-href') || node.getAttribute('data-route') || node.getAttribute('data-page')) || ''
+      );
+
+      // Only evaluate the actionable item itself (or its own compact list-item wrapper).
+      // Never let a shared toolbar/nav parent preserve every sibling icon just because
+      // that parent also contains Library or Content Management.
+      const primaryLabels = new Set(['brand hub', 'brand assets', 'library', 'content management']);
+      const hasPrimaryIdentity = (node) => {
+        if (!node || node.nodeType !== 1) return false;
+        if (primaryRoutes.has(routeOf(node))) return true;
+        return nodeLabels(node).some(label => primaryLabels.has(label));
+      };
+
+      const isPrimaryItem = (node) => {
+        if (!node || node.nodeType !== 1) return false;
+        if (hasPrimaryIdentity(node)) return true;
+        const tag = (node.tagName || '').toLowerCase();
+        const isItemWrapper = tag === 'li' || /^(listitem|menuitem|treeitem)$/.test(node.getAttribute('role') || '');
+        if (isItemWrapper) {
+          const children = node.querySelectorAll ? node.querySelectorAll('a, button, [role="button"], [role="link"], [role="menuitem"], [role="treeitem"]') : [];
+          if (children.length === 1) return hasPrimaryIdentity(children[0]);
+        }
+        return false;
+      };
+
+      const getRect = (node) => {
+        try { return node.getBoundingClientRect(); } catch (_) { return null; }
+      };
+
+      const isTopLeftToolbarIcon = (node) => {
+        const rect = getRect(node);
+        if (!rect || rect.width <= 0 || rect.height <= 0) return false;
+        // The icon row in this site sits before the search input; the input itself is not a nav item.
+        return rect.top >= -4 && rect.top <= 62 && rect.bottom <= 72 &&
+          rect.left >= -4 && rect.left <= 470 && rect.width <= 150 && rect.height <= 100;
+      };
+
+      const toolbarItemContainer = (control) => {
+        // Choose the outermost compact wrapper around this one icon. Prefer the wrapper
+        // over the button itself so hiding an item also removes its empty flex/grid slot.
+        // Stop naturally before the shared toolbar because its width is much larger.
+        let current = control;
+        let candidate = control;
+        const interactiveSelector = 'a, button, [role="button"], [role="link"], [role="menuitem"], [role="treeitem"]';
+        for (let depth = 0; current && depth < 4; depth += 1) {
+          const tag = (current.tagName || '').toLowerCase();
+          const role = current.getAttribute && current.getAttribute('role') || '';
+          const rect = getRect(current);
+          const compact = rect && rect.width > 0 && rect.width <= 100 && rect.height > 0 && rect.height <= 76 && rect.top <= 62;
+          if (compact) {
+            const descendants = current.querySelectorAll ? current.querySelectorAll(interactiveSelector) : [];
+            const isItemWrapper = tag === 'li' || /^(listitem|menuitem|treeitem)$/.test(role);
+            if (current === control || isItemWrapper || descendants.length === 1) candidate = current;
+          }
+          current = current.parentElement;
+        }
+        return candidate;
+      };
+
+      const hideElement = (element) => {
+        if (!element || element.getAttribute('data-def-hidden-native-nav') === 'true') return;
+        element.style.setProperty('display', 'none', 'important');
+        element.setAttribute('aria-hidden', 'true');
+        element.setAttribute('data-def-hidden-native-nav', 'true');
+      };
+
+      // Hide only Sveltia's Validation tab/panel. Keep publishing-time required-field checks.
+      const validationLabelPattern = /^(?:validation|field validation|validate(?:\s+(?:entry|content|all))?|验证|校验)$/i;
+      const isValidationLabel = value => validationLabelPattern.test(normalized(value));
+      const validationControlSelector = 'button, [role="button"], [role="radio"], [role="tab"], [role="menuitem"]';
+      const hideValidationElement = element => {
+        if (!element || element.getAttribute('data-def-hidden-validation') === 'true') return;
+        element.style.setProperty('display', 'none', 'important');
+        element.setAttribute('aria-hidden', 'true');
+        element.setAttribute('data-def-hidden-validation', 'true');
+      };
+      const restoreValidationElement = element => {
+        if (!element || element.getAttribute('data-def-hidden-validation') !== 'true') return;
+        element.style.removeProperty('display');
+        element.removeAttribute('aria-hidden');
+        element.removeAttribute('data-def-hidden-validation');
+      };
+      const hideValidationUi = element => {
+        if (!element || element.nodeType !== 1) return;
+        const tag = String(element.tagName || '').toLowerCase();
+        const visibleLabel = normalized(element.getAttribute('aria-label') || element.getAttribute('title') || element.innerText || element.textContent);
+        if (element.matches && element.matches(validationControlSelector) && isValidationLabel(visibleLabel)) {
+          hideValidationElement(element);
+        }
+
+        // Sveltia keeps the active sidebar content in #entry-sidebar-content and labels its
+        // panel with an h3 (the Chinese locale calls this panel “验证”).
+        const sidebarContent = element.closest ? element.closest('#entry-sidebar-content') : null;
+        if (sidebarContent) {
+          const heading = sidebarContent.querySelector('h3');
+          if (heading && isValidationLabel(heading.innerText || heading.textContent)) {
+            hideValidationElement(sidebarContent);
+          } else {
+            restoreValidationElement(sidebarContent);
+          }
+        } else if (/^h[1-6]$/.test(tag) && isValidationLabel(visibleLabel)) {
+          const panel = element.closest('[role="group"][aria-labelledby]');
+          const sidebar = panel && panel.closest('#entry-sidebar-content');
+          if (sidebar) hideValidationElement(sidebar);
+        }
+
+        // Hide the manual Validate action wherever Sveltia exposes it.
+        if (tag === 'button' && isValidationLabel(visibleLabel)) hideValidationElement(element);
+      };
+
+      // Sveltia v0.250.2 renders the native Save/Save and Publish split control as
+      // .sui.split-button > button + button.menu-button. Add a clearly labelled Publish
+      // button beside that native control, but delegate the actual publish action to Sveltia.
+      const allOpenDomRoots = () => {
+        const roots = [document];
+        for (let index = 0; index < roots.length; index += 1) {
+          const root = roots[index];
+          if (!root || !root.querySelectorAll) continue;
+          root.querySelectorAll('*').forEach(node => {
+            if (node.shadowRoot && !roots.includes(node.shadowRoot)) roots.push(node.shadowRoot);
+          });
+        }
+        return roots;
+      };
+      const queryAllOpenRoots = selector => {
+        const found = [];
+        allOpenDomRoots().forEach(root => {
+          if (root.querySelectorAll) root.querySelectorAll(selector).forEach(node => found.push(node));
+        });
+        return [...new Set(found)];
+      };
+      const getEditorControlLabel = element => normalized(
+        element && (element.getAttribute('aria-label') || element.getAttribute('title') || element.innerText || element.textContent)
+      );
+      const visibleEditorElement = element => {
+        if (!element || !element.isConnected) return false;
+        const rect = element.getBoundingClientRect();
+        if (rect.width < 1 || rect.height < 1) return false;
+        const style = window.getComputedStyle(element);
+        return style.display !== 'none' && style.visibility !== 'hidden';
+      };
+      const findNativeSaveSplit = () => queryAllOpenRoots('.sui.split-button').find(group => {
+        const rect = group.getBoundingClientRect();
+        if (rect.top < -2 || rect.top > 130 || rect.right < window.innerWidth * 0.45) return false;
+        const buttons = Array.from(group.querySelectorAll('button'));
+        const save = buttons.find(button =>
+          !button.classList.contains('menu-button') &&
+          /^(?:save|保存|保存更改|saving|保存中|publishing|发布中)$/i.test(getEditorControlLabel(button))
+        );
+        const menu = buttons.find(button => button.classList.contains('menu-button'));
+        return visibleEditorElement(group) && !!save && !!menu;
+      }) || null;
+
+      let activePublishGroup = null;
+      let activeNativeSaveButton = null;
+      let activeNativeMenuButton = null;
+      let activePublishButton = null;
+
+      const installEditorPublishButton = () => {
+        if (
+          activePublishButton && activePublishButton.isConnected &&
+          activePublishGroup && activePublishGroup.isConnected &&
+          activeNativeSaveButton && activeNativeSaveButton.isConnected &&
+          activeNativeMenuButton && activeNativeMenuButton.isConnected &&
+          activePublishButton.parentElement === activePublishGroup.parentElement
+        ) {
+          if (!activePublishButton.dataset.defPublishPending) {
+            activePublishButton.disabled = activeNativeSaveButton.disabled ||
+              activePublishGroup.getAttribute('aria-disabled') === 'true';
+          }
+          return;
+        }
+
+        if (activePublishButton && activePublishButton.isConnected) activePublishButton.remove();
+        activePublishGroup = null;
+        activeNativeSaveButton = null;
+        activeNativeMenuButton = null;
+        activePublishButton = null;
+
+        const group = findNativeSaveSplit();
+        if (!group || !group.parentElement) return;
+        const buttons = Array.from(group.querySelectorAll('button'));
+        const saveButton = buttons.find(button =>
+          !button.classList.contains('menu-button') &&
+          /^(?:save|保存|保存更改|saving|保存中|publishing|发布中)$/i.test(getEditorControlLabel(button))
+        );
+        const menuButton = buttons.find(button => button.classList.contains('menu-button'));
+        if (!saveButton || !menuButton) return;
+
+        const publishButton = document.createElement('button');
+        publishButton.type = 'button';
+        publishButton.textContent = '发布';
+        publishButton.setAttribute('aria-label', 'Publish');
+        publishButton.setAttribute('title', 'Publish this entry to the website');
+        publishButton.setAttribute('data-def-explicit-publish', 'true');
+        publishButton.style.cssText = [
+          'display:inline-flex',
+          'align-items:center',
+          'justify-content:center',
+          'min-height:36px',
+          'margin-inline-start:8px',
+          'padding:0 16px',
+          'border:1px solid #1b66bd',
+          'border-radius:6px',
+          'background:#1b66bd',
+          'color:#fff',
+          'font:inherit',
+          'font-size:14px',
+          'font-weight:600',
+          'line-height:1.2',
+          'white-space:nowrap',
+          'cursor:pointer'
+        ].join(';');
+
+        publishButton.addEventListener('click', event => {
+          event.preventDefault();
+          event.stopPropagation();
+          const currentGroup = findNativeSaveSplit();
+          if (!currentGroup) {
+            publishButton.title = '未找到 CMS 原生发布菜单，请刷新编辑页后重试。';
+            return;
+          }
+          const currentSave = Array.from(currentGroup.querySelectorAll('button')).find(button =>
+            !button.classList.contains('menu-button') &&
+            /^(?:save|保存|保存更改|saving|保存中|publishing|发布中)$/i.test(getEditorControlLabel(button))
+          );
+          const currentMenu = Array.from(currentGroup.querySelectorAll('button')).find(button => button.classList.contains('menu-button'));
+          if (!currentSave || !currentMenu || currentSave.disabled || currentGroup.getAttribute('aria-disabled') === 'true') return;
+
+          publishButton.disabled = true;
+          publishButton.dataset.defPublishPending = 'true';
+          currentMenu.click();
+
+          const startedAt = Date.now();
+          const triggerNativePublish = () => {
+            const option = queryAllOpenRoots('button, [role="menuitem"], [role="option"]').find(candidate =>
+              visibleEditorElement(candidate) &&
+              !candidate.disabled &&
+              /^(?:save and publish|保存并发布)$/i.test(getEditorControlLabel(candidate))
+            );
+            if (option) {
+              option.click();
+              publishButton.title = '已将发布操作交给 CMS 处理。';
+              window.setTimeout(() => {
+                if (!publishButton.isConnected) return;
+                delete publishButton.dataset.defPublishPending;
+                const nativeGroup = findNativeSaveSplit();
+                const nativeSave = nativeGroup && Array.from(nativeGroup.querySelectorAll('button')).find(button =>
+                  !button.classList.contains('menu-button') &&
+                  /^(?:save|保存|保存更改|saving|保存中|publishing|发布中)$/i.test(getEditorControlLabel(button))
+                );
+                publishButton.disabled = !nativeSave || nativeSave.disabled;
+              }, 5000);
+            } else if (Date.now() - startedAt < 3000) {
+              window.setTimeout(triggerNativePublish, 60);
+            } else {
+              delete publishButton.dataset.defPublishPending;
+              publishButton.disabled = false;
+              publishButton.title = '没有找到“保存并发布”菜单项。请用 Save 旁边的下拉菜单执行发布。';
+            }
+          };
+          window.setTimeout(triggerNativePublish, 0);
+        });
+
+        group.insertAdjacentElement('afterend', publishButton);
+        activePublishGroup = group;
+        activeNativeSaveButton = saveButton;
+        activeNativeMenuButton = menuButton;
+        activePublishButton = publishButton;
+        publishButton.disabled = saveButton.disabled || group.getAttribute('aria-disabled') === 'true';
+      };
+
+      const restoreElement = (element) => {
+        if (!element || element.getAttribute('data-def-hidden-native-nav') !== 'true') return;
+        element.style.removeProperty('display');
+        element.removeAttribute('aria-hidden');
+        element.removeAttribute('data-def-hidden-native-nav');
+      };
+
+      const hideResourceRow = (element) => {
+        let target = element;
+        if (typeof element.closest === 'function') {
+          target = element.closest('a, button, [role="button"], [role="treeitem"], [role="link"], [role="listitem"], li') || element;
+        }
+        if (!resourceRowPattern.test(normalized(target.innerText || target.textContent))) {
+          let parent = target.parentElement;
+          for (let step = 0; parent && step < 4; step += 1, parent = parent.parentElement) {
+            if (resourceRowPattern.test(normalized(parent.innerText || parent.textContent))) target = parent;
+            else break;
+          }
+        }
+        hideElement(target);
+      };
+
+      // Keep exactly the three custom project sections in the top toolbar.
+      // Sveltia's native toolbar controls have no stable routes/labels in this layout,
+      // so identify the six compact icon controls by position and retain the rightmost three.
+      // Do not infer project navigation from icon position. Sveltia can change
+      // toolbar ordering between versions; route/label identity is the stable signal.
+      const normalizeProjectToolbar = () => {
+  // Reconcile compact toolbar controls after each CMS render.
+  // Preserve the three project pages by route/label; hide native extras.
+  document.querySelectorAll(navItemSelector).forEach((control) => {
+    if (!isTopLeftToolbarIcon(control)) return;
+    const target = toolbarItemContainer(control);
+    if (isPrimaryItem(control) || isPrimaryItem(target)) {
+      restoreElement(control);
+      if (target !== control) restoreElement(target);
+    } else {
+      hideElement(target);
+    }
+  });
 };
-function esc(v){return String(v==null?"":v).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));}
-function note(){return '<div class="readonly-note"><strong>Read-only preview.</strong> All edit fields and publishing controls are disabled. You can open each section and inspect the complete content structure without changing the website.</div>';}
-function head(group,title,sub,back){return '<div class="page-head"><div><div class="eyebrow">'+esc(group)+'</div><h1>'+esc(title)+'</h1><p class="subtitle">'+esc(sub)+'</p></div>'+(back||'')+'</div>';}
-function navlink(title,desc,action){return '<button class="navlink" data-action="'+action+'"><span><strong>'+esc(title)+'</strong><small>'+esc(desc)+'</small></span><span class="arrow">›</span></button>';}
-function dashboard(){return head("CONTENT MANAGEMENT","Content Management","Manage website content, page copy and publishing settings.")+note()+
-'<section class="group"><header class="group-head"><div><strong>Stories</strong><small>Editorial articles and industry insights</small></div></header><div class="group-body">'+navlink("New Story","Create a new Story entry","new-story")+navlink("Drafts","Unpublished Story entries","draft-stories")+navlink("Published","Published Stories on the website","published-stories")+navlink("Page Settings","Stories page title and introduction","story-settings")+'</div></section>'+
-'<section class="group"><header class="group-head"><div><strong>Trade Shows</strong><small>Upcoming show cards and supporting articles</small></div></header><div class="group-body">'+navlink("Upcoming Shows","Edit the event cards shown on the website","upcoming-shows")+
-'<div class="subgroup"><div class="subgroup-title">Trade Show Articles</div><div class="group-body">'+navlink("New Trade Show Article","Create a pre-show, during-show or post-show article","new-trade")+navlink("Drafts","Unpublished Trade Show Articles","draft-trade")+navlink("Published","Published Trade Show Articles","published-trade")+navlink("Page Settings","Trade Shows page title, tabs and introduction","trade-settings")+'</div></div></div></section>'+
-'<section class="group"><header class="group-head"><div><strong>Social Media</strong><small>Page copy and social channel cards</small></div></header><div class="group-body">'+navlink("Social Media Page Content","Page title and disclaimer","social-page")+navlink("Social Channel Cards","LinkedIn, YouTube and Facebook cards","social-cards")+'</div></section>'+
-'<section class="group"><header class="group-head"><div><strong>Media</strong><small>Media page copy and contacts</small></div></header><div class="group-body">'+navlink("Media Page Content","Page title and introduction","media-page")+navlink("Media Contacts","Contact records and portraits","media-contacts")+'</div></section>'+
-'<section class="group"><header class="group-head"><div><strong>Website Basics</strong><small>Shared website content and form copy</small></div></header><div class="group-body">'+navlink("Brand Introduction","Logo, navigation and home hero","brand-intro")+navlink("Newsletter","Subscription content and confirmation","newsletter")+navlink("Contact Content","Contact Sales form labels and messages","contact")+navlink("Cookie & Privacy","Cookie banner and preference copy","cookie")+'</div></section>';}
-function library(){return head("ASSET MANAGEMENT","Library","Browse visual assets stored in the website repository.")+note()+'<section class="panel"><div class="toolbar"><input class="search" id="asset-search" placeholder="Search assets by file name…"><button class="filter active">Images</button><button class="filter">PDF</button><button class="filter">Videos</button></div><div class="assets-grid" id="asset-grid">'+assets.map(a=>'<article class="asset-card" data-search="'+esc(a[0].toLowerCase())+'"><img loading="lazy" src="/images/'+esc(a[0])+'" alt=""><div class="asset-info"><strong>'+esc(a[0])+'</strong><small>'+esc(a[1])+' · images/</small></div></article>').join('')+'</div></section>';}
-function draftPage(label){return head("CONTENT MANAGEMENT",label,"Unpublished entries are kept separately from published website content.",'<button class="btn" data-action="content">← Content Management</button>')+note()+'<section class="panel"><div class="empty-state"><strong>No draft entries to display</strong>This is the Drafts view in the editorial workflow. New entries can be saved as drafts before being published.</div></section>';}
-function listPage(type,records){let title=type==="stories"?"Stories":type==="trade"?"Trade Show Articles":"Upcoming Shows";let rows=records.map((x,i)=>'<tr><td><span class="entry-title">'+esc(x.title)+'</span></td><td>'+esc(x.category||x.stage||x.theme||"—")+'</td><td>'+esc(x.date||x.start||"—")+'</td><td><span class="pill '+(type==="shows"?"amber":"green")+'">'+(type==="shows"?"Upcoming":"Published")+'</span></td><td><button class="open-link" data-record="'+type+'" data-index="'+i+'">Open entry →</button></td></tr>').join("");return head(type==="shows"?"TRADE SHOWS":"CONTENT MANAGEMENT",title,"Select an entry to inspect its configured fields.",'<button class="btn" data-action="content">← Content Management</button>')+note()+'<section class="panel"><div class="toolbar"><input class="search" data-filter="'+type+'" placeholder="Search title, date or category…"></div><div class="table-wrap"><table><thead><tr><th>Title</th><th>Category / Topic</th><th>Date</th><th>Status</th><th></th></tr></thead><tbody id="rows">'+rows+'</tbody></table></div></section>'+
-'<div class="card-grid">'+records.map((x,i)=>'<article class="record-card"><img src="/images/'+esc(x.image||"event-1.jpg")+'" alt=""><div class="record-copy"><div class="record-meta">'+esc(x.date||x.start||"")+' · '+esc(x.category||x.stage||x.theme||"")+'</div><strong>'+esc(x.title)+'</strong><p>'+esc(x.summary||x.location||"")+'</p><button class="open-link" data-record="'+type+'" data-index="'+i+'">Open entry →</button></div></article>').join("")+'</div>';}
-function input(v,type){return '<input class="control" type="'+(type||"text")+'" value="'+esc(v||"")+'" disabled>';}
-function area(v){return '<textarea class="control" disabled>'+esc(v||"")+'</textarea>';}
-function selectbox(value,options){return '<div class="select-display"><span>'+esc(value||"Select…")+'</span><span>⌄</span></div><div class="select-options">'+options.map(o=>'<span class="option-chip '+(o===value?'selected':'')+'">'+esc(o)+'</span>').join('')+'</div>';}
-function tokens(arr){return '<div class="token-list">'+(arr||[]).map(x=>'<span class="token">'+esc(x)+'</span>').join('')+'</div>';}
-function checkbox(on,label){return '<div class="check-row"><input type="checkbox" '+(on?'checked':'')+' disabled><span>'+esc(label)+'</span><span class="switch-pill '+(on?'':'off')+'">'+(on?'Enabled':'Disabled')+'</span></div>';}
-function imagefield(file){return '<div class="image-field"><img src="/images/'+esc(file||"story-cover.jpg")+'" alt=""><div><strong>'+esc(file||"")+'</strong><small>Selected from Library</small></div></div>';}
-function field(label,control,hint,required){return '<div class="field"><label>'+esc(label)+(required?'<span class="required">*</span>':'')+'</label>'+control+(hint?'<div class="hint">'+esc(hint)+'</div>':'')+'</div>';}
-function richtext(text){return '<div class="rich-toolbar">'+["H2","H3","B","I","• List","1. List","Link","Quote"].map(x=>'<span class="rich-tool">'+x+'</span>').join('')+'</div><div class="rich-area">'+esc(text||"")+'</div><div class="rich-modes"><span>Rich Text</span><span>Raw</span></div>';}
-function ctaFields(on,label){return field("显示销售 CTA",checkbox(on,"Show sales CTA at the end of this content"))+field("CTA 文案",selectbox(label,ctaOptions),"Fixed choices: Talk to Our Team / Contact Sales / Book a Demo");}
-function statusSide(type,status,date){return '<aside class="side-column"><section class="side-box"><header>Publishing</header><div class="inside">'+
-'<div class="info-row"><span>Collection</span><b>'+esc(type)+'</b></div><div class="info-row"><span>Status</span><b><span class="pill '+(status==="Published"?"green":"amber")+'">'+esc(status)+'</span></b></div><div class="info-row"><span>Date</span><b>'+esc(date||"—")+'</b></div><div class="info-row"><span>Workflow</span><b>Draft → Publish</b></div></div></section><section class="side-box"><header>Actions</header><div class="inside"><p style="font-size:11px;color:#74818b;margin:0;line-height:1.6">The live CMS uses Save to keep an unpublished draft and Publish to update the website.</p></div></section></aside>';}
-function actions(){return '<div class="action-bar"><span class="action-hint">Preview only · Actions disabled</span><button class="btn" disabled>Save</button><button class="btn" disabled>⌄</button><button class="btn primary" disabled>Publish</button></div>';}
-function storyEditor(x,isNew){let title=isNew?"New Story":x.title;return head("STORIES / EDITOR","Story Editor",title,'<button class="btn" data-action="published-stories">← Stories</button>')+note()+
-'<div class="form-layout"><section class="editor-panel"><div class="editor-header"><div><strong>Content</strong><small>Stories · JSON content entry</small></div><span class="pill '+(isNew?"amber":"green")+'">'+(isNew?"New entry":"Published")+'</span></div><div class="form-body">'+
-field("文章标题",input(isNew?"":x.title),"",true)+
-field("标题字号（px）",input(x.titleSize||34,"number"),"Controls the main article title on the website detail page. Range: 28–42 px.")+
-field("发布日期",input(x.date,"date"),"",true)+
-field("Content Category｜内容类别",selectbox(x.category||"Product & Technology",categories),"Required · Single selection",true)+
-field("Industry｜行业",tokens(x.industries||[]),"Multiple selection")+
-field("Content Topic｜内容话题",tokens(x.tags||[]),"Shared option set with Upcoming Shows and Trade Show Articles.")+
-field("卡片摘要（可调整官网字号）",area(x.summary),"Required · Shown in Stories listing and recommendation cards",true)+
-field("摘要字号（px）",input(x.summarySize||16,"number"),"Range: 14–18 px")+
-field("封面图片",imagefield(x.image),"Select an existing image from Library.")+
-field("图片替代文本",input(x.alt))+
-field("虚构应用示例",checkbox(!!x.illustrative,"Illustrative example"))+
-field("正文",richtext(x.body),"Rich text editor · Markdown format · Rich Text / Raw modes",true)+
-field("正文默认字号（px）",input(x.bodySize||17,"number"),"Range: 14–20 px")+
-ctaFields(!!x.cta,x.ctaLabel||"Talk to Our Team")+
-'</div>'+actions()+'</section>'+statusSide("Stories",isNew?"New":"Published",x.date)+'</div>';}
-function tradeEditor(x,isNew){return head("TRADE SHOW ARTICLES / EDITOR","Trade Show Article Editor",isNew?"New Trade Show Article":x.title,'<button class="btn" data-action="published-trade">← Trade Show Articles</button>')+note()+
-'<div class="form-layout"><section class="editor-panel"><div class="editor-header"><div><strong>Content</strong><small>Trade Show Articles · JSON content entry</small></div><span class="pill '+(isNew?"amber":"green")+'">'+(isNew?"New entry":"Published")+'</span></div><div class="form-body">'+
-field("文章标题",input(isNew?"":x.title),"",true)+field("标题字号（px）",input(x.titleSize||34,"number"),"Range: 28–42 px")+
-field("文章阶段标签（官网卡片显示）",selectbox(x.stage||"Pre-show Preview",["Pre-show Preview","During-show Update","Post-show Recap"]),"Displayed before the publication date and article title on the website card.",true)+
-field("对应展会名称（可选）",input(x.related||""))+
-field("发布日期",input(x.date,"date"),"",true)+
-field("Industry｜行业",tokens(x.industries||[]),"Multiple selection")+
-field("Content Topic｜内容话题",tokens(x.tags||[]),"Shared topic set with Upcoming Shows and Stories.")+
-field("卡片摘要（可调整官网字号）",area(x.summary),"Required",true)+field("摘要字号（px）",input(x.summarySize||16,"number"),"Range: 14–18 px")+
-field("封面图片",imagefield(x.image))+field("图片替代文本",input(x.alt||""))+
-field("虚构示例标记",checkbox(!!x.illustrative,"Illustrative example"))+
-field("正文",richtext(x.body),"Rich text editor · Markdown format · Rich Text / Raw modes",true)+
-field("正文默认字号（px）",input(x.bodySize||17,"number"),"Range: 14–20 px")+
-ctaFields(!!x.cta,x.ctaLabel||"Talk to Our Team")+
-'</div>'+actions()+'</section>'+statusSide("Trade Show Articles",isNew?"New":"Published",x.date)+'</div>';}
-function showEditor(x){return head("TRADE SHOWS / UPCOMING SHOWS","Upcoming Show Editor",x.title,'<button class="btn" data-action="upcoming-shows">← Upcoming Shows</button>')+note()+
-'<div class="form-layout"><section class="editor-panel"><div class="editor-header"><div><strong>Exhibition</strong><small>Upcoming Shows · exhibitions list item</small></div><span class="pill amber">Upcoming</span></div><div class="form-body">'+
-field("展会名称",input(x.title),"",true)+field("展会封面图（卡片顶部图片）",imagefield(x.image),"Uploaded image is displayed at its original aspect ratio without cropping or stretching.",true)+
-field("展位号",input(x.booth),"尚未确认时填写 TBC。",true)+field("开始日期",input(x.start,"date"),"",true)+field("结束日期",input(x.end,"date"),"",true)+
-field("地点（城市、地区和国家）",input(x.location),"",true)+field("卡片话题标签",tokens(x.tags),"Shared topic options.")+
-field("显示预约按钮",checkbox(true,"Show booking CTA on event card"))+
-field("预约按钮文案",selectbox("Book a Meeting at This Show",showCtaOptions),"Available options: Book a Meeting at This Show / Talk to Our Team / Contact Sales / Book a Demo")+
-'</div>'+actions()+'</section>'+statusSide("Upcoming Shows","Upcoming",x.start)+'</div>';}
-function settingEditor(title,rows){return head("CONTENT MANAGEMENT / PAGE SETTINGS",title,"Page content and labels configured for the public website.",'<button class="btn" data-action="content">← Content Management</button>')+note()+'<section class="editor-panel"><div class="editor-header"><div><strong>Page Content</strong><small>File-based settings entry</small></div><span class="pill">Page Settings</span></div><div class="form-body">'+rows.map(r=>field(r[0],r[1].length>68?area(r[1]):input(r[1]),r[2]||"")).join('')+'</div>'+actions()+'</section>';}
-function socialCards(){return head("SOCIAL MEDIA","Social Channel Cards","Each channel is configured as a separate item in the CMS.",'<button class="btn" data-action="content">← Content Management</button>')+note()+'<section class="panel">'+socialChannels.map((x,i)=>'<div class="panel-head"><strong>'+esc(x.platform)+'</strong><button class="open-link" data-record="social" data-index="'+i+'">Open channel →</button></div>').join('')+'</section>';}
-function socialEditor(x){return head("SOCIAL MEDIA / CHANNEL","Social Channel Editor",x.platform,'<button class="btn" data-action="social-cards">← Social Channel Cards</button>')+note()+'<section class="editor-panel"><div class="editor-header"><strong>Channel</strong><span class="pill">Social Channel</span></div><div class="form-body">'+field("平台名称",selectbox(x.platform,["LinkedIn","YouTube","Facebook","Instagram","X","Other"]))+field("平台简介",area(x.description),"",true)+field("平台主页链接（https://）",input(x.url),"",true)+field("按钮文字",input(x.button),"",true)+field("图片",imagefield(x.image))+field("图片替代文本",input(x.alt))+field("在网站显示",checkbox(x.active,"Display this channel on the website"))+'</div>'+actions()+'</section>';}
-function mediaContacts(){return head("MEDIA","Media Contacts","Each contact is configured as a separate item.",'<button class="btn" data-action="content">← Content Management</button>')+note()+'<section class="panel">'+contacts.map((x,i)=>'<div class="panel-head"><div><strong>'+esc(x.name)+'</strong><small>'+esc(x.title)+' · '+esc(x.email)+'</small></div><button class="open-link" data-record="contact" data-index="'+i+'">Open contact →</button></div>').join('')+'</section>';}
-function contactEditor(x){return head("MEDIA / CONTACT","Media Contact Editor",x.name,'<button class="btn" data-action="media-contacts">← Media Contacts</button>')+note()+'<section class="editor-panel"><div class="editor-header"><strong>Contact</strong><span class="pill">Media Contact</span></div><div class="form-body">'+field("姓名",input(x.name),"",true)+field("职位",input(x.title),"",true)+field("联系邮箱",input(x.email),"",true)+field("头像（可选）",imagefield(x.portrait))+field("头像替代文本",input(x.alt))+field("在网站显示",checkbox(x.active,"Display this contact on the website"))+'</div>'+actions()+'</section>';}
-function drafts(type){let title=type==="story"?"Draft Stories":"Draft Trade Show Articles";return head("CONTENT MANAGEMENT",title,"Unpublished entries in the editorial workflow.",'<button class="btn" data-action="content">← Content Management</button>')+note()+'<section class="panel"><div class="empty-state"><strong>No draft entries available in this public preview</strong>The live CMS separates unpublished drafts from published content. This view is included to show the draft workflow structure.</div></section>';}
-function render(page,data){state.page=page;navs();crumb.textContent=page==="library"?"Library":"Content Management";let out="";
-if(page==="library")out=library();
-else if(page==="content")out=dashboard();
-else if(page==="stories")out=listPage("stories",stories);
-else if(page==="trade")out=listPage("trade",tradeArticles);
-else if(page==="shows")out=listPage("shows",shows);
-else if(page==="draft-stories")out=drafts("story");
-else if(page==="draft-trade")out=drafts("trade");
-else if(page==="story-editor")out=storyEditor(data||stories[0],false);
-else if(page==="new-story")out=storyEditor({title:"",date:"",category:"Product & Technology",industries:[],tags:[],summary:"",image:"story-cover.jpg",alt:"",illustrative:false,titleSize:34,summarySize:16,bodySize:17,cta:false,ctaLabel:"Talk to Our Team",body:""},true);
-else if(page==="trade-editor")out=tradeEditor(data||tradeArticles[0],false);
-else if(page==="new-trade")out=tradeEditor({title:"",date:"",stage:"Pre-show Preview",related:"",industries:[],tags:[],summary:"",image:"story-cover.jpg",alt:"",illustrative:true,titleSize:34,summarySize:16,bodySize:17,cta:false,ctaLabel:"Talk to Our Team",body:""},true);
-else if(page==="show-editor")out=showEditor(data||shows[0]);
-else if(page==="social-cards")out=socialCards();
-else if(page==="social-editor")out=socialEditor(data||socialChannels[0]);
-else if(page==="media-contacts")out=mediaContacts();
-else if(page==="contact-editor")out=contactEditor(data||contacts[0]);
-else if(page==="story-settings")out=settingEditor("Stories Page Settings",settings[page]);
-else if(page==="trade-settings")out=settingEditor("Trade Shows Page Settings",settings[page]);
-else if(page==="brand-intro")out=settingEditor("Brand Introduction",settings[page]);
-else if(page==="newsletter")out=settingEditor("Newsletter",settings[page]);
-else if(page==="social-page")out=settingEditor("Social Media Page Content",settings[page]);
-else if(page==="media-page")out=settingEditor("Media Page Content",settings[page]);
-else if(page==="contact")out=settingEditor("Contact Content",settings[page]);
-else if(page==="cookie")out=settingEditor("Cookie & Privacy",settings[page]);
-root.innerHTML=out;bind();}
-function navs(){document.querySelectorAll("[data-nav]").forEach(b=>b.classList.toggle("active",b.dataset.nav===(state.page==="library"?"library":"content")));}
-function go(a){const map={"library":"library","content":"content","new-story":"new-story","draft-stories":"draft-stories","published-stories":"stories","story-settings":"story-settings","upcoming-shows":"shows","new-trade":"new-trade","draft-trade":"draft-trade","published-trade":"trade","trade-settings":"trade-settings","social-page":"social-page","social-cards":"social-cards","media-page":"media-page","media-contacts":"media-contacts","brand-intro":"brand-intro","newsletter":"newsletter","contact":"contact","cookie":"cookie"};render(map[a]||"content");}
-function bind(){
-root.querySelectorAll("[data-action]").forEach(b=>b.addEventListener("click",()=>go(b.dataset.action)));
-root.querySelectorAll("[data-record]").forEach(b=>b.addEventListener("click",()=>{const t=b.dataset.record,i=Number(b.dataset.index);if(t==="stories")render("story-editor",stories[i]);if(t==="trade")render("trade-editor",tradeArticles[i]);if(t==="shows")render("show-editor",shows[i]);if(t==="social")render("social-editor",socialChannels[i]);if(t==="contact")render("contact-editor",contacts[i]);}));
-const a=$("#asset-search");if(a)a.addEventListener("input",()=>{const q=a.value.toLowerCase();root.querySelectorAll("[data-search]").forEach(el=>el.style.display=el.dataset.search.includes(q)?"":"none");});
-const f=root.querySelector("[data-filter]");if(f)f.addEventListener("input",()=>{const q=f.value.toLowerCase();root.querySelectorAll("#rows tr").forEach(row=>row.style.display=row.textContent.toLowerCase().includes(q)?"":"none");});
-}
-document.querySelectorAll("[data-nav]").forEach(b=>b.addEventListener("click",()=>render(b.dataset.nav)));
-render("library");
-})();
-</script>
+
+      const inspectElement = (element) => {
+        if (!element || element.nodeType !== 1) return;
+        hideValidationUi(element);
+        const control = element.matches && element.matches(navItemSelector)
+          ? element
+          : (element.closest ? element.closest(navItemSelector) : null);
+        if (control) {
+          const target = toolbarItemContainer(control);
+          if (isPrimaryItem(control) || isPrimaryItem(target)) {
+            // Restore both the clickable control and its one-item wrapper. This also
+            // handles scan order where a wrapper is visited before its inner link.
+            restoreElement(control);
+            if (target !== control) restoreElement(target);
+          } else if (isTopLeftToolbarIcon(control)) {
+            hideElement(target);
+          }
+        }
+        const text = normalized(element.innerText || element.textContent);
+        if (resourceRowPattern.test(text)) hideResourceRow(element);
+      };
+
+      const scanTree = (root) => {
+        if (!root) return;
+        if (root.nodeType === 1) inspectElement(root);
+        const descendants = root.querySelectorAll ? root.querySelectorAll('*') : [];
+        descendants.forEach((element) => {
+          inspectElement(element);
+          if (element.shadowRoot) observeAndScanRoot(element.shadowRoot);
+        });
+      };
+
+      const observeAndScanRoot = (root) => {
+        if (!root || observedRoots.has(root)) return;
+        observedRoots.add(root);
+        scanTree(root);
+        const observer = new MutationObserver((mutations) => {
+          mutations.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+              if (node.nodeType === 1) {
+                inspectElement(node);
+                scanTree(node);
+                if (node.shadowRoot) observeAndScanRoot(node.shadowRoot);
+              }
+            });
+            if ((mutation.type === 'attributes' || mutation.type === 'characterData') && mutation.target) {
+              const target = mutation.target.nodeType === 1 ? mutation.target : mutation.target.parentElement;
+              if (target) inspectElement(target);
+            }
+          });
+          normalizeProjectToolbar();
+          installEditorPublishButton();
+        });
+        observer.observe(root, {
+          childList: true,
+          subtree: true,
+          attributes: true,
+          characterData: true,
+          attributeFilter: ['aria-label', 'title', 'data-tooltip', 'data-testid', 'aria-description', 'data-label', 'data-page', 'href', 'data-href', 'data-route']
+        });
+      };
+
+      // Version marker makes it possible to confirm this exact navigation script reached production.
+      document.documentElement.setAttribute('data-def-cms-nav-fix', 'three-primary-sections-v1');
+      document.documentElement.setAttribute('data-def-brand-hub', 'brand-guidelines-v2');
+      document.documentElement.setAttribute('data-def-cms-validation-ui', 'hidden-v1');
+      observeAndScanRoot(document);
+      normalizeProjectToolbar();
+      installEditorPublishButton();
+      // The document-level observer above already watches this subtree.
+      // A second observer here duplicated every mutation and repeatedly rescanned the same DOM.
+
+
+      if (!window.location.hash || /^#\/collections\/content-management\/?$/.test(window.location.hash)) window.location.hash = '#/pages/content-navigator';
+    })();
+  </script>
 </body>
 </html>
