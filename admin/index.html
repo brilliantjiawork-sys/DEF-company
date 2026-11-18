@@ -601,7 +601,7 @@
           const l=guide.logo,c=guide.colors,t=guide.typography,contrast=c.contrastStandards;
           const palette=(title,desc,items)=>h('section',{className:'bh-color-group'},h('div',{className:'bh-color-group-head'},h('h4',null,title),h('p',null,desc)),h('div',{className:'bh-palette'},...items.map((x,i)=>h('div',{className:'bh-palette-item',key:i},h('div',{className:'bh-palette-chip',style:{background:x.hex}}),h('div',{className:'bh-palette-meta'},h('strong',null,x.name),h('code',null,x.hex),x.role?h('small',null,x.role):null,h('p',null,x.usage))))));
           const combo=x=>h('div',{className:'bh-combo',key:x.background},h('div',{className:'bh-combo-preview',style:{background:x.backgroundHex}},h('strong',{style:{color:x.title}},'DEF Company · '+x.background),h('p',{style:{color:x.body}},'Industrial Vision, Precisely Applied'),h('span',{style:{background:x.accent,color:x.accentText,borderColor:x.accent}},'CTA / 重点信息')),h('div',{className:'bh-combo-meta'},h('strong',null,x.background+' Background · '+x.backgroundHex),h('p',null,'标题 '+x.title+' · '+x.titleContrast),h('p',null,'正文 '+x.body+' · '+x.bodyContrast),h('p',null,'CTA 背景 '+x.accent+' / 文字 '+x.accentText+' · '+x.accentContrast)));
-          const priorityItem=x=>h('div',{className:'bh-priority-item',key:x.name},h('i',{className:'bh-priority-chip',style:{background:x.hex}}),h('div',null,h('strong',null,x.priority+' · '+x.name),h('code',null,x.hex),h('p',null,x.usage)));
+
           const functionalItem=x=>h('div',{className:'bh-functional-item',key:x.element},h('div',{className:'bh-functional-chip',style:{background:x.sampleBackground||x.hex,color:x.sampleTextColor||'#FFFFFF'}},x.sample||''),h('div',null,h('strong',null,x.element),h('p',null,x.color),h('code',null,x.hex+' · '+x.contrast),h('small',null,x.usage)));
           return h('div',null,
             sectionHead('02 / Visual Identity','Visual Identity','Logo、颜色与字体规范。'),
@@ -612,14 +612,13 @@
                 h('div',{className:'bh-logo-bg dark'},h('div',{style:{textAlign:'center'}},h('div',{style:{fontSize:25,fontWeight:750,letterSpacing:'.04em',color:'#FFFFFF'}},'DEF COMPANY'),h('small',null,'白色反白版 · Reverse White'))),
                 h('div',{className:'bh-logo-bg',style:{background:'#F2F5F6'}},h('div',{style:{textAlign:'center'}},h('div',{style:{fontSize:25,fontWeight:750,letterSpacing:'.04em',color:'#222222'}},'DEF COMPANY'),h('small',null,'黑色单色版 · Monochrome')))
               ),
-              h('div',{className:'bh-logo-rules'},...l.variants.map((v,i)=>h('div',{className:'bh-rule',key:i},h('strong',null,v.name),h('p',null,v.detail))),h('div',{className:'bh-note'},l.displayNote),h('div',{className:'bh-note'},l.printNote)),
+              h('div',{className:'bh-logo-rules'},...l.variants.map((v,i)=>h('div',{className:'bh-rule',key:i},h('strong',null,v.name),h('p',null,v.detail))),h('div',{className:'bh-note'},l.imagePlacement),h('div',{className:'bh-note'},l.displayNote),h('div',{className:'bh-note'},l.printNote)),
               h('div',{className:'bh-grid',style:{marginTop:22}},mini('Clear Space｜保护空间（暂定）',l.clearSpace),mini('Minimum Size｜最小尺寸原则',l.minimum),mini('Background Usage',l.background),mini('File Formats',l.formats.join(' · ')))
             )),
             card('02 · Color System｜色彩系统',h('div',{className:'bh-color-system'},
               palette('Brand Colors｜品牌核心色','品牌识别的核心颜色：主蓝与强调黄。',c.brand),
               palette('Supporting Blue｜辅助蓝色阶','由主蓝延展，只保留浅蓝与深蓝两个层级；它们不是额外的品牌核心色。',c.supporting),
               palette('Neutral Colors｜中性色','页面底色、内容分区和正文基础颜色。',c.neutral),
-              h('section',{className:'bh-color-group'},h('div',{className:'bh-color-group-head'},h('h4',null,'Color Usage Priority｜颜色使用优先级'),h('p',null,'按以下顺序选择颜色；每个色块都对应明确的品牌用途。')),h('div',{className:'bh-priority-list'},...c.usagePriority.map(priorityItem))),
               h('section',{className:'bh-color-group'},
                 h('div',{className:'bh-color-group-head'},h('h4',null,'Background & Text｜背景与文字搭配'),h('p',null,'先选择背景色，再按对应色值选择标题、正文和 CTA 文字。以下组合均已核算对比度。')),
                 h('h5',{className:'bh-color-subhead'},'浅色背景 · Light Backgrounds'),
